@@ -74,11 +74,13 @@ table 'CoreAI Guide'
 
 		annotation SummarizationSetBy = Automatic
 
-	column Name
+	column 'CoreAI Guide Name'
 		dataType: string
 		lineageTag: 2ff81350-102e-4092-a382-474bd2c17ffd
 		summarizeBy: none
 		sourceColumn: caiiw_name
+
+		changedProperty = Name
 
 		annotation SummarizationSetBy = Automatic
 
