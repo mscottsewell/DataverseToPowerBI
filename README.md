@@ -1,5 +1,51 @@
 # Dataverse Metadata to Power BI Semantic Model Quickstart
 
+## � Documentation
+
+| Document | Purpose |
+|----------|---------|
+| **[SUMMARY.md](SUMMARY.md)** | Quick overview - "Can you do this?" - **Start here!** |
+| **[QUICK-REFERENCE.md](QUICK-REFERENCE.md)** | Command cheat sheet & quick tips |
+| **[Code/README-DirectExtraction.md](Code/README-DirectExtraction.md)** | Complete usage guide |
+| **[WORKFLOW-GUIDE.md](WORKFLOW-GUIDE.md)** | End-to-end implementation workflow |
+| **[VISUAL-GUIDE.md](VISUAL-GUIDE.md)** | Before/after comparison with visuals |
+| **[ARCHITECTURE.md](ARCHITECTURE.md)** | Technical architecture & data flow |
+| **[WHATS-NEW.md](WHATS-NEW.md)** | What changed in this update |
+| **[DOCUMENTATION-INDEX.md](DOCUMENTATION-INDEX.md)** | Complete documentation map |
+
+---
+
+## �🚀 Quick Start: Direct Dataverse Extraction (Recommended)
+
+**NEW:** Skip Excel exports and get metadata directly from Dataverse!
+
+```bash
+# 1. Install dependencies
+cd Code
+pip install -r requirements.txt
+
+# 2. Test connection and find your solution name
+python test_dataverse_connection.py https://yourorg.crm.dynamics.com
+
+# 3. Extract metadata
+python extract_metadata_from_dataverse.py https://yourorg.crm.dynamics.com YourSolutionName "Reports/MyProject/Metadata"
+```
+
+**Why use this method?**
+- ✓ **Automated**: No manual exports needed
+- ✓ **Current**: Always gets latest metadata
+- ✓ **Repeatable**: Run anytime to refresh
+- ✓ **CI/CD Ready**: Integrate into pipelines
+- ✓ **Complete**: Extracts all forms and fields automatically
+
+📖 **Full documentation:** [Code/README-DirectExtraction.md](Code/README-DirectExtraction.md)
+
+---
+
+## Alternative: Excel-Based Extraction (Legacy)
+
+If you prefer using XrmToolBox and Excel files, follow these steps:
+
 ## Project Structure
 
 ```

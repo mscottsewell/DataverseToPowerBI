@@ -1,0 +1,5 @@
+# Requirements for Dataverse metadata extraction
+requests>=2.31.0
+msal>=1.25.0
+pandas>=2.0.0
+openpyxl>=3.1.0

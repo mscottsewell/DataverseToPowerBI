@@ -1,6 +1,34 @@
 # Code Scripts
 
-## Active Scripts
+## 🚀 NEW: Direct Dataverse Extraction
+
+**Extract metadata directly from Dataverse without Excel!**
+
+See [README-DirectExtraction.md](README-DirectExtraction.md) for complete documentation.
+
+### Quick Start
+
+```bash
+# Install dependencies
+pip install -r requirements.txt
+
+# Test connection and list solutions
+python test_dataverse_connection.py https://yourorg.crm.dynamics.com
+
+# Extract metadata
+python extract_metadata_from_dataverse.py https://yourorg.crm.dynamics.com MySolution "Reports/MyProject/Metadata"
+```
+
+**Benefits:**
+- ✓ Automated & repeatable
+- ✓ Always current metadata
+- ✓ No manual Excel export
+- ✓ CI/CD ready
+- ✓ Git-friendly JSON output
+
+---
+
+## Excel-Based Scripts (Legacy)
 
 ### extract_fields.py
 
