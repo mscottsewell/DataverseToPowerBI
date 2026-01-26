@@ -25,10 +25,10 @@ cd Code
 pip install -r requirements.txt
 
 # 2. Test connection and find your solution name
-python test_dataverse_connection.py https://yourorg.crm.dynamics.com
+python test_dataverse_connection.py https://portfolioshapingdev.crm.dynamics.com
 
 # 3. Extract metadata
-python extract_metadata_from_dataverse.py https://yourorg.crm.dynamics.com YourSolutionName "Reports/MyProject/Metadata"
+python extract_metadata_from_dataverse.py https://portfolioshapingdev.crm.dynamics.com YourSolutionName "CoreAI"
 ```
 
 **Why use this method?**

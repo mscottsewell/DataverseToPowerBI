@@ -24,11 +24,11 @@ def list_solutions(environment_url: str, access_token: str):
     print("AVAILABLE SOLUTIONS")
     print("=" * 80)
     
-    # Get all solutions (excluding system ones)
+    # Get all solutions (excluding system ones, only unmanaged)
     query = (
         f"{api_url}/solutions?"
         f"$select=solutionid,uniquename,friendlyname,version,ismanaged,publisherid"
-        f"&$filter=isvisible eq true"
+        f"&$filter=isvisible eq true and ismanaged eq false"
         f"&$orderby=friendlyname"
     )
     
