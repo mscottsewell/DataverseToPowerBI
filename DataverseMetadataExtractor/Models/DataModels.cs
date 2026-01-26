@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace DataverseMetadataExtractor.Models
 {
@@ -24,6 +25,7 @@ namespace DataverseMetadataExtractor.Models
 
     public class TableDisplayInfo
     {
+        [JsonIgnore]
         public string LogicalName { get; set; } = "";
         public string? DisplayName { get; set; }
         public string? SchemaName { get; set; }
@@ -33,11 +35,13 @@ namespace DataverseMetadataExtractor.Models
 
     public class AttributeDisplayInfo
     {
+        [JsonIgnore]
         public string LogicalName { get; set; } = "";
         public string? DisplayName { get; set; }
         public string? SchemaName { get; set; }
         public string? AttributeType { get; set; }
         public bool IsRequired { get; set; } = false;
+        public List<string>? Targets { get; set; }  // For Lookup fields - related table(s)
     }
 
     public class MetadataCache
@@ -113,6 +117,7 @@ namespace DataverseMetadataExtractor.Models
         public string? SchemaName { get; set; }
         public string? AttributeType { get; set; }
         public bool IsCustomAttribute { get; set; }
+        public List<string>? Targets { get; set; }  // For Lookup fields - related table(s)
     }
 
     public class FormMetadata

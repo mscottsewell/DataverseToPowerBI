@@ -228,7 +228,8 @@ namespace DataverseMetadataExtractor.Services
 
         public async Task<List<AttributeMetadata>> GetAttributesAsync(string tableName)
         {
-            var response = await _httpClient.GetStringAsync($"EntityDefinitions(LogicalName='{tableName}')/Attributes?$select=LogicalName,DisplayName,SchemaName,AttributeType,IsCustomAttribute");
+            // Note: Targets is a property on LookupAttributeMetadata - don't use $select to allow all properties
+            var response = await _httpClient.GetStringAsync($"EntityDefinitions(LogicalName='{tableName}')/Attributes");
             var json = JObject.Parse(response);
 
             return json["value"]!.Select(a => new AttributeMetadata
@@ -237,7 +238,8 @@ namespace DataverseMetadataExtractor.Services
                 DisplayName = GetLocalizedLabel(a["DisplayName"]) ?? a["SchemaName"]?.ToString() ?? a["LogicalName"]!.ToString(),
                 SchemaName = a["SchemaName"]?.ToString(),
                 AttributeType = a["AttributeType"]?.ToString(),
-                IsCustomAttribute = a["IsCustomAttribute"]?.ToObject<bool>() ?? false
+                IsCustomAttribute = a["IsCustomAttribute"]?.ToObject<bool>() ?? false,
+                Targets = a["Targets"]?.ToObject<List<string>>()  // Lookup target tables
             }).OrderBy(a => a.DisplayName ?? a.LogicalName).ToList();
         }
 

@@ -50,7 +50,6 @@ namespace DataverseMetadataExtractor.Forms
             
             // Disable connection-dependent controls
             btnSelectTables.Enabled = false;
-            EnableMetadataDependentControls(false);
             
             try
             {
@@ -79,11 +78,20 @@ namespace DataverseMetadataExtractor.Forms
                 {
                     SetStatus($"Loaded cache from {_cache.CachedDate:g}");
                     RestoreFromCache();
+                    // Cache is valid, enable metadata-dependent controls
+                    EnableMetadataDependentControls(true);
                 }
                 else if (_settings.SelectedTables.Any())
                 {
                     // Cache is invalid but we have settings - restore minimal state without metadata
                     RestoreFromSettings();
+                    // No valid metadata, disable controls and force "Selected" mode
+                    EnableMetadataDependentControls(false);
+                }
+                else
+                {
+                    // No cache and no settings, disable controls
+                    EnableMetadataDependentControls(false);
                 }
                 
                 UpdateTableCount();
@@ -242,7 +250,8 @@ namespace DataverseMetadataExtractor.Forms
                             DisplayName = attr.DisplayName,
                             SchemaName = attr.SchemaName,
                             AttributeType = attr.AttributeType,
-                            IsRequired = requiredAttrs.Contains(attr.LogicalName)
+                            IsRequired = requiredAttrs.Contains(attr.LogicalName),
+                            Targets = attr.Targets  // Lookup target tables
                         };
                     }
                     _settings.AttributeDisplayInfo[logicalName] = attrDict;
@@ -392,7 +401,8 @@ namespace DataverseMetadataExtractor.Forms
                             DisplayName = attrMeta.DisplayName,
                             SchemaName = attrMeta.SchemaName,
                             AttributeType = attrMeta.AttributeType,
-                            IsRequired = requiredAttrs.Contains(attrLogicalName)
+                            IsRequired = requiredAttrs.Contains(attrLogicalName),
+                            Targets = attrMeta.Targets  // Lookup target tables
                         };
                     }
                 }
@@ -1203,11 +1213,17 @@ namespace DataverseMetadataExtractor.Forms
 
         private void RadioShowMode_CheckedChanged(object sender, EventArgs e)
         {
+            // Only process when a radio button is being checked (not unchecked)
+            if (sender is System.Windows.Forms.RadioButton radio && !radio.Checked)
+                return;
+                
             if (listViewSelectedTables.SelectedItems.Count > 0)
             {
                 var logicalName = listViewSelectedTables.SelectedItems[0].Name;
                 UpdateAttributesDisplay(logicalName);
             }
+            
+            SaveSettings();  // Save the show mode preference
         }
 
         private void BtnSelectAll_Click(object sender, EventArgs e)
