@@ -1,155 +1,154 @@
-# Dataverse Metadata to Power BI Semantic Model Quickstart
+# Dataverse Metadata Extractor
 
-## � Documentation
+A Windows Forms application for extracting metadata from Microsoft Dataverse environments and exporting it for use with Power BI semantic models.
 
-| Document | Purpose |
-|----------|---------|
-| **[SUMMARY.md](SUMMARY.md)** | Quick overview - "Can you do this?" - **Start here!** |
-| **[QUICK-REFERENCE.md](QUICK-REFERENCE.md)** | Command cheat sheet & quick tips |
-| **[Code/README-DirectExtraction.md](Code/README-DirectExtraction.md)** | Complete usage guide |
-| **[WORKFLOW-GUIDE.md](WORKFLOW-GUIDE.md)** | End-to-end implementation workflow |
-| **[VISUAL-GUIDE.md](VISUAL-GUIDE.md)** | Before/after comparison with visuals |
-| **[ARCHITECTURE.md](ARCHITECTURE.md)** | Technical architecture & data flow |
-| **[WHATS-NEW.md](WHATS-NEW.md)** | What changed in this update |
-| **[DOCUMENTATION-INDEX.md](DOCUMENTATION-INDEX.md)** | Complete documentation map |
+## Features
 
----
+- **OAuth Authentication**: Secure MSAL-based authentication to Dataverse environments
+- **Solution Browser**: Navigate and select from available Dataverse solutions  
+- **Table Selection**: Choose tables from your solution with form/view configuration
+- **Attribute Selection**: 
+  - View all attributes with display name, logical name, and type
+  - Select attributes from forms/views or manually
+  - Filter between selected and all attributes
+  - Lookup relationship tracking (Targets property)
+- **Metadata Export**: Export selected tables and attributes to JSON format
+- **24-Hour Caching**: Metadata cache for improved performance
+- **Settings Persistence**: Saves preferences and selections between sessions
 
-## �🚀 Quick Start: Direct Dataverse Extraction (Recommended)
+## Quick Start
 
-**NEW:** Skip Excel exports and get metadata directly from Dataverse!
+### Option 1: Run from Release
 
-```bash
-# 1. Install dependencies
-cd Code
-pip install -r requirements.txt
-
-# 2. Test connection and find your solution name
-python test_dataverse_connection.py https://portfolioshapingdev.crm.dynamics.com
-
-# 3. Extract metadata
-python extract_metadata_from_dataverse.py https://portfolioshapingdev.crm.dynamics.com YourSolutionName "CoreAI"
+```batch
+LaunchExtractor.bat
 ```
 
-**Why use this method?**
-- ✓ **Automated**: No manual exports needed
-- ✓ **Current**: Always gets latest metadata
-- ✓ **Repeatable**: Run anytime to refresh
-- ✓ **CI/CD Ready**: Integrate into pipelines
-- ✓ **Complete**: Extracts all forms and fields automatically
+### Option 2: Build and Run
 
-📖 **Full documentation:** [Code/README-DirectExtraction.md](Code/README-DirectExtraction.md)
+```powershell
+cd DataverseMetadataExtractor
+dotnet build --configuration Release
+dotnet run
+```
 
----
+## Requirements
 
-## Alternative: Excel-Based Extraction (Legacy)
+- Windows 10/11
+- .NET 8.0 Runtime
+- Dataverse environment access (read permissions)
 
-If you prefer using XrmToolBox and Excel files, follow these steps:
+## Usage
+
+1. **Connect**: Enter your Dataverse environment URL and click Connect
+2. **Authenticate**: Sign in via browser when prompted
+3. **Select Solution**: Choose your solution from the dropdown
+4. **Add Tables**: Click "Add Table" to select tables from your solution
+5. **Configure**: For each table, select a form and view using the ✏️ edit button
+6. **Select Attributes**: Check/uncheck attributes to include in export
+7. **Export**: Click "Export Metadata JSON" to generate the output file
+
+## Output Format
+
+The exported JSON contains:
+
+```json
+{
+  "Environment": "https://yourorg.crm.dynamics.com",
+  "Solution": "YourSolution",
+  "ProjectName": "MyProject",
+  "Tables": [
+    {
+      "LogicalName": "account",
+      "DisplayName": "Account",
+      "SchemaName": "Account",
+      "PrimaryIdAttribute": "accountid",
+      "PrimaryNameAttribute": "name",
+      "Forms": [...],
+      "View": {...},
+      "Attributes": [
+        {
+          "LogicalName": "name",
+          "DisplayName": "Account Name",
+          "SchemaName": "Name",
+          "AttributeType": "String",
+          "IsCustomAttribute": false,
+          "Targets": null
+        },
+        {
+          "LogicalName": "primarycontactid",
+          "DisplayName": "Primary Contact",
+          "SchemaName": "PrimaryContactId", 
+          "AttributeType": "Lookup",
+          "IsCustomAttribute": false,
+          "Targets": ["contact"]
+        }
+      ]
+    }
+  ]
+}
+```
 
 ## Project Structure
 
 ```
 DataverseMetadata-to-PowerBI-Semantic-Model/
-├── Reports/                # Power BI Reports with project-specific metadata
-│   └── Dynamics 365 Sales/
-│       ├── Metadata/       # Excel and JSON metadata files
-│       │   ├── DataverseURL.txt
-│       │   ├── Dynamics 365 Sales Metadata Dictionary.xlsx
-│       │   └── Dynamics 365 Sales Metadata Dictionary.json
-│       └── PBIP/           # Power BI Project files
-           ├── Dynamics 365 Sales.pbip
-           ├── Dynamics 365 Sales.Report/
-           └── Dynamics 365 Sales.SemanticModel/
-├── Code/                   # Utility scripts
-│   ├── extract_fields.py
-│   ├── extract_tables.py
-│   └── Archive/            # Legacy scripts
-├── Extract-PowerBIMetadata.ps1  # Main metadata extraction tool
-└── README.md
+├── DataverseMetadataExtractor/     # WinForms application
+│   ├── Forms/                      # UI components
+│   │   ├── MainForm.cs            # Main application window
+│   │   ├── TableSelectorDialog.cs # Table selection dialog
+│   │   └── FormViewSelectorDialog.cs # Form/View selector
+│   ├── Models/                     # Data models
+│   │   └── DataModels.cs          # All domain objects
+│   ├── Services/                   # Business logic
+│   │   ├── DataverseClient.cs     # Dataverse API client
+│   │   └── SettingsManager.cs     # Settings/cache persistence
+│   └── Program.cs                  # Entry point
+├── Reports/                        # Output location for projects
+│   └── [ProjectName]/
+│       └── Metadata/
+│           └── *.json              # Generated metadata files
+├── PBIP_DefaultTemplate/           # Power BI project template
+├── LaunchExtractor.bat             # Quick launcher
+└── README.md                       # This file
 ```
 
-## Extracting Metadata
+## Cached Data Location
 
-- **Create a DataverseURL.txt file** in the `Reports/[ProjectName]/Metadata/` folder containing your Dataverse organization URL (e.g., `https://yourorg.crm.dynamics.com`).
-- Use the XrmToolBox "Metadata Document Generator" utility to export Dataverse table metadata to an Excel file. 
-- Use the 'Load Entities from Solution' option to include only relevant tables.
-- Choose the "All Attributes contained in forms", and select a form for each entity you want added to the semantic model in Power BI. (Be sure to select each entity row and select the form for it, one by one.)
-- Select the two checkboxes in the lower right corner to create the two summarized tabs.
-- **Hint** Use the "Generation settings" option to save a configuration file so that you can return and edit/re-create the file easily if needed.
-- Generate the file and save it into the `Reports/[ProjectName]/Metadata/` folder.
-- If your organization uses IRM, be sure to set the Excel file's sensitivity label to 'General' to avoid access issues. <img width="800" alt="Metadata Document Generator Screenshot" src="https://github.com/user-attachments/assets/e437ec8c-4513-4db0-bdf2-e6d32a07b802" />
+Settings and cache are stored in:
+```
+%APPDATA%\DataverseMetadataExtractor\
+├── .dataverse_metadata_settings.json   # User preferences & selections
+└── .dataverse_metadata_cache.json      # Metadata cache (24hr expiry)
+```
 
-## Main Tool
+## Authentication
 
-### Extract-PowerBIMetadata.ps1
+Uses the official Dataverse OAuth App Registration:
+- **Client ID**: 51f81489-12ee-4a9e-aaae-a2591f45987d
+- **Authority**: https://login.microsoftonline.com/organizations
+- Interactive browser authentication with token caching
 
-Extracts metadata from Excel files into JSON format for Power BI semantic model generation.
+## Dependencies
 
-**Usage:**
+- .NET 8.0 Runtime (Windows)
+- Microsoft.Identity.Client 4.61.3 (OAuth/MSAL)
+- Newtonsoft.Json 13.0.3 (JSON serialization)
+
+## Building from Source
 
 ```powershell
-# Use default project (Dynamics 365 Sales)
-.\Extract-PowerBIMetadata.ps1
+# Clone the repository
+git clone https://github.com/your-repo/DataverseMetadata-to-PowerBI-Semantic-Model.git
+cd DataverseMetadata-to-PowerBI-Semantic-Model
 
-# Specify a different project
-.\Extract-PowerBIMetadata.ps1 -ProjectName "Dynamics 365 Sales"
+# Build
+dotnet build DataverseMetadataExtractor/DataverseMetadataExtractor.csproj
 
-# Specify custom Excel file name
-.\Extract-PowerBIMetadata.ps1 -ProjectName "Dynamics 365 Sales" -ExcelFileName "CustomMetadata.xlsx"
-
-# Create a new project structure (if project doesn't exist)
-.\Extract-PowerBIMetadata.ps1 -ProjectName "NewProject"
+# Run
+dotnet run --project DataverseMetadataExtractor/DataverseMetadataExtractor.csproj
 ```
 
-**Parameters:**
-- `ProjectName` (optional): Name of the project folder under Reports/. Default: `Dynamics 365 Sales`
-- `ExcelFileName` (optional): Name of Excel file. Default: `{ProjectName} Metadata Dictionary.xlsx`
+## License
 
-**Output:**
-- Creates a JSON file in Reports/{ProjectName}/Metadata/
-- JSON contains all tables and their fields with schema information
-
-**Auto-Create New Projects:**
-- If the project folder doesn't exist, the script will create:
-  - `Reports/{ProjectName}/Metadata/` folder
-  - `Reports/{ProjectName}/PBIP/` folder
-  - Prompts you to add Excel file and set sensitivity to 'General'
-
-## Utility Scripts
-
-See [Code/README.md](Code/README.md) for Python utility scripts that display metadata contents.
-
-## Working with Projects
-
-### Adding a New Project
-
-1. Run the extraction script with a new project name:
-   ```powershell
-   .\Extract-PowerBIMetadata.ps1 -ProjectName "NewProject"
-   ```
-
-2. The script will create:
-   - `Reports/NewProject/Metadata/` folder
-   - `Reports/NewProject/PBIP/` folder
-
-3. Add your Excel metadata file to `Reports/NewProject/Metadata/`
-   - Filename should be: `NewProject Metadata Dictionary.xlsx`
-   - Set sensitivity label to 'General'
-
-4. Create a `DataverseURL.txt` file in `Reports/NewProject/Metadata/`
-   - Add your Dataverse organization URL (e.g., `yourorg.crm.dynamics.com`)
-   - This file documents the source environment for the metadata
-
-5. Run the script again to generate JSON:
-   ```powershell
-   .\Extract-PowerBIMetadata.ps1 -ProjectName "NewProject"
-   ```
-
-6. Create your PBIP files in `Reports/NewProject/PBIP/`
-
-### Existing Projects
-
-- **Dynamics 365 Sales**: Sample Dynamics 365 Sales report with common CRM tables
-  - Metadata: [Reports/Dynamics 365 Sales/Metadata/](Reports/Dynamics%20365%20Sales/Metadata/)
-  - PBIP: [Reports/Dynamics 365 Sales/PBIP/](Reports/Dynamics%20365%20Sales/PBIP/)
-
+MIT License

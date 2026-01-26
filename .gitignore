@@ -1,3 +1,25 @@
+# Power BI local files
 **/.pbi/localSettings.json
 **/.pbi/cache.abf
+
+# Project-specific ignores
 Reports/ImaginationWorkshop
+
+# .NET build outputs
+**/bin/
+**/obj/
+
+# Python (legacy - can be removed once .venv is deleted)
+.venv/
+__pycache__/
+*.pyc
+
+# IDE
+.vs/
+
+# User-specific settings
+*.user
+*.suo
+
+# Dataverse cache files
+.dataverse_metadata_cache.json
