@@ -44,6 +44,7 @@ namespace DataverseMetadataExtractor.Models
         public string? DisplayName { get; set; }            // Friendly name of the lookup
         public bool IsActive { get; set; } = true;          // Active relationship (only one active per table pair)
         public bool IsSnowflake { get; set; } = false;      // True if this is a Dimension->ParentDimension relationship
+        public bool IsReverse { get; set; } = false;        // True if this is a one-to-many relationship (from fact's perspective)
     }
 
     public class AppSettings
@@ -213,6 +214,7 @@ namespace DataverseMetadataExtractor.Models
         public string? PrimaryIdAttribute { get; set; }
         public string? PrimaryNameAttribute { get; set; }
         public string Role { get; set; } = "Dimension";  // "Fact" or "Dimension"
+        public bool HasStateCode { get; set; } = false;  // True if table has a statecode attribute
         public List<ExportForm> Forms { get; set; } = new();
         public ExportView? View { get; set; }
         public List<AttributeMetadata> Attributes { get; set; } = new();

@@ -28,6 +28,7 @@ namespace DataverseMetadataExtractor.Forms
         // UI Controls
         private ComboBox cmbSolutions = null!;
         private ComboBox cmbFactTable = null!;
+        private CheckBox chkIncludeOneToMany = null!;
         private ListView listViewRelationships = null!;
         private Button btnAddSnowflake = null!;
         private Button btnFinish = null!;
@@ -132,21 +133,34 @@ namespace DataverseMetadataExtractor.Forms
             };
             this.Controls.Add(lblDimHint);
 
+            // One-to-many checkbox
+            chkIncludeOneToMany = new CheckBox
+            {
+                Text = "Include one-to-many relationships (Advanced: tables that reference this fact table)",
+                Location = new Point(10, 138),
+                Width = 600,
+                AutoSize = false,
+                Height = 20
+            };
+            chkIncludeOneToMany.CheckedChanged += ChkIncludeOneToMany_CheckedChanged;
+            this.Controls.Add(chkIncludeOneToMany);
+
             listViewRelationships = new ListView
             {
-                Location = new Point(10, 135),
+                Location = new Point(10, 165),
                 Width = 910,
-                Height = 420,
+                Height = 390,
                 View = View.Details,
                 FullRowSelect = true,
                 CheckBoxes = true
             };
             listViewRelationships.Columns.Add("Include", 55);
-            listViewRelationships.Columns.Add("Lookup Field", 200);
-            listViewRelationships.Columns.Add("Target Table", 200);
+            listViewRelationships.Columns.Add("Cardinality", 90);
+            listViewRelationships.Columns.Add("Lookup Field", 180);
+            listViewRelationships.Columns.Add("Target Table", 180);
             listViewRelationships.Columns.Add("Status", 100);
             listViewRelationships.Columns.Add("Type", 80);
-            listViewRelationships.Columns.Add("Target Logical Name", 180);
+            listViewRelationships.Columns.Add("Target Logical Name", 150);
             listViewRelationships.ItemChecked += ListViewRelationships_ItemChecked;
             listViewRelationships.DoubleClick += ListViewRelationships_DoubleClick;
             listViewRelationships.SelectedIndexChanged += ListViewRelationships_SelectedIndexChanged;
@@ -277,7 +291,7 @@ namespace DataverseMetadataExtractor.Forms
                 progressBar.Visible = true;
 
                 _tables = await _client.GetSolutionTablesAsync(solution.SolutionId);
-                _tableAttributes.Clear();
+                _tableAttributes.Clear();  // Clear cached attributes to force refresh
 
                 // Populate fact table dropdown
                 cmbFactTable.Items.Clear();
@@ -331,34 +345,149 @@ namespace DataverseMetadataExtractor.Forms
             await LoadFactTableRelationships();
         }
 
+        private bool _suppressOneToManyWarning = false;
+
+        private async void ChkIncludeOneToMany_CheckedChanged(object? sender, EventArgs e)
+        {
+            if (chkIncludeOneToMany.Checked && !_suppressOneToManyWarning)
+            {
+                var result = MessageBox.Show(
+                    "⚠️ WARNING: Including one-to-many relationships is an advanced feature.\n\n" +
+                    "One-to-many relationships create detail tables (child records) rather than typical dimension tables.\n" +
+                    "This can significantly increase the size of your semantic model and may cause performance issues.\n\n" +
+                    "Only enable this if:\n" +
+                    "• You understand star schema and snowflake schema design\n" +
+                    "• You need to analyze child record details alongside fact data\n" +
+                    "• You accept the potential performance implications\n\n" +
+                    "Do you want to continue?",
+                    "Advanced Feature Warning",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Warning,
+                    MessageBoxDefaultButton.Button2);
+
+                if (result == DialogResult.No)
+                {
+                    chkIncludeOneToMany.Checked = false;
+                    return;
+                }
+            }
+
+            // Reload relationships when checkbox changes
+            if (SelectedFactTable != null)
+            {
+                await LoadFactTableRelationships();
+            }
+        }
+
         private async Task LoadFactTableRelationships()
         {
             if (SelectedFactTable == null) return;
 
             try
             {
+                // Restore the one-to-many checkbox state if there are reverse relationships in current config
+                // Suppress warning dialog when restoring existing configuration
+                if (_currentRelationships.Any(r => r.IsReverse))
+                {
+                    _suppressOneToManyWarning = true;
+                    chkIncludeOneToMany.Checked = true;
+                    _suppressOneToManyWarning = false;
+                }
+
                 lblStatus.Text = $"Loading lookups for {SelectedFactTable.DisplayName}...";
                 progressBar.Visible = true;
                 cmbFactTable.Enabled = false;
 
-                // Load attributes for the fact table
-                if (!_tableAttributes.ContainsKey(SelectedFactTable.LogicalName))
-                {
-                    var attrs = await _client.GetAttributesAsync(SelectedFactTable.LogicalName);
-                    _tableAttributes[SelectedFactTable.LogicalName] = attrs;
-                }
+                // Always fetch fresh attributes from server to ensure we have the latest relationships
+                var attrs = await _client.GetAttributesAsync(SelectedFactTable.LogicalName);
+                _tableAttributes[SelectedFactTable.LogicalName] = attrs;
 
                 var factAttrs = _tableAttributes[SelectedFactTable.LogicalName];
 
-                // Get lookup attributes only
+                // Get lookup attributes - include ALL lookups regardless of target table's solution
                 var lookups = factAttrs
                     .Where(a => a.AttributeType == "Lookup" && a.Targets != null && a.Targets.Any())
                     .OrderBy(a => a.DisplayName)
                     .ToList();
 
-                PopulateRelationshipsListView(SelectedFactTable.LogicalName, lookups, isSnowflake: false);
+                PopulateRelationshipsListView(SelectedFactTable.LogicalName, lookups, isSnowflake: false, isReverse: false);
 
-                lblStatus.Text = $"Found {lookups.Count} lookup fields on {SelectedFactTable.DisplayName}.";
+                // If "Include one-to-many" is checked, also find tables that reference THIS fact table
+                if (chkIncludeOneToMany.Checked)
+                {
+                    lblStatus.Text = $"Loading one-to-many relationships (tables referencing {SelectedFactTable.DisplayName})...";
+                    await LoadReverseLookups(SelectedFactTable.LogicalName);
+                }
+
+                // Restore snowflake relationships from:
+                // 1. Normal dimensions (fact -> dimension -> parent)
+                // 2. Reverse relationship detail tables (detail -> fact, detail -> parent)
+                var factLookupTargets = lookups
+                    .Where(l => l.Targets != null)
+                    .SelectMany(l => l.Targets)
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                    .ToHashSet(StringComparer.OrdinalIgnoreCase);
+                
+                // Also get source tables from reverse relationships
+                var reverseRelSourceTables = _currentRelationships
+                    .Where(r => r.IsReverse)
+                    .Select(r => r.SourceTable)
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                    .ToHashSet(StringComparer.OrdinalIgnoreCase);
+                    
+                var snowflakeRels = _currentRelationships
+                    .Where(r => r.IsSnowflake && 
+                           (factLookupTargets.Contains(r.SourceTable) || reverseRelSourceTables.Contains(r.SourceTable)))
+                    .ToList();
+                    
+                if (snowflakeRels.Any())
+                {
+                    // Load target tables for snowflake relationships if not already loaded
+                    var missingTables = snowflakeRels
+                        .Select(r => r.TargetTable)
+                        .Distinct(StringComparer.OrdinalIgnoreCase)
+                        .Where(t => !_tables.Any(table => table.LogicalName.Equals(t, StringComparison.OrdinalIgnoreCase)))
+                        .ToList();
+
+                    if (missingTables.Any())
+                    {
+                        // Load missing tables - they might be from different solutions or system tables
+                        foreach (var tableName in missingTables)
+                        {
+                            try
+                            {
+                                var tableMetadata = await _client.GetTableMetadataAsync(tableName);
+                                if (tableMetadata != null && !_tables.Any(t => t.LogicalName.Equals(tableName, StringComparison.OrdinalIgnoreCase)))
+                                {
+                                    // Convert TableMetadata to TableInfo
+                                    _tables.Add(new TableInfo
+                                    {
+                                        LogicalName = tableMetadata.LogicalName,
+                                        DisplayName = tableMetadata.DisplayName,
+                                        SchemaName = tableMetadata.SchemaName,
+                                        PrimaryIdAttribute = tableMetadata.PrimaryIdAttribute,
+                                        PrimaryNameAttribute = tableMetadata.PrimaryNameAttribute
+                                    });
+                                }
+                            }
+                            catch
+                            {
+                                // If we can't load the table, continue anyway - we'll use the logical name
+                            }
+                        }
+                    }
+
+                    // Now add the snowflake relationships to the list
+                    foreach (var snowflakeRel in snowflakeRels)
+                    {
+                        AddSnowflakeRelationshipToList(snowflakeRel);
+                    }
+                }
+
+                var totalLookups = lookups.Count + snowflakeRels.Count;
+                lblStatus.Text = snowflakeRels.Any() 
+                    ? $"Found {lookups.Count} lookup fields on {SelectedFactTable.DisplayName} + {snowflakeRels.Count} snowflake relationship(s)."
+                    : $"Found {lookups.Count} lookup fields on {SelectedFactTable.DisplayName}.";
             }
             catch (Exception ex)
             {
@@ -374,7 +503,174 @@ namespace DataverseMetadataExtractor.Forms
             }
         }
 
-        private void PopulateRelationshipsListView(string sourceTable, List<AttributeMetadata> lookups, bool isSnowflake)
+        private async Task LoadReverseLookups(string factTableName)
+        {
+            try
+            {
+                var reverseLookups = new List<(string SourceTable, AttributeMetadata Lookup)>();
+
+                // System tables to exclude from one-to-many relationships
+                var systemTablesToExclude = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+                {
+                    "syncerror",
+                    "duplicaterecord",
+                    "bulkdeletefailure",
+                    "bulkdeleteoperation",
+                    "asyncoperation",
+                    "workflowlog",
+                    "importlog",
+                    "importfile",
+                    "tracelog",
+                    "plugintracelog",
+                    "audit",
+                    "principalobjectaccess",
+                    "principalobjectattributeaccess"
+                };
+
+                // First check if we already have reverse relationships in current config - if so, only check those tables
+                var knownReverseTables = _currentRelationships
+                    .Where(r => r.IsReverse && r.TargetTable.Equals(factTableName, StringComparison.OrdinalIgnoreCase))
+                    .Select(r => r.SourceTable)
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                    .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+                if (knownReverseTables.Any())
+                {
+                    // Fast path: only check known reverse relationship tables
+                    foreach (var tableName in knownReverseTables)
+                    {
+                        var table = _tables.FirstOrDefault(t => t.LogicalName.Equals(tableName, StringComparison.OrdinalIgnoreCase));
+                        if (table == null) continue;
+
+                        // Get or fetch attributes for this table
+                        if (!_tableAttributes.ContainsKey(table.LogicalName))
+                        {
+                            var attrs = await _client.GetAttributesAsync(table.LogicalName);
+                            _tableAttributes[table.LogicalName] = attrs;
+                        }
+
+                        var tableAttrs = _tableAttributes[table.LogicalName];
+                        
+                        // Find lookups that target the fact table
+                        var lookupsToFact = tableAttrs
+                            .Where(a => a.AttributeType == "Lookup" && 
+                                       a.Targets != null && 
+                                       a.Targets.Any(t => t.Equals(factTableName, StringComparison.OrdinalIgnoreCase)))
+                            .ToList();
+
+                        foreach (var lookup in lookupsToFact)
+                        {
+                            reverseLookups.Add((table.LogicalName, lookup));
+                        }
+                    }
+                }
+                else
+                {
+                    // Full search: Search all tables in solution for lookups that target the fact table
+                    foreach (var table in _tables)
+                    {
+                        // Skip the fact table itself
+                        if (table.LogicalName.Equals(factTableName, StringComparison.OrdinalIgnoreCase))
+                            continue;
+
+                        // Skip system/internal tables
+                        if (systemTablesToExclude.Contains(table.LogicalName))
+                            continue;
+
+                        // Get or fetch attributes for this table
+                        if (!_tableAttributes.ContainsKey(table.LogicalName))
+                        {
+                            var attrs = await _client.GetAttributesAsync(table.LogicalName);
+                            _tableAttributes[table.LogicalName] = attrs;
+                        }
+
+                        var tableAttrs = _tableAttributes[table.LogicalName];
+                        
+                        // Find lookups that target the fact table
+                        var lookupsToFact = tableAttrs
+                            .Where(a => a.AttributeType == "Lookup" && 
+                                       a.Targets != null && 
+                                       a.Targets.Any(t => t.Equals(factTableName, StringComparison.OrdinalIgnoreCase)))
+                            .ToList();
+
+                        foreach (var lookup in lookupsToFact)
+                        {
+                            reverseLookups.Add((table.LogicalName, lookup));
+                        }
+                    }
+                }
+
+                // Add reverse lookups to the list view
+                if (reverseLookups.Any())
+                {
+                    PopulateReverseLookups(reverseLookups);
+                    lblStatus.Text += $" Found {reverseLookups.Count} one-to-many relationship(s).";
+                }
+            }
+            catch (Exception ex)
+            {
+                lblStatus.Text = $"Error loading reverse lookups: {ex.Message}";
+            }
+        }
+
+        private void PopulateReverseLookups(List<(string SourceTable, AttributeMetadata Lookup)> reverseLookups)
+        {
+            foreach (var (sourceTable, lookup) in reverseLookups)
+            {
+                var sourceTableInfo = _tables.FirstOrDefault(t => t.LogicalName.Equals(sourceTable, StringComparison.OrdinalIgnoreCase));
+                var sourceTableDisplay = sourceTableInfo?.DisplayName ?? sourceTable;
+
+                // Each reverse lookup represents: SourceTable (many) -> FactTable (one)
+                // From the fact table's perspective, this is a 1:many relationship
+                foreach (var target in lookup.Targets!)
+                {
+                    // Skip if already in the list
+                    var existingKey = $"{sourceTable}|{lookup.LogicalName}|{target}";
+                    if (listViewRelationships.Items.Cast<ListViewItem>().Any(item => item.Name == existingKey))
+                        continue;
+
+                    // Check if this reverse relationship exists in current config
+                    var existingRel = _currentRelationships.FirstOrDefault(r =>
+                        r.SourceTable.Equals(sourceTable, StringComparison.OrdinalIgnoreCase) &&
+                        r.SourceAttribute.Equals(lookup.LogicalName, StringComparison.OrdinalIgnoreCase) &&
+                        r.TargetTable.Equals(target, StringComparison.OrdinalIgnoreCase) &&
+                        r.IsReverse);
+
+                    var isChecked = existingRel != null;
+                    var isActive = existingRel?.IsActive ?? true;
+                    var statusText = isActive ? "Active" : "Inactive";
+
+                    var item = new ListViewItem("");
+                    item.Name = existingKey;
+                    item.Checked = isChecked;
+                    item.Tag = new RelationshipConfig
+                    {
+                        SourceTable = sourceTable,
+                        SourceAttribute = lookup.LogicalName,
+                        TargetTable = target,
+                        DisplayName = lookup.DisplayName,
+                        IsSnowflake = false,
+                        IsActive = isActive,
+                        IsReverse = true  // Mark as reverse (1:many from fact's perspective)
+                    };
+
+                    item.SubItems.Add("Fact:Many");  // Cardinality column - from fact's perspective
+                    item.SubItems.Add(lookup.DisplayName);  // Lookup field on child table
+                    item.SubItems.Add(sourceTableDisplay);  // Child table that references the fact
+                    item.SubItems.Add(statusText);
+                    item.SubItems.Add("Direct");
+                    item.SubItems.Add(sourceTable);
+
+                    // Mark reverse relationships with a different color
+                    item.BackColor = Color.LightCyan;
+                    item.ToolTipText = "One-to-many: Multiple records from this table can reference each fact record";
+
+                    listViewRelationships.Items.Add(item);
+                }
+            }
+        }
+
+        private void PopulateRelationshipsListView(string sourceTable, List<AttributeMetadata> lookups, bool isSnowflake, bool isReverse = false)
         {
             // If not snowflake, clear and repopulate; if snowflake, append
             if (!isSnowflake)
@@ -431,9 +727,11 @@ namespace DataverseMetadataExtractor.Forms
                     }
 
                     var typeText = isSnowflake ? "Snowflake" : "Direct";
+                    var cardinalityText = isReverse ? "Fact:Many" : "Many:1";
 
                     var item = new ListViewItem("");
                     item.Checked = isChecked;
+                    item.SubItems.Add(cardinalityText);
                     item.SubItems.Add(lookup.DisplayName ?? lookup.LogicalName);
                     item.SubItems.Add(targetDisplayName);
                     item.SubItems.Add(statusText);
@@ -446,7 +744,8 @@ namespace DataverseMetadataExtractor.Forms
                         TargetTable = target,
                         DisplayName = lookup.DisplayName,
                         IsActive = isActive,
-                        IsSnowflake = isSnowflake
+                        IsSnowflake = existingRel?.IsSnowflake ?? isSnowflake,  // Preserve existing snowflake status
+                        IsReverse = existingRel?.IsReverse ?? isReverse  // Preserve existing reverse status
                     };
 
                     // Color code
@@ -548,8 +847,9 @@ namespace DataverseMetadataExtractor.Forms
             // Only allow snowflaking if:
             // 1. Item is checked (included)
             // 2. It's not already a snowflake relationship
-            // 3. The target table exists in our solution
-            var targetExists = _tables.Any(t => t.LogicalName == config.TargetTable);
+            // 3. The table we want to snowflake from exists in our solution (SourceTable for reverse, TargetTable for normal)
+            var tableToCheck = config.IsReverse ? config.SourceTable : config.TargetTable;
+            var targetExists = _tables.Any(t => t.LogicalName == tableToCheck);
             btnAddSnowflake.Enabled = item.Checked && !config.IsSnowflake && targetExists;
         }
 
@@ -559,7 +859,11 @@ namespace DataverseMetadataExtractor.Forms
 
             var item = listViewRelationships.SelectedItems[0];
             var config = (RelationshipConfig)item.Tag;
-            var dimensionTable = _tables.FirstOrDefault(t => t.LogicalName == config.TargetTable);
+            
+            // For reverse relationships (Fact:Many), we want to add snowflakes to the SOURCE table (child table)
+            // For normal relationships (Many:1), we want to add snowflakes to the TARGET table (dimension)
+            var tableToSnowflake = config.IsReverse ? config.SourceTable : config.TargetTable;
+            var dimensionTable = _tables.FirstOrDefault(t => t.LogicalName == tableToSnowflake);
 
             if (dimensionTable == null) return;
 
@@ -643,9 +947,11 @@ namespace DataverseMetadataExtractor.Forms
 
             var targetTable = _tables.FirstOrDefault(t => t.LogicalName == rel.TargetTable);
             var targetDisplayName = targetTable?.DisplayName ?? rel.TargetTable;
+            var cardinalityText = rel.IsReverse ? "Fact:Many" : "Many:1";
 
             var item = new ListViewItem("");
             item.Checked = true;
+            item.SubItems.Add(cardinalityText);
             item.SubItems.Add(rel.DisplayName ?? rel.SourceAttribute);
             item.SubItems.Add(targetDisplayName);
             item.SubItems.Add(rel.IsActive ? "Active" : "Inactive");
@@ -697,15 +1003,45 @@ namespace DataverseMetadataExtractor.Forms
             // Build results
             SelectedRelationships = configs;
 
-            // Build list of all selected tables (Fact + all unique target tables)
+            // Build list of all selected tables (Fact + all dimension and detail tables)
             AllSelectedTables = new List<TableInfo> { SelectedFactTable! };
-            var targetLogicalNames = configs.Select(c => c.TargetTable).Distinct();
-            foreach (var targetName in targetLogicalNames)
+            
+            // Collect all unique tables from relationships
+            // For reverse relationships (Fact:Many), we need the SourceTable (detail table)
+            // For normal relationships (Many:1), we need the TargetTable (dimension)
+            // For snowflakes, we need both (source is dimension, target is parent dimension)
+            var allTableNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            
+            foreach (var config in configs)
             {
-                var targetTable = _tables.FirstOrDefault(t => t.LogicalName == targetName);
-                if (targetTable != null && !AllSelectedTables.Any(t => t.LogicalName == targetName))
+                // For reverse relationships, the detail table is the SourceTable
+                if (config.IsReverse)
                 {
-                    AllSelectedTables.Add(targetTable);
+                    allTableNames.Add(config.SourceTable);
+                }
+                else
+                {
+                    // For normal Many:1 and snowflakes, add the TargetTable
+                    allTableNames.Add(config.TargetTable);
+                    
+                    // For snowflakes, also ensure the source dimension is included
+                    if (config.IsSnowflake)
+                    {
+                        allTableNames.Add(config.SourceTable);
+                    }
+                }
+            }
+            
+            foreach (var tableName in allTableNames)
+            {
+                // Skip the fact table (already added)
+                if (tableName.Equals(SelectedFactTable!.LogicalName, StringComparison.OrdinalIgnoreCase))
+                    continue;
+                    
+                var table = _tables.FirstOrDefault(t => t.LogicalName.Equals(tableName, StringComparison.OrdinalIgnoreCase));
+                if (table != null && !AllSelectedTables.Any(t => t.LogicalName.Equals(tableName, StringComparison.OrdinalIgnoreCase)))
+                {
+                    AllSelectedTables.Add(table);
                 }
             }
 

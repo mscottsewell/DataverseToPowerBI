@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -59,6 +60,7 @@ namespace DataverseMetadataExtractor.Forms
             
             // Disable connection-dependent controls
             btnSelectTables.Enabled = false;
+            btnRefreshMetadata.Enabled = false;
             
             try
             {
@@ -85,6 +87,9 @@ namespace DataverseMetadataExtractor.Forms
                 // Restore star-schema configuration
                 _factTable = _settings.FactTable;
                 _relationships = _settings.Relationships ?? new List<RelationshipConfig>();
+
+                // Populate semantic model dropdown
+                RefreshSemanticModelDropdown();
 
                 // Restore from cache if valid
                 if (!string.IsNullOrEmpty(_settings.LastEnvironmentUrl) && 
@@ -320,7 +325,11 @@ namespace DataverseMetadataExtractor.Forms
                     var views = _tableViews[logicalName];
                     var defaultView = views.FirstOrDefault(v => v.IsDefault) ?? views.FirstOrDefault();
                     if (defaultView != null)
+                    {
                         _selectedViews[logicalName] = defaultView.ViewId;
+                        // Also save to settings for persistence
+                        _settings.TableViews[logicalName] = defaultView.ViewId;
+                    }
                 }
                 
                 // Add to UI
@@ -359,7 +368,6 @@ namespace DataverseMetadataExtractor.Forms
 
         private void EnableMetadataDependentControls(bool enabled)
         {
-            btnExport.Enabled = enabled;
             btnSelectFromForm.Enabled = enabled;
             radioShowAll.Enabled = enabled;
             
@@ -420,9 +428,11 @@ namespace DataverseMetadataExtractor.Forms
             _settings.LastEnvironmentUrl = url;
             _settings.LastSolution = _currentSolutionName ?? "";
             _settings.SelectedTables = _selectedTables.Keys.ToList();
-            _settings.TableForms = GetSelectedFormIds();
+            // Don't regenerate TableForms from UI - it's maintained through direct updates in ShowFormViewSelector
+            // _settings.TableForms is already correct from direct assignment: _settings.TableForms[logicalName] = dialog.SelectedForm.FormId
             _settings.TableFormNames = GetSelectedFormNames();
-            _settings.TableViews = _selectedViews.ToDictionary(k => k.Key, v => v.Value);
+            // Don't regenerate TableViews from _selectedViews - it's maintained through direct updates
+            // _settings.TableViews is already correct from direct assignment in ShowFormViewSelector and LoadTableMetadata
             _settings.TableViewNames = GetSelectedViewNames();
             _settings.TableAttributes = _selectedAttributes.ToDictionary(
                 k => k.Key,
@@ -443,8 +453,9 @@ namespace DataverseMetadataExtractor.Forms
             );
             
             // Save attribute display info
-            // Only update if we have full metadata loaded, otherwise preserve existing display info
-            if (_tableAttributes.Any())
+            // Always update from _selectedAttributes when we have selections
+            // This ensures custom attribute selections are preserved even if _tableAttributes was cleared
+            if (_selectedAttributes.Any())
             {
                 Services.DebugLogger.Log($"Rebuilding AttributeDisplayInfo from {_selectedAttributes.Count} tables in _selectedAttributes");
                 
@@ -464,12 +475,6 @@ namespace DataverseMetadataExtractor.Forms
                     var selectedNames = string.Join(", ", _selectedAttributes[tableName].Take(3));
                     Services.DebugLogger.Log($"    _selectedAttributes has: {selectedNames}...");
                     
-                    if (!_tableAttributes.ContainsKey(tableName))
-                    {
-                        Services.DebugLogger.Log($"    SKIPPED: Not in _tableAttributes");
-                        continue;
-                    }
-                    
                     if (!_selectedTables.ContainsKey(tableName))
                     {
                         Services.DebugLogger.Log($"    SKIPPED: Not in _selectedTables");
@@ -481,24 +486,42 @@ namespace DataverseMetadataExtractor.Forms
                     var selectedAttrCount = _selectedAttributes[tableName].Count;
                     Services.DebugLogger.Log($"    Has {selectedAttrCount} selected attributes");
                     
+                    // If we have full metadata, use it. Otherwise, save minimal info to preserve selections
+                    bool hasMetadata = _tableAttributes.ContainsKey(tableName);
+                    
                     foreach (var attrLogicalName in _selectedAttributes[tableName])
                     {
-                        var attrMeta = _tableAttributes[tableName].FirstOrDefault(a => a.LogicalName == attrLogicalName);
-                        if (attrMeta != null)
+                        if (hasMetadata)
                         {
-                            attrDict[attrLogicalName] = new AttributeDisplayInfo
+                            var attrMeta = _tableAttributes[tableName].FirstOrDefault(a => a.LogicalName == attrLogicalName);
+                            if (attrMeta != null)
                             {
-                                LogicalName = attrMeta.LogicalName,
-                                DisplayName = attrMeta.DisplayName,
-                                SchemaName = attrMeta.SchemaName,
-                                AttributeType = attrMeta.AttributeType,
-                                IsRequired = requiredAttrs.Contains(attrLogicalName),
-                                Targets = attrMeta.Targets  // Lookup target tables
-                            };
+                                attrDict[attrLogicalName] = new AttributeDisplayInfo
+                                {
+                                    LogicalName = attrMeta.LogicalName,
+                                    DisplayName = attrMeta.DisplayName,
+                                    SchemaName = attrMeta.SchemaName,
+                                    AttributeType = attrMeta.AttributeType,
+                                    IsRequired = requiredAttrs.Contains(attrLogicalName),
+                                    Targets = attrMeta.Targets  // Lookup target tables
+                                };
+                            }
+                            else
+                            {
+                                Services.DebugLogger.Log($"      Attribute {attrLogicalName} not found in _tableAttributes[{tableName}]");
+                            }
                         }
                         else
                         {
-                            Services.DebugLogger.Log($"      Attribute {attrLogicalName} not found in _tableAttributes[{tableName}]");
+                            // No metadata available - save minimal info to preserve the selection
+                            attrDict[attrLogicalName] = new AttributeDisplayInfo
+                            {
+                                LogicalName = attrLogicalName,
+                                DisplayName = attrLogicalName,  // Will be updated when metadata reloads
+                                SchemaName = attrLogicalName,
+                                AttributeType = "Unknown",
+                                IsRequired = requiredAttrs.Contains(attrLogicalName)
+                            };
                         }
                     }
                     
@@ -512,13 +535,13 @@ namespace DataverseMetadataExtractor.Forms
                 
                 Services.DebugLogger.Log($"Final AttributeDisplayInfo has {_settings.AttributeDisplayInfo.Sum(t => t.Value.Count)} attributes across {_settings.AttributeDisplayInfo.Count} tables");
             }
-            // else: keep existing AttributeDisplayInfo from loaded settings
+            // else: No selected attributes, keep existing AttributeDisplayInfo from loaded settings
             
             // DEBUG: Check AttributeDisplayInfo after update
             var afterAttrInfoCount = _settings.AttributeDisplayInfo?.Sum(t => t.Value.Count) ?? 0;
             Services.DebugLogger.LogSection("SaveSettings - After AttributeDisplayInfo Update",
                 $"_settings.AttributeDisplayInfo: {afterAttrInfoCount} attrs across {_settings.AttributeDisplayInfo?.Count ?? 0} tables\n" +
-                $"Updated: {_tableAttributes.Any()}");
+                $"Updated: {_selectedAttributes.Any()}");
             
             // Project name always matches configuration name
             var configName = _settingsManager.GetCurrentConfigurationName();
@@ -648,7 +671,198 @@ namespace DataverseMetadataExtractor.Forms
             progressBar.Visible = show;
         }
 
-        private async void BtnConnect_Click(object sender, EventArgs e)
+        private void RefreshSemanticModelDropdown()
+        {
+            cboSemanticModels.Items.Clear();
+            
+            // Add "+ Create New" option first
+            cboSemanticModels.Items.Add("+ Create New...");
+            
+            // Get all configurations from SettingsManager
+            var configurations = _settingsManager.GetConfigurationNames();
+            if (configurations.Any())
+            {
+                foreach (var config in configurations.OrderBy(c => c))
+                {
+                    cboSemanticModels.Items.Add(config);
+                }
+                
+                // Select current configuration
+                var currentConfig = _settingsManager.GetCurrentConfigurationName();
+                var index = cboSemanticModels.Items.IndexOf(currentConfig);
+                if (index >= 0)
+                {
+                    cboSemanticModels.SelectedIndex = index;
+                }
+                else if (cboSemanticModels.Items.Count > 1)
+                {
+                    cboSemanticModels.SelectedIndex = 1;  // Skip "+ Create New"
+                }
+            }
+            else
+            {
+                // Only "+ Create New" is available
+                cboSemanticModels.SelectedIndex = 0;
+            }
+        }
+
+        private void CboSemanticModels_SelectedIndexChanged(object? sender, EventArgs e)
+        {
+            if (_isLoading) return;
+            
+            var selectedModel = cboSemanticModels.SelectedItem?.ToString();
+            if (string.IsNullOrEmpty(selectedModel))
+                return;
+            
+            // Handle "+ Create New" option
+            if (selectedModel == "+ Create New...")
+            {
+                CreateNewSemanticModel();
+                return;
+            }
+            
+            // Skip placeholder items
+            if (selectedModel.StartsWith("(No"))
+                return;
+            
+            // Switch to the corresponding configuration
+            var configs = _settingsManager.GetConfigurationNames();
+            if (configs.Contains(selectedModel))
+            {
+                SwitchToConfiguration(selectedModel);
+            }
+        }
+
+        private async void CreateNewSemanticModel()
+        {
+            using var dialog = new NewSemanticModelDialog(txtOutputFolder.Text);
+            
+            if (dialog.ShowDialog(this) == DialogResult.OK)
+            {
+                var modelName = dialog.SemanticModelName;
+                var folder = dialog.WorkingFolder;
+                
+                // Update working folder if changed
+                if (dialog.WorkingFolderChanged)
+                {
+                    txtOutputFolder.Text = folder;
+                    SaveSettings();
+                }
+                
+                // Check if configuration already exists
+                var existingConfigs = _settingsManager.GetConfigurationNames();
+                if (existingConfigs.Contains(modelName))
+                {
+                    // Configuration exists - just switch to it
+                    var result = MessageBox.Show(
+                        $"A configuration named '{modelName}' already exists.\n\n" +
+                        $"Would you like to switch to that configuration?",
+                        "Configuration Exists",
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Question);
+                    
+                    if (result == DialogResult.Yes)
+                    {
+                        SwitchToConfiguration(modelName);
+                    }
+                    else
+                    {
+                        RefreshSemanticModelDropdown();
+                    }
+                    return;
+                }
+                
+                // Create the folder structure for the new semantic model
+                try
+                {
+                    var modelFolder = Path.Combine(folder, modelName);
+                    Directory.CreateDirectory(modelFolder);
+                    
+                    // Create a new configuration for this semantic model
+                    var newSettings = new AppSettings 
+                    { 
+                        ProjectName = modelName,
+                        OutputFolder = folder
+                    };
+                    _settingsManager.CreateNewConfiguration(modelName, newSettings);
+                    
+                    // Switch to the new configuration
+                    SwitchToConfiguration(modelName);
+                    
+                    SetStatus($"Created new semantic model: {modelName}");
+                    
+                    // Ask if user wants to select facts and dimensions
+                    var selectTablesResult = MessageBox.Show(
+                        $"Semantic model '{modelName}' created successfully.\n\n" +
+                        "Would you like to select Fact and Dimension tables now?",
+                        "Select Tables?",
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Question);
+                    
+                    if (selectTablesResult == DialogResult.Yes)
+                    {
+                        // Check if connected, if not, connect first
+                        if (_client == null)
+                        {
+                            await ConnectToEnvironmentAsync();
+                        }
+                        
+                        // Only open selector if we're now connected
+                        if (_client != null)
+                        {
+                            BtnSelectTables_Click(null, EventArgs.Empty);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Failed to create semantic model:\n{ex.Message}",
+                        "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    RefreshSemanticModelDropdown();  // Reset dropdown
+                }
+            }
+            else
+            {
+                // User cancelled - reset dropdown to previous selection
+                RefreshSemanticModelDropdown();
+            }
+        }
+
+        private void BtnChangeWorkingFolder_Click(object? sender, EventArgs e)
+        {
+            using var dialog = new WorkingFolderDialog(txtOutputFolder.Text);
+
+            if (dialog.ShowDialog(this) == DialogResult.OK)
+            {
+                txtOutputFolder.Text = dialog.WorkingFolder;
+                SaveSettings();
+                RefreshSemanticModelDropdown();
+                SetStatus($"Working folder set to: {dialog.WorkingFolder}");
+            }
+        }
+
+        private async void BtnChangeEnvironment_Click(object? sender, EventArgs e)
+        {
+            var currentUrl = txtEnvironmentUrl.Text.Trim();
+            
+            using var dialog = new EnvironmentDialog(currentUrl);
+            if (dialog.ShowDialog(this) == DialogResult.OK)
+            {
+                var url = dialog.EnvironmentUrl;
+                if (url.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+                    url = url.Substring(8);
+                    
+                txtEnvironmentUrl.Text = url;
+                SaveSettings();
+                
+                if (dialog.ShouldConnect)
+                {
+                    await ConnectToEnvironmentAsync();
+                }
+            }
+        }
+
+        private async Task ConnectToEnvironmentAsync()
         {
             var url = txtEnvironmentUrl.Text.Trim();
             if (string.IsNullOrWhiteSpace(url))
@@ -658,7 +872,7 @@ namespace DataverseMetadataExtractor.Forms
                 return;
             }
 
-            // Add https:// for connection (but don't update the text box)
+            // Add https:// for connection
             var connectionUrl = url;
             if (!connectionUrl.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
                 connectionUrl = "https://" + connectionUrl;
@@ -680,14 +894,15 @@ namespace DataverseMetadataExtractor.Forms
                 if (result == DialogResult.Yes)
                 {
                     SwitchToConfiguration(mostRecentConfigForUrl);
-                    return; // Don't connect yet, let user click Connect again
+                    return;
                 }
             }
 
             try
             {
-                btnConnect.Enabled = false;
+                btnChangeEnvironment.Enabled = false;
                 lblConnectionStatus.Text = "Connecting...";
+                lblConnectionStatus.ForeColor = System.Drawing.Color.Orange;
                 SetStatus("Authenticating to Dataverse...");
                 ShowProgress(true);
 
@@ -695,7 +910,9 @@ namespace DataverseMetadataExtractor.Forms
                 await _client.AuthenticateAsync();
 
                 lblConnectionStatus.Text = "Connected";
-                btnSelectTables.Enabled = true;  // Enable table selection
+                lblConnectionStatus.ForeColor = System.Drawing.Color.Green;
+                btnSelectTables.Enabled = true;
+                btnRefreshMetadata.Enabled = true;
                 SetStatus("Connected successfully.");
                 SaveSettings();
                 
@@ -708,19 +925,77 @@ namespace DataverseMetadataExtractor.Forms
             catch (Exception ex)
             {
                 lblConnectionStatus.Text = "Connection failed";
-                btnSelectTables.Enabled = false;  // Disable table selection
+                lblConnectionStatus.ForeColor = System.Drawing.Color.Red;
+                btnSelectTables.Enabled = false;
+                btnRefreshMetadata.Enabled = false;
                 MessageBox.Show($"Connection failed:\n{ex.Message}", "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 SetStatus("Connection failed.");
             }
             finally
             {
-                btnConnect.Enabled = true;
+                btnChangeEnvironment.Enabled = true;
                 ShowProgress(false);
             }
         }
 
-        private void BtnSelectTables_Click(object sender, EventArgs e)
+        private async void BtnConnect_Click(object sender, EventArgs e)
+        {
+            await ConnectToEnvironmentAsync();
+        }
+
+        private async void BtnRefreshMetadata_Click(object sender, EventArgs e)
+        {
+            if (_client == null)
+            {
+                MessageBox.Show("Please connect to an environment first.", "Not Connected",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var result = MessageBox.Show(
+                "This will clear all cached metadata and allow you to re-select fact and dimension tables with fresh data from Dataverse.\n\n" +
+                "Any unsaved changes will be lost. Continue?",
+                "Refresh Metadata",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question);
+
+            if (result != DialogResult.Yes)
+                return;
+
+            try
+            {
+                btnRefreshMetadata.Enabled = false;
+                SetStatus("Clearing cached metadata...");
+
+                // Clear all cached metadata to force fresh retrieval
+                _tableForms.Clear();
+                _tableViews.Clear();
+                _tableAttributes.Clear();
+                _cache = new MetadataCache();
+                
+                // Clear cache file
+                var currentConfig = _settingsManager.GetCurrentConfigurationName();
+                _settingsManager.SaveCache(_cache, currentConfig);
+
+                SetStatus("Metadata cache cleared. Opening fact & dimension selector...");
+
+                // Re-open the fact/dimension selector to allow fresh selection
+                BtnSelectTables_Click(sender, e);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to refresh metadata:\n{ex.Message}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                SetStatus("Metadata refresh failed.");
+            }
+            finally
+            {
+                btnRefreshMetadata.Enabled = true;
+            }
+        }
+
+        private void BtnSelectTables_Click(object? sender, EventArgs e)
         {
             if (_client == null)
             {
@@ -750,7 +1025,17 @@ namespace DataverseMetadataExtractor.Forms
                 // Add all selected tables (Fact + Dimensions)
                 if (dialog.AllSelectedTables.Any())
                 {
-                    AddTablesInBulk(dialog.AllSelectedTables);
+                    // Preserve existing attribute selections before adding tables
+                    var preservedSelections = new Dictionary<string, HashSet<string>>();
+                    foreach (var table in dialog.AllSelectedTables)
+                    {
+                        if (_selectedAttributes.ContainsKey(table.LogicalName))
+                        {
+                            preservedSelections[table.LogicalName] = new HashSet<string>(_selectedAttributes[table.LogicalName]);
+                        }
+                    }
+                    
+                    AddTablesInBulk(dialog.AllSelectedTables, preservedSelections);
                 }
 
                 SaveSettings();
@@ -770,17 +1055,29 @@ namespace DataverseMetadataExtractor.Forms
             listViewAttributes.Items.Clear();
         }
 
-        private async void AddTablesInBulk(List<TableInfo> tables)
+        private async void AddTablesInBulk(List<TableInfo> tables, Dictionary<string, HashSet<string>> preservedSelections = null)
         {
             // Add all tables to the list first
             foreach (var table in tables)
             {
                 var logicalName = table.LogicalName;
-                if (_selectedTables.ContainsKey(logicalName))
+                bool isExistingTable = _selectedTables.ContainsKey(logicalName);
+                
+                if (isExistingTable)
                     continue;  // Already added
                 
                 _selectedTables[logicalName] = table;
-                _selectedAttributes[logicalName] = GetRequiredAttributes(table);
+                
+                // Restore preserved selections if available, otherwise use required attributes only
+                if (preservedSelections != null && preservedSelections.ContainsKey(logicalName))
+                {
+                    _selectedAttributes[logicalName] = preservedSelections[logicalName];
+                }
+                else
+                {
+                    _selectedAttributes[logicalName] = GetRequiredAttributes(table);
+                }
+                
                 _loadingStates[logicalName] = true;
                 
                 AddTableToSelectedList(table, loading: true);
@@ -836,8 +1133,17 @@ namespace DataverseMetadataExtractor.Forms
                 var selectedAttrs = _selectedAttributes[logicalName];
                 var requiredAttrs = GetRequiredAttributes(_selectedTables[logicalName]);
                 
-                // Check if this is a new table (not restored from cache) by seeing if only required attrs are selected
-                bool isNewTable = selectedAttrs.Count == requiredAttrs.Count && requiredAttrs.All(r => selectedAttrs.Contains(r));
+                // Check if this is a truly new table (not restored from cache or reopened from dialog)
+                // Only auto-select if we have EXACTLY the required attrs and nothing more
+                bool isNewTable = selectedAttrs.Count == requiredAttrs.Count && 
+                                  requiredAttrs.All(r => selectedAttrs.Contains(r)) &&
+                                  selectedAttrs.All(s => requiredAttrs.Contains(s));
+                
+                // Ensure form ID is set (for new tables or if missing)
+                if (!_settings.TableForms.ContainsKey(logicalName) && forms.Any())
+                {
+                    _settings.TableForms[logicalName] = forms.First().FormId;
+                }
                 
                 if (isNewTable && forms.Any())
                 {
@@ -871,6 +1177,8 @@ namespace DataverseMetadataExtractor.Forms
                 {
                     var defaultView = views.FirstOrDefault(v => v.IsDefault) ?? views.First();
                     _selectedViews[logicalName] = defaultView.ViewId;
+                    // Also save to settings for persistence
+                    _settings.TableViews[logicalName] = defaultView.ViewId;
                 }
 
                 // Update UI on main thread
@@ -953,17 +1261,6 @@ namespace DataverseMetadataExtractor.Forms
                 _tableForms[logicalName] = forms;
                 _tableViews[logicalName] = views;
 
-                // Get all fields from all forms
-                var allFormFields = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-                foreach (var form in forms)
-                {
-                    if (form.Fields != null)
-                    {
-                        foreach (var field in form.Fields)
-                            allFormFields.Add(field);
-                    }
-                }
-
                 // Get current attribute names from Dataverse
                 var currentAttributeNames = new HashSet<string>(
                     attributes.Select(a => a.LogicalName),
@@ -983,15 +1280,6 @@ namespace DataverseMetadataExtractor.Forms
                 
                 foreach (var attr in toRemove)
                     selectedAttrs.Remove(attr);
-
-                // Add new attributes that are in forms but not yet selected
-                foreach (var formField in allFormFields)
-                {
-                    if (currentAttributeNames.Contains(formField) && !selectedAttrs.Contains(formField))
-                    {
-                        selectedAttrs.Add(formField);
-                    }
-                }
 
                 // Always ensure required attributes are included
                 foreach (var req in requiredAttrs)
@@ -1108,28 +1396,7 @@ namespace DataverseMetadataExtractor.Forms
             return view != null ? view.Name : views.First().Name;
         }
 
-        private void BtnRemoveTable_Click(object sender, EventArgs e)
-        {
-            if (listViewSelectedTables.SelectedItems.Count == 0) return;
 
-            var item = listViewSelectedTables.SelectedItems[0];
-            var logicalName = item.Name;
-
-            _selectedTables.Remove(logicalName);
-            _tableForms.Remove(logicalName);
-            _tableViews.Remove(logicalName);
-            _tableAttributes.Remove(logicalName);
-            _selectedAttributes.Remove(logicalName);
-            _selectedViews.Remove(logicalName);
-            _loadingStates.Remove(logicalName);
-
-            listViewSelectedTables.Items.Remove(item);
-            listViewAttributes.Items.Clear();
-
-            UpdateTableCount();
-            SaveSettings();
-            SaveCache();
-        }
 
         private void ListViewSelectedTables_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -1208,12 +1475,15 @@ namespace DataverseMetadataExtractor.Forms
                 if (dialog.SelectedView != null)
                 {
                     _selectedViews[logicalName] = dialog.SelectedView.ViewId;
+                    // Also save to settings for persistence (matching form handling)
+                    _settings.TableViews[logicalName] = dialog.SelectedView.ViewId;
                 }
 
-                // If form changed, auto-select fields from the new form
-                if (formChanged && dialog.SelectedForm != null)
+                // If form changed, switch to "show all" mode so user can see all attributes
+                // Don't auto-select - only "Match Selected Form" button should do that
+                if (formChanged)
                 {
-                    AutoSelectFormFields(logicalName, dialog.SelectedForm);
+                    radioShowAll.Checked = true;
                 }
 
                 UpdateSelectedTableRow(logicalName);
@@ -1525,245 +1795,7 @@ namespace DataverseMetadataExtractor.Forms
             SetStatus($"Selected {formFields.Count} fields from form.");
         }
 
-        private void TxtProjectName_TextChanged(object sender, EventArgs e)
-        {
-            if (_isLoading)
-                return;
 
-            var newProjectName = txtProjectName.Text.Trim();
-            if (string.IsNullOrWhiteSpace(newProjectName))
-            {
-                SaveSettings();
-                return;
-            }
-
-            var currentConfigName = _settingsManager.GetCurrentConfigurationName();
-            
-            // If project name changed, rename the configuration to match
-            if (newProjectName != currentConfigName)
-            {
-                try
-                {
-                    _settingsManager.RenameConfiguration(currentConfigName, newProjectName);
-                    this.Text = $"Dataverse Metadata Extractor for Power BI - {newProjectName}";
-                }
-                catch
-                {
-                    // If rename fails (e.g., name already exists), revert the text
-                    _isLoading = true;
-                    txtProjectName.Text = currentConfigName;
-                    _isLoading = false;
-                    MessageBox.Show($"Cannot rename configuration to '{newProjectName}' - a configuration with that name already exists.", "Error",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
-            
-            SaveSettings();
-        }
-
-        private void TxtOutputFolder_TextChanged(object sender, EventArgs e)
-        {
-            SaveSettings();
-        }
-
-        private void BtnBrowseOutput_Click(object sender, EventArgs e)
-        {
-            using var dialog = new FolderBrowserDialog
-            {
-                Description = "Select Output Folder",
-                SelectedPath = txtOutputFolder.Text
-            };
-
-            if (dialog.ShowDialog(this) == DialogResult.OK)
-            {
-                txtOutputFolder.Text = dialog.SelectedPath;
-            }
-        }
-
-        private async void BtnExport_Click(object sender, EventArgs e)
-        {
-            if (!_selectedTables.Any())
-            {
-                MessageBox.Show("No tables selected.", "Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            var semanticModelName = txtProjectName.Text.Trim();
-            if (string.IsNullOrEmpty(semanticModelName))
-            {
-                MessageBox.Show("Please enter a semantic model name.", "Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            var baseOutputFolder = txtOutputFolder.Text.Trim();
-            if (string.IsNullOrEmpty(baseOutputFolder))
-            {
-                // Default to Reports/SemanticModelName
-                var baseDir = Path.GetDirectoryName(Application.ExecutablePath);
-                baseOutputFolder = Path.Combine(baseDir, "..", "..", "..", "..", "Reports");
-                txtOutputFolder.Text = baseOutputFolder;
-            }
-
-            // Combine base folder with semantic model name as subfolder
-            var outputFolder = Path.Combine(baseOutputFolder, semanticModelName);
-
-            try
-            {
-                btnExport.Enabled = false;
-                SetStatus("Preparing export...");
-                ShowProgress(true);
-
-                await Task.Run(() => ExportMetadata(semanticModelName, outputFolder));
-
-                SetStatus($"Exported to {outputFolder}");
-                ShowProgress(false);
-
-                var totalAttrs = _selectedAttributes.Values.Sum(s => s.Count);
-                var factDisplay = _factTable != null && _selectedTables.ContainsKey(_factTable)
-                    ? _selectedTables[_factTable].DisplayName ?? _factTable
-                    : "(none)";
-                var directRels = _relationships.Count(r => !r.IsSnowflake);
-                var snowflakeRels = _relationships.Count(r => r.IsSnowflake);
-                var relInfo = snowflakeRels > 0
-                    ? $"{directRels} direct + {snowflakeRels} snowflake"
-                    : $"{directRels}";
-                MessageBox.Show(
-                    $"Metadata exported successfully!\n\n" +
-                    $"File: {Path.Combine(outputFolder, semanticModelName + " Metadata Dictionary.json")}\n" +
-                    $"Fact Table: {factDisplay}\n" +
-                    $"Dimension Tables: {_selectedTables.Count - (_factTable != null ? 1 : 0)}\n" +
-                    $"Relationships: {relInfo}\n" +
-                    $"Total Attributes: {totalAttrs}",
-                    "Export Complete",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Information);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Export failed:\n{ex.Message}", "Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-                SetStatus("Export failed.");
-            }
-            finally
-            {
-                btnExport.Enabled = true;
-                ShowProgress(false);
-            }
-        }
-
-        private void ExportMetadata(string projectName, string outputFolder)
-        {
-            // Add https:// prefix for export metadata
-            var envUrl = txtEnvironmentUrl.Text.Trim();
-            if (!envUrl.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
-                envUrl = "https://" + envUrl;
-
-            // Export relationships
-            var exportRelationships = _relationships.Select(r => new ExportRelationship
-            {
-                SourceTable = r.SourceTable,
-                SourceAttribute = r.SourceAttribute,
-                TargetTable = r.TargetTable,
-                DisplayName = r.DisplayName,
-                IsActive = r.IsActive,
-                IsSnowflake = r.IsSnowflake
-            }).ToList();
-
-            var metadata = new ExportMetadata
-            {
-                Environment = envUrl,
-                Solution = _currentSolutionName ?? "",
-                ProjectName = projectName,
-                FactTable = _factTable,
-                Relationships = exportRelationships,
-                Tables = new List<ExportTable>()
-            };
-
-            foreach (var kvp in _selectedTables)
-            {
-                var logicalName = kvp.Key;
-                var table = kvp.Value;
-
-                // Get selected form
-                var forms = new List<ExportForm>();
-                if (_tableForms.ContainsKey(logicalName))
-                {
-                    var formId = GetSelectedFormId(logicalName);
-                    var form = _tableForms[logicalName].FirstOrDefault(f => f.FormId == formId);
-                    if (form != null)
-                    {
-                        forms.Add(new ExportForm
-                        {
-                            FormId = form.FormId,
-                            FormName = form.Name,
-                            FieldCount = form.Fields?.Count ?? 0
-                        });
-                    }
-                }
-
-                // Get selected view
-                ExportView? view = null;
-                if (_tableViews.ContainsKey(logicalName) && _selectedViews.ContainsKey(logicalName))
-                {
-                    var viewId = _selectedViews[logicalName];
-                    var viewData = _tableViews[logicalName].FirstOrDefault(v => v.ViewId == viewId);
-                    if (viewData != null)
-                    {
-                        view = new ExportView
-                        {
-                            ViewId = viewData.ViewId,
-                            ViewName = viewData.Name,
-                            FetchXml = viewData.FetchXml
-                        };
-                    }
-                }
-
-                // Get selected attributes
-                var selectedAttrNames = _selectedAttributes.ContainsKey(logicalName)
-                    ? _selectedAttributes[logicalName]
-                    : new HashSet<string>();
-                var allAttrs = _tableAttributes.ContainsKey(logicalName)
-                    ? _tableAttributes[logicalName]
-                    : new List<AttributeMetadata>();
-
-                var attributes = allAttrs
-                    .Where(a => selectedAttrNames.Contains(a.LogicalName))
-                    .ToList();
-
-                // Determine table role
-                var role = logicalName == _factTable ? "Fact" : "Dimension";
-
-                metadata.Tables.Add(new ExportTable
-                {
-                    LogicalName = table.LogicalName,
-                    DisplayName = table.DisplayName,
-                    SchemaName = table.SchemaName,
-                    ObjectTypeCode = table.ObjectTypeCode,
-                    PrimaryIdAttribute = table.PrimaryIdAttribute,
-                    PrimaryNameAttribute = table.PrimaryNameAttribute,
-                    Role = role,
-                    Forms = forms,
-                    View = view,
-                    Attributes = attributes
-                });
-            }
-
-            // Save to file
-            Directory.CreateDirectory(outputFolder);
-            var outputFile = Path.Combine(outputFolder, $"{projectName} Metadata Dictionary.json");
-
-            var json = JsonConvert.SerializeObject(metadata, Formatting.Indented);
-            File.WriteAllText(outputFile, json);
-
-            // Also save DataverseURL.txt (with https:// prefix)
-            var urlFile = Path.Combine(outputFolder, "DataverseURL.txt");
-            var urlForFile = txtEnvironmentUrl.Text.Trim();
-            if (!urlForFile.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
-                urlForFile = "https://" + urlForFile;
-            File.WriteAllText(urlFile, urlForFile);
-        }
 
         private void ListViewSelectedTables_ColumnClick(object sender, ColumnClickEventArgs e)
         {
@@ -1916,10 +1948,20 @@ namespace DataverseMetadataExtractor.Forms
                 }
 
                 UpdateTableCount();
+                
+                // Refresh the semantic model dropdown
+                RefreshSemanticModelDropdown();
+                
                 _isLoading = false;
 
                 // Update title
                 this.Text = $"Dataverse Metadata Extractor for Power BI - {configurationName}";
+                
+                // Update connection status
+                lblConnectionStatus.Text = "Not connected";
+                lblConnectionStatus.ForeColor = System.Drawing.Color.Gray;
+                btnSelectTables.Enabled = false;
+                btnRefreshMetadata.Enabled = false;
                 
                 // Show status
                 SetStatus(statusMsg);
@@ -2094,6 +2136,284 @@ namespace DataverseMetadataExtractor.Forms
             SaveCache();
             
             Services.DebugLogger.Log($"Log saved to: {Services.DebugLogger.GetLogPath()}");
+        }
+
+        private async void BtnBuildSemanticModel_Click(object? sender, EventArgs e)
+        {
+            if (!_selectedTables.Any())
+            {
+                MessageBox.Show("No tables selected.", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var semanticModelName = txtProjectName.Text.Trim();
+            if (string.IsNullOrEmpty(semanticModelName))
+            {
+                MessageBox.Show("Please enter a semantic model name.", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var envUrl = txtEnvironmentUrl.Text.Trim();
+            if (string.IsNullOrEmpty(envUrl))
+            {
+                MessageBox.Show("Please enter a Dataverse URL.", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var baseOutputFolder = txtOutputFolder.Text.Trim();
+            if (string.IsNullOrEmpty(baseOutputFolder))
+            {
+                // Default to Reports/SemanticModelName
+                var baseDir = Path.GetDirectoryName(Application.ExecutablePath);
+                baseOutputFolder = Path.Combine(baseDir ?? "", "..", "..", "..", "..", "Reports");
+                txtOutputFolder.Text = baseOutputFolder;
+            }
+
+            // Combine base folder with semantic model name as subfolder
+            var outputFolder = Path.Combine(baseOutputFolder, semanticModelName);
+
+            // Get template path
+            var templatePath = Path.Combine(
+                Path.GetDirectoryName(Application.ExecutablePath) ?? "",
+                "..", "..", "..", "..", "PBIP_DefaultTemplate");
+
+            if (!Directory.Exists(templatePath))
+            {
+                MessageBox.Show($"PBIP template not found at: {templatePath}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            try
+            {
+                btnBuildSemanticModel.Enabled = false;
+                SetStatus("Building semantic model...");
+                ShowProgress(true);
+
+                // Build export tables
+                var exportTables = BuildExportTables();
+
+                // Build export relationships
+                var exportRelationships = _relationships.Select(r => new ExportRelationship
+                {
+                    SourceTable = r.SourceTable,
+                    SourceAttribute = r.SourceAttribute,
+                    TargetTable = r.TargetTable,
+                    DisplayName = r.DisplayName,
+                    IsActive = r.IsActive,
+                    IsSnowflake = r.IsSnowflake
+                }).ToList();
+
+                // Don't add https:// - TMDL format stores URLs without protocol prefix
+                // The URL validation and https:// addition happens in DataverseClient when actually connecting
+                var fullUrl = envUrl;
+
+                // First analyze changes (non-blocking)
+                SemanticModelBuilder? builder = null;
+                List<SemanticModelChange>? changes = null;
+
+                await Task.Run(() =>
+                {
+                    builder = new SemanticModelBuilder(templatePath, msg =>
+                    {
+                        this.Invoke((MethodInvoker)delegate { SetStatus(msg); });
+                    });
+
+                    changes = builder.AnalyzeChanges(
+                        semanticModelName,
+                        outputFolder,
+                        fullUrl,
+                        exportTables,
+                        exportRelationships,
+                        _settings.AttributeDisplayInfo);
+                });
+
+                if (builder == null || changes == null)
+                {
+                    ShowProgress(false);
+                    SetStatus("Build failed");
+                    return;
+                }
+
+                // Show preview dialog on UI thread
+                bool userApproved = false;
+                bool createBackup = false;
+
+                using (var dialog = new SemanticModelChangesDialog(changes))
+                {
+                    if (dialog.ShowDialog(this) == DialogResult.OK && dialog.UserApproved)
+                    {
+                        userApproved = true;
+                        createBackup = dialog.CreateBackup;
+                    }
+                }
+
+                if (!userApproved)
+                {
+                    ShowProgress(false);
+                    SetStatus("Build cancelled");
+                    MessageBox.Show(
+                        "Semantic model build was cancelled.",
+                        "Build Cancelled",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+                    return;
+                }
+
+                // Apply changes
+                bool buildSucceeded = false;
+                await Task.Run(() =>
+                {
+                    buildSucceeded = builder.ApplyChanges(
+                        semanticModelName,
+                        outputFolder,
+                        fullUrl,
+                        exportTables,
+                        exportRelationships,
+                        _settings.AttributeDisplayInfo,
+                        createBackup);
+                });
+
+                ShowProgress(false);
+
+                if (!buildSucceeded)
+                {
+                    SetStatus("Build failed");
+                    MessageBox.Show(
+                        "Semantic model build failed.",
+                        "Build Failed",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+                    return;
+                }
+
+                SetStatus("Semantic model build complete!");
+
+                var pbipPath = Path.Combine(outputFolder, "PBIP", $"{semanticModelName}.pbip");
+                MessageBox.Show(
+                    $"Semantic model built successfully!\n\n" +
+                    $"Location: {pbipPath}\n\n" +
+                    $"Tables: {exportTables.Count}\n" +
+                    $"Relationships: {exportRelationships.Count}",
+                    "Build Complete",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Build failed:\n{ex.Message}\n\n{ex.StackTrace}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                SetStatus("Build failed.");
+            }
+            finally
+            {
+                btnBuildSemanticModel.Enabled = true;
+                ShowProgress(false);
+            }
+        }
+
+        private List<ExportTable> BuildExportTables()
+        {
+            var exportTables = new List<ExportTable>();
+
+            foreach (var kvp in _selectedTables)
+            {
+                var logicalName = kvp.Key;
+                var table = kvp.Value;
+
+                // Get selected form
+                var forms = new List<ExportForm>();
+                if (_tableForms.ContainsKey(logicalName))
+                {
+                    var formId = GetSelectedFormId(logicalName);
+                    var form = _tableForms[logicalName].FirstOrDefault(f => f.FormId == formId);
+                    if (form != null)
+                    {
+                        forms.Add(new ExportForm
+                        {
+                            FormId = form.FormId,
+                            FormName = form.Name,
+                            FieldCount = form.Fields?.Count ?? 0
+                        });
+                    }
+                }
+
+                // Get selected view
+                ExportView? view = null;
+                if (_tableViews.ContainsKey(logicalName) && _selectedViews.ContainsKey(logicalName))
+                {
+                    var viewId = _selectedViews[logicalName];
+                    var viewData = _tableViews[logicalName].FirstOrDefault(v => v.ViewId == viewId);
+                    if (viewData != null)
+                    {
+                        view = new ExportView
+                        {
+                            ViewId = viewData.ViewId,
+                            ViewName = viewData.Name,
+                            FetchXml = viewData.FetchXml
+                        };
+                    }
+                }
+
+                // Get selected attributes
+                var selectedAttrNames = _selectedAttributes.ContainsKey(logicalName)
+                    ? _selectedAttributes[logicalName]
+                    : new HashSet<string>();
+                var allAttrs = _tableAttributes.ContainsKey(logicalName)
+                    ? _tableAttributes[logicalName]
+                    : new List<AttributeMetadata>();
+
+                var attributes = allAttrs
+                    .Where(a => selectedAttrNames.Contains(a.LogicalName))
+                    .ToList();
+
+                // If no attributes loaded from cache, try to build from settings
+                if (!attributes.Any() && _settings.AttributeDisplayInfo.ContainsKey(logicalName))
+                {
+                    attributes = _settings.AttributeDisplayInfo[logicalName]
+                        .Where(a => selectedAttrNames.Contains(a.Key))
+                        .Select(a => new AttributeMetadata
+                        {
+                            LogicalName = a.Key,
+                            DisplayName = a.Value.DisplayName,
+                            SchemaName = a.Value.SchemaName,
+                            AttributeType = a.Value.AttributeType,
+                            Targets = a.Value.Targets
+                        })
+                        .ToList();
+                }
+
+                // Determine table role
+                var role = logicalName == _factTable ? "Fact" : "Dimension";
+
+                // Check if table has a statecode attribute
+                var hasStateCode = allAttrs.Any(a => a.LogicalName.Equals("statecode", StringComparison.OrdinalIgnoreCase));
+                if (!hasStateCode && _settings.AttributeDisplayInfo.ContainsKey(logicalName))
+                {
+                    hasStateCode = _settings.AttributeDisplayInfo[logicalName]
+                        .Any(a => a.Key.Equals("statecode", StringComparison.OrdinalIgnoreCase));
+                }
+
+                exportTables.Add(new ExportTable
+                {
+                    LogicalName = table.LogicalName,
+                    DisplayName = table.DisplayName,
+                    SchemaName = table.SchemaName,
+                    ObjectTypeCode = table.ObjectTypeCode,
+                    PrimaryIdAttribute = table.PrimaryIdAttribute,
+                    PrimaryNameAttribute = table.PrimaryNameAttribute,
+                    Role = role,
+                    HasStateCode = hasStateCode,
+                    Forms = forms,
+                    View = view,
+                    Attributes = attributes
+                });
+            }
+
+            return exportTables;
         }
     }
 }

@@ -23,15 +23,22 @@ namespace DataverseMetadataExtractor.Forms
             this.renameConfigurationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteConfigurationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             
-            this.groupBoxConnection = new System.Windows.Forms.GroupBox();
-            this.lblConnectionStatus = new System.Windows.Forms.Label();
-            this.btnConnect = new System.Windows.Forms.Button();
-            this.txtEnvironmentUrl = new System.Windows.Forms.TextBox();
-            this.labelEnvironmentUrl = new System.Windows.Forms.Label();
+            // Ribbon ToolStrip
+            this.toolStripRibbon = new System.Windows.Forms.ToolStrip();
+            this.btnChangeEnvironment = new System.Windows.Forms.ToolStripButton();
+            this.btnConnect = new System.Windows.Forms.ToolStripButton();
+            this.btnRefreshMetadata = new System.Windows.Forms.ToolStripButton();
+            this.lblConnectionStatus = new System.Windows.Forms.ToolStripLabel();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.btnSelectTables = new System.Windows.Forms.ToolStripButton();
+            this.btnBuildSemanticModel = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.lblSemanticModel = new System.Windows.Forms.ToolStripLabel();
+            this.cboSemanticModels = new System.Windows.Forms.ToolStripComboBox();
+            this.btnChangeWorkingFolder = new System.Windows.Forms.ToolStripButton();
             
-            this.panelTableSelector = new System.Windows.Forms.Panel();
-            this.btnSelectTables = new System.Windows.Forms.Button();
-            this.lblTableCount = new System.Windows.Forms.Label();
+            // Hidden textbox to hold environment URL
+            this.txtEnvironmentUrl = new System.Windows.Forms.TextBox();
             
             this.splitContainerMain = new System.Windows.Forms.SplitContainer();
             
@@ -42,7 +49,8 @@ namespace DataverseMetadataExtractor.Forms
             this.colForm = new System.Windows.Forms.ColumnHeader();
             this.colView = new System.Windows.Forms.ColumnHeader();
             this.colAttrs = new System.Windows.Forms.ColumnHeader();
-            this.btnRemoveTable = new System.Windows.Forms.Button();
+            this.panelTableInfo = new System.Windows.Forms.Panel();
+            this.lblTableCount = new System.Windows.Forms.Label();
             
             this.groupBoxAttributes = new System.Windows.Forms.GroupBox();
             this.panelAttrFilter = new System.Windows.Forms.Panel();
@@ -62,49 +70,30 @@ namespace DataverseMetadataExtractor.Forms
             this.btnDeselectAll = new System.Windows.Forms.Button();
             this.btnSelectFromForm = new System.Windows.Forms.Button();
             
-            this.groupBoxOutput = new System.Windows.Forms.GroupBox();
-            this.btnBrowseOutput = new System.Windows.Forms.Button();
-            this.txtOutputFolder = new System.Windows.Forms.TextBox();
-            this.lblOutputFolder = new System.Windows.Forms.Label();
-            this.txtProjectName = new System.Windows.Forms.TextBox();
-            this.lblProjectName = new System.Windows.Forms.Label();
-            
-            this.panelActions = new System.Windows.Forms.Panel();
-            this.btnExport = new System.Windows.Forms.Button();
+            this.panelStatus = new System.Windows.Forms.Panel();
             this.lblStatus = new System.Windows.Forms.Label();
             
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.progressBar = new System.Windows.Forms.ToolStripProgressBar();
             
+            // Hidden fields for settings storage
+            this.txtOutputFolder = new System.Windows.Forms.TextBox();
+            this.txtProjectName = new System.Windows.Forms.TextBox();
+            
             this.menuStrip.SuspendLayout();
+            this.toolStripRibbon.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainerMain)).BeginInit();
             this.splitContainerMain.Panel1.SuspendLayout();
             this.splitContainerMain.Panel2.SuspendLayout();
             this.splitContainerMain.SuspendLayout();
-            this.groupBoxConnection.SuspendLayout();
-            this.panelTableSelector.SuspendLayout();
             this.groupBoxSelectedTables.SuspendLayout();
+            this.panelTableInfo.SuspendLayout();
             this.groupBoxAttributes.SuspendLayout();
             this.panelAttrFilter.SuspendLayout();
             this.panelAttrButtons.SuspendLayout();
-            this.groupBoxOutput.SuspendLayout();
-            this.panelActions.SuspendLayout();
+            this.panelStatus.SuspendLayout();
             this.statusStrip.SuspendLayout();
             this.SuspendLayout();
-
-            // groupBoxConnection
-            this.groupBoxConnection.Controls.Add(this.lblConnectionStatus);
-            this.groupBoxConnection.Controls.Add(this.btnConnect);
-            this.groupBoxConnection.Controls.Add(this.txtEnvironmentUrl);
-            this.groupBoxConnection.Controls.Add(this.labelEnvironmentUrl);
-            this.groupBoxConnection.Dock = System.Windows.Forms.DockStyle.Top;
-            this.groupBoxConnection.Location = new System.Drawing.Point(10, 10);
-            this.groupBoxConnection.Name = "groupBoxConnection";
-            this.groupBoxConnection.Padding = new System.Windows.Forms.Padding(10);
-            this.groupBoxConnection.Size = new System.Drawing.Size(1180, 80);
-            this.groupBoxConnection.TabIndex = 0;
-            this.groupBoxConnection.TabStop = false;
-            this.groupBoxConnection.Text = "Connection";
 
             // menuStrip
             this.menuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { this.fileToolStripMenuItem });
@@ -138,7 +127,6 @@ namespace DataverseMetadataExtractor.Forms
             this.switchConfigurationToolStripMenuItem.Name = "switchConfigurationToolStripMenuItem";
             this.switchConfigurationToolStripMenuItem.Size = new System.Drawing.Size(220, 22);
             this.switchConfigurationToolStripMenuItem.Text = "&Switch to...";
-            // Will be populated dynamically with submenu items
 
             // newConfigurationToolStripMenuItem
             this.newConfigurationToolStripMenuItem.Name = "newConfigurationToolStripMenuItem";
@@ -158,85 +146,160 @@ namespace DataverseMetadataExtractor.Forms
             this.deleteConfigurationToolStripMenuItem.Text = "&Delete Current...";
             this.deleteConfigurationToolStripMenuItem.Click += new System.EventHandler(this.DeleteConfigurationToolStripMenuItem_Click);
 
-            // labelEnvironmentUrl
-            this.labelEnvironmentUrl.AutoSize = true;
-            this.labelEnvironmentUrl.Location = new System.Drawing.Point(13, 26);
-            this.labelEnvironmentUrl.Name = "labelEnvironmentUrl";
-            this.labelEnvironmentUrl.Size = new System.Drawing.Size(100, 15);
-            this.labelEnvironmentUrl.TabIndex = 0;
-            this.labelEnvironmentUrl.Text = "Dataverse URL:";
+            // toolStripRibbon
+            this.toolStripRibbon.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.toolStripRibbon.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+                this.btnChangeEnvironment,
+                this.btnConnect,
+                this.btnRefreshMetadata,
+                this.lblConnectionStatus,
+                this.toolStripSeparator1,
+                this.btnSelectTables,
+                this.btnBuildSemanticModel,
+                this.toolStripSeparator2,
+                this.lblSemanticModel,
+                this.cboSemanticModels,
+                this.btnChangeWorkingFolder
+            });
+            this.toolStripRibbon.Location = new System.Drawing.Point(0, 24);
+            this.toolStripRibbon.Name = "toolStripRibbon";
+            this.toolStripRibbon.Padding = new System.Windows.Forms.Padding(5, 3, 5, 3);
+            this.toolStripRibbon.Size = new System.Drawing.Size(1200, 34);
+            this.toolStripRibbon.TabIndex = 1;
+            this.toolStripRibbon.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
 
-            // txtEnvironmentUrl
-            this.txtEnvironmentUrl.Location = new System.Drawing.Point(13, 44);
-            this.txtEnvironmentUrl.Name = "txtEnvironmentUrl";
-            this.txtEnvironmentUrl.Size = new System.Drawing.Size(500, 23);
-            this.txtEnvironmentUrl.TabIndex = 1;
+            // toolStripSeparator1
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 28);
+
+            // btnChangeEnvironment
+            this.btnChangeEnvironment.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.ImageAndText;
+            this.btnChangeEnvironment.Image = RibbonIcons.CloudIcon;
+            this.btnChangeEnvironment.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnChangeEnvironment.Name = "btnChangeEnvironment";
+            this.btnChangeEnvironment.Size = new System.Drawing.Size(130, 25);
+            this.btnChangeEnvironment.Text = "Change Environment";
+            this.btnChangeEnvironment.ToolTipText = "Configure the Dataverse environment URL";
+            this.btnChangeEnvironment.Click += new System.EventHandler(this.BtnChangeEnvironment_Click);
 
             // btnConnect
-            this.btnConnect.Location = new System.Drawing.Point(525, 43);
+            this.btnConnect.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.ImageAndText;
+            this.btnConnect.Image = RibbonIcons.CloudIcon;
+            this.btnConnect.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnConnect.Name = "btnConnect";
-            this.btnConnect.Size = new System.Drawing.Size(90, 25);
-            this.btnConnect.TabIndex = 2;
+            this.btnConnect.Size = new System.Drawing.Size(75, 25);
             this.btnConnect.Text = "Connect";
-            this.btnConnect.UseVisualStyleBackColor = true;
+            this.btnConnect.ToolTipText = "Connect to the configured Dataverse environment";
             this.btnConnect.Click += new System.EventHandler(this.BtnConnect_Click);
 
-            // lblConnectionStatus
-            this.lblConnectionStatus.AutoSize = true;
-            this.lblConnectionStatus.Location = new System.Drawing.Point(630, 48);
-            this.lblConnectionStatus.Name = "lblConnectionStatus";
-            this.lblConnectionStatus.Size = new System.Drawing.Size(88, 15);
-            this.lblConnectionStatus.TabIndex = 3;
-            this.lblConnectionStatus.Text = "Not connected";
+            // btnRefreshMetadata
+            this.btnRefreshMetadata.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.ImageAndText;
+            this.btnRefreshMetadata.Image = RibbonIcons.RefreshIcon;
+            this.btnRefreshMetadata.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnRefreshMetadata.Name = "btnRefreshMetadata";
+            this.btnRefreshMetadata.Size = new System.Drawing.Size(120, 25);
+            this.btnRefreshMetadata.Text = "Refresh Metadata";
+            this.btnRefreshMetadata.ToolTipText = "Check for metadata changes in the Dataverse environment";
+            this.btnRefreshMetadata.Enabled = false;
+            this.btnRefreshMetadata.Click += new System.EventHandler(this.BtnRefreshMetadata_Click);
 
-            // panelTableSelector
-            this.panelTableSelector.Controls.Add(this.btnSelectTables);
-            this.panelTableSelector.Controls.Add(this.lblTableCount);
-            this.panelTableSelector.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panelTableSelector.Location = new System.Drawing.Point(10, 90);
-            this.panelTableSelector.Name = "panelTableSelector";
-            this.panelTableSelector.Padding = new System.Windows.Forms.Padding(0, 5, 0, 5);
-            this.panelTableSelector.Size = new System.Drawing.Size(1180, 40);
-            this.panelTableSelector.TabIndex = 1;
+            // lblConnectionStatus
+            this.lblConnectionStatus.Name = "lblConnectionStatus";
+            this.lblConnectionStatus.Size = new System.Drawing.Size(88, 25);
+            this.lblConnectionStatus.Text = "Not connected";
+            this.lblConnectionStatus.ForeColor = System.Drawing.Color.Gray;
 
             // btnSelectTables
-            this.btnSelectTables.Location = new System.Drawing.Point(0, 5);
+            this.btnSelectTables.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.ImageAndText;
+            this.btnSelectTables.Image = RibbonIcons.TableIcon;
+            this.btnSelectTables.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnSelectTables.Name = "btnSelectTables";
-            this.btnSelectTables.Size = new System.Drawing.Size(180, 30);
-            this.btnSelectTables.TabIndex = 0;
-            this.btnSelectTables.Text = "Select Fact && Dimensions...";
-            this.btnSelectTables.UseVisualStyleBackColor = true;
+            this.btnSelectTables.Size = new System.Drawing.Size(140, 25);
+            this.btnSelectTables.Text = "Select Fact && Dimensions";
+            this.btnSelectTables.ToolTipText = "Select fact and dimension tables from the solution";
+            this.btnSelectTables.Enabled = false;
             this.btnSelectTables.Click += new System.EventHandler(this.BtnSelectTables_Click);
 
-            // lblTableCount
-            this.lblTableCount.AutoSize = true;
-            this.lblTableCount.Location = new System.Drawing.Point(190, 12);
-            this.lblTableCount.Name = "lblTableCount";
-            this.lblTableCount.Size = new System.Drawing.Size(112, 15);
-            this.lblTableCount.TabIndex = 1;
-            this.lblTableCount.Text = "No tables selected";
+            // btnBuildSemanticModel
+            this.btnBuildSemanticModel.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.ImageAndText;
+            this.btnBuildSemanticModel.Image = RibbonIcons.BuildIcon;
+            this.btnBuildSemanticModel.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnBuildSemanticModel.Name = "btnBuildSemanticModel";
+            this.btnBuildSemanticModel.Size = new System.Drawing.Size(130, 25);
+            this.btnBuildSemanticModel.Text = "Build Semantic Model";
+            this.btnBuildSemanticModel.ToolTipText = "Generate the Power BI semantic model";
+            this.btnBuildSemanticModel.Click += new System.EventHandler(this.BtnBuildSemanticModel_Click);
+
+            // toolStripSeparator2
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 28);
+
+            // lblSemanticModel
+            this.lblSemanticModel.Name = "lblSemanticModel";
+            this.lblSemanticModel.Size = new System.Drawing.Size(95, 25);
+            this.lblSemanticModel.Text = "Semantic Model:";
+
+            // cboSemanticModels
+            this.cboSemanticModels.Name = "cboSemanticModels";
+            this.cboSemanticModels.Size = new System.Drawing.Size(180, 28);
+            this.cboSemanticModels.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboSemanticModels.ToolTipText = "Select a semantic model from the working folder";
+            this.cboSemanticModels.SelectedIndexChanged += new System.EventHandler(this.CboSemanticModels_SelectedIndexChanged);
+
+            // btnChangeWorkingFolder
+            this.btnChangeWorkingFolder.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.ImageAndText;
+            this.btnChangeWorkingFolder.Image = RibbonIcons.FolderIcon;
+            this.btnChangeWorkingFolder.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnChangeWorkingFolder.Name = "btnChangeWorkingFolder";
+            this.btnChangeWorkingFolder.Size = new System.Drawing.Size(100, 25);
+            this.btnChangeWorkingFolder.Text = "Working Folder";
+            this.btnChangeWorkingFolder.ToolTipText = "Browse or open the working folder";
+            this.btnChangeWorkingFolder.Click += new System.EventHandler(this.BtnChangeWorkingFolder_Click);
+
+            // txtEnvironmentUrl (hidden)
+            this.txtEnvironmentUrl.Location = new System.Drawing.Point(-100, -100);
+            this.txtEnvironmentUrl.Name = "txtEnvironmentUrl";
+            this.txtEnvironmentUrl.Size = new System.Drawing.Size(10, 23);
+            this.txtEnvironmentUrl.TabIndex = 100;
+            this.txtEnvironmentUrl.Visible = false;
 
             // splitContainerMain
             this.splitContainerMain.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainerMain.Location = new System.Drawing.Point(10, 130);
+            this.splitContainerMain.Location = new System.Drawing.Point(10, 68);
             this.splitContainerMain.Name = "splitContainerMain";
             this.splitContainerMain.Panel1.Controls.Add(this.groupBoxSelectedTables);
             this.splitContainerMain.Panel2.Controls.Add(this.groupBoxAttributes);
-            this.splitContainerMain.Size = new System.Drawing.Size(1180, 450);
+            this.splitContainerMain.Size = new System.Drawing.Size(1180, 520);
             this.splitContainerMain.SplitterDistance = 590;
             this.splitContainerMain.TabIndex = 2;
 
             // groupBoxSelectedTables
             this.groupBoxSelectedTables.Controls.Add(this.listViewSelectedTables);
-            this.groupBoxSelectedTables.Controls.Add(this.btnRemoveTable);
+            this.groupBoxSelectedTables.Controls.Add(this.panelTableInfo);
             this.groupBoxSelectedTables.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBoxSelectedTables.Location = new System.Drawing.Point(0, 0);
             this.groupBoxSelectedTables.Name = "groupBoxSelectedTables";
             this.groupBoxSelectedTables.Padding = new System.Windows.Forms.Padding(5);
-            this.groupBoxSelectedTables.Size = new System.Drawing.Size(590, 450);
+            this.groupBoxSelectedTables.Size = new System.Drawing.Size(590, 520);
             this.groupBoxSelectedTables.TabIndex = 0;
             this.groupBoxSelectedTables.TabStop = false;
             this.groupBoxSelectedTables.Text = "Selected Tables && Forms";
+
+            // panelTableInfo
+            this.panelTableInfo.Controls.Add(this.lblTableCount);
+            this.panelTableInfo.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.panelTableInfo.Location = new System.Drawing.Point(5, 490);
+            this.panelTableInfo.Name = "panelTableInfo";
+            this.panelTableInfo.Size = new System.Drawing.Size(580, 25);
+            this.panelTableInfo.TabIndex = 1;
+
+            // lblTableCount
+            this.lblTableCount.AutoSize = true;
+            this.lblTableCount.Location = new System.Drawing.Point(3, 5);
+            this.lblTableCount.Name = "lblTableCount";
+            this.lblTableCount.Size = new System.Drawing.Size(112, 15);
+            this.lblTableCount.TabIndex = 0;
+            this.lblTableCount.Text = "No tables selected";
 
             // listViewSelectedTables
             this.colRole = new System.Windows.Forms.ColumnHeader();
@@ -253,7 +316,7 @@ namespace DataverseMetadataExtractor.Forms
             this.listViewSelectedTables.Location = new System.Drawing.Point(5, 21);
             this.listViewSelectedTables.MultiSelect = false;
             this.listViewSelectedTables.Name = "listViewSelectedTables";
-            this.listViewSelectedTables.Size = new System.Drawing.Size(580, 389);
+            this.listViewSelectedTables.Size = new System.Drawing.Size(580, 464);
             this.listViewSelectedTables.TabIndex = 0;
             this.listViewSelectedTables.UseCompatibleStateImageBehavior = false;
             this.listViewSelectedTables.View = System.Windows.Forms.View.Details;
@@ -286,16 +349,6 @@ namespace DataverseMetadataExtractor.Forms
             this.colAttrs.Text = "Attrs";
             this.colAttrs.Width = 60;
 
-            // btnRemoveTable
-            this.btnRemoveTable.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.btnRemoveTable.Location = new System.Drawing.Point(5, 410);
-            this.btnRemoveTable.Name = "btnRemoveTable";
-            this.btnRemoveTable.Size = new System.Drawing.Size(580, 35);
-            this.btnRemoveTable.TabIndex = 1;
-            this.btnRemoveTable.Text = "Remove Selected Table";
-            this.btnRemoveTable.UseVisualStyleBackColor = true;
-            this.btnRemoveTable.Click += new System.EventHandler(this.BtnRemoveTable_Click);
-
             // groupBoxAttributes
             this.groupBoxAttributes.Controls.Add(this.listViewAttributes);
             this.groupBoxAttributes.Controls.Add(this.panelAttrButtons);
@@ -304,7 +357,7 @@ namespace DataverseMetadataExtractor.Forms
             this.groupBoxAttributes.Location = new System.Drawing.Point(0, 0);
             this.groupBoxAttributes.Name = "groupBoxAttributes";
             this.groupBoxAttributes.Padding = new System.Windows.Forms.Padding(5);
-            this.groupBoxAttributes.Size = new System.Drawing.Size(586, 450);
+            this.groupBoxAttributes.Size = new System.Drawing.Size(586, 520);
             this.groupBoxAttributes.TabIndex = 0;
             this.groupBoxAttributes.TabStop = false;
             this.groupBoxAttributes.Text = "Attributes";
@@ -381,7 +434,7 @@ namespace DataverseMetadataExtractor.Forms
             this.listViewAttributes.HideSelection = false;
             this.listViewAttributes.Location = new System.Drawing.Point(5, 56);
             this.listViewAttributes.Name = "listViewAttributes";
-            this.listViewAttributes.Size = new System.Drawing.Size(576, 354);
+            this.listViewAttributes.Size = new System.Drawing.Size(576, 424);
             this.listViewAttributes.TabIndex = 1;
             this.listViewAttributes.UseCompatibleStateImageBehavior = false;
             this.listViewAttributes.View = System.Windows.Forms.View.Details;
@@ -413,7 +466,7 @@ namespace DataverseMetadataExtractor.Forms
             this.panelAttrButtons.Controls.Add(this.btnDeselectAll);
             this.panelAttrButtons.Controls.Add(this.btnSelectFromForm);
             this.panelAttrButtons.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panelAttrButtons.Location = new System.Drawing.Point(5, 410);
+            this.panelAttrButtons.Location = new System.Drawing.Point(5, 480);
             this.panelAttrButtons.Name = "panelAttrButtons";
             this.panelAttrButtons.Size = new System.Drawing.Size(576, 35);
             this.panelAttrButtons.TabIndex = 2;
@@ -441,94 +494,44 @@ namespace DataverseMetadataExtractor.Forms
             this.btnSelectFromForm.Name = "btnSelectFromForm";
             this.btnSelectFromForm.Size = new System.Drawing.Size(130, 28);
             this.btnSelectFromForm.TabIndex = 2;
-            this.btnSelectFromForm.Text = "Select From Form";
+            this.btnSelectFromForm.Text = "Match Selected Form";
             this.btnSelectFromForm.UseVisualStyleBackColor = true;
             this.btnSelectFromForm.Click += new System.EventHandler(this.BtnSelectFromForm_Click);
 
-            // groupBoxOutput
-            this.groupBoxOutput.Controls.Add(this.btnBrowseOutput);
-            this.groupBoxOutput.Controls.Add(this.txtOutputFolder);
-            this.groupBoxOutput.Controls.Add(this.lblOutputFolder);
-            this.groupBoxOutput.Controls.Add(this.txtProjectName);
-            this.groupBoxOutput.Controls.Add(this.lblProjectName);
-            this.groupBoxOutput.Dock = System.Windows.Forms.DockStyle.Top;
-            this.groupBoxOutput.Location = new System.Drawing.Point(10, 580);
-            this.groupBoxOutput.Name = "groupBoxOutput";
-            this.groupBoxOutput.Padding = new System.Windows.Forms.Padding(10);
-            this.groupBoxOutput.Size = new System.Drawing.Size(1180, 80);
-            this.groupBoxOutput.TabIndex = 3;
-            this.groupBoxOutput.TabStop = false;
-            this.groupBoxOutput.Text = "Output";
-
-            // lblProjectName
-            this.lblProjectName.AutoSize = true;
-            this.lblProjectName.Location = new System.Drawing.Point(13, 36);
-            this.lblProjectName.Name = "lblProjectName";
-            this.lblProjectName.Size = new System.Drawing.Size(82, 15);
-            this.lblProjectName.TabIndex = 0;
-            this.lblProjectName.Text = "Semantic Model Name:";
-
-            // txtProjectName
-            this.txtProjectName.Location = new System.Drawing.Point(105, 33);
-            this.txtProjectName.Name = "txtProjectName";
-            this.txtProjectName.Size = new System.Drawing.Size(250, 23);
-            this.txtProjectName.TabIndex = 1;
-            this.txtProjectName.TextChanged += new System.EventHandler(this.TxtProjectName_TextChanged);
-
-            // lblOutputFolder
-            this.lblOutputFolder.AutoSize = true;
-            this.lblOutputFolder.Location = new System.Drawing.Point(375, 36);
-            this.lblOutputFolder.Name = "lblOutputFolder";
-            this.lblOutputFolder.Size = new System.Drawing.Size(88, 15);
-            this.lblOutputFolder.TabIndex = 2;
-            this.lblOutputFolder.Text = "Project Folder:";
-
-            // txtOutputFolder
-            this.txtOutputFolder.Location = new System.Drawing.Point(469, 33);
-            this.txtOutputFolder.Name = "txtOutputFolder";
-            this.txtOutputFolder.Size = new System.Drawing.Size(550, 23);
-            this.txtOutputFolder.TabIndex = 3;
-            this.txtOutputFolder.TextChanged += new System.EventHandler(this.TxtOutputFolder_TextChanged);
-
-            // btnBrowseOutput
-            this.btnBrowseOutput.Location = new System.Drawing.Point(1025, 32);
-            this.btnBrowseOutput.Name = "btnBrowseOutput";
-            this.btnBrowseOutput.Size = new System.Drawing.Size(80, 25);
-            this.btnBrowseOutput.TabIndex = 4;
-            this.btnBrowseOutput.Text = "Browse...";
-            this.btnBrowseOutput.UseVisualStyleBackColor = true;
-            this.btnBrowseOutput.Click += new System.EventHandler(this.BtnBrowseOutput_Click);
-
-            // panelActions
-            this.panelActions.Controls.Add(this.lblStatus);
-            this.panelActions.Controls.Add(this.btnExport);
-            this.panelActions.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panelActions.Location = new System.Drawing.Point(10, 660);
-            this.panelActions.Name = "panelActions";
-            this.panelActions.Size = new System.Drawing.Size(1180, 40);
-            this.panelActions.TabIndex = 4;
+            // panelStatus
+            this.panelStatus.Controls.Add(this.lblStatus);
+            this.panelStatus.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.panelStatus.Location = new System.Drawing.Point(10, 588);
+            this.panelStatus.Name = "panelStatus";
+            this.panelStatus.Padding = new System.Windows.Forms.Padding(0, 5, 0, 5);
+            this.panelStatus.Size = new System.Drawing.Size(1180, 30);
+            this.panelStatus.TabIndex = 3;
 
             // lblStatus
             this.lblStatus.AutoSize = true;
-            this.lblStatus.Location = new System.Drawing.Point(3, 13);
+            this.lblStatus.Location = new System.Drawing.Point(3, 8);
             this.lblStatus.Name = "lblStatus";
             this.lblStatus.Size = new System.Drawing.Size(39, 15);
             this.lblStatus.TabIndex = 0;
             this.lblStatus.Text = "Ready";
 
-            // btnExport
-            this.btnExport.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnExport.Location = new System.Drawing.Point(1020, 5);
-            this.btnExport.Name = "btnExport";
-            this.btnExport.Size = new System.Drawing.Size(160, 30);
-            this.btnExport.TabIndex = 1;
-            this.btnExport.Text = "Export Metadata JSON";
-            this.btnExport.UseVisualStyleBackColor = true;
-            this.btnExport.Click += new System.EventHandler(this.BtnExport_Click);
+            // txtOutputFolder (hidden)
+            this.txtOutputFolder.Location = new System.Drawing.Point(-100, -100);
+            this.txtOutputFolder.Name = "txtOutputFolder";
+            this.txtOutputFolder.Size = new System.Drawing.Size(10, 23);
+            this.txtOutputFolder.TabIndex = 101;
+            this.txtOutputFolder.Visible = false;
+
+            // txtProjectName (hidden)
+            this.txtProjectName.Location = new System.Drawing.Point(-100, -100);
+            this.txtProjectName.Name = "txtProjectName";
+            this.txtProjectName.Size = new System.Drawing.Size(10, 23);
+            this.txtProjectName.TabIndex = 102;
+            this.txtProjectName.Visible = false;
 
             // statusStrip
             this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { this.progressBar });
-            this.statusStrip.Location = new System.Drawing.Point(0, 708);
+            this.statusStrip.Location = new System.Drawing.Point(0, 628);
             this.statusStrip.Name = "statusStrip";
             this.statusStrip.Size = new System.Drawing.Size(1200, 22);
             this.statusStrip.TabIndex = 5;
@@ -542,18 +545,19 @@ namespace DataverseMetadataExtractor.Forms
             // MainForm
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1200, 730);
+            this.ClientSize = new System.Drawing.Size(1200, 650);
             this.Controls.Add(this.splitContainerMain);
-            this.Controls.Add(this.panelActions);
-            this.Controls.Add(this.groupBoxOutput);
-            this.Controls.Add(this.panelTableSelector);
-            this.Controls.Add(this.groupBoxConnection);
+            this.Controls.Add(this.panelStatus);
+            this.Controls.Add(this.toolStripRibbon);
             this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.menuStrip);
+            this.Controls.Add(this.txtEnvironmentUrl);
+            this.Controls.Add(this.txtOutputFolder);
+            this.Controls.Add(this.txtProjectName);
             this.MainMenuStrip = this.menuStrip;
-            this.MinimumSize = new System.Drawing.Size(1000, 600);
+            this.MinimumSize = new System.Drawing.Size(1000, 500);
             this.Name = "MainForm";
-            this.Padding = new System.Windows.Forms.Padding(10);
+            this.Padding = new System.Windows.Forms.Padding(10, 10, 10, 10);
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Dataverse Metadata Extractor for Power BI";
             this.Load += new System.EventHandler(this.MainForm_Load);
@@ -561,23 +565,21 @@ namespace DataverseMetadataExtractor.Forms
 
             this.menuStrip.ResumeLayout(false);
             this.menuStrip.PerformLayout();
+            this.toolStripRibbon.ResumeLayout(false);
+            this.toolStripRibbon.PerformLayout();
             this.splitContainerMain.Panel1.ResumeLayout(false);
             this.splitContainerMain.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainerMain)).EndInit();
             this.splitContainerMain.ResumeLayout(false);
-            this.groupBoxConnection.ResumeLayout(false);
-            this.groupBoxConnection.PerformLayout();
-            this.panelTableSelector.ResumeLayout(false);
-            this.panelTableSelector.PerformLayout();
             this.groupBoxSelectedTables.ResumeLayout(false);
+            this.panelTableInfo.ResumeLayout(false);
+            this.panelTableInfo.PerformLayout();
             this.groupBoxAttributes.ResumeLayout(false);
             this.panelAttrFilter.ResumeLayout(false);
             this.panelAttrFilter.PerformLayout();
             this.panelAttrButtons.ResumeLayout(false);
-            this.groupBoxOutput.ResumeLayout(false);
-            this.groupBoxOutput.PerformLayout();
-            this.panelActions.ResumeLayout(false);
-            this.panelActions.PerformLayout();
+            this.panelStatus.ResumeLayout(false);
+            this.panelStatus.PerformLayout();
             this.statusStrip.ResumeLayout(false);
             this.statusStrip.PerformLayout();
             this.ResumeLayout(false);
@@ -592,15 +594,24 @@ namespace DataverseMetadataExtractor.Forms
         private System.Windows.Forms.ToolStripMenuItem renameConfigurationToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem deleteConfigurationToolStripMenuItem;
         
-        private System.Windows.Forms.GroupBox groupBoxConnection;
-        private System.Windows.Forms.Label lblConnectionStatus;
-        private System.Windows.Forms.Button btnConnect;
-        private System.Windows.Forms.TextBox txtEnvironmentUrl;
-        private System.Windows.Forms.Label labelEnvironmentUrl;
+        // Ribbon ToolStrip
+        private System.Windows.Forms.ToolStrip toolStripRibbon;
+        private System.Windows.Forms.ToolStripButton btnChangeEnvironment;
+        private System.Windows.Forms.ToolStripButton btnConnect;
+        private System.Windows.Forms.ToolStripButton btnRefreshMetadata;
+        private System.Windows.Forms.ToolStripLabel lblConnectionStatus;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripButton btnSelectTables;
+        private System.Windows.Forms.ToolStripButton btnBuildSemanticModel;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripLabel lblSemanticModel;
+        private System.Windows.Forms.ToolStripComboBox cboSemanticModels;
+        private System.Windows.Forms.ToolStripButton btnChangeWorkingFolder;
         
-        private System.Windows.Forms.Panel panelTableSelector;
-        private System.Windows.Forms.Button btnSelectTables;
-        private System.Windows.Forms.Label lblTableCount;
+        // Hidden fields for settings storage
+        private System.Windows.Forms.TextBox txtEnvironmentUrl;
+        private System.Windows.Forms.TextBox txtOutputFolder;
+        private System.Windows.Forms.TextBox txtProjectName;
         
         private System.Windows.Forms.SplitContainer splitContainerMain;
         
@@ -612,7 +623,8 @@ namespace DataverseMetadataExtractor.Forms
         private System.Windows.Forms.ColumnHeader colForm;
         private System.Windows.Forms.ColumnHeader colView;
         private System.Windows.Forms.ColumnHeader colAttrs;
-        private System.Windows.Forms.Button btnRemoveTable;
+        private System.Windows.Forms.Panel panelTableInfo;
+        private System.Windows.Forms.Label lblTableCount;
         
         private System.Windows.Forms.GroupBox groupBoxAttributes;
         private System.Windows.Forms.Panel panelAttrFilter;
@@ -632,15 +644,7 @@ namespace DataverseMetadataExtractor.Forms
         private System.Windows.Forms.Button btnDeselectAll;
         private System.Windows.Forms.Button btnSelectFromForm;
         
-        private System.Windows.Forms.GroupBox groupBoxOutput;
-        private System.Windows.Forms.Button btnBrowseOutput;
-        private System.Windows.Forms.TextBox txtOutputFolder;
-        private System.Windows.Forms.Label lblOutputFolder;
-        private System.Windows.Forms.TextBox txtProjectName;
-        private System.Windows.Forms.Label lblProjectName;
-        
-        private System.Windows.Forms.Panel panelActions;
-        private System.Windows.Forms.Button btnExport;
+        private System.Windows.Forms.Panel panelStatus;
         private System.Windows.Forms.Label lblStatus;
         
         private System.Windows.Forms.StatusStrip statusStrip;
