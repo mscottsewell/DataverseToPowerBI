@@ -32,6 +32,7 @@ namespace DataverseMetadataExtractor.Forms
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.btnSelectTables = new System.Windows.Forms.ToolStripButton();
             this.btnBuildSemanticModel = new System.Windows.Forms.ToolStripButton();
+            this.btnCalendarTable = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.lblSemanticModel = new System.Windows.Forms.ToolStripLabel();
             this.cboSemanticModels = new System.Windows.Forms.ToolStripComboBox();
@@ -156,6 +157,7 @@ namespace DataverseMetadataExtractor.Forms
                 this.toolStripSeparator1,
                 this.btnSelectTables,
                 this.btnBuildSemanticModel,
+                this.btnCalendarTable,
                 this.toolStripSeparator2,
                 this.lblSemanticModel,
                 this.cboSemanticModels,
@@ -229,6 +231,17 @@ namespace DataverseMetadataExtractor.Forms
             this.btnBuildSemanticModel.Text = "Build Semantic Model";
             this.btnBuildSemanticModel.ToolTipText = "Generate the Power BI semantic model";
             this.btnBuildSemanticModel.Click += new System.EventHandler(this.BtnBuildSemanticModel_Click);
+
+            // btnCalendarTable
+            this.btnCalendarTable.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.ImageAndText;
+            this.btnCalendarTable.Image = RibbonIcons.CalendarIcon;
+            this.btnCalendarTable.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnCalendarTable.Name = "btnCalendarTable";
+            this.btnCalendarTable.Size = new System.Drawing.Size(100, 25);
+            this.btnCalendarTable.Text = "Calendar Table";
+            this.btnCalendarTable.ToolTipText = "Configure a Date/Calendar table for the semantic model";
+            this.btnCalendarTable.Enabled = false;
+            this.btnCalendarTable.Click += new System.EventHandler(this.BtnCalendarTable_Click);
 
             // toolStripSeparator2
             this.toolStripSeparator2.Name = "toolStripSeparator2";
@@ -603,6 +616,7 @@ namespace DataverseMetadataExtractor.Forms
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripButton btnSelectTables;
         private System.Windows.Forms.ToolStripButton btnBuildSemanticModel;
+        private System.Windows.Forms.ToolStripButton btnCalendarTable;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripLabel lblSemanticModel;
         private System.Windows.Forms.ToolStripComboBox cboSemanticModels;

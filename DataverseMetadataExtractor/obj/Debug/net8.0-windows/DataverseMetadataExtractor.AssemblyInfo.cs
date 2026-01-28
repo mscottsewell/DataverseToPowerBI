@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DataverseMetadataExtractor")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+db2163e3f47053baa02d9d961b3a84061f5a6870")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8a666269d5f7fe94c5b3761fd29d7abd2fd0a408")]
 [assembly: System.Reflection.AssemblyProductAttribute("DataverseMetadataExtractor")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DataverseMetadataExtractor")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

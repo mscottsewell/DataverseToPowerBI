@@ -47,6 +47,30 @@ namespace DataverseMetadataExtractor.Models
         public bool IsReverse { get; set; } = false;        // True if this is a one-to-many relationship (from fact's perspective)
     }
 
+    /// <summary>
+    /// Configuration for the Date/Calendar table feature
+    /// </summary>
+    public class DateTableConfig
+    {
+        public string PrimaryDateTable { get; set; } = "";      // Table containing the primary date field
+        public string PrimaryDateField { get; set; } = "";      // The date field to join on
+        public string TimeZoneId { get; set; } = "";            // Windows timezone ID (e.g., "Eastern Standard Time")
+        public double UtcOffsetHours { get; set; } = 0;         // UTC offset in hours (e.g., -5 for EST)
+        public int StartYear { get; set; }                      // Date range start year
+        public int EndYear { get; set; }                        // Date range end year
+        public List<DateTimeFieldConfig> WrappedFields { get; set; } = new(); // DateTime fields to adjust for timezone
+    }
+
+    /// <summary>
+    /// Configuration for a single DateTime field that should be timezone-adjusted
+    /// </summary>
+    public class DateTimeFieldConfig
+    {
+        public string TableName { get; set; } = "";             // Table containing the field
+        public string FieldName { get; set; } = "";             // Field logical name
+        public bool ConvertToDateOnly { get; set; } = true;     // True to truncate time component
+    }
+
     public class AppSettings
     {
         public string? LastEnvironmentUrl { get; set; }
@@ -69,6 +93,9 @@ namespace DataverseMetadataExtractor.Models
         public string? FactTable { get; set; }  // Logical name of the fact table (null if not set)
         public Dictionary<string, TableRole> TableRoles { get; set; } = new();  // table -> role
         public List<RelationshipConfig> Relationships { get; set; } = new();  // All configured relationships
+
+        // Calendar/Date table configuration
+        public DateTableConfig? DateTableConfig { get; set; }  // Configuration for the Date table (null if not configured)
     }
 
     public class TableDisplayInfo

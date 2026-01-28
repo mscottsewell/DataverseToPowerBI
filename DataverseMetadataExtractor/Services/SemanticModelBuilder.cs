@@ -52,7 +52,8 @@ namespace DataverseMetadataExtractor.Services
             string dataverseUrl,
             List<ExportTable> tables,
             List<ExportRelationship> relationships,
-            Dictionary<string, Dictionary<string, AttributeDisplayInfo>> attributeDisplayInfo)
+            Dictionary<string, Dictionary<string, AttributeDisplayInfo>> attributeDisplayInfo,
+            DateTableConfig? dateTableConfig = null)
         {
             SetStatus("Starting semantic model build...");
 
@@ -95,23 +96,34 @@ namespace DataverseMetadataExtractor.Services
                 var requiredLookupColumns = relationshipColumnsPerTable.ContainsKey(table.LogicalName)
                     ? relationshipColumnsPerTable[table.LogicalName]
                     : new HashSet<string>();
-                var tableTmdl = GenerateTableTmdl(table, attributeDisplayInfo, requiredLookupColumns);
+                var tableTmdl = GenerateTableTmdl(table, attributeDisplayInfo, requiredLookupColumns, dateTableConfig);
                 var tableFileName = SanitizeFileName(table.DisplayName ?? table.LogicalName) + ".tmdl";
                 WriteTmdlFile(Path.Combine(tablesFolder, tableFileName), tableTmdl);
             }
 
+            // Build Date table if configured
+            if (dateTableConfig != null)
+            {
+                SetStatus("Building Date table...");
+                var dateTableTmdl = GenerateDateTableTmdl(dateTableConfig);
+                WriteTmdlFile(Path.Combine(tablesFolder, "Date.tmdl"), dateTableTmdl);
+            }
+
             // Build relationships
-            if (relationships.Any())
+            if (relationships.Any() || dateTableConfig != null)
             {
                 SetStatus($"Building {relationships.Count} relationships...");
-                var relationshipsTmdl = GenerateRelationshipsTmdl(tables, relationships, attributeDisplayInfo);
+                var relationshipsTmdl = GenerateRelationshipsTmdl(tables, relationships, attributeDisplayInfo, dateTableConfig);
                 var definitionFolder = Path.Combine(pbipFolder, $"{projectName}.SemanticModel", "definition");
                 WriteTmdlFile(Path.Combine(definitionFolder, "relationships.tmdl"), relationshipsTmdl);
             }
 
             // Update model.tmdl with table references
             SetStatus("Updating model configuration...");
-            UpdateModelTmdl(pbipFolder, projectName, tables);
+            UpdateModelTmdl(pbipFolder, projectName, tables, dateTableConfig != null);
+
+            // Verify critical files exist
+            VerifyPbipStructure(pbipFolder, projectName);
 
             SetStatus("Semantic model build complete!");
         }
@@ -125,7 +137,8 @@ namespace DataverseMetadataExtractor.Services
             string dataverseUrl,
             List<ExportTable> tables,
             List<ExportRelationship> relationships,
-            Dictionary<string, Dictionary<string, AttributeDisplayInfo>> attributeDisplayInfo)
+            Dictionary<string, Dictionary<string, AttributeDisplayInfo>> attributeDisplayInfo,
+            DateTableConfig? dateTableConfig = null)
         {
             SetStatus("Analyzing changes...");
 
@@ -215,7 +228,7 @@ namespace DataverseMetadataExtractor.Services
                                 ? relationshipColumnsPerTable[table.LogicalName]
                                 : new HashSet<string>();
 
-                            var tableChanges = AnalyzeTableChanges(tmdlPath, table, attributeDisplayInfo, requiredLookupColumns);
+                            var tableChanges = AnalyzeTableChanges(tmdlPath, table, attributeDisplayInfo, requiredLookupColumns, dateTableConfig);
 
                             // Check for user measures to preserve
                             var userMeasures = ExtractUserMeasures(tmdlPath, table);
@@ -284,8 +297,13 @@ namespace DataverseMetadataExtractor.Services
                         }
                     }
 
-                    // Warn about orphaned tables
-                    var orphanedTables = existingTables.Except(metadataTables, StringComparer.OrdinalIgnoreCase).ToList();
+                    // Warn about orphaned tables (exclude generated tables like Date/DateAutoTemplate)
+                    var generatedTables = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "Date", "DateAutoTemplate" };
+                    var orphanedTables = existingTables
+                        .Except(metadataTables, StringComparer.OrdinalIgnoreCase)
+                        .Where(t => !generatedTables.Contains(t))
+                        .ToList();
+                    
                     foreach (var orphan in orphanedTables)
                     {
                         changes.Add(new SemanticModelChange
@@ -299,7 +317,7 @@ namespace DataverseMetadataExtractor.Services
                 }
 
                 // Check for relationship changes
-                var relationshipChanges = AnalyzeRelationshipChanges(pbipFolder, projectName, relationships, tables, attributeDisplayInfo);
+                var relationshipChanges = AnalyzeRelationshipChanges(pbipFolder, projectName, relationships, tables, attributeDisplayInfo, dateTableConfig);
                 if (relationshipChanges.HasChanges)
                 {
                     var relDetails = new List<string>();
@@ -311,7 +329,7 @@ namespace DataverseMetadataExtractor.Services
                     {
                         ChangeType = ChangeType.Update,
                         ObjectType = "Relationships",
-                        ObjectName = "All",
+                        ObjectName = "Relationships",
                         Description = $"Update: {string.Join(", ", relDetails)}"
                     });
                 }
@@ -328,14 +346,20 @@ namespace DataverseMetadataExtractor.Services
 
                 // Check DataverseURL changes
                 var currentUrl = ExtractDataverseUrl(pbipFolder, projectName);
-                if (!string.Equals(currentUrl, dataverseUrl, StringComparison.OrdinalIgnoreCase))
+                
+                // Normalize the dataverseUrl for comparison (remove https:// prefix if present)
+                var normalizedDataverseUrl = dataverseUrl;
+                if (normalizedDataverseUrl.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+                    normalizedDataverseUrl = normalizedDataverseUrl.Substring(8);
+                
+                if (!string.Equals(currentUrl, normalizedDataverseUrl, StringComparison.OrdinalIgnoreCase))
                 {
                     changes.Add(new SemanticModelChange
                     {
                         ChangeType = ChangeType.Update,
                         ObjectType = "DataverseURL",
                         ObjectName = "Expression",
-                        Description = $"Update: {currentUrl} → {dataverseUrl}"
+                        Description = $"Update: {currentUrl} → {normalizedDataverseUrl}"
                     });
                 }
                 else
@@ -373,7 +397,8 @@ namespace DataverseMetadataExtractor.Services
             string tmdlPath,
             ExportTable table,
             Dictionary<string, Dictionary<string, AttributeDisplayInfo>> attributeDisplayInfo,
-            HashSet<string> requiredLookupColumns)
+            HashSet<string> requiredLookupColumns,
+            DateTableConfig? dateTableConfig = null)
         {
             var analysis = new TableChangeAnalysis();
 
@@ -391,7 +416,7 @@ namespace DataverseMetadataExtractor.Services
                 var existingColumns = ParseExistingColumns(existingContent);
 
                 // Generate what the new columns should be (pass existing to preserve lookup column types)
-                var newColumns = GenerateExpectedColumns(table, attributeDisplayInfo, requiredLookupColumns, existingColumns);
+                var newColumns = GenerateExpectedColumns(table, attributeDisplayInfo, requiredLookupColumns, existingColumns, dateTableConfig);
 
                 // DEBUG: Log column comparison for Allocation
                 if (table.LogicalName == "cai_allocation")
@@ -500,7 +525,8 @@ namespace DataverseMetadataExtractor.Services
             ExportTable table,
             Dictionary<string, Dictionary<string, AttributeDisplayInfo>> attributeDisplayInfo,
             HashSet<string> requiredLookupColumns,
-            Dictionary<string, ColumnDefinition> existingColumns = null)
+            Dictionary<string, ColumnDefinition> existingColumns = null,
+            DateTableConfig? dateTableConfig = null)
         {
             var columns = new Dictionary<string, ColumnDefinition>(StringComparer.OrdinalIgnoreCase);
 
@@ -592,8 +618,17 @@ namespace DataverseMetadataExtractor.Services
                     }
                     else
                     {
-                        // Regular column
-                        var (dataType, formatString, _, _) = MapDataType(attr.AttributeType);
+                        // Regular column - check if it's a wrapped DateTime field
+                        var isDateTime = attrType.Equals("DateTime", StringComparison.OrdinalIgnoreCase);
+                        var shouldWrapDateTime = isDateTime && dateTableConfig != null &&
+                            dateTableConfig.WrappedFields.Any(f =>
+                                f.TableName.Equals(table.LogicalName, StringComparison.OrdinalIgnoreCase) &&
+                                f.FieldName.Equals(attr.LogicalName, StringComparison.OrdinalIgnoreCase));
+
+                        // If wrapping datetime, use dateonly format
+                        var effectiveAttrType = shouldWrapDateTime ? "dateonly" : attr.AttributeType;
+                        var (dataType, formatString, _, _) = MapDataType(effectiveAttrType);
+                        
                         columns[attrDisplayName] = new ColumnDefinition
                         {
                             DisplayName = attrDisplayName,
@@ -769,7 +804,8 @@ namespace DataverseMetadataExtractor.Services
             string projectName,
             List<ExportRelationship> newRelationships,
             List<ExportTable> tables,
-            Dictionary<string, Dictionary<string, AttributeDisplayInfo>> attributeDisplayInfo)
+            Dictionary<string, Dictionary<string, AttributeDisplayInfo>> attributeDisplayInfo,
+            DateTableConfig? dateTableConfig = null)
         {
             var analysis = new RelationshipChangeAnalysis();
             var relationshipsPath = Path.Combine(pbipFolder, $"{projectName}.SemanticModel", "definition", "relationships.tmdl");
@@ -794,7 +830,7 @@ namespace DataverseMetadataExtractor.Services
             {
                 var existingContent = File.ReadAllText(relationshipsPath);
                 var existingRels = ParseExistingRelationships(existingContent);
-                var expectedRels = GenerateExpectedRelationships(newRelationships, tables, attributeDisplayInfo);
+                var expectedRels = GenerateExpectedRelationships(newRelationships, tables, attributeDisplayInfo, dateTableConfig);
 
                 // DEBUG: Log what we're comparing
                 DebugLogger.Log($"Relationship comparison:");
@@ -910,7 +946,8 @@ namespace DataverseMetadataExtractor.Services
         private HashSet<string> GenerateExpectedRelationships(
             List<ExportRelationship> relationships,
             List<ExportTable> tables,
-            Dictionary<string, Dictionary<string, AttributeDisplayInfo>> attributeDisplayInfo)
+            Dictionary<string, Dictionary<string, AttributeDisplayInfo>> attributeDisplayInfo,
+            DateTableConfig? dateTableConfig = null)
         {
             var rels = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             var tableDisplayNames = tables.ToDictionary(t => t.LogicalName, t => t.DisplayName ?? t.LogicalName, StringComparer.OrdinalIgnoreCase);
@@ -930,6 +967,26 @@ namespace DataverseMetadataExtractor.Services
                 var relString = $"{sourceTableDisplay}.{sourceColLogical}→{targetTableDisplay}.{targetColLogical}";
                 rels.Add(relString);
                 DebugLogger.Log($"  Generated: {relString} (from {rel.SourceTable}.{rel.SourceAttribute} to {rel.TargetTable})");
+            }
+
+            // Add Date table relationship if configured (only for the primary date field)
+            if (dateTableConfig != null && !string.IsNullOrEmpty(dateTableConfig.PrimaryDateTable) && !string.IsNullOrEmpty(dateTableConfig.PrimaryDateField))
+            {
+                var tableDisplayName = tableDisplayNames.ContainsKey(dateTableConfig.PrimaryDateTable) 
+                    ? tableDisplayNames[dateTableConfig.PrimaryDateTable] 
+                    : dateTableConfig.PrimaryDateTable;
+                
+                // Look up the display name for the primary date field
+                var primaryDateFieldName = dateTableConfig.PrimaryDateField;
+                if (attributeDisplayInfo.TryGetValue(dateTableConfig.PrimaryDateTable, out var tableAttrs) &&
+                    tableAttrs.TryGetValue(dateTableConfig.PrimaryDateField, out var fieldDisplayInfo))
+                {
+                    primaryDateFieldName = fieldDisplayInfo.DisplayName ?? dateTableConfig.PrimaryDateField;
+                }
+                
+                var dateRelString = $"{tableDisplayName}.{primaryDateFieldName}→Date.Date";
+                rels.Add(dateRelString);
+                DebugLogger.Log($"  Generated Date table relationship: {dateRelString}");
             }
 
             return rels;
@@ -1006,7 +1063,8 @@ namespace DataverseMetadataExtractor.Services
             List<ExportTable> tables,
             List<ExportRelationship> relationships,
             Dictionary<string, Dictionary<string, AttributeDisplayInfo>> attributeDisplayInfo,
-            bool createBackup)
+            bool createBackup,
+            DateTableConfig? dateTableConfig = null)
         {
             try
             {
@@ -1022,11 +1080,11 @@ namespace DataverseMetadataExtractor.Services
                 // Apply changes
                 if (pbipExists)
                 {
-                    BuildIncremental(semanticModelName, outputFolder, dataverseUrl, tables, relationships, attributeDisplayInfo);
+                    BuildIncremental(semanticModelName, outputFolder, dataverseUrl, tables, relationships, attributeDisplayInfo, dateTableConfig);
                 }
                 else
                 {
-                    Build(semanticModelName, outputFolder, dataverseUrl, tables, relationships, attributeDisplayInfo);
+                    Build(semanticModelName, outputFolder, dataverseUrl, tables, relationships, attributeDisplayInfo, dateTableConfig);
                 }
 
                 return true;
@@ -1122,7 +1180,8 @@ namespace DataverseMetadataExtractor.Services
             string dataverseUrl,
             List<ExportTable> tables,
             List<ExportRelationship> relationships,
-            Dictionary<string, Dictionary<string, AttributeDisplayInfo>> attributeDisplayInfo)
+            Dictionary<string, Dictionary<string, AttributeDisplayInfo>> attributeDisplayInfo,
+            DateTableConfig? dateTableConfig = null)
         {
             SetStatus("Performing incremental update...");
 
@@ -1165,7 +1224,7 @@ namespace DataverseMetadataExtractor.Services
                 }
 
                 // Generate new table TMDL
-                var tableTmdl = GenerateTableTmdl(table, attributeDisplayInfo, requiredLookupColumns);
+                var tableTmdl = GenerateTableTmdl(table, attributeDisplayInfo, requiredLookupColumns, dateTableConfig);
 
                 // Append user measures if any
                 if (!string.IsNullOrEmpty(userMeasuresSection))
@@ -1176,15 +1235,26 @@ namespace DataverseMetadataExtractor.Services
                 WriteTmdlFile(tablePath, tableTmdl);
             }
 
+            // Build/Update Date table if configured
+            if (dateTableConfig != null)
+            {
+                SetStatus("Updating Date table...");
+                var dateTableTmdl = GenerateDateTableTmdl(dateTableConfig);
+                WriteTmdlFile(Path.Combine(tablesFolder, "Date.tmdl"), dateTableTmdl);
+            }
+
             // Update relationships
             SetStatus("Updating relationships...");
-            var relationshipsTmdl = GenerateRelationshipsTmdl(tables, relationships, attributeDisplayInfo);
+            var relationshipsTmdl = GenerateRelationshipsTmdl(tables, relationships, attributeDisplayInfo, dateTableConfig);
             var relationshipsPath = Path.Combine(pbipFolder, $"{projectName}.SemanticModel", "definition", "relationships.tmdl");
             WriteTmdlFile(relationshipsPath, relationshipsTmdl);
 
             // Update model.tmdl
             SetStatus("Updating model metadata...");
-            UpdateModelTmdl(pbipFolder, projectName, tables);
+            UpdateModelTmdl(pbipFolder, projectName, tables, dateTableConfig != null);
+
+            // Verify critical files exist
+            VerifyPbipStructure(pbipFolder, projectName);
 
             SetStatus("Incremental update complete!");
         }
@@ -1246,7 +1316,7 @@ namespace DataverseMetadataExtractor.Services
         /// <summary>
         /// Updates the model.tmdl file with table references
         /// </summary>
-        private void UpdateModelTmdl(string pbipFolder, string projectName, List<ExportTable> tables)
+        private void UpdateModelTmdl(string pbipFolder, string projectName, List<ExportTable> tables, bool includeDateTable = false)
         {
             var modelPath = Path.Combine(pbipFolder, $"{projectName}.SemanticModel", "definition", "model.tmdl");
             if (!File.Exists(modelPath))
@@ -1269,6 +1339,10 @@ namespace DataverseMetadataExtractor.Services
             // Build PBI_QueryOrder annotation
             var tableNames = tables.Select(t => t.DisplayName ?? t.LogicalName).ToList();
             tableNames.Insert(0, "DataverseURL"); // DataverseURL is always first
+            if (includeDateTable)
+            {
+                tableNames.Add("Date"); // Date table at the end
+            }
             var queryOrder = string.Join("\",\"", tableNames);
             sb.AppendLine($"annotation PBI_QueryOrder = [\"{queryOrder}\"]");
             sb.AppendLine();
@@ -1289,6 +1363,12 @@ namespace DataverseMetadataExtractor.Services
                     sb.AppendLine($"ref table {displayName}");
                 }
             }
+
+            // Add Date table reference if configured
+            if (includeDateTable)
+            {
+                sb.AppendLine("ref table Date");
+            }
             sb.AppendLine();
             sb.AppendLine("ref cultureInfo en-US");
             sb.AppendLine();
@@ -1306,6 +1386,13 @@ namespace DataverseMetadataExtractor.Services
 
             // Copy all template files
             CopyDirectory(_templatePath, targetFolder, projectName);
+            
+            // Verify .pbip file was created
+            var pbipFile = Path.Combine(targetFolder, $"{projectName}.pbip");
+            if (!File.Exists(pbipFile))
+            {
+                throw new FileNotFoundException($"Failed to create .pbip file at: {pbipFile}");
+            }
         }
 
         /// <summary>
@@ -1324,6 +1411,8 @@ namespace DataverseMetadataExtractor.Services
                 var newFileName = fileName.Replace("Template", projectName);
                 var targetPath = Path.Combine(targetDir, newFileName);
 
+                DebugLogger.Log($"Copying: {fileName} -> {newFileName}");
+
                 // Determine if this is a text file that needs content replacement
                 var extension = Path.GetExtension(file).ToLowerInvariant();
                 var isTextFile = extension == ".json" || extension == ".pbip" || extension == ".pbism" || 
@@ -1339,11 +1428,13 @@ namespace DataverseMetadataExtractor.Services
                         content = content.Replace("Template", projectName);
                     }
                     WriteTmdlFile(targetPath, content);
+                    DebugLogger.Log($"  Written text file: {targetPath}");
                 }
                 else
                 {
                     // Binary copy for non-text files
                     File.Copy(file, targetPath, true);
+                    DebugLogger.Log($"  Copied binary file: {targetPath}");
                 }
             }
 
@@ -1433,7 +1524,7 @@ namespace DataverseMetadataExtractor.Services
         /// <summary>
         /// Generates TMDL content for a table
         /// </summary>
-        private string GenerateTableTmdl(ExportTable table, Dictionary<string, Dictionary<string, AttributeDisplayInfo>> attributeDisplayInfo, HashSet<string> requiredLookupColumns)
+        private string GenerateTableTmdl(ExportTable table, Dictionary<string, Dictionary<string, AttributeDisplayInfo>> attributeDisplayInfo, HashSet<string> requiredLookupColumns, DateTableConfig? dateTableConfig = null)
         {
             var sb = new StringBuilder();
             var displayName = table.DisplayName ?? table.SchemaName ?? table.LogicalName;
@@ -1575,6 +1666,15 @@ namespace DataverseMetadataExtractor.Services
                 else
                 {
                     // Regular column
+                    var isDateTime = attrType.Equals("DateTime", StringComparison.OrdinalIgnoreCase);
+                    var shouldWrapDateTime = isDateTime && dateTableConfig != null &&
+                        dateTableConfig.WrappedFields.Any(f =>
+                            f.TableName.Equals(table.LogicalName, StringComparison.OrdinalIgnoreCase) &&
+                            f.FieldName.Equals(attr.LogicalName, StringComparison.OrdinalIgnoreCase));
+
+                    // If wrapping datetime, change the data type to dateTime (date-only)
+                    var effectiveAttrType = shouldWrapDateTime ? "dateonly" : attrType;
+
                     columns.Add(new ColumnInfo
                     {
                         LogicalName = attr.LogicalName,
@@ -1584,9 +1684,20 @@ namespace DataverseMetadataExtractor.Services
                         IsKey = isPrimaryKey,
                         IsRowLabel = isPrimaryName,
                         Description = description,
-                        AttributeType = attrType
+                        AttributeType = effectiveAttrType
                     });
-                    sqlFields.Add($"Base.{attr.LogicalName}");
+
+                    // Generate SQL field - wrap datetime if configured
+                    if (shouldWrapDateTime)
+                    {
+                        var offset = dateTableConfig!.UtcOffsetHours;
+                        // Use CAST(DATEADD(...) AS DATE) to convert to date-only with timezone adjustment
+                        sqlFields.Add($"CAST(DATEADD(hour, {offset}, Base.{attr.LogicalName}) AS DATE) AS {attr.LogicalName}");
+                    }
+                    else
+                    {
+                        sqlFields.Add($"Base.{attr.LogicalName}");
+                    }
                 }
             }
 
@@ -1676,12 +1787,44 @@ namespace DataverseMetadataExtractor.Services
         }
 
         /// <summary>
+        /// Generates the Date table TMDL from template with configured year range
+        /// </summary>
+        private string GenerateDateTableTmdl(DateTableConfig config)
+        {
+            // Read the template file
+            var templatePath = Path.Combine(_templatePath, "DateTable.tmdl");
+            if (!File.Exists(templatePath))
+            {
+                throw new FileNotFoundException($"Date table template not found: {templatePath}");
+            }
+
+            var content = File.ReadAllText(templatePath);
+
+            // Update _startdate: DATE(YYYY,1,1) -> DATE(config.StartYear,1,1)
+            content = Regex.Replace(
+                content,
+                @"VAR _startdate\s*=\s*\r?\n\s*DATE\(\d+,\s*1,\s*1\)",
+                $"VAR _startdate =\r\n\t\t\t\t    DATE({config.StartYear},1,1)",
+                RegexOptions.Multiline);
+
+            // Update _enddate: DATE(YYYY,1,1)-1 -> DATE(config.EndYear+1,1,1)-1
+            content = Regex.Replace(
+                content,
+                @"VAR _enddate\s*=\s*\r?\n\s*DATE\(\d+,\s*1,\s*1\)\s*-\s*1",
+                $"VAR _enddate =\r\n\t\t\t\t\tDATE({config.EndYear + 1},1,1)-1",
+                RegexOptions.Multiline);
+
+            return content;
+        }
+
+        /// <summary>
         /// Generates relationships TMDL content
         /// </summary>
         private string GenerateRelationshipsTmdl(
             List<ExportTable> tables,
             List<ExportRelationship> relationships,
-            Dictionary<string, Dictionary<string, AttributeDisplayInfo>> attributeDisplayInfo)
+            Dictionary<string, Dictionary<string, AttributeDisplayInfo>> attributeDisplayInfo,
+            DateTableConfig? dateTableConfig = null)
         {
             var sb = new StringBuilder();
 
@@ -1730,6 +1873,28 @@ namespace DataverseMetadataExtractor.Services
                 sb.AppendLine();
             }
 
+            // Add Date table relationship if configured
+            if (dateTableConfig != null && 
+                !string.IsNullOrEmpty(dateTableConfig.PrimaryDateTable) && 
+                !string.IsNullOrEmpty(dateTableConfig.PrimaryDateField) &&
+                tableDisplayNames.ContainsKey(dateTableConfig.PrimaryDateTable))
+            {
+                var sourceTableDisplay = tableDisplayNames[dateTableConfig.PrimaryDateTable];
+                
+                // Look up the display name for the primary date field
+                var primaryDateFieldName = dateTableConfig.PrimaryDateField;
+                if (attributeDisplayInfo.TryGetValue(dateTableConfig.PrimaryDateTable, out var tableAttrs) &&
+                    tableAttrs.TryGetValue(dateTableConfig.PrimaryDateField, out var fieldDisplayInfo))
+                {
+                    primaryDateFieldName = fieldDisplayInfo.DisplayName ?? dateTableConfig.PrimaryDateField;
+                }
+                
+                sb.AppendLine($"relationship {Guid.NewGuid()}");
+                sb.AppendLine($"\tfromColumn: {QuoteTmdlName(sourceTableDisplay)}.{QuoteTmdlName(primaryDateFieldName)}");
+                sb.AppendLine($"\ttoColumn: Date.Date");
+                sb.AppendLine();
+            }
+
             return sb.ToString();
         }
 
@@ -1767,6 +1932,7 @@ namespace DataverseMetadataExtractor.Services
                 
                 // Date/Time types
                 "datetime" => ("dateTime", "General Date", "datetime2", "none"),
+                "dateonly" => ("dateTime", "Short Date", "date", "none"),  // Date-only (no time component)
                 
                 // Boolean types
                 "boolean" => ("boolean", null, "bit", "none"),
@@ -1777,6 +1943,82 @@ namespace DataverseMetadataExtractor.Services
                 
                 _ => ("string", null, null, "none")
             };
+        }
+
+        /// <summary>
+        /// Verifies that essential PBIP structure exists and creates missing pieces
+        /// </summary>
+        private void VerifyPbipStructure(string pbipFolder, string projectName)
+        {
+            // Check for .pbip file
+            var pbipFile = Path.Combine(pbipFolder, $"{projectName}.pbip");
+            if (!File.Exists(pbipFile))
+            {
+                DebugLogger.Log($"Missing .pbip file, recreating: {pbipFile}");
+                var templatePbip = Path.Combine(_templatePath, "Template.pbip");
+                if (File.Exists(templatePbip))
+                {
+                    var content = File.ReadAllText(templatePbip, Utf8WithoutBom);
+                    content = content.Replace("Template", projectName);
+                    WriteTmdlFile(pbipFile, content);
+                }
+                else
+                {
+                    throw new FileNotFoundException($"Template.pbip not found at: {templatePbip}");
+                }
+            }
+
+            // Check for Report folder
+            var reportFolder = Path.Combine(pbipFolder, $"{projectName}.Report");
+            if (!Directory.Exists(reportFolder))
+            {
+                DebugLogger.Log($"Missing Report folder, recreating: {reportFolder}");
+                var templateReport = Path.Combine(_templatePath, "Template.Report");
+                if (Directory.Exists(templateReport))
+                {
+                    CopyDirectory(templateReport, reportFolder, projectName);
+                }
+                else
+                {
+                    throw new DirectoryNotFoundException($"Template.Report folder not found at: {templateReport}");
+                }
+            }
+
+            // Check for SemanticModel .platform file
+            var platformFile = Path.Combine(pbipFolder, $"{projectName}.SemanticModel", ".platform");
+            if (!File.Exists(platformFile))
+            {
+                DebugLogger.Log($"Missing .platform file, recreating: {platformFile}");
+                var templatePlatform = Path.Combine(_templatePath, "Template.SemanticModel", ".platform");
+                if (File.Exists(templatePlatform))
+                {
+                    var content = File.ReadAllText(templatePlatform, Utf8WithoutBom);
+                    content = content.Replace("Template", projectName);
+                    WriteTmdlFile(platformFile, content);
+                }
+                else
+                {
+                    throw new FileNotFoundException($"Template .platform file not found at: {templatePlatform}");
+                }
+            }
+
+            // Check for definition.pbism
+            var pbismFile = Path.Combine(pbipFolder, $"{projectName}.SemanticModel", "definition.pbism");
+            if (!File.Exists(pbismFile))
+            {
+                DebugLogger.Log($"Missing definition.pbism file, recreating: {pbismFile}");
+                var templatePbism = Path.Combine(_templatePath, "Template.SemanticModel", "definition.pbism");
+                if (File.Exists(templatePbism))
+                {
+                    var content = File.ReadAllText(templatePbism, Utf8WithoutBom);
+                    content = content.Replace("Template", projectName);
+                    WriteTmdlFile(pbismFile, content);
+                }
+                else
+                {
+                    throw new FileNotFoundException($"Template definition.pbism file not found at: {templatePbism}");
+                }
+            }
         }
 
         /// <summary>

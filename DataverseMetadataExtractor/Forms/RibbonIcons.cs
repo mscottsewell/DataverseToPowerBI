@@ -225,6 +225,49 @@ namespace DataverseMetadataExtractor.Forms
         }
 
         /// <summary>
+        /// Calendar icon for Calendar Table feature
+        /// </summary>
+        public static Image CalendarIcon
+        {
+            get
+            {
+                var bmp = new Bitmap(IconSize, IconSize);
+                using (var g = Graphics.FromImage(bmp))
+                {
+                    g.SmoothingMode = SmoothingMode.None;
+                    g.Clear(Color.Transparent);
+
+                    using var headerBrush = new SolidBrush(Color.FromArgb(200, 80, 80));
+                    using var bodyBrush = new SolidBrush(Color.FromArgb(250, 250, 250));
+                    using var dateBrush = new SolidBrush(Color.FromArgb(60, 60, 60));
+                    using var pen = new Pen(Color.FromArgb(100, 100, 100), 1);
+
+                    // Calendar body
+                    g.FillRectangle(bodyBrush, 2, 4, 16, 13);
+                    g.DrawRectangle(pen, 2, 4, 16, 13);
+
+                    // Header (month bar) - red
+                    g.FillRectangle(headerBrush, 2, 4, 16, 4);
+                    g.DrawRectangle(pen, 2, 4, 16, 4);
+
+                    // Calendar rings (top binding)
+                    g.DrawLine(pen, 6, 2, 6, 5);
+                    g.DrawLine(pen, 14, 2, 14, 5);
+
+                    // Date grid (3x2 small squares)
+                    for (int row = 0; row < 2; row++)
+                    {
+                        for (int col = 0; col < 3; col++)
+                        {
+                            g.FillRectangle(dateBrush, 4 + col * 5, 10 + row * 3, 3, 2);
+                        }
+                    }
+                }
+                return bmp;
+            }
+        }
+
+        /// <summary>
         /// Refresh icon with circular arrow for Refresh Metadata
         /// </summary>
         public static Image RefreshIcon

@@ -31,6 +31,7 @@ namespace DataverseMetadataExtractor.Forms
         // Star-schema state
         private string? _factTable = null;  // Logical name of the fact table
         private List<RelationshipConfig> _relationships = new();  // Configured relationships
+        private DateTableConfig? _dateTableConfig = null;  // Calendar/Date table configuration
         
         // Sorting state
         private int _selectedTablesSortColumn = -1;
@@ -87,6 +88,7 @@ namespace DataverseMetadataExtractor.Forms
                 // Restore star-schema configuration
                 _factTable = _settings.FactTable;
                 _relationships = _settings.Relationships ?? new List<RelationshipConfig>();
+                _dateTableConfig = _settings.DateTableConfig;
 
                 // Populate semantic model dropdown
                 RefreshSemanticModelDropdown();
@@ -554,6 +556,7 @@ namespace DataverseMetadataExtractor.Forms
             // Save star-schema configuration
             _settings.FactTable = _factTable;
             _settings.Relationships = _relationships;
+            _settings.DateTableConfig = _dateTableConfig;
             _settings.TableRoles = _selectedTables.ToDictionary(
                 k => k.Key,
                 v => v.Key == _factTable ? TableRole.Fact : TableRole.Dimension
@@ -658,6 +661,9 @@ namespace DataverseMetadataExtractor.Forms
             {
                 lblTableCount.Text = count == 1 ? "1 table selected" : $"{count} tables selected";
             }
+
+            // Enable Calendar Table button when tables are selected
+            btnCalendarTable.Enabled = count > 0;
         }
 
         private void SetStatus(string message)
@@ -2134,8 +2140,56 @@ namespace DataverseMetadataExtractor.Forms
             
             SaveSettings();
             SaveCache();
-            
+
             Services.DebugLogger.Log($"Log saved to: {Services.DebugLogger.GetLogPath()}");
+        }
+
+        private void BtnCalendarTable_Click(object? sender, EventArgs e)
+        {
+            if (!_selectedTables.Any())
+            {
+                MessageBox.Show("No tables selected. Please select tables first.", "No Tables",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // Check if Date table already exists in config
+            if (_dateTableConfig != null)
+            {
+                var result = MessageBox.Show(
+                    "A Calendar Table has already been configured. Do you want to update its configuration?",
+                    "Calendar Table Exists",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question);
+                if (result != DialogResult.Yes) return;
+            }
+
+            using var dialog = new CalendarTableDialog(
+                _selectedTables,
+                _settings.AttributeDisplayInfo,
+                _factTable,
+                _dateTableConfig);
+
+            if (dialog.ShowDialog(this) == DialogResult.OK && dialog.Config != null)
+            {
+                _dateTableConfig = dialog.Config;
+                SaveSettings();
+
+                var tzName = !string.IsNullOrEmpty(_dateTableConfig.TimeZoneId)
+                    ? TimeZoneInfo.FindSystemTimeZoneById(_dateTableConfig.TimeZoneId)?.DisplayName ?? _dateTableConfig.TimeZoneId
+                    : "UTC";
+
+                MessageBox.Show(
+                    $"Calendar Table configured successfully.\n\n" +
+                    $"Primary Date: {_dateTableConfig.PrimaryDateTable}.{_dateTableConfig.PrimaryDateField}\n" +
+                    $"Time Zone: {tzName}\n" +
+                    $"Date Range: {_dateTableConfig.StartYear} - {_dateTableConfig.EndYear}\n" +
+                    $"Fields to adjust: {_dateTableConfig.WrappedFields.Count}\n\n" +
+                    $"The Date table will be created when you build the semantic model.",
+                    "Configuration Saved",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+            }
         }
 
         private async void BtnBuildSemanticModel_Click(object? sender, EventArgs e)
@@ -2228,7 +2282,8 @@ namespace DataverseMetadataExtractor.Forms
                         fullUrl,
                         exportTables,
                         exportRelationships,
-                        _settings.AttributeDisplayInfo);
+                        _settings.AttributeDisplayInfo,
+                        _dateTableConfig);
                 });
 
                 if (builder == null || changes == null)
@@ -2274,7 +2329,8 @@ namespace DataverseMetadataExtractor.Forms
                         exportTables,
                         exportRelationships,
                         _settings.AttributeDisplayInfo,
-                        createBackup);
+                        createBackup,
+                        _dateTableConfig);
                 });
 
                 ShowProgress(false);
