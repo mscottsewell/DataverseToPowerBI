@@ -1857,33 +1857,6 @@ namespace DataverseMetadataExtractor.Forms
             listViewAttributes.ItemChecked += ListViewAttributes_ItemChecked;
         }
 
-        private void ConfigurationsToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
-        {
-            // Populate the Switch Configuration submenu
-            switchConfigurationToolStripMenuItem.DropDownItems.Clear();
-
-            var currentConfig = _settingsManager.GetCurrentConfigurationName();
-            var allConfigs = _settingsManager.GetConfigurationNames();
-
-            foreach (var configName in allConfigs)
-            {
-                var item = new ToolStripMenuItem(configName);
-                item.Click += (s, args) => SwitchToConfiguration(configName);
-                
-                // Check the current configuration
-                if (configName == currentConfig)
-                {
-                    item.Checked = true;
-                    item.Enabled = false; // Can't switch to current
-                }
-
-                switchConfigurationToolStripMenuItem.DropDownItems.Add(item);
-            }
-
-            // Update title to show current configuration
-            this.Text = $"Dataverse Metadata Extractor for Power BI - {currentConfig}";
-        }
-
         private void SwitchToConfiguration(string configurationName)
         {
             try
@@ -1980,152 +1953,6 @@ namespace DataverseMetadataExtractor.Forms
                 _isLoading = false;
                 MessageBox.Show($"Failed to switch configuration:\n{ex.Message}\n\n{ex.StackTrace}", "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void NewConfigurationToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            using (var inputDialog = new Form())
-            {
-                inputDialog.Text = "New Configuration";
-                inputDialog.Width = 400;
-                inputDialog.Height = 150;
-                inputDialog.StartPosition = FormStartPosition.CenterParent;
-
-                var label = new Label { Text = "Configuration Name:", Left = 20, Top = 20, Width = 340 };
-                var textBox = new TextBox { Left = 20, Top = 45, Width = 340 };
-                var btnOk = new Button { Text = "Create", Left = 220, Top = 80, DialogResult = DialogResult.OK };
-                var btnCancel = new Button { Text = "Cancel", Left = 300, Top = 80, DialogResult = DialogResult.Cancel };
-                
-                btnOk.Click += (s, args) => {
-                    if (string.IsNullOrWhiteSpace(textBox.Text))
-                    {
-                        MessageBox.Show("Please enter a configuration name.", "Error",
-                            MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        inputDialog.DialogResult = DialogResult.None;
-                    }
-                };
-
-                inputDialog.Controls.AddRange(new Control[] { label, textBox, btnOk, btnCancel });
-                inputDialog.AcceptButton = btnOk;
-                inputDialog.CancelButton = btnCancel;
-
-                if (inputDialog.ShowDialog() == DialogResult.OK)
-                {
-                    try
-                    {
-                        var newName = textBox.Text.Trim();
-                        var newSettings = new AppSettings { ProjectName = newName };
-                        _settingsManager.CreateNewConfiguration(newName, newSettings);
-                        
-                        // Switch to the new configuration
-                        SwitchToConfiguration(newName);
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show($"Failed to create configuration:\n{ex.Message}", "Error",
-                            MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                }
-            }
-        }
-
-        private void RenameConfigurationToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            var currentName = _settingsManager.GetCurrentConfigurationName();
-
-            using (var inputDialog = new Form())
-            {
-                inputDialog.Text = "Rename Configuration";
-                inputDialog.Width = 400;
-                inputDialog.Height = 150;
-                inputDialog.StartPosition = FormStartPosition.CenterParent;
-
-                var label = new Label { Text = $"Rename '{currentName}' to:", Left = 20, Top = 20, Width = 340 };
-                var textBox = new TextBox { Text = currentName, Left = 20, Top = 45, Width = 340 };
-                var btnOk = new Button { Text = "Rename", Left = 220, Top = 80, DialogResult = DialogResult.OK };
-                var btnCancel = new Button { Text = "Cancel", Left = 300, Top = 80, DialogResult = DialogResult.Cancel };
-                
-                btnOk.Click += (s, args) => {
-                    if (string.IsNullOrWhiteSpace(textBox.Text))
-                    {
-                        MessageBox.Show("Please enter a configuration name.", "Error",
-                            MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        inputDialog.DialogResult = DialogResult.None;
-                    }
-                };
-
-                inputDialog.Controls.AddRange(new Control[] { label, textBox, btnOk, btnCancel });
-                inputDialog.AcceptButton = btnOk;
-                inputDialog.CancelButton = btnCancel;
-
-                if (inputDialog.ShowDialog() == DialogResult.OK)
-                {
-                    try
-                    {
-                        var newName = textBox.Text.Trim();
-                        _settingsManager.RenameConfiguration(currentName, newName);
-                        
-                        // Update project name to match new config name
-                        _isLoading = true;
-                        txtProjectName.Text = newName;
-                        _isLoading = false;
-                        
-                        this.Text = $"Dataverse Metadata Extractor for Power BI - {newName}";
-
-                        MessageBox.Show($"Configuration renamed to '{newName}'.", "Success",
-                            MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show($"Failed to rename configuration:\n{ex.Message}", "Error",
-                            MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                }
-            }
-        }
-
-        private void DeleteConfigurationToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            var currentName = _settingsManager.GetCurrentConfigurationName();
-            
-            var result = MessageBox.Show(
-                $"Are you sure you want to delete the configuration '{currentName}'?\n\nThis cannot be undone.",
-                "Delete Configuration",
-                MessageBoxButtons.YesNo,
-                MessageBoxIcon.Warning);
-
-            if (result == DialogResult.Yes)
-            {
-                try
-                {
-                    _settingsManager.DeleteConfiguration(currentName);
-                    
-                    // Load the new current configuration
-                    _settings = _settingsManager.LoadSettings();
-                    var newCurrentName = _settingsManager.GetCurrentConfigurationName();
-
-                    // Apply to UI - project name matches config name
-                    _isLoading = true;
-                    txtEnvironmentUrl.Text = _settings.LastEnvironmentUrl ?? "";
-                    txtProjectName.Text = newCurrentName;
-                    txtOutputFolder.Text = _settings.OutputFolder ?? "";
-                    _isLoading = false;
-
-                    listViewSelectedTables.Items.Clear();
-                    listViewAttributes.Items.Clear();
-                    UpdateTableCount();
-
-                    this.Text = $"Dataverse Metadata Extractor for Power BI - {newCurrentName}";
-
-                    MessageBox.Show($"Configuration '{currentName}' deleted.\n\nSwitched to '{newCurrentName}'.", "Success",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Failed to delete configuration:\n{ex.Message}", "Error",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
             }
         }
 
@@ -2349,14 +2176,32 @@ namespace DataverseMetadataExtractor.Forms
                 SetStatus("Semantic model build complete!");
 
                 var pbipPath = Path.Combine(outputFolder, "PBIP", $"{semanticModelName}.pbip");
-                MessageBox.Show(
+                var result = MessageBox.Show(
                     $"Semantic model built successfully!\n\n" +
                     $"Location: {pbipPath}\n\n" +
                     $"Tables: {exportTables.Count}\n" +
-                    $"Relationships: {exportRelationships.Count}",
+                    $"Relationships: {exportRelationships.Count}\n\n" +
+                    $"Would you like to open the semantic model in Power BI Desktop?",
                     "Build Complete",
-                    MessageBoxButtons.OK,
+                    MessageBoxButtons.YesNo,
                     MessageBoxIcon.Information);
+
+                if (result == DialogResult.Yes)
+                {
+                    try
+                    {
+                        System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                        {
+                            FileName = pbipPath,
+                            UseShellExecute = true
+                        });
+                    }
+                    catch (Exception openEx)
+                    {
+                        MessageBox.Show($"Failed to open Power BI Desktop:\n{openEx.Message}",
+                            "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
             }
             catch (Exception ex)
             {

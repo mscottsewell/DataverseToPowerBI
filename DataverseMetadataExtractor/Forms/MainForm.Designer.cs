@@ -15,13 +15,6 @@ namespace DataverseMetadataExtractor.Forms
 
         private void InitializeComponent()
         {
-            this.menuStrip = new System.Windows.Forms.MenuStrip();
-            this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.configurationsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.switchConfigurationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.newConfigurationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.renameConfigurationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.deleteConfigurationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             
             // Ribbon ToolStrip
             this.toolStripRibbon = new System.Windows.Forms.ToolStrip();
@@ -81,7 +74,6 @@ namespace DataverseMetadataExtractor.Forms
             this.txtOutputFolder = new System.Windows.Forms.TextBox();
             this.txtProjectName = new System.Windows.Forms.TextBox();
             
-            this.menuStrip.SuspendLayout();
             this.toolStripRibbon.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainerMain)).BeginInit();
             this.splitContainerMain.Panel1.SuspendLayout();
@@ -95,57 +87,6 @@ namespace DataverseMetadataExtractor.Forms
             this.panelStatus.SuspendLayout();
             this.statusStrip.SuspendLayout();
             this.SuspendLayout();
-
-            // menuStrip
-            this.menuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { this.fileToolStripMenuItem });
-            this.menuStrip.Location = new System.Drawing.Point(0, 0);
-            this.menuStrip.Name = "menuStrip";
-            this.menuStrip.Size = new System.Drawing.Size(1200, 24);
-            this.menuStrip.TabIndex = 0;
-            this.menuStrip.Text = "menuStrip";
-
-            // fileToolStripMenuItem
-            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-                this.configurationsToolStripMenuItem
-            });
-            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
-            this.fileToolStripMenuItem.Text = "&File";
-
-            // configurationsToolStripMenuItem
-            this.configurationsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-                this.switchConfigurationToolStripMenuItem,
-                this.newConfigurationToolStripMenuItem,
-                this.renameConfigurationToolStripMenuItem,
-                this.deleteConfigurationToolStripMenuItem
-            });
-            this.configurationsToolStripMenuItem.Name = "configurationsToolStripMenuItem";
-            this.configurationsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.configurationsToolStripMenuItem.Text = "&Configurations";
-            this.configurationsToolStripMenuItem.DropDownOpening += new System.EventHandler(this.ConfigurationsToolStripMenuItem_DropDownOpening);
-
-            // switchConfigurationToolStripMenuItem
-            this.switchConfigurationToolStripMenuItem.Name = "switchConfigurationToolStripMenuItem";
-            this.switchConfigurationToolStripMenuItem.Size = new System.Drawing.Size(220, 22);
-            this.switchConfigurationToolStripMenuItem.Text = "&Switch to...";
-
-            // newConfigurationToolStripMenuItem
-            this.newConfigurationToolStripMenuItem.Name = "newConfigurationToolStripMenuItem";
-            this.newConfigurationToolStripMenuItem.Size = new System.Drawing.Size(220, 22);
-            this.newConfigurationToolStripMenuItem.Text = "&New Configuration...";
-            this.newConfigurationToolStripMenuItem.Click += new System.EventHandler(this.NewConfigurationToolStripMenuItem_Click);
-
-            // renameConfigurationToolStripMenuItem
-            this.renameConfigurationToolStripMenuItem.Name = "renameConfigurationToolStripMenuItem";
-            this.renameConfigurationToolStripMenuItem.Size = new System.Drawing.Size(220, 22);
-            this.renameConfigurationToolStripMenuItem.Text = "&Rename Current...";
-            this.renameConfigurationToolStripMenuItem.Click += new System.EventHandler(this.RenameConfigurationToolStripMenuItem_Click);
-
-            // deleteConfigurationToolStripMenuItem
-            this.deleteConfigurationToolStripMenuItem.Name = "deleteConfigurationToolStripMenuItem";
-            this.deleteConfigurationToolStripMenuItem.Size = new System.Drawing.Size(220, 22);
-            this.deleteConfigurationToolStripMenuItem.Text = "&Delete Current...";
-            this.deleteConfigurationToolStripMenuItem.Click += new System.EventHandler(this.DeleteConfigurationToolStripMenuItem_Click);
 
             // toolStripRibbon
             this.toolStripRibbon.ImageScalingSize = new System.Drawing.Size(20, 20);
@@ -163,7 +104,7 @@ namespace DataverseMetadataExtractor.Forms
                 this.cboSemanticModels,
                 this.btnChangeWorkingFolder
             });
-            this.toolStripRibbon.Location = new System.Drawing.Point(0, 24);
+            this.toolStripRibbon.Location = new System.Drawing.Point(0, 0);
             this.toolStripRibbon.Name = "toolStripRibbon";
             this.toolStripRibbon.Padding = new System.Windows.Forms.Padding(5, 3, 5, 3);
             this.toolStripRibbon.Size = new System.Drawing.Size(1200, 34);
@@ -278,7 +219,7 @@ namespace DataverseMetadataExtractor.Forms
 
             // splitContainerMain
             this.splitContainerMain.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainerMain.Location = new System.Drawing.Point(10, 68);
+            this.splitContainerMain.Location = new System.Drawing.Point(10, 44);
             this.splitContainerMain.Name = "splitContainerMain";
             this.splitContainerMain.Panel1.Controls.Add(this.groupBoxSelectedTables);
             this.splitContainerMain.Panel2.Controls.Add(this.groupBoxAttributes);
@@ -563,11 +504,9 @@ namespace DataverseMetadataExtractor.Forms
             this.Controls.Add(this.panelStatus);
             this.Controls.Add(this.toolStripRibbon);
             this.Controls.Add(this.statusStrip);
-            this.Controls.Add(this.menuStrip);
             this.Controls.Add(this.txtEnvironmentUrl);
             this.Controls.Add(this.txtOutputFolder);
             this.Controls.Add(this.txtProjectName);
-            this.MainMenuStrip = this.menuStrip;
             this.MinimumSize = new System.Drawing.Size(1000, 500);
             this.Name = "MainForm";
             this.Padding = new System.Windows.Forms.Padding(10, 10, 10, 10);
@@ -576,8 +515,6 @@ namespace DataverseMetadataExtractor.Forms
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
 
-            this.menuStrip.ResumeLayout(false);
-            this.menuStrip.PerformLayout();
             this.toolStripRibbon.ResumeLayout(false);
             this.toolStripRibbon.PerformLayout();
             this.splitContainerMain.Panel1.ResumeLayout(false);
@@ -599,14 +536,6 @@ namespace DataverseMetadataExtractor.Forms
             this.PerformLayout();
         }
 
-        private System.Windows.Forms.MenuStrip menuStrip;
-        private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem configurationsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem switchConfigurationToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem newConfigurationToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem renameConfigurationToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem deleteConfigurationToolStripMenuItem;
-        
         // Ribbon ToolStrip
         private System.Windows.Forms.ToolStrip toolStripRibbon;
         private System.Windows.Forms.ToolStripButton btnChangeEnvironment;
