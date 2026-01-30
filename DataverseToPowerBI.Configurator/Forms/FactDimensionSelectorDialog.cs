@@ -349,7 +349,11 @@ namespace DataverseToPowerBI.Configurator.Forms
 
         private async void ChkIncludeOneToMany_CheckedChanged(object? sender, EventArgs e)
         {
-            if (chkIncludeOneToMany.Checked && !_suppressOneToManyWarning)
+            // Skip if we're suppressing (used when programmatically changing the checkbox)
+            if (_suppressOneToManyWarning)
+                return;
+            
+            if (chkIncludeOneToMany.Checked)
             {
                 var result = MessageBox.Show(
                     "⚠️ WARNING: Including one-to-many relationships is an advanced feature.\n\n" +
@@ -367,7 +371,10 @@ namespace DataverseToPowerBI.Configurator.Forms
 
                 if (result == DialogResult.No)
                 {
+                    // Suppress event to prevent recursive trigger
+                    _suppressOneToManyWarning = true;
                     chkIncludeOneToMany.Checked = false;
+                    _suppressOneToManyWarning = false;
                     return;
                 }
             }
@@ -376,6 +383,17 @@ namespace DataverseToPowerBI.Configurator.Forms
             if (SelectedFactTable != null)
             {
                 await LoadFactTableRelationships();
+            }
+            else if (chkIncludeOneToMany.Checked)
+            {
+                // User checked the box before selecting a fact table
+                // Show a helpful message
+                MessageBox.Show(
+                    "Please select a Fact Table first.\n\n" +
+                    "Once you select a fact table, any tables that reference it (one-to-many relationships) will be shown in the list.",
+                    "Select Fact Table First",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
             }
         }
 
@@ -605,6 +623,17 @@ namespace DataverseToPowerBI.Configurator.Forms
                 {
                     PopulateReverseLookups(reverseLookups);
                     lblStatus.Text += $" Found {reverseLookups.Count} one-to-many relationship(s).";
+                }
+                else
+                {
+                    // No one-to-many relationships found
+                    lblStatus.Text = "No one-to-many relationships found.";
+                    MessageBox.Show(
+                        $"The '{SelectedFactTable?.DisplayName ?? SelectedFactTable?.LogicalName}' table has no available one-to-many relationships.\n\n" +
+                        "One-to-many relationships occur when other tables have lookup fields that reference this fact table.",
+                        "No Relationships Available",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
                 }
             }
             catch (Exception ex)

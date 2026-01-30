@@ -342,5 +342,137 @@ namespace DataverseToPowerBI.Configurator.Services
                 // Ignore errors when clearing cache
             }
         }
+
+        /// <summary>
+        /// Removes cache files for configurations that no longer exist
+        /// </summary>
+        public int CleanupOrphanedCacheFiles()
+        {
+            try
+            {
+                if (_configurationsFile == null)
+                {
+                    _configurationsFile = LoadConfigurationsFile();
+                }
+
+                var validConfigNames = _configurationsFile.Configurations
+                    .Select(c => c.Name)
+                    .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+                var cacheFiles = Directory.GetFiles(_appFolder, ".dataverse_metadata_cache_*.json");
+                int removedCount = 0;
+
+                foreach (var cacheFile in cacheFiles)
+                {
+                    var fileName = Path.GetFileName(cacheFile);
+                    // Extract config name from: .dataverse_metadata_cache_{configname}.json
+                    var configName = fileName
+                        .Replace(".dataverse_metadata_cache_", "")
+                        .Replace(".json", "")
+                        .Replace("_", " ");  // Unsanitize the name
+
+                    if (!validConfigNames.Contains(configName))
+                    {
+                        DebugLogger.Log($"Cleaning up orphaned cache file: {fileName} (config '{configName}' not found)");
+                        File.Delete(cacheFile);
+                        removedCount++;
+                    }
+                }
+
+                return removedCount;
+            }
+            catch (Exception ex)
+            {
+                DebugLogger.Log($"Error cleaning up orphaned cache files: {ex.Message}");
+                return 0;
+            }
+        }
+
+        /// <summary>
+        /// Gets diagnostic information about the settings storage
+        /// </summary>
+        public string GetSettingsDiagnostics()
+        {
+            try
+            {
+                if (_configurationsFile == null)
+                {
+                    _configurationsFile = LoadConfigurationsFile();
+                }
+
+                var sb = new System.Text.StringBuilder();
+                sb.AppendLine("=== Settings Storage Diagnostics ===");
+                sb.AppendLine();
+                sb.AppendLine($"Settings Folder: {_appFolder}");
+                sb.AppendLine($"Configurations File: {_configurationsPath}");
+                sb.AppendLine($"File Exists: {File.Exists(_configurationsPath)}");
+                sb.AppendLine();
+                sb.AppendLine($"Total Configurations: {_configurationsFile.Configurations.Count}");
+                sb.AppendLine($"Last Used Configuration: {_configurationsFile.LastUsedConfigurationName}");
+                sb.AppendLine();
+
+                foreach (var config in _configurationsFile.Configurations)
+                {
+                    sb.AppendLine($"Configuration: {config.Name}");
+                    sb.AppendLine($"  Last Used: {config.LastUsed:g}");
+                    sb.AppendLine($"  Environment URL: {config.Settings.LastEnvironmentUrl ?? "(not set)"}");
+                    sb.AppendLine($"  Solution: {config.Settings.LastSolution ?? "(not set)"}");
+                    sb.AppendLine($"  Project Name: {config.Settings.ProjectName ?? "(not set)"}");
+                    sb.AppendLine($"  Output Folder: {config.Settings.OutputFolder ?? "(not set)"}");
+                    sb.AppendLine($"  Selected Tables: {config.Settings.SelectedTables.Count}");
+                    
+                    var cachePath = GetCachePath(config.Name);
+                    sb.AppendLine($"  Cache File: {Path.GetFileName(cachePath)}");
+                    sb.AppendLine($"  Cache Exists: {File.Exists(cachePath)}");
+                    if (File.Exists(cachePath))
+                    {
+                        var fileInfo = new FileInfo(cachePath);
+                        sb.AppendLine($"  Cache Size: {fileInfo.Length:N0} bytes");
+                        sb.AppendLine($"  Cache Modified: {fileInfo.LastWriteTime:g}");
+                    }
+                    sb.AppendLine();
+                }
+
+                // Check for orphaned cache files
+                var cacheFiles = Directory.GetFiles(_appFolder, ".dataverse_metadata_cache_*.json");
+                var validConfigNames = _configurationsFile.Configurations
+                    .Select(c => c.Name)
+                    .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+                var orphanedFiles = new List<string>();
+                foreach (var cacheFile in cacheFiles)
+                {
+                    var fileName = Path.GetFileName(cacheFile);
+                    var configName = fileName
+                        .Replace(".dataverse_metadata_cache_", "")
+                        .Replace(".json", "")
+                        .Replace("_", " ");
+
+                    if (!validConfigNames.Contains(configName))
+                    {
+                        orphanedFiles.Add(fileName);
+                    }
+                }
+
+                if (orphanedFiles.Any())
+                {
+                    sb.AppendLine("⚠️ Orphaned Cache Files (no matching configuration):");
+                    foreach (var file in orphanedFiles)
+                    {
+                        sb.AppendLine($"  - {file}");
+                    }
+                }
+                else
+                {
+                    sb.AppendLine("✅ No orphaned cache files found");
+                }
+
+                return sb.ToString();
+            }
+            catch (Exception ex)
+            {
+                return $"Error generating diagnostics: {ex.Message}";
+            }
+        }
     }
 }

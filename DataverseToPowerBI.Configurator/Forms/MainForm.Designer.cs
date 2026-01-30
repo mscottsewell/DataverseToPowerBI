@@ -35,6 +35,7 @@ namespace DataverseToPowerBI.Configurator.Forms
             this.txtEnvironmentUrl = new System.Windows.Forms.TextBox();
             
             this.splitContainerMain = new System.Windows.Forms.SplitContainer();
+            this.splitContainerLeft = new System.Windows.Forms.SplitContainer();
             
             this.groupBoxSelectedTables = new System.Windows.Forms.GroupBox();
             this.listViewSelectedTables = new System.Windows.Forms.ListView();
@@ -45,6 +46,12 @@ namespace DataverseToPowerBI.Configurator.Forms
             this.colAttrs = new System.Windows.Forms.ColumnHeader();
             this.panelTableInfo = new System.Windows.Forms.Panel();
             this.lblTableCount = new System.Windows.Forms.Label();
+            
+            this.groupBoxRelationships = new System.Windows.Forms.GroupBox();
+            this.listViewRelationships = new System.Windows.Forms.ListView();
+            this.colRelFrom = new System.Windows.Forms.ColumnHeader();
+            this.colRelTo = new System.Windows.Forms.ColumnHeader();
+            this.colRelType = new System.Windows.Forms.ColumnHeader();
             
             this.groupBoxAttributes = new System.Windows.Forms.GroupBox();
             this.panelAttrFilter = new System.Windows.Forms.Panel();
@@ -79,8 +86,13 @@ namespace DataverseToPowerBI.Configurator.Forms
             this.splitContainerMain.Panel1.SuspendLayout();
             this.splitContainerMain.Panel2.SuspendLayout();
             this.splitContainerMain.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainerLeft)).BeginInit();
+            this.splitContainerLeft.Panel1.SuspendLayout();
+            this.splitContainerLeft.Panel2.SuspendLayout();
+            this.splitContainerLeft.SuspendLayout();
             this.groupBoxSelectedTables.SuspendLayout();
             this.panelTableInfo.SuspendLayout();
+            this.groupBoxRelationships.SuspendLayout();
             this.groupBoxAttributes.SuspendLayout();
             this.panelAttrFilter.SuspendLayout();
             this.panelAttrButtons.SuspendLayout();
@@ -96,8 +108,8 @@ namespace DataverseToPowerBI.Configurator.Forms
                 this.lblConnectionStatus,
                 this.toolStripSeparator1,
                 this.btnSelectTables,
-                this.btnBuildSemanticModel,
                 this.btnCalendarTable,
+                this.btnBuildSemanticModel,
                 this.toolStripSeparator2,
                 this.lblSemanticModel,
                 this.cboSemanticModels,
@@ -121,7 +133,7 @@ namespace DataverseToPowerBI.Configurator.Forms
             this.btnChangeEnvironment.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnChangeEnvironment.Name = "btnChangeEnvironment";
             this.btnChangeEnvironment.Size = new System.Drawing.Size(130, 25);
-            this.btnChangeEnvironment.Text = "Change Environment";
+            this.btnChangeEnvironment.Text = "Dataverse";
             this.btnChangeEnvironment.ToolTipText = "Configure the Dataverse environment URL";
             this.btnChangeEnvironment.Click += new System.EventHandler(this.BtnChangeEnvironment_Click);
 
@@ -131,7 +143,7 @@ namespace DataverseToPowerBI.Configurator.Forms
             this.btnRefreshMetadata.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnRefreshMetadata.Name = "btnRefreshMetadata";
             this.btnRefreshMetadata.Size = new System.Drawing.Size(120, 25);
-            this.btnRefreshMetadata.Text = "Refresh Metadata";
+            this.btnRefreshMetadata.Text = "Metadata";
             this.btnRefreshMetadata.ToolTipText = "Connect and refresh metadata from the Dataverse environment";
             this.btnRefreshMetadata.Click += new System.EventHandler(this.BtnRefreshMetadata_Click);
 
@@ -147,7 +159,7 @@ namespace DataverseToPowerBI.Configurator.Forms
             this.btnSelectTables.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnSelectTables.Name = "btnSelectTables";
             this.btnSelectTables.Size = new System.Drawing.Size(140, 25);
-            this.btnSelectTables.Text = "Select Fact && Dimensions";
+            this.btnSelectTables.Text = "Select Tables";
             this.btnSelectTables.ToolTipText = "Select fact and dimension tables from the solution";
             this.btnSelectTables.Enabled = false;
             this.btnSelectTables.Click += new System.EventHandler(this.BtnSelectTables_Click);
@@ -158,7 +170,7 @@ namespace DataverseToPowerBI.Configurator.Forms
             this.btnBuildSemanticModel.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnBuildSemanticModel.Name = "btnBuildSemanticModel";
             this.btnBuildSemanticModel.Size = new System.Drawing.Size(130, 25);
-            this.btnBuildSemanticModel.Text = "Build Semantic Model";
+            this.btnBuildSemanticModel.Text = "Build";
             this.btnBuildSemanticModel.ToolTipText = "Generate the Power BI semantic model";
             this.btnBuildSemanticModel.Click += new System.EventHandler(this.BtnBuildSemanticModel_Click);
 
@@ -168,7 +180,7 @@ namespace DataverseToPowerBI.Configurator.Forms
             this.btnCalendarTable.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnCalendarTable.Name = "btnCalendarTable";
             this.btnCalendarTable.Size = new System.Drawing.Size(100, 25);
-            this.btnCalendarTable.Text = "Calendar Table";
+            this.btnCalendarTable.Text = "Dates";
             this.btnCalendarTable.ToolTipText = "Configure a Date/Calendar table for the semantic model";
             this.btnCalendarTable.Enabled = false;
             this.btnCalendarTable.Click += new System.EventHandler(this.BtnCalendarTable_Click);
@@ -220,11 +232,22 @@ namespace DataverseToPowerBI.Configurator.Forms
             this.splitContainerMain.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainerMain.Location = new System.Drawing.Point(10, 44);
             this.splitContainerMain.Name = "splitContainerMain";
-            this.splitContainerMain.Panel1.Controls.Add(this.groupBoxSelectedTables);
+            this.splitContainerMain.Panel1.Controls.Add(this.splitContainerLeft);
             this.splitContainerMain.Panel2.Controls.Add(this.groupBoxAttributes);
             this.splitContainerMain.Size = new System.Drawing.Size(1180, 520);
             this.splitContainerMain.SplitterDistance = 590;
             this.splitContainerMain.TabIndex = 2;
+
+            // splitContainerLeft
+            this.splitContainerLeft.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainerLeft.Location = new System.Drawing.Point(0, 0);
+            this.splitContainerLeft.Name = "splitContainerLeft";
+            this.splitContainerLeft.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            this.splitContainerLeft.Panel1.Controls.Add(this.groupBoxSelectedTables);
+            this.splitContainerLeft.Panel2.Controls.Add(this.groupBoxRelationships);
+            this.splitContainerLeft.Size = new System.Drawing.Size(590, 520);
+            this.splitContainerLeft.SplitterDistance = 340;
+            this.splitContainerLeft.TabIndex = 0;
 
             // groupBoxSelectedTables
             this.groupBoxSelectedTables.Controls.Add(this.listViewSelectedTables);
@@ -233,7 +256,7 @@ namespace DataverseToPowerBI.Configurator.Forms
             this.groupBoxSelectedTables.Location = new System.Drawing.Point(0, 0);
             this.groupBoxSelectedTables.Name = "groupBoxSelectedTables";
             this.groupBoxSelectedTables.Padding = new System.Windows.Forms.Padding(5);
-            this.groupBoxSelectedTables.Size = new System.Drawing.Size(590, 520);
+            this.groupBoxSelectedTables.Size = new System.Drawing.Size(590, 340);
             this.groupBoxSelectedTables.TabIndex = 0;
             this.groupBoxSelectedTables.TabStop = false;
             this.groupBoxSelectedTables.Text = "Selected Tables && Forms";
@@ -241,7 +264,7 @@ namespace DataverseToPowerBI.Configurator.Forms
             // panelTableInfo
             this.panelTableInfo.Controls.Add(this.lblTableCount);
             this.panelTableInfo.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panelTableInfo.Location = new System.Drawing.Point(5, 490);
+            this.panelTableInfo.Location = new System.Drawing.Point(5, 310);
             this.panelTableInfo.Name = "panelTableInfo";
             this.panelTableInfo.Size = new System.Drawing.Size(580, 25);
             this.panelTableInfo.TabIndex = 1;
@@ -269,7 +292,7 @@ namespace DataverseToPowerBI.Configurator.Forms
             this.listViewSelectedTables.Location = new System.Drawing.Point(5, 21);
             this.listViewSelectedTables.MultiSelect = false;
             this.listViewSelectedTables.Name = "listViewSelectedTables";
-            this.listViewSelectedTables.Size = new System.Drawing.Size(580, 464);
+            this.listViewSelectedTables.Size = new System.Drawing.Size(580, 284);
             this.listViewSelectedTables.TabIndex = 0;
             this.listViewSelectedTables.UseCompatibleStateImageBehavior = false;
             this.listViewSelectedTables.View = System.Windows.Forms.View.Details;
@@ -301,6 +324,45 @@ namespace DataverseToPowerBI.Configurator.Forms
             // colAttrs
             this.colAttrs.Text = "Attrs";
             this.colAttrs.Width = 60;
+
+            // groupBoxRelationships
+            this.groupBoxRelationships.Controls.Add(this.listViewRelationships);
+            this.groupBoxRelationships.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupBoxRelationships.Location = new System.Drawing.Point(0, 0);
+            this.groupBoxRelationships.Name = "groupBoxRelationships";
+            this.groupBoxRelationships.Padding = new System.Windows.Forms.Padding(5);
+            this.groupBoxRelationships.Size = new System.Drawing.Size(590, 176);
+            this.groupBoxRelationships.TabIndex = 0;
+            this.groupBoxRelationships.TabStop = false;
+            this.groupBoxRelationships.Text = "Relationships";
+
+            // listViewRelationships
+            this.listViewRelationships.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+                this.colRelFrom,
+                this.colRelTo,
+                this.colRelType});
+            this.listViewRelationships.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listViewRelationships.FullRowSelect = true;
+            this.listViewRelationships.GridLines = true;
+            this.listViewRelationships.HideSelection = false;
+            this.listViewRelationships.Location = new System.Drawing.Point(5, 21);
+            this.listViewRelationships.Name = "listViewRelationships";
+            this.listViewRelationships.Size = new System.Drawing.Size(580, 150);
+            this.listViewRelationships.TabIndex = 0;
+            this.listViewRelationships.UseCompatibleStateImageBehavior = false;
+            this.listViewRelationships.View = System.Windows.Forms.View.Details;
+
+            // colRelFrom
+            this.colRelFrom.Text = "From";
+            this.colRelFrom.Width = 200;
+
+            // colRelTo
+            this.colRelTo.Text = "To";
+            this.colRelTo.Width = 200;
+
+            // colRelType
+            this.colRelType.Text = "Type";
+            this.colRelType.Width = 150;
 
             // groupBoxAttributes
             this.groupBoxAttributes.Controls.Add(this.listViewAttributes);
@@ -487,6 +549,7 @@ namespace DataverseToPowerBI.Configurator.Forms
             this.statusStrip.Location = new System.Drawing.Point(0, 628);
             this.statusStrip.Name = "statusStrip";
             this.statusStrip.Size = new System.Drawing.Size(1200, 22);
+            this.statusStrip.SizingGrip = true;
             this.statusStrip.TabIndex = 5;
 
             // progressBar
@@ -513,6 +576,7 @@ namespace DataverseToPowerBI.Configurator.Forms
             this.Text = "Dataverse Metadata Extractor for Power BI";
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
+            this.Resize += new System.EventHandler(this.MainForm_Resize);
 
             this.toolStripRibbon.ResumeLayout(false);
             this.toolStripRibbon.PerformLayout();
@@ -520,9 +584,14 @@ namespace DataverseToPowerBI.Configurator.Forms
             this.splitContainerMain.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainerMain)).EndInit();
             this.splitContainerMain.ResumeLayout(false);
+            this.splitContainerLeft.Panel1.ResumeLayout(false);
+            this.splitContainerLeft.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainerLeft)).EndInit();
+            this.splitContainerLeft.ResumeLayout(false);
             this.groupBoxSelectedTables.ResumeLayout(false);
             this.panelTableInfo.ResumeLayout(false);
             this.panelTableInfo.PerformLayout();
+            this.groupBoxRelationships.ResumeLayout(false);
             this.groupBoxAttributes.ResumeLayout(false);
             this.panelAttrFilter.ResumeLayout(false);
             this.panelAttrFilter.PerformLayout();
@@ -556,6 +625,7 @@ namespace DataverseToPowerBI.Configurator.Forms
         private System.Windows.Forms.TextBox txtProjectName;
         
         private System.Windows.Forms.SplitContainer splitContainerMain;
+        private System.Windows.Forms.SplitContainer splitContainerLeft;
         
         private System.Windows.Forms.GroupBox groupBoxSelectedTables;
         private System.Windows.Forms.ListView listViewSelectedTables;
@@ -567,6 +637,12 @@ namespace DataverseToPowerBI.Configurator.Forms
         private System.Windows.Forms.ColumnHeader colAttrs;
         private System.Windows.Forms.Panel panelTableInfo;
         private System.Windows.Forms.Label lblTableCount;
+        
+        private System.Windows.Forms.GroupBox groupBoxRelationships;
+        private System.Windows.Forms.ListView listViewRelationships;
+        private System.Windows.Forms.ColumnHeader colRelFrom;
+        private System.Windows.Forms.ColumnHeader colRelTo;
+        private System.Windows.Forms.ColumnHeader colRelType;
         
         private System.Windows.Forms.GroupBox groupBoxAttributes;
         private System.Windows.Forms.Panel panelAttrFilter;

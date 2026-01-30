@@ -64,8 +64,20 @@ namespace DataverseToPowerBI.Configurator.Forms
             
             try
             {
+                // Clean up orphaned cache files on startup
+                var orphansRemoved = _settingsManager.CleanupOrphanedCacheFiles();
+                if (orphansRemoved > 0)
+                {
+                    Services.DebugLogger.Log($"Removed {orphansRemoved} orphaned cache file(s)");
+                }
+
+                // Log diagnostics to help understand settings loading
+                var diagnostics = _settingsManager.GetSettingsDiagnostics();
+                Services.DebugLogger.LogSection("Settings Storage Diagnostics", diagnostics);
+
                 // Restore settings (strip https:// from URL for display)
                 var url = _settings.LastEnvironmentUrl ?? "";
+                Services.DebugLogger.Log($"Loading environment URL from settings: '{url}'");
                 if (url.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
                     url = url.Substring(8);
                 txtEnvironmentUrl.Text = url;
@@ -147,6 +159,22 @@ namespace DataverseToPowerBI.Configurator.Forms
                 // Log where debug log is saved
                 Services.DebugLogger.Log($"=== MainForm_Load Complete ===");
                 Services.DebugLogger.Log($"Debug log location: {Services.DebugLogger.GetLogPath()}");
+                
+                // Auto-connect and refresh metadata on launch if environment URL is configured
+                if (!string.IsNullOrEmpty(_settings.LastEnvironmentUrl))
+                {
+                    this.Invoke(new Action(async () =>
+                    {
+                        await Task.Delay(500); // Brief delay for UI to initialize
+                        await ConnectToEnvironmentAsync();
+                        
+                        // After connection, refresh metadata (skip confirmation prompt)
+                        if (_client != null)
+                        {
+                            await RefreshMetadataAsync(promptForConfirmation: false);
+                        }
+                    }));
+                }
             }
         }
 
@@ -329,7 +357,14 @@ namespace DataverseToPowerBI.Configurator.Forms
                 
                 // Add to UI with display name
                 var isFact = tableName == _factTable;
-                var roleText = isFact ? "⭐ Fact" : "Dim";
+                
+                // Check if this dimension is a snowflake (is the target of a snowflake relationship)
+                // A snowflake dimension is referenced BY another dimension (not referencing another dimension)
+                var isSnowflake = !isFact && _relationships.Any(r => 
+                    r.TargetTable == tableName && 
+                    r.IsSnowflake);
+                
+                var roleText = isFact ? "⭐ Fact" : (isSnowflake ? "Dim ❄️" : "Dim");
                 var formName = _settings.TableFormNames.ContainsKey(tableName)
                     ? _settings.TableFormNames[tableName]
                     : "(reconnect to load)";
@@ -355,6 +390,25 @@ namespace DataverseToPowerBI.Configurator.Forms
                 }
 
                 listViewSelectedTables.Items.Add(item);
+            }
+            
+            // Add Date Table if configured
+            if (_dateTableConfig != null && !string.IsNullOrEmpty(_dateTableConfig.PrimaryDateTable))
+            {
+                var yearRange = $"{_dateTableConfig.StartYear}-{_dateTableConfig.EndYear}";
+                var dateItem = new ListViewItem("📅");  // Calendar icon
+                dateItem.Name = "__DateTable";
+                dateItem.SubItems.Add("Dim");
+                dateItem.SubItems.Add("Date Table");
+                dateItem.SubItems.Add("");  // No form
+                dateItem.SubItems.Add(yearRange);  // Year range in Filter column
+                dateItem.SubItems.Add("365+");  // Approximate row count
+                dateItem.ForeColor = System.Drawing.Color.DarkGreen;
+                
+                // Insert after Fact table (position 1) if there is a fact, otherwise at position 0
+                var insertPosition = listViewSelectedTables.Items.Cast<ListViewItem>()
+                    .Any(i => i.SubItems[1].Text.StartsWith("⭐")) ? 1 : 0;
+                listViewSelectedTables.Items.Insert(insertPosition, dateItem);
             }
             
             // Auto-select first table and show its attributes
@@ -458,6 +512,25 @@ namespace DataverseToPowerBI.Configurator.Forms
             
             UpdateTableCount();
             
+            // Add Date Table if configured
+            if (_dateTableConfig != null && !string.IsNullOrEmpty(_dateTableConfig.PrimaryDateTable))
+            {
+                var yearRange = $"{_dateTableConfig.StartYear}-{_dateTableConfig.EndYear}";
+                var dateItem = new ListViewItem("📅");  // Calendar icon
+                dateItem.Name = "__DateTable";
+                dateItem.SubItems.Add("Dim");
+                dateItem.SubItems.Add("Date Table");
+                dateItem.SubItems.Add("");  // No form
+                dateItem.SubItems.Add(yearRange);  // Year range in Filter column
+                dateItem.SubItems.Add("365+");  // Approximate row count
+                dateItem.ForeColor = System.Drawing.Color.DarkGreen;
+                
+                // Insert after Fact table (position 1) if there is a fact, otherwise at position 0
+                var insertPosition = listViewSelectedTables.Items.Cast<ListViewItem>()
+                    .Any(i => i.SubItems[1].Text.StartsWith("⭐")) ? 1 : 0;
+                listViewSelectedTables.Items.Insert(insertPosition, dateItem);
+            }
+            
             // Auto-select first table and show its attributes
             if (listViewSelectedTables.Items.Count > 0)
             {
@@ -484,6 +557,36 @@ namespace DataverseToPowerBI.Configurator.Forms
             if (!string.IsNullOrEmpty(table.PrimaryNameAttribute))
                 required.Add(table.PrimaryNameAttribute);
             return required;
+        }
+
+        private void AddDateTableToDisplay()
+        {
+            // Remove existing Date Table entry if present (to avoid duplicates)
+            var existingDateItem = listViewSelectedTables.Items.Cast<ListViewItem>()
+                .FirstOrDefault(i => i.Name == "__DateTable");
+            if (existingDateItem != null)
+            {
+                listViewSelectedTables.Items.Remove(existingDateItem);
+            }
+
+            // Add Date Table if configured
+            if (_dateTableConfig != null && !string.IsNullOrEmpty(_dateTableConfig.PrimaryDateTable))
+            {
+                var yearRange = $"{_dateTableConfig.StartYear}-{_dateTableConfig.EndYear}";
+                var dateItem = new ListViewItem("📅");  // Calendar icon
+                dateItem.Name = "__DateTable";
+                dateItem.SubItems.Add("Dim");
+                dateItem.SubItems.Add("Date Table");
+                dateItem.SubItems.Add("");  // No form
+                dateItem.SubItems.Add(yearRange);  // Year range in Filter column
+                dateItem.SubItems.Add("365+");  // Approximate row count
+                dateItem.ForeColor = System.Drawing.Color.DarkGreen;
+                
+                // Insert after Fact table (position 1) if there is a fact, otherwise at position 0
+                var insertPosition = listViewSelectedTables.Items.Cast<ListViewItem>()
+                    .Any(i => i.SubItems[1].Text.StartsWith("⭐")) ? 1 : 0;
+                listViewSelectedTables.Items.Insert(insertPosition, dateItem);
+            }
         }
 
         private void EnableMetadataDependentControls(bool enabled)
@@ -782,6 +885,68 @@ namespace DataverseToPowerBI.Configurator.Forms
 
             // Enable Calendar Table button when tables are selected
             btnCalendarTable.Enabled = count > 0;
+            
+            // Update relationships display
+            UpdateRelationshipsDisplay();
+        }
+
+        private void UpdateRelationshipsDisplay()
+        {
+            listViewRelationships.Items.Clear();
+            
+            // Display relationship to date table first if configured
+            if (_dateTableConfig != null && !string.IsNullOrEmpty(_dateTableConfig.PrimaryDateTable))
+            {
+                var dateSourceTable = _selectedTables.ContainsKey(_dateTableConfig.PrimaryDateTable)
+                    ? _selectedTables[_dateTableConfig.PrimaryDateTable].DisplayName ?? _dateTableConfig.PrimaryDateTable
+                    : _dateTableConfig.PrimaryDateTable;
+                
+                var item = new ListViewItem($"{dateSourceTable}.{_dateTableConfig.PrimaryDateField}");
+                item.SubItems.Add("Date Table 📅");
+                item.SubItems.Add("Active (Date)");
+                item.ForeColor = System.Drawing.Color.DarkGreen;
+                
+                listViewRelationships.Items.Add(item);
+            }
+            
+            if (!_relationships.Any())
+            {
+                return;
+            }
+            
+            // Display regular relationships
+            foreach (var rel in _relationships.Where(r => !r.IsSnowflake))
+            {
+                var fromTable = _selectedTables.ContainsKey(rel.SourceTable) 
+                    ? _selectedTables[rel.SourceTable].DisplayName ?? rel.SourceTable 
+                    : rel.SourceTable;
+                var toTable = _selectedTables.ContainsKey(rel.TargetTable) 
+                    ? _selectedTables[rel.TargetTable].DisplayName ?? rel.TargetTable 
+                    : rel.TargetTable;
+                
+                var item = new ListViewItem($"{fromTable}.{rel.SourceAttribute}");
+                item.SubItems.Add(toTable);
+                item.SubItems.Add(rel.IsActive ? "Active" : "Inactive");
+                
+                listViewRelationships.Items.Add(item);
+            }
+            
+            // Display snowflake relationships
+            foreach (var rel in _relationships.Where(r => r.IsSnowflake))
+            {
+                var fromTable = _selectedTables.ContainsKey(rel.SourceTable) 
+                    ? _selectedTables[rel.SourceTable].DisplayName ?? rel.SourceTable 
+                    : rel.SourceTable;
+                var toTable = _selectedTables.ContainsKey(rel.TargetTable) 
+                    ? _selectedTables[rel.TargetTable].DisplayName ?? rel.TargetTable 
+                    : rel.TargetTable;
+                
+                var item = new ListViewItem($"{fromTable}.{rel.SourceAttribute}");
+                item.SubItems.Add($"{toTable} ❄️");
+                item.SubItems.Add(rel.IsActive ? "Snowflake (Active)" : "Snowflake (Inactive)");
+                
+                listViewRelationships.Items.Add(item);
+            }
         }
 
         private void SetStatus(string message)
@@ -919,7 +1084,7 @@ namespace DataverseToPowerBI.Configurator.Forms
                     _settingsManager.CreateNewConfiguration(modelName, newSettings);
                     
                     // Switch to the new configuration
-                    await SwitchToConfiguration(modelName);
+                    await SwitchToConfiguration(modelName, clearCredentials: true);
                     
                     SetStatus($"Created new semantic model: {modelName}");
                     
@@ -935,9 +1100,9 @@ namespace DataverseToPowerBI.Configurator.Forms
                     {
                         SetStatus($"Connecting to {envUrl}...");
                         
-                        // Connect and refresh (skip confirmation prompt)
+                        // Connect and refresh with forced re-authentication
                         // RefreshMetadataAsync will automatically open the table selector
-                        await RefreshMetadataAsync(promptForConfirmation: false);
+                        await RefreshMetadataAsync(promptForConfirmation: false, clearCredentials: true);
                         
                         // Check if connection failed
                         if (_client == null)
@@ -984,21 +1149,35 @@ namespace DataverseToPowerBI.Configurator.Forms
             {
                 var settingsFolder = _settingsManager.GetSettingsFolderPath();
                 
-                // Ensure the folder exists
-                if (!Directory.Exists(settingsFolder))
+                // Log diagnostics to debug log
+                var diagnostics = _settingsManager.GetSettingsDiagnostics();
+                Services.DebugLogger.LogSection("Settings Folder Opened", diagnostics);
+                
+                // Show diagnostics in a message box
+                var result = MessageBox.Show(
+                    $"{diagnostics}\n\nOpen settings folder in Windows Explorer?",
+                    "Settings Storage Information",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Information);
+                
+                if (result == DialogResult.Yes)
                 {
-                    Directory.CreateDirectory(settingsFolder);
+                    // Ensure the folder exists
+                    if (!Directory.Exists(settingsFolder))
+                    {
+                        Directory.CreateDirectory(settingsFolder);
+                    }
+                    
+                    // Open the folder in Windows Explorer
+                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                    {
+                        FileName = settingsFolder,
+                        UseShellExecute = true,
+                        Verb = "open"
+                    });
+                    
+                    SetStatus($"Opened settings folder: {settingsFolder}");
                 }
-                
-                // Open the folder in Windows Explorer
-                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
-                {
-                    FileName = settingsFolder,
-                    UseShellExecute = true,
-                    Verb = "open"
-                });
-                
-                SetStatus($"Opened settings folder: {settingsFolder}");
             }
             catch (Exception ex)
             {
@@ -1017,18 +1196,35 @@ namespace DataverseToPowerBI.Configurator.Forms
                 var url = dialog.EnvironmentUrl;
                 if (url.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
                     url = url.Substring(8);
+                
+                // Check if environment URL has changed
+                var urlChanged = !currentUrl.Equals(url, StringComparison.OrdinalIgnoreCase);
                     
                 txtEnvironmentUrl.Text = url;
                 SaveSettings();
                 
+                // If environment changed, clear cache and force re-authentication
+                if (urlChanged)
+                {
+                    // Clear the cache for the current configuration
+                    _cache = new MetadataCache();
+                    var currentConfig = _settingsManager.GetCurrentConfigurationName();
+                    _settingsManager.SaveCache(_cache, currentConfig);
+                    
+                    // Clear client to force re-authentication
+                    _client = null;
+                    lblConnectionStatus.Text = "Not Connected";
+                    lblConnectionStatus.ForeColor = System.Drawing.Color.Red;
+                }
+                
                 if (dialog.ShouldConnect)
                 {
-                    await ConnectToEnvironmentAsync();
+                    await ConnectToEnvironmentAsync(clearCredentials: urlChanged);
                 }
             }
         }
 
-        private async Task ConnectToEnvironmentAsync()
+        private async Task ConnectToEnvironmentAsync(bool clearCredentials = false)
         {
             var url = txtEnvironmentUrl.Text.Trim();
             if (string.IsNullOrWhiteSpace(url))
@@ -1059,7 +1255,7 @@ namespace DataverseToPowerBI.Configurator.Forms
 
                 if (result == DialogResult.Yes)
                 {
-                    await SwitchToConfiguration(mostRecentConfigForUrl);
+                    await SwitchToConfiguration(mostRecentConfigForUrl, clearCredentials: clearCredentials);
                     return;
                 }
             }
@@ -1069,11 +1265,11 @@ namespace DataverseToPowerBI.Configurator.Forms
                 btnChangeEnvironment.Enabled = false;
                 lblConnectionStatus.Text = "Connecting...";
                 lblConnectionStatus.ForeColor = System.Drawing.Color.Orange;
-                SetStatus("Authenticating to Dataverse...");
+                SetStatus(clearCredentials ? "Re-authenticating to Dataverse..." : "Authenticating to Dataverse...");
                 ShowProgress(true);
 
                 _client = new DataverseClient(connectionUrl);
-                await _client.AuthenticateAsync();
+                await _client.AuthenticateAsync(clearCredentials);
 
                 lblConnectionStatus.Text = "Connected";
                 lblConnectionStatus.ForeColor = System.Drawing.Color.Green;
@@ -1108,7 +1304,7 @@ namespace DataverseToPowerBI.Configurator.Forms
             await RefreshMetadataAsync(promptForConfirmation: true);
         }
 
-        private async Task RefreshMetadataAsync(bool promptForConfirmation = true)
+        private async Task RefreshMetadataAsync(bool promptForConfirmation = true, bool clearCredentials = false)
         {
             // If not connected, connect first
             if (_client == null)
@@ -1122,27 +1318,19 @@ namespace DataverseToPowerBI.Configurator.Forms
                 }
             }
 
-            // Only prompt for confirmation if requested (skip on first run)
+            // Show what we're doing (no confirmation needed)
             if (promptForConfirmation)
             {
-                var result = MessageBox.Show(
-                    "This will refresh metadata from Dataverse:\n\n" +
-                    "• Validate existing selections are still valid\n" +
-                    "• Add new fields from selected forms\n" +
-                    "• Update FetchXML for selected views\n" +
-                    "• Remove deleted tables/attributes/forms/views\n\n" +
-                    "Your current selections will be preserved. Continue?",
-                    "Refresh Metadata",
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Question);
-
-                if (result != DialogResult.Yes)
-                    return;
+                SetStatus("Refreshing Metadata...");
+                ShowProgress(true);
             }
 
             try
             {
-                ShowProgress(true);
+                if (!promptForConfirmation)
+                {
+                    ShowProgress(true);
+                }
                 SetStatus("Refreshing metadata from Dataverse...");
 
                 // Track changes
@@ -1299,61 +1487,7 @@ namespace DataverseToPowerBI.Configurator.Forms
                 var currentConfig = _settingsManager.GetCurrentConfigurationName();
                 _settingsManager.SaveCache(_cache, currentConfig);
 
-                // Build summary message
-                var summary = new System.Text.StringBuilder();
-                summary.AppendLine("Metadata refresh complete:");
-                summary.AppendLine();
-                
-                if (removedTables.Any())
-                {
-                    summary.AppendLine($"❌ Removed {removedTables.Count} deleted table(s):");
-                    foreach (var t in removedTables.Take(5))
-                        summary.AppendLine($"   • {t}");
-                    if (removedTables.Count > 5)
-                        summary.AppendLine($"   ... and {removedTables.Count - 5} more");
-                    summary.AppendLine();
-                }
-                
-                if (removedAttributes.Any())
-                {
-                    var totalRemoved = removedAttributes.Sum(kvp => kvp.Value.Count);
-                    summary.AppendLine($"❌ Removed {totalRemoved} deleted attribute(s) from {removedAttributes.Count} table(s)");
-                    summary.AppendLine();
-                }
-                
-                if (addedAttributes.Any())
-                {
-                    var totalAdded = addedAttributes.Sum(kvp => kvp.Value.Count);
-                    summary.AppendLine($"✅ Added {totalAdded} new attribute(s) from selected forms in {addedAttributes.Count} table(s)");
-                    summary.AppendLine();
-                }
-                
-                if (updatedViews.Any())
-                {
-                    summary.AppendLine($"🔄 Updated FetchXML for {updatedViews.Count} view(s)");
-                    summary.AppendLine();
-                }
-                
-                if (removedForms.Any())
-                {
-                    summary.AppendLine($"❌ Removed {removedForms.Sum(kvp => kvp.Value.Count)} deleted form(s)");
-                    summary.AppendLine();
-                }
-                
-                if (removedViews.Any())
-                {
-                    summary.AppendLine($"❌ Removed {removedViews.Sum(kvp => kvp.Value.Count)} deleted view(s)");
-                    summary.AppendLine();
-                }
-                
-                if (!removedTables.Any() && !removedAttributes.Any() && !addedAttributes.Any() && 
-                    !updatedViews.Any() && !removedForms.Any() && !removedViews.Any())
-                {
-                    summary.AppendLine("✅ No changes detected - all metadata is up to date.");
-                }
-
                 SetStatus("Metadata refresh complete.");
-                MessageBox.Show(summary.ToString(), "Refresh Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                 // Rebuild the display to reflect changes
                 RefreshTableListDisplay();
@@ -1471,6 +1605,9 @@ namespace DataverseToPowerBI.Configurator.Forms
             ShowProgress(false);
             SetStatus($"Loaded metadata for {tables.Count} tables.");
             SaveCache();
+            
+            // Add Date Table to display after loading metadata
+            AddDateTableToDisplay();
             
             // Enable metadata-dependent controls after successful load
             EnableMetadataDependentControls(true);
@@ -1682,7 +1819,14 @@ namespace DataverseToPowerBI.Configurator.Forms
         {
             var logicalName = table.LogicalName;
             var isFact = logicalName == _factTable;
-            var roleText = isFact ? "⭐ Fact" : "Dim";
+            
+            // Check if this dimension is a snowflake (is the target of a snowflake relationship)
+            // A snowflake dimension is referenced BY another dimension (not referencing another dimension)
+            var isSnowflake = !isFact && _relationships.Any(r => 
+                r.TargetTable == logicalName && 
+                r.IsSnowflake);
+            
+            var roleText = isFact ? "⭐ Fact" : (isSnowflake ? "Dim ❄️" : "Dim");
             var formText = loading ? "(loading...)" : GetFormDisplayText(logicalName);
             var viewText = loading ? "(loading...)" : GetViewDisplayText(logicalName);
             var attrCount = _selectedAttributes.ContainsKey(logicalName)
@@ -1716,7 +1860,14 @@ namespace DataverseToPowerBI.Configurator.Forms
             {
                 // Column indices: 0=Edit, 1=Role, 2=Table, 3=Form, 4=View, 5=Attrs
                 var isFact = logicalName == _factTable;
-                item.SubItems[1].Text = isFact ? "⭐ Fact" : "Dim";
+                
+                // Check if this dimension is a snowflake (is the target of a snowflake relationship)
+                // A snowflake dimension is referenced BY another dimension (not referencing another dimension)
+                var isSnowflake = !isFact && _relationships.Any(r => 
+                    r.TargetTable == logicalName && 
+                    r.IsSnowflake);
+                
+                item.SubItems[1].Text = isFact ? "⭐ Fact" : (isSnowflake ? "Dim ❄️" : "Dim");
                 item.SubItems[3].Text = GetFormDisplayText(logicalName);
                 item.SubItems[4].Text = GetViewDisplayText(logicalName);
                 item.SubItems[5].Text = _selectedAttributes.ContainsKey(logicalName)
@@ -1747,6 +1898,7 @@ namespace DataverseToPowerBI.Configurator.Forms
                 AddTableToSelectedList(kvp.Value, loading: false);
             }
             
+            AddDateTableToDisplay();
             UpdateTableCount();
         }
 
@@ -2239,7 +2391,7 @@ namespace DataverseToPowerBI.Configurator.Forms
             listViewAttributes.ItemChecked += ListViewAttributes_ItemChecked;
         }
 
-        private async Task SwitchToConfiguration(string configurationName)
+        private async Task SwitchToConfiguration(string configurationName, bool clearCredentials = false)
         {
             try
             {
@@ -2320,6 +2472,16 @@ namespace DataverseToPowerBI.Configurator.Forms
                     EnableMetadataDependentControls(false);
                     statusMsg = $"Loaded {_selectedTables.Count} tables from settings. Reconnect to refresh metadata.";
                 }
+                
+                // If environment changed and clearCredentials is true, reconnect with forced re-authentication
+                if (clearCredentials && !sameEnvironment && !string.IsNullOrEmpty(newEnvUrl))
+                {
+                    _client = null;
+                    lblConnectionStatus.Text = "Not Connected";
+                    lblConnectionStatus.ForeColor = System.Drawing.Color.Red;
+                    
+                    statusMsg = "Configuration switched. Reconnect to load metadata.";
+                }
                 else
                 {
                     // No cache and no settings, disable controls
@@ -2398,6 +2560,15 @@ namespace DataverseToPowerBI.Configurator.Forms
             SaveCache();
 
             Services.DebugLogger.Log($"Log saved to: {Services.DebugLogger.GetLogPath()}");
+        }
+
+        private void MainForm_Resize(object sender, EventArgs e)
+        {
+            // Save window size when user resizes
+            if (!_isLoading && this.WindowState == FormWindowState.Normal)
+            {
+                SaveSettings();
+            }
         }
 
         private void BtnCalendarTable_Click(object? sender, EventArgs e)

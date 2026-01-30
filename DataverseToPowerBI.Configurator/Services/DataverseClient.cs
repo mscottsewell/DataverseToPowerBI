@@ -29,7 +29,7 @@ namespace DataverseToPowerBI.Configurator.Services
             };
         }
 
-        public async Task<string> AuthenticateAsync()
+        public async Task<string> AuthenticateAsync(bool clearCredentials = false)
         {
             var resource = $"{_environmentUrl}/";
             var scopes = new[] { $"{resource}.default" };
@@ -39,6 +39,16 @@ namespace DataverseToPowerBI.Configurator.Services
                 .WithAuthority(Authority)
                 .WithRedirectUri("http://localhost")
                 .Build();
+
+            // Clear cached credentials if requested (force re-authentication)
+            if (clearCredentials)
+            {
+                var accounts = await app.GetAccountsAsync();
+                foreach (var account in accounts)
+                {
+                    await app.RemoveAsync(account);
+                }
+            }
 
             AuthenticationResult? result;
             try
