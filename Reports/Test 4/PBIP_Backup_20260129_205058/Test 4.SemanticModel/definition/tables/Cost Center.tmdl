@@ -1,0 +1,189 @@
+/// Source: tov2_costcenter
+table 'Cost Center'
+	lineageTag: ea507ab7-930d-424f-97d9-a9d667b9fac7
+
+	/// tov2_companycode
+	column tov2_companycode
+		dataType: string
+		isHidden
+		sourceProviderType: uniqueidentifier
+		lineageTag: 19d12988-b426-4850-8d52-6046ae34ee14
+		summarizeBy: none
+		sourceColumn: tov2_companycode
+
+		annotation SummarizationSetBy = Automatic
+
+	/// tov2_companycodename
+	column 'Company Code'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: e94a3444-5b88-488c-a247-208e16951b22
+		summarizeBy: none
+		sourceColumn: tov2_companycodename
+
+		annotation SummarizationSetBy = Automatic
+
+	/// tov2_costcenter
+	column 'Cost Center'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: 0e5b96fe-b80f-4020-a0d3-3b05b5d4db8b
+		isDefaultLabel
+		summarizeBy: none
+		sourceColumn: tov2_costcenter
+
+		annotation SummarizationSetBy = Automatic
+
+	/// tov2_costcenterid
+	column tov2_costcenterid
+		dataType: string
+		isHidden
+		isKey
+		sourceProviderType: uniqueidentifier
+		lineageTag: 90b82448-9fd1-4bab-915b-d6887e612c50
+		summarizeBy: none
+		sourceColumn: tov2_costcenterid
+
+		annotation SummarizationSetBy = Automatic
+
+	/// tov2_costcenterdescription
+	column 'Cost Center Desc'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: 71194b62-9e1c-4d4c-92ca-44e74699560f
+		summarizeBy: none
+		sourceColumn: tov2_costcenterdescription
+
+		annotation SummarizationSetBy = Automatic
+
+	/// tov2_hasheadcountname
+	column 'Has Headcount'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: e311d566-be26-4915-8067-49d90d5dc69c
+		summarizeBy: none
+		sourceColumn: tov2_hasheadcountname
+
+		annotation SummarizationSetBy = Automatic
+
+	/// tov2_latestheadcountdate
+	column 'Latest Headcount Date'
+		dataType: dateTime
+		formatString: Short Date
+		sourceProviderType: datetime2
+		lineageTag: 65c69014-b77e-4f42-b6ad-fad4f61e6f4c
+		summarizeBy: none
+		sourceColumn: tov2_latestheadcountdate
+
+		changedProperty = DataType
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	/// ownerid
+	column ownerid
+		dataType: string
+		isHidden
+		sourceProviderType: uniqueidentifier
+		lineageTag: 55cef51f-cf14-4b9b-8e71-5a35ef4886dc
+		summarizeBy: none
+		sourceColumn: ownerid
+
+		annotation SummarizationSetBy = Automatic
+
+	/// owneridname
+	column Owner
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: cb2fc30c-2933-4bfd-a28e-04345ed27132
+		summarizeBy: none
+		sourceColumn: owneridname
+
+		annotation SummarizationSetBy = Automatic
+
+	/// owningbusinessunit
+	column owningbusinessunit
+		dataType: string
+		isHidden
+		sourceProviderType: uniqueidentifier
+		lineageTag: 4bd897a2-2a19-4590-bac9-2ee70dfd46eb
+		summarizeBy: none
+		sourceColumn: owningbusinessunit
+
+		annotation SummarizationSetBy = Automatic
+
+	/// owningbusinessunitname
+	column 'Owning Business Unit'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: 22a17571-acb9-466f-b6f6-42a534ed3d65
+		summarizeBy: none
+		sourceColumn: owningbusinessunitname
+
+		annotation SummarizationSetBy = Automatic
+
+	/// tov2_profit_center
+	column 'Profit Center'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: 79bf68c2-6dcf-4941-9e54-9db581ba3a76
+		summarizeBy: none
+		sourceColumn: tov2_profit_center
+
+		annotation SummarizationSetBy = Automatic
+
+	/// tov2_profitcenterdescription
+	column 'Profit Center Description'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: f90ba2d2-7faa-4b81-833e-3728158cfd28
+		summarizeBy: none
+		sourceColumn: tov2_profitcenterdescription
+
+		annotation SummarizationSetBy = Automatic
+
+	/// tov2_secfunctionalarea
+	column 'SEC Functional Area'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: 3ecaa261-0857-466c-a67e-a0a13d7693a1
+		summarizeBy: none
+		sourceColumn: tov2_secfunctionalarea
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Cost Center' = m
+		mode: directQuery
+		source =
+				let
+				    Dataverse = CommonDataService.Database(DataverseURL,[CreateNavigationProperties=false]),
+				    Source = Value.NativeQuery(Dataverse,"
+				
+				    -- View Filter: Active Cost Centers
+				
+				    SELECT Base.tov2_companycode
+				        ,Base.tov2_companycodename
+				        ,Base.tov2_costcenter
+				        ,Base.tov2_costcenterid
+				        ,Base.tov2_costcenterdescription
+				        ,Base.tov2_hasheadcountname
+				        ,Base.tov2_latestheadcountdate
+				        ,Base.ownerid
+				        ,Base.owneridname
+				        ,Base.owningbusinessunit
+				        ,Base.owningbusinessunitname
+				        ,Base.tov2_profit_center
+				        ,Base.tov2_profitcenterdescription
+				        ,Base.tov2_secfunctionalarea
+				    FROM tov2_CostCenter as Base
+				    WHERE (Base.statecode = 0)
+				
+				    " ,null ,[EnableFolding=true])
+				in
+				    Source
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

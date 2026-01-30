@@ -12,5 +12,7 @@ annotation PBI_QueryOrder = ["DataverseURL"]
 
 annotation PBI_ProTooling = ["DevMode"]
 
+ref table DataverseURL
+
 ref cultureInfo en-US
 

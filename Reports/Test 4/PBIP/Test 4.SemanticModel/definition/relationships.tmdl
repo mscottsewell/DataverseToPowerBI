@@ -1,0 +1,33 @@
+relationship 771e2984-79b4-465a-b229-59803db9ae9d
+	relyOnReferentialIntegrity
+	fromColumn: Allocation.cai_allocationperiodid
+	toColumn: 'Allocation Period'.cai_allocationperiodid
+
+relationship b668e4ff-959a-4568-88fc-b6a58f1cd187
+	fromColumn: Allocation.tov2_positionid
+	toColumn: Position.tov2_positionid
+
+relationship 429a609d-7893-4f16-89ae-90100a2e74bc
+	relyOnReferentialIntegrity
+	fromColumn: Allocation.cai_resourceid
+	toColumn: Resource.cai_resourceid
+
+relationship 0b801d9c-4a9d-490b-a325-b41f57907b88
+	relyOnReferentialIntegrity
+	fromColumn: Allocation.cai_serviceorinitiativeid
+	toColumn: 'Service or Initiative'.cai_serviceorinitiativeid
+
+relationship d4f317de-4d45-4fb9-a304-46a283638f7f
+	relyOnReferentialIntegrity
+	fromColumn: Position.tov2_companycode
+	toColumn: Company.tov2_companyid
+
+relationship 02575cd7-b2de-44b9-99c5-7b02c71985a1
+	relyOnReferentialIntegrity
+	fromColumn: Position.tov2_costcenter
+	toColumn: 'Cost Center'.tov2_costcenterid
+
+relationship b870d14a-61de-4426-b4d1-bb18611fde9a
+	fromColumn: 'Allocation Period'.'Allocation Period Start'
+	toColumn: Date.Date
+

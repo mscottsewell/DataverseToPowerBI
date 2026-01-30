@@ -1126,8 +1126,12 @@ namespace DataverseToPowerBI.Configurator.Forms
             if (promptForConfirmation)
             {
                 var result = MessageBox.Show(
-                    "This will clear all cached metadata and allow you to re-select fact and dimension tables with fresh data from Dataverse.\n\n" +
-                    "Any unsaved changes will be lost. Continue?",
+                    "This will refresh metadata from Dataverse:\n\n" +
+                    "• Validate existing selections are still valid\n" +
+                    "• Add new fields from selected forms\n" +
+                    "• Update FetchXML for selected views\n" +
+                    "• Remove deleted tables/attributes/forms/views\n\n" +
+                    "Your current selections will be preserved. Continue?",
                     "Refresh Metadata",
                     MessageBoxButtons.YesNo,
                     MessageBoxIcon.Question);
@@ -1138,28 +1142,231 @@ namespace DataverseToPowerBI.Configurator.Forms
 
             try
             {
-                SetStatus("Clearing cached metadata...");
+                ShowProgress(true);
+                SetStatus("Refreshing metadata from Dataverse...");
 
-                // Clear all cached metadata to force fresh retrieval
-                _tableForms.Clear();
-                _tableViews.Clear();
-                _tableAttributes.Clear();
-                _cache = new MetadataCache();
-                
-                // Clear cache file
+                // Track changes
+                var removedTables = new List<string>();
+                var removedAttributes = new Dictionary<string, List<string>>();
+                var addedAttributes = new Dictionary<string, List<string>>();
+                var updatedViews = new List<string>();
+                var removedForms = new Dictionary<string, List<string>>();
+                var removedViews = new Dictionary<string, List<string>>();
+
+                // Step 1: Validate tables still exist in solution
+                if (_selectedTables.Any() && !string.IsNullOrEmpty(_currentSolutionName))
+                {
+                    SetStatus("Validating tables...");
+                    
+                    // Get the solution ID from the solution name
+                    var solutions = await _client.GetSolutionsAsync();
+                    var currentSolution = solutions.FirstOrDefault(s => s.UniqueName == _currentSolutionName);
+                    
+                    if (currentSolution == null)
+                    {
+                        MessageBox.Show($"Solution '{_currentSolutionName}' not found. Metadata refresh cancelled.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                    
+                    var allTables = await _client.GetSolutionTablesAsync(currentSolution.SolutionId);
+                    var validTableNames = allTables.Select(t => t.LogicalName).ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+                foreach (var tableName in _selectedTables.Keys.ToList())
+                {
+                    if (!validTableNames.Contains(tableName))
+                    {
+                        removedTables.Add(tableName);
+                        _selectedTables.Remove(tableName);
+                        _tableAttributes.Remove(tableName);
+                        _selectedAttributes.Remove(tableName);
+                        _tableForms.Remove(tableName);
+                        _tableViews.Remove(tableName);
+                    }
+                }
+            }
+
+            // Step 2: For each remaining table, refresh metadata
+            foreach (var tableName in _selectedTables.Keys.ToList())
+            {
+                SetStatus($"Refreshing metadata for {tableName}...");
+
+                    // Refresh attributes
+                    var currentAttrs = await _client.GetAttributesAsync(tableName);
+                    var oldAttrs = _tableAttributes.ContainsKey(tableName) ? _tableAttributes[tableName] : new List<AttributeMetadata>();
+                    _tableAttributes[tableName] = currentAttrs;
+
+                    // Check for removed attributes
+                    var currentAttrNames = currentAttrs.Select(a => a.LogicalName).ToHashSet(StringComparer.OrdinalIgnoreCase);
+                    if (_selectedAttributes.ContainsKey(tableName))
+                    {
+                        var invalidAttrs = _selectedAttributes[tableName].Where(a => !currentAttrNames.Contains(a)).ToList();
+                        if (invalidAttrs.Any())
+                        {
+                            if (!removedAttributes.ContainsKey(tableName))
+                                removedAttributes[tableName] = new List<string>();
+                            removedAttributes[tableName].AddRange(invalidAttrs);
+                            
+                            foreach (var attr in invalidAttrs)
+                            {
+                                _selectedAttributes[tableName].Remove(attr);
+                            }
+                        }
+                    }
+
+                    // Refresh forms and add new fields from selected form
+                    if (_settings.TableForms.ContainsKey(tableName))
+                    {
+                        var forms = await _client.GetFormsAsync(tableName, includeXml: false);
+                        var selectedFormId = _settings.TableForms[tableName];
+                        
+                        if (forms.Any(f => f.FormId == selectedFormId))
+                        {
+                            // Form still exists - get updated field list
+                            var formXml = await _client.GetFormXmlAsync(selectedFormId);
+                            if (!string.IsNullOrEmpty(formXml))
+                            {
+                                var formFields = DataverseClient.ExtractFieldsFromFormXml(formXml);
+                                
+                                // Add new fields from form that aren't already selected
+                                if (_selectedAttributes.ContainsKey(tableName))
+                                {
+                                    var newFieldsFromForm = formFields.Where(f => 
+                                        currentAttrNames.Contains(f) && 
+                                        !_selectedAttributes[tableName].Contains(f, StringComparer.OrdinalIgnoreCase)).ToList();
+                                    
+                                    if (newFieldsFromForm.Any())
+                                    {
+                                        if (!addedAttributes.ContainsKey(tableName))
+                                            addedAttributes[tableName] = new List<string>();
+                                        addedAttributes[tableName].AddRange(newFieldsFromForm);
+                                        
+                                        foreach (var field in newFieldsFromForm)
+                                        {
+                                            _selectedAttributes[tableName].Add(field);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            // Form was deleted - remove it
+                            if (!removedForms.ContainsKey(tableName))
+                                removedForms[tableName] = new List<string>();
+                            removedForms[tableName].Add(selectedFormId);
+                            _settings.TableForms.Remove(tableName);
+                            _settings.TableFormNames.Remove(tableName);
+                            _tableForms.Remove(tableName);
+                        }
+                    }
+
+                    // Refresh views and update FetchXML
+                    if (_settings.TableViews.ContainsKey(tableName))
+                    {
+                        var views = await _client.GetViewsAsync(tableName, includeFetchXml: false);
+                        var selectedViewId = _settings.TableViews[tableName];
+                        
+                        if (views.Any(v => v.ViewId == selectedViewId))
+                        {
+                            // View still exists - get updated FetchXML
+                            var fetchXml = await _client.GetViewFetchXmlAsync(selectedViewId);
+                            
+                            // Update cache with new FetchXML
+                            if (_cache.TableViews.ContainsKey(tableName))
+                            {
+                                var cachedView = _cache.TableViews[tableName].FirstOrDefault(v => v.ViewId == selectedViewId);
+                                if (cachedView != null)
+                                {
+                                    cachedView.FetchXml = fetchXml;
+                                    updatedViews.Add($"{tableName}: {cachedView.Name}");
+                                }
+                            }
+                        }
+                        else
+                        {
+                            // View was deleted - remove it
+                            if (!removedViews.ContainsKey(tableName))
+                                removedViews[tableName] = new List<string>();
+                            removedViews[tableName].Add(selectedViewId);
+                            _settings.TableViews.Remove(tableName);
+                            _settings.TableViewNames.Remove(tableName);
+                            _tableViews.Remove(tableName);
+                        }
+                    }
+                }
+
+                // Save updated cache
                 var currentConfig = _settingsManager.GetCurrentConfigurationName();
                 _settingsManager.SaveCache(_cache, currentConfig);
 
-                SetStatus("Metadata cache cleared. Opening fact & dimension selector...");
+                // Build summary message
+                var summary = new System.Text.StringBuilder();
+                summary.AppendLine("Metadata refresh complete:");
+                summary.AppendLine();
+                
+                if (removedTables.Any())
+                {
+                    summary.AppendLine($"❌ Removed {removedTables.Count} deleted table(s):");
+                    foreach (var t in removedTables.Take(5))
+                        summary.AppendLine($"   • {t}");
+                    if (removedTables.Count > 5)
+                        summary.AppendLine($"   ... and {removedTables.Count - 5} more");
+                    summary.AppendLine();
+                }
+                
+                if (removedAttributes.Any())
+                {
+                    var totalRemoved = removedAttributes.Sum(kvp => kvp.Value.Count);
+                    summary.AppendLine($"❌ Removed {totalRemoved} deleted attribute(s) from {removedAttributes.Count} table(s)");
+                    summary.AppendLine();
+                }
+                
+                if (addedAttributes.Any())
+                {
+                    var totalAdded = addedAttributes.Sum(kvp => kvp.Value.Count);
+                    summary.AppendLine($"✅ Added {totalAdded} new attribute(s) from selected forms in {addedAttributes.Count} table(s)");
+                    summary.AppendLine();
+                }
+                
+                if (updatedViews.Any())
+                {
+                    summary.AppendLine($"🔄 Updated FetchXML for {updatedViews.Count} view(s)");
+                    summary.AppendLine();
+                }
+                
+                if (removedForms.Any())
+                {
+                    summary.AppendLine($"❌ Removed {removedForms.Sum(kvp => kvp.Value.Count)} deleted form(s)");
+                    summary.AppendLine();
+                }
+                
+                if (removedViews.Any())
+                {
+                    summary.AppendLine($"❌ Removed {removedViews.Sum(kvp => kvp.Value.Count)} deleted view(s)");
+                    summary.AppendLine();
+                }
+                
+                if (!removedTables.Any() && !removedAttributes.Any() && !addedAttributes.Any() && 
+                    !updatedViews.Any() && !removedForms.Any() && !removedViews.Any())
+                {
+                    summary.AppendLine("✅ No changes detected - all metadata is up to date.");
+                }
 
-                // Re-open the fact/dimension selector to allow fresh selection
-                BtnSelectTables_Click(null, EventArgs.Empty);
+                SetStatus("Metadata refresh complete.");
+                MessageBox.Show(summary.ToString(), "Refresh Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                // Rebuild the display to reflect changes
+                RefreshTableListDisplay();
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Failed to refresh metadata:\n{ex.Message}", "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 SetStatus("Metadata refresh failed.");
+            }
+            finally
+            {
+                ShowProgress(false);
             }
         }
 
@@ -1528,6 +1735,19 @@ namespace DataverseToPowerBI.Configurator.Forms
                     item.Font = listViewSelectedTables.Font;
                 }
             }
+        }
+
+        private void RefreshTableListDisplay()
+        {
+            // Clear and rebuild the table list
+            listViewSelectedTables.Items.Clear();
+            
+            foreach (var kvp in _selectedTables)
+            {
+                AddTableToSelectedList(kvp.Value, loading: false);
+            }
+            
+            UpdateTableCount();
         }
 
         private string GetFormDisplayText(string logicalName)
@@ -2320,7 +2540,8 @@ namespace DataverseToPowerBI.Configurator.Forms
                     TargetTable = r.TargetTable,
                     DisplayName = r.DisplayName,
                     IsActive = r.IsActive,
-                    IsSnowflake = r.IsSnowflake
+                    IsSnowflake = r.IsSnowflake,
+                    AssumeReferentialIntegrity = r.AssumeReferentialIntegrity
                 }).ToList();
 
                 // Don't add https:// - TMDL format stores URLs without protocol prefix

@@ -1,0 +1,129 @@
+/// Source: tov2_company
+table Company
+	lineageTag: 059fb71f-647a-47f8-bb85-f0e29f90c6cc
+
+	/// tov2_companyid
+	column tov2_companyid
+		dataType: string
+		sourceProviderType: uniqueidentifier
+		isHidden
+		isKey
+		lineageTag: 062c27ef-bf4f-4567-a0a2-d46fa222cdb9
+		summarizeBy: none
+		sourceColumn: tov2_companyid
+
+		annotation SummarizationSetBy = Automatic
+
+	/// tov2_companycode
+	column 'Company Code'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: 6d95ac96-f3d6-44b4-bb07-1d295f161c65
+		isDefaultLabel
+		summarizeBy: none
+		sourceColumn: tov2_companycode
+
+		annotation SummarizationSetBy = Automatic
+
+	/// tov2_companyname
+	column 'Company Name'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: a55a84dc-3c69-4e34-894b-2ac7eee3b5cc
+		summarizeBy: none
+		sourceColumn: tov2_companyname
+
+		annotation SummarizationSetBy = Automatic
+
+	/// tov2_geography
+	column tov2_geography
+		dataType: string
+		sourceProviderType: uniqueidentifier
+		isHidden
+		lineageTag: ea30ac8d-a1f4-4fcf-8432-24667101e977
+		summarizeBy: none
+		sourceColumn: tov2_geography
+
+		annotation SummarizationSetBy = Automatic
+
+	/// tov2_geographyname
+	column Geography
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: 4d382120-8eb4-47a9-8e31-e076a92aa180
+		summarizeBy: none
+		sourceColumn: tov2_geographyname
+
+		annotation SummarizationSetBy = Automatic
+
+	/// ownerid
+	column ownerid
+		dataType: string
+		sourceProviderType: uniqueidentifier
+		isHidden
+		lineageTag: de1f583e-473d-4d8c-9fb9-4e395e08b5a6
+		summarizeBy: none
+		sourceColumn: ownerid
+
+		annotation SummarizationSetBy = Automatic
+
+	/// owneridname
+	column Owner
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: bcd99bf9-1909-411f-bf94-62aa9f5321de
+		summarizeBy: none
+		sourceColumn: owneridname
+
+		annotation SummarizationSetBy = Automatic
+
+	/// owningbusinessunit
+	column owningbusinessunit
+		dataType: string
+		sourceProviderType: uniqueidentifier
+		isHidden
+		lineageTag: dbc62a2a-634c-4c3e-b77b-b77d665854d0
+		summarizeBy: none
+		sourceColumn: owningbusinessunit
+
+		annotation SummarizationSetBy = Automatic
+
+	/// owningbusinessunitname
+	column 'Owning Business Unit'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: 71a042e0-95d6-4690-84ea-88c0434dfd16
+		summarizeBy: none
+		sourceColumn: owningbusinessunitname
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Company = m
+		mode: directQuery
+		source =
+				let
+				    Dataverse = CommonDataService.Database(DataverseURL,[CreateNavigationProperties=false]),
+				    Source = Value.NativeQuery(Dataverse,"
+				
+				    -- View Filter: Active Companies
+				
+				    SELECT Base.tov2_companyid
+				        ,Base.tov2_companycode
+				        ,Base.tov2_companyname
+				        ,Base.tov2_geography
+				        ,Base.tov2_geographyname
+				        ,Base.ownerid
+				        ,Base.owneridname
+				        ,Base.owningbusinessunit
+				        ,Base.owningbusinessunitname
+				    FROM tov2_Company as Base
+				    WHERE (Base.statecode = 0)
+				
+				    " ,null ,[EnableFolding=true])
+				in
+				    Source
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,284 @@
+/// Source: cai_serviceorinitiative
+table 'Service or Initiative'
+	lineageTag: e880793b-4d2e-4f4e-830a-95c6db848dce
+
+	/// cai_description
+	column Description
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: c53c61ae-a1b1-4b4e-99af-9cd0fe50b80f
+		summarizeBy: none
+		sourceColumn: cai_description
+
+		annotation SummarizationSetBy = Automatic
+
+	/// cai_docslink
+	column 'Docs Link'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: 9bdcb04f-41b1-48d9-a176-b04ba0947e4d
+		summarizeBy: none
+		sourceColumn: cai_docslink
+
+		annotation SummarizationSetBy = Automatic
+
+	/// cai_feedbacklink
+	column 'Feedback Link'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: 17720d53-5dcd-4694-9e14-3fad1b7441a7
+		summarizeBy: none
+		sourceColumn: cai_feedbacklink
+
+		annotation SummarizationSetBy = Automatic
+
+	/// cai_level
+	column 'Hierarchy Level'
+		dataType: int64
+		formatString: 0
+		sourceProviderType: int
+		lineageTag: 22c6c30d-4767-4826-b60b-88888ed6008a
+		summarizeBy: sum
+		sourceColumn: cai_level
+
+		annotation SummarizationSetBy = Automatic
+
+	/// cai_level_1
+	column 'Hierarchy Level 1'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: d6183e37-1144-49f9-a007-b9d30457e6a8
+		summarizeBy: none
+		sourceColumn: cai_level_1
+
+		annotation SummarizationSetBy = Automatic
+
+	/// cai_level_2
+	column 'Hierarchy Level 2'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: c39dd071-e487-477c-bf3d-e0f7b068411a
+		summarizeBy: none
+		sourceColumn: cai_level_2
+
+		annotation SummarizationSetBy = Automatic
+
+	/// cai_level_3
+	column 'Hierarchy Level 3'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: 3f505523-80a3-4d29-b6a1-8d1bede03cca
+		summarizeBy: none
+		sourceColumn: cai_level_3
+
+		annotation SummarizationSetBy = Automatic
+
+	/// cai_level_4
+	column 'Hierarchy Level 4'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: b8ae85bf-a009-4ecd-b215-da12564fa125
+		summarizeBy: none
+		sourceColumn: cai_level_4
+
+		annotation SummarizationSetBy = Automatic
+
+	/// cai_level_5
+	column 'Hierarchy Level 5'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: 21d88c86-bf3a-4f08-a736-49d0b0f0c955
+		summarizeBy: none
+		sourceColumn: cai_level_5
+
+		annotation SummarizationSetBy = Automatic
+
+	/// cai_level_6
+	column 'Hierarchy Level 6'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: 8a1bb6fa-71a7-4bcf-9432-69a5453ce684
+		summarizeBy: none
+		sourceColumn: cai_level_6
+
+		annotation SummarizationSetBy = Automatic
+
+	/// cai_level_7
+	column 'Hierarchy Level 7'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: 4d262a28-8b6b-4e96-9fae-533032bf733f
+		summarizeBy: none
+		sourceColumn: cai_level_7
+
+		annotation SummarizationSetBy = Automatic
+
+	/// cai_level_8
+	column 'Hierarchy Level 8'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: 16a974a7-a5c0-4e2b-8d3d-068ffc6ea69a
+		summarizeBy: none
+		sourceColumn: cai_level_8
+
+		annotation SummarizationSetBy = Automatic
+
+	/// cai_level_9
+	column 'Hierarchy Level 9'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: 54df5e8d-59cb-4d7b-bfdf-86fcc96c66b1
+		summarizeBy: none
+		sourceColumn: cai_level_9
+
+		annotation SummarizationSetBy = Automatic
+
+	/// cai_hierarchypath
+	column 'Hierarchy Path'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: 68831059-ab94-40df-8bae-969da6c35938
+		summarizeBy: none
+		sourceColumn: cai_hierarchypath
+
+		annotation SummarizationSetBy = Automatic
+
+	/// cai_name
+	column Name
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: 408642c9-bf48-44f2-a834-a3d109d2793d
+		isDefaultLabel
+		summarizeBy: none
+		sourceColumn: cai_name
+
+		annotation SummarizationSetBy = Automatic
+
+	/// ownerid
+	column ownerid
+		dataType: string
+		sourceProviderType: uniqueidentifier
+		isHidden
+		lineageTag: 10820e87-6f52-4543-b23f-49a24c257349
+		summarizeBy: none
+		sourceColumn: ownerid
+
+		annotation SummarizationSetBy = Automatic
+
+	/// owneridname
+	column Owner\DRI
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: 7b96eaa1-0562-427e-93da-454607e5cd75
+		summarizeBy: none
+		sourceColumn: owneridname
+
+		annotation SummarizationSetBy = Automatic
+
+	/// cai_area
+	column cai_area
+		dataType: string
+		sourceProviderType: uniqueidentifier
+		isHidden
+		lineageTag: c1e7b7c7-c030-455c-b898-69ee34d65a1e
+		summarizeBy: none
+		sourceColumn: cai_area
+
+		annotation SummarizationSetBy = Automatic
+
+	/// cai_areaname
+	column 'Parent Area'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: ac461a9a-392e-462e-b31f-90b067d0b2f2
+		summarizeBy: none
+		sourceColumn: cai_areaname
+
+		annotation SummarizationSetBy = Automatic
+
+	/// cai_parentserviceorinitiativeid
+	column cai_parentserviceorinitiativeid
+		dataType: string
+		sourceProviderType: uniqueidentifier
+		isHidden
+		lineageTag: d1271105-0639-4138-8cd2-03736d2a0fd4
+		summarizeBy: none
+		sourceColumn: cai_parentserviceorinitiativeid
+
+		annotation SummarizationSetBy = Automatic
+
+	/// cai_parentserviceorinitiativeidname
+	column 'Parent Service or Initiative'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: 5b58e808-4771-4034-959e-043427fca8fb
+		summarizeBy: none
+		sourceColumn: cai_parentserviceorinitiativeidname
+
+		annotation SummarizationSetBy = Automatic
+
+	/// cai_repolink
+	column 'Repo Link'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: c233671f-bfdc-444d-91bd-342bc59cb0ab
+		summarizeBy: none
+		sourceColumn: cai_repolink
+
+		annotation SummarizationSetBy = Automatic
+
+	/// cai_serviceorinitiativeid
+	column cai_serviceorinitiativeid
+		dataType: string
+		sourceProviderType: uniqueidentifier
+		isHidden
+		isKey
+		lineageTag: 9db90057-9ede-42c2-817c-e52d282d8d7b
+		summarizeBy: none
+		sourceColumn: cai_serviceorinitiativeid
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Service or Initiative' = m
+		mode: directQuery
+		source =
+				let
+				    Dataverse = CommonDataService.Database(DataverseURL,[CreateNavigationProperties=false]),
+				    Source = Value.NativeQuery(Dataverse,"
+				
+				    -- View Filter: Active Services & Initiatives
+				
+				    SELECT Base.cai_description
+				        ,Base.cai_docslink
+				        ,Base.cai_feedbacklink
+				        ,Base.cai_level
+				        ,Base.cai_level_1
+				        ,Base.cai_level_2
+				        ,Base.cai_level_3
+				        ,Base.cai_level_4
+				        ,Base.cai_level_5
+				        ,Base.cai_level_6
+				        ,Base.cai_level_7
+				        ,Base.cai_level_8
+				        ,Base.cai_level_9
+				        ,Base.cai_hierarchypath
+				        ,Base.cai_name
+				        ,Base.ownerid
+				        ,Base.owneridname
+				        ,Base.cai_area
+				        ,Base.cai_areaname
+				        ,Base.cai_parentserviceorinitiativeid
+				        ,Base.cai_parentserviceorinitiativeidname
+				        ,Base.cai_repolink
+				        ,Base.cai_serviceorinitiativeid
+				    FROM cai_ServiceorInitiative as Base
+				    WHERE (Base.statecode = 0)
+				
+				    " ,null ,[EnableFolding=true])
+				in
+				    Source
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

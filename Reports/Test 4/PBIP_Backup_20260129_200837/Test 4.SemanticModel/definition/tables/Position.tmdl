@@ -1,0 +1,383 @@
+/// Source: tov2_position
+table Position
+	lineageTag: 0e7101a3-e15c-4d4f-b568-9cee9d1d1c7b
+
+	/// tov2_alias
+	column Alias
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: 396c8e36-10e3-4b69-b734-63ef531add46
+		summarizeBy: none
+		sourceColumn: tov2_alias
+
+		annotation SummarizationSetBy = Automatic
+
+	/// tov2_city
+	column City
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: 6a7d214e-7b7a-448c-9569-630dfddf2c4c
+		summarizeBy: none
+		sourceColumn: tov2_city
+
+		annotation SummarizationSetBy = Automatic
+
+	/// tov2_companycode
+	column tov2_companycode
+		dataType: string
+		sourceProviderType: uniqueidentifier
+		isHidden
+		lineageTag: b2424b2f-a1e7-4f13-a509-2f97a348ab8d
+		summarizeBy: none
+		sourceColumn: tov2_companycode
+
+		annotation SummarizationSetBy = Automatic
+
+	/// tov2_companycodename
+	column 'Company Code'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: dbb11592-b583-40f9-ae07-3350c1dbd16b
+		summarizeBy: none
+		sourceColumn: tov2_companycodename
+
+		annotation SummarizationSetBy = Automatic
+
+	/// tov2_costcenter
+	column tov2_costcenter
+		dataType: string
+		sourceProviderType: uniqueidentifier
+		isHidden
+		lineageTag: 3e2e3f74-7bf8-43d7-92ee-6fbbd129a22e
+		summarizeBy: none
+		sourceColumn: tov2_costcenter
+
+		annotation SummarizationSetBy = Automatic
+
+	/// tov2_costcentername
+	column 'Cost Center'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: 84c7b74b-d145-4900-8cd4-3543a6b80f4d
+		summarizeBy: none
+		sourceColumn: tov2_costcentername
+
+		annotation SummarizationSetBy = Automatic
+
+	/// tov2_employee_name
+	column 'Employee Name'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: cc10455a-4391-4715-b3ab-7ea12f8d8eff
+		summarizeBy: none
+		sourceColumn: tov2_employee_name
+
+		annotation SummarizationSetBy = Automatic
+
+	/// tov2_location
+	column Location
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: 47be9ca4-4a23-40d2-a720-ef057e0fd048
+		summarizeBy: none
+		sourceColumn: tov2_location
+
+		annotation SummarizationSetBy = Automatic
+
+	/// ownerid
+	column ownerid
+		dataType: string
+		sourceProviderType: uniqueidentifier
+		isHidden
+		lineageTag: 7359925f-af7f-4ba6-9c30-bb6f59561258
+		summarizeBy: none
+		sourceColumn: ownerid
+
+		annotation SummarizationSetBy = Automatic
+
+	/// owneridname
+	column Owner
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: b2e1a846-4548-45cb-9637-3c5f70144ebf
+		summarizeBy: none
+		sourceColumn: owneridname
+
+		annotation SummarizationSetBy = Automatic
+
+	/// owningbusinessunit
+	column owningbusinessunit
+		dataType: string
+		sourceProviderType: uniqueidentifier
+		isHidden
+		lineageTag: dd27282a-6298-4df8-927b-0d6caaaef913
+		summarizeBy: none
+		sourceColumn: owningbusinessunit
+
+		annotation SummarizationSetBy = Automatic
+
+	/// owningbusinessunitname
+	column 'Owning Business Unit'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: 9ee52271-ae41-4ffd-a217-0d67a1b1f3c4
+		summarizeBy: none
+		sourceColumn: owningbusinessunitname
+
+		annotation SummarizationSetBy = Automatic
+
+	/// tov2_positionid
+	column tov2_positionid
+		dataType: string
+		sourceProviderType: uniqueidentifier
+		isHidden
+		isKey
+		lineageTag: 6a17c931-89e5-46c2-9538-49ece6203670
+		summarizeBy: none
+		sourceColumn: tov2_positionid
+
+		annotation SummarizationSetBy = Automatic
+
+	/// tov2_positionnumber
+	column 'Position Number'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: 82244654-a502-4b66-bbaf-522fca2e07e5
+		isDefaultLabel
+		summarizeBy: none
+		sourceColumn: tov2_positionnumber
+
+		annotation SummarizationSetBy = Automatic
+
+	/// tov2_positionstatus
+	column 'Position Status'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: f28eed9a-b31a-4b08-8012-5a649e621505
+		summarizeBy: none
+		sourceColumn: tov2_positionstatus
+
+		annotation SummarizationSetBy = Automatic
+
+	/// tov2_position_subtype
+	column 'Position Subtype'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: 3b08a757-3a95-4e33-91ee-cfb32506cafb
+		summarizeBy: none
+		sourceColumn: tov2_position_subtype
+
+		annotation SummarizationSetBy = Automatic
+
+	/// tov2_position_type
+	column 'Position Type'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: 0324e9d9-30aa-4fad-8e0b-f2f2e3c10ee1
+		summarizeBy: none
+		sourceColumn: tov2_position_type
+
+		annotation SummarizationSetBy = Automatic
+
+	/// tov2_profession
+	column Profession
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: c7231bf2-b9ed-4b3f-b232-19d5461f13a1
+		summarizeBy: none
+		sourceColumn: tov2_profession
+
+		annotation SummarizationSetBy = Automatic
+
+	/// tov2_project_code
+	column 'Project Code'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: 731d8149-614f-4246-b941-c159b6e3c628
+		summarizeBy: none
+		sourceColumn: tov2_project_code
+
+		annotation SummarizationSetBy = Automatic
+
+	/// tov2_project_description
+	column 'Project Description'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: a940826b-915f-492b-90f4-464934568de0
+		summarizeBy: none
+		sourceColumn: tov2_project_description
+
+		annotation SummarizationSetBy = Automatic
+
+	/// tov2_project_name
+	column 'Project Name'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: cd8201b9-78e4-414d-ba75-590b8e47c0c2
+		summarizeBy: none
+		sourceColumn: tov2_project_name
+
+		annotation SummarizationSetBy = Automatic
+
+	/// tov2_reports_to_level1
+	column 'Reports To L1'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: 19395940-1ce8-4372-8c7e-25196a32fa36
+		summarizeBy: none
+		sourceColumn: tov2_reports_to_level1
+
+		annotation SummarizationSetBy = Automatic
+
+	/// tov2_reports_to_level2
+	column 'Reports To L2'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: 7ebd9b0a-a1c9-4fb5-9805-3bf808bfe955
+		summarizeBy: none
+		sourceColumn: tov2_reports_to_level2
+
+		annotation SummarizationSetBy = Automatic
+
+	/// tov2_reports_to_level3
+	column 'Reports To L3'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: e1a11adb-3280-443b-9f23-20c6f744924a
+		summarizeBy: none
+		sourceColumn: tov2_reports_to_level3
+
+		annotation SummarizationSetBy = Automatic
+
+	/// tov2_reports_to_level4
+	column 'Reports To L4'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: 4fdcc8cf-258d-43e6-ba2b-4327d4cc0c05
+		summarizeBy: none
+		sourceColumn: tov2_reports_to_level4
+
+		annotation SummarizationSetBy = Automatic
+
+	/// tov2_reports_to_level5
+	column 'Reports To L5'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: bcbf0b84-2851-44f7-9cd0-8dfdf574e99c
+		summarizeBy: none
+		sourceColumn: tov2_reports_to_level5
+
+		annotation SummarizationSetBy = Automatic
+
+	/// tov2_reports_to_level6
+	column 'Reports To L6'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: 5c700d18-c997-4ea0-9ab7-4f87d42f46d0
+		summarizeBy: none
+		sourceColumn: tov2_reports_to_level6
+
+		annotation SummarizationSetBy = Automatic
+
+	/// tov2_reports_to_level7
+	column 'Reports To L7'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: a63bd04b-03c8-41b5-9381-5b14e1de61c3
+		summarizeBy: none
+		sourceColumn: tov2_reports_to_level7
+
+		annotation SummarizationSetBy = Automatic
+
+	/// tov2_reports_to_manager
+	column 'Reports To Manager'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: 09390593-f278-4e6d-b1b9-9f7c27ea6068
+		summarizeBy: none
+		sourceColumn: tov2_reports_to_manager
+
+		annotation SummarizationSetBy = Automatic
+
+	/// tov2_requisitionnumbers
+	column 'Req Numbers'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: cbfc0298-4cfa-448d-8744-0a101e1e5b05
+		summarizeBy: none
+		sourceColumn: tov2_requisitionnumbers
+
+		annotation SummarizationSetBy = Automatic
+
+	/// tov2_sec_functional_area
+	column 'SEC Func Area'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: f30aa9b9-db8b-4050-b2a9-7415319f2be5
+		summarizeBy: none
+		sourceColumn: tov2_sec_functional_area
+
+		annotation SummarizationSetBy = Automatic
+
+	/// tov2_standard_title
+	column 'Standard Title'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: dd100194-cf53-4f52-ab32-6e20ffa79d41
+		summarizeBy: none
+		sourceColumn: tov2_standard_title
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Position = m
+		mode: directQuery
+		source =
+				let
+				    Dataverse = CommonDataService.Database(DataverseURL,[CreateNavigationProperties=false]),
+				    Source = Value.NativeQuery(Dataverse,"
+				
+				    -- View Filter: Active Positions
+				
+				    SELECT Base.tov2_alias
+				        ,Base.tov2_city
+				        ,Base.tov2_companycode
+				        ,Base.tov2_companycodename
+				        ,Base.tov2_costcenter
+				        ,Base.tov2_costcentername
+				        ,Base.tov2_employee_name
+				        ,Base.tov2_location
+				        ,Base.ownerid
+				        ,Base.owneridname
+				        ,Base.owningbusinessunit
+				        ,Base.owningbusinessunitname
+				        ,Base.tov2_positionid
+				        ,Base.tov2_positionnumber
+				        ,Base.tov2_positionstatus
+				        ,Base.tov2_position_subtype
+				        ,Base.tov2_position_type
+				        ,Base.tov2_profession
+				        ,Base.tov2_project_code
+				        ,Base.tov2_project_description
+				        ,Base.tov2_project_name
+				        ,Base.tov2_reports_to_level1
+				        ,Base.tov2_reports_to_level2
+				        ,Base.tov2_reports_to_level3
+				        ,Base.tov2_reports_to_level4
+				        ,Base.tov2_reports_to_level5
+				        ,Base.tov2_reports_to_level6
+				        ,Base.tov2_reports_to_level7
+				        ,Base.tov2_reports_to_manager
+				        ,Base.tov2_requisitionnumbers
+				        ,Base.tov2_sec_functional_area
+				        ,Base.tov2_standard_title
+				    FROM tov2_Position as Base
+				    WHERE (Base.statecode = 0)
+				
+				    " ,null ,[EnableFolding=true])
+				in
+				    Source
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

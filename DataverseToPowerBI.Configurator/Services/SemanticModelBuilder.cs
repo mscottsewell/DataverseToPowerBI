@@ -306,8 +306,8 @@ namespace DataverseToPowerBI.Configurator.Services
                         }
                     }
 
-                    // Warn about orphaned tables (exclude generated tables like Date/DateAutoTemplate)
-                    var generatedTables = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "Date", "DateAutoTemplate" };
+                    // Warn about orphaned tables (exclude generated tables like Date/DateAutoTemplate/DataverseURL)
+                    var generatedTables = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "Date", "DateAutoTemplate", "DataverseURL" };
                     var orphanedTables = existingTables
                         .Except(metadataTables, StringComparer.OrdinalIgnoreCase)
                         .Where(t => !generatedTables.Contains(t))
@@ -466,7 +466,7 @@ namespace DataverseToPowerBI.Configurator.Services
                 // Compare M query
                 var existingQuery = ExtractMQuery(existingContent);
                 var requiredLookupCols = requiredLookupColumns ?? new HashSet<string>();
-                var newQuery = GenerateMQuery(table, requiredLookupCols);
+                var newQuery = GenerateMQuery(table, requiredLookupCols, dateTableConfig);
                 
                 // Only flag as changed if queries actually differ
                 if (!string.IsNullOrEmpty(existingQuery) && !string.IsNullOrEmpty(newQuery))
@@ -718,7 +718,7 @@ namespace DataverseToPowerBI.Configurator.Services
         /// <summary>
         /// Generates expected M query for comparison - must exactly match actual BuildIncrementalTable logic
         /// </summary>
-        private string GenerateMQuery(ExportTable table, HashSet<string> requiredLookupColumns)
+        private string GenerateMQuery(ExportTable table, HashSet<string> requiredLookupColumns, DateTableConfig? dateTableConfig = null)
         {
             var schemaName = table.SchemaName ?? table.LogicalName;
             var sqlFields = new List<string>();
@@ -780,7 +780,29 @@ namespace DataverseToPowerBI.Configurator.Services
             }
 
             var selectList = string.Join(", ", sqlFields);
-            var whereClause = table.HasStateCode ? " WHERE statecode=0" : "";
+            
+            // Build WHERE clause - use view filter if present, otherwise default statecode filter
+            var whereClause = "";
+            if (table.View != null && !string.IsNullOrWhiteSpace(table.View.FetchXml))
+            {
+                // Convert FetchXML to SQL WHERE clause for comparison
+                var utcOffset = (int)(dateTableConfig?.UtcOffsetHours ?? -6);
+                var converter = new FetchXmlToSqlConverter(utcOffset);
+                var conversionResult = converter.ConvertToWhereClause(table.View.FetchXml, "Base");
+                
+                if (!string.IsNullOrWhiteSpace(conversionResult.SqlWhereClause))
+                {
+                    whereClause = $" WHERE {conversionResult.SqlWhereClause}";
+                }
+                else if (table.HasStateCode)
+                {
+                    whereClause = " WHERE Base.statecode=0";
+                }
+            }
+            else if (table.HasStateCode)
+            {
+                whereClause = " WHERE Base.statecode=0";
+            }
             
             return NormalizeQuery($"SELECT {selectList} FROM {schemaName} AS Base{whereClause}");
         }
@@ -1006,14 +1028,16 @@ namespace DataverseToPowerBI.Configurator.Services
         /// </summary>
         private string ExtractDataverseUrl(string pbipFolder, string projectName)
         {
-            var expressionsPath = Path.Combine(pbipFolder, $"{projectName}.SemanticModel", "definition", "expressions.tmdl");
-            if (!File.Exists(expressionsPath))
+            // DataverseURL is stored as a table in tables/DataverseURL.tmdl
+            var dataverseUrlPath = Path.Combine(pbipFolder, $"{projectName}.SemanticModel", "definition", "tables", "DataverseURL.tmdl");
+            if (!File.Exists(dataverseUrlPath))
                 return string.Empty;
 
             try
             {
-                var content = File.ReadAllText(expressionsPath);
-                var urlMatch = Regex.Match(content, @"DataverseURL\s*=\s*""([^""]+)""");
+                var content = File.ReadAllText(dataverseUrlPath);
+                // Extract the URL from the partition source expression: expression = "portfolioshapingdev.crm.dynamics.com"
+                var urlMatch = Regex.Match(content, @"expression\s*=\s*""([^""]+)""");
                 if (urlMatch.Success)
                     return urlMatch.Groups[1].Value;
             }
@@ -1477,18 +1501,18 @@ namespace DataverseToPowerBI.Configurator.Services
             if (normalizedUrl.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
                 normalizedUrl = normalizedUrl.Substring(8);
 
-            // Update expressions.tmdl with the DataverseURL
-            var expressionsPath = Path.Combine(pbipFolder, $"{projectName}.SemanticModel", "definition", "expressions.tmdl");
-            if (File.Exists(expressionsPath))
+            // Update DataverseURL.tmdl with the DataverseURL
+            var dataverseUrlPath = Path.Combine(pbipFolder, $"{projectName}.SemanticModel", "definition", "tables", "DataverseURL.tmdl");
+            if (File.Exists(dataverseUrlPath))
             {
-                var content = File.ReadAllText(expressionsPath, Utf8WithoutBom);
-                // Replace the DataverseURL value
+                var content = File.ReadAllText(dataverseUrlPath, Utf8WithoutBom);
+                // Replace the DataverseURL value in the partition source
                 content = Regex.Replace(
                     content,
-                    @"expression DataverseURL = ""[^""]*""",
-                    $"expression DataverseURL = \"{normalizedUrl}\""
+                    @"source = ""[^""]*"" meta",
+                    $"source = \"{normalizedUrl}\" meta"
                 );
-                WriteTmdlFile(expressionsPath, content);
+                WriteTmdlFile(dataverseUrlPath, content);
             }
 
             // Update .platform file with display name
@@ -1780,6 +1804,8 @@ namespace DataverseToPowerBI.Configurator.Services
 
                 // Map the data type
                 var (dataType, formatString, sourceProviderType, summarizeBy) = MapDataType(col.AttributeType);
+                var isDateTime = col.AttributeType?.Equals("dateonly", StringComparison.OrdinalIgnoreCase) == true ||
+                                 col.AttributeType?.Equals("datetime", StringComparison.OrdinalIgnoreCase) == true;
 
                 sb.AppendLine($"\tcolumn {QuoteTmdlName(col.DisplayName)}");
                 sb.AppendLine($"\t\tdataType: {dataType}");
@@ -1807,7 +1833,17 @@ namespace DataverseToPowerBI.Configurator.Services
                 sb.AppendLine($"\t\tsummarizeBy: {summarizeBy}");
                 sb.AppendLine($"\t\tsourceColumn: {col.SourceColumn}");
                 sb.AppendLine();
+                if (isDateTime)
+                {
+                    sb.AppendLine($"\t\tchangedProperty = DataType");
+                    sb.AppendLine();
+                }
                 sb.AppendLine($"\t\tannotation SummarizationSetBy = Automatic");
+                if (isDateTime)
+                {
+                    sb.AppendLine();
+                    sb.AppendLine($"\t\tannotation UnderlyingDateTimeDataType = Date");
+                }
                 sb.AppendLine();
             }
 
@@ -1946,8 +1982,8 @@ namespace DataverseToPowerBI.Configurator.Services
 
                 sb.AppendLine($"relationship {Guid.NewGuid()}");
                 
-                // Add relyOnReferentialIntegrity for snowflake relationships
-                if (rel.IsSnowflake)
+                // Add relyOnReferentialIntegrity if lookup is required OR if snowflake
+                if (rel.AssumeReferentialIntegrity || rel.IsSnowflake)
                 {
                     sb.AppendLine($"\trelyOnReferentialIntegrity");
                 }
@@ -1973,13 +2009,22 @@ namespace DataverseToPowerBI.Configurator.Services
                 
                 // Look up the display name for the primary date field
                 var primaryDateFieldName = dateTableConfig.PrimaryDateField;
+                var isDateFieldRequired = false;
                 if (attributeDisplayInfo.TryGetValue(dateTableConfig.PrimaryDateTable, out var tableAttrs) &&
                     tableAttrs.TryGetValue(dateTableConfig.PrimaryDateField, out var fieldDisplayInfo))
                 {
                     primaryDateFieldName = fieldDisplayInfo.DisplayName ?? dateTableConfig.PrimaryDateField;
+                    isDateFieldRequired = fieldDisplayInfo.IsRequired;
                 }
                 
                 sb.AppendLine($"relationship {Guid.NewGuid()}");
+                
+                // Add relyOnReferentialIntegrity if the date field is required
+                if (isDateFieldRequired)
+                {
+                    sb.AppendLine($"\trelyOnReferentialIntegrity");
+                }
+                
                 sb.AppendLine($"\tfromColumn: {QuoteTmdlName(sourceTableDisplay)}.{QuoteTmdlName(primaryDateFieldName)}");
                 sb.AppendLine($"\ttoColumn: Date.Date");
                 sb.AppendLine();
@@ -2021,8 +2066,8 @@ namespace DataverseToPowerBI.Configurator.Services
                 "money" => ("decimal", "\\$#,0.00;(\\$#,0.00);\\$#,0.00", "money", "sum"),
                 
                 // Date/Time types
-                "datetime" => ("dateTime", "General Date", "datetime2", "none"),
-                "dateonly" => ("dateTime", "Short Date", "date", "none"),  // Date-only (no time component)
+                "datetime" => ("dateTime", "Short Date", "datetime2", "none"),
+                "dateonly" => ("dateTime", "Short Date", "datetime2", "none"),  // Date-only (no time component, timezone adjusted)
                 
                 // Boolean types
                 "boolean" => ("boolean", null, "bit", "none"),

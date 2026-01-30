@@ -1,0 +1,107 @@
+/// Source: cai_allocationperiod
+table 'Allocation Period'
+	lineageTag: f67e7aa7-21a3-4145-933b-e233f3731a0b
+
+	/// cai_allocationperiodid
+	column cai_allocationperiodid
+		dataType: string
+		sourceProviderType: uniqueidentifier
+		isHidden
+		isKey
+		lineageTag: 45e78d8f-834a-4704-9509-149c2cda856b
+		summarizeBy: none
+		sourceColumn: cai_allocationperiodid
+
+		annotation SummarizationSetBy = Automatic
+
+	/// cai_allocationperiod_end
+	column 'Allocation Period End'
+		dataType: dateTime
+		formatString: General Date
+		sourceProviderType: datetime2
+		lineageTag: cfbc15d8-e331-47fb-98b0-c2ae006f9cb6
+		summarizeBy: none
+		sourceColumn: cai_allocationperiod_end
+
+		annotation SummarizationSetBy = Automatic
+
+	/// cai_allocationperiod_start
+	column 'Allocation Period Start'
+		dataType: dateTime
+		formatString: General Date
+		sourceProviderType: datetime2
+		lineageTag: c38b858a-516a-49be-af97-6e2d08a6af7f
+		summarizeBy: none
+		sourceColumn: cai_allocationperiod_start
+
+		annotation SummarizationSetBy = Automatic
+
+	/// cai_fiscalyearname
+	column 'Fiscal Year'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: c9a70d45-19de-499b-9310-d5669a79dd9d
+		summarizeBy: none
+		sourceColumn: cai_fiscalyearname
+
+		annotation SummarizationSetBy = Automatic
+
+	/// ownerid
+	column ownerid
+		dataType: string
+		sourceProviderType: uniqueidentifier
+		isHidden
+		lineageTag: 20343b43-7867-4b5b-9b83-99afb9801255
+		summarizeBy: none
+		sourceColumn: ownerid
+
+		annotation SummarizationSetBy = Automatic
+
+	/// owneridname
+	column Owner
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: 560d2e2a-637f-479a-8687-15a283f82f47
+		summarizeBy: none
+		sourceColumn: owneridname
+
+		annotation SummarizationSetBy = Automatic
+
+	/// cai_periodname
+	column 'Period Name'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: 3324b56d-dce7-486a-bf2e-c09682548a79
+		isDefaultLabel
+		summarizeBy: none
+		sourceColumn: cai_periodname
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Allocation Period' = m
+		mode: directQuery
+		source =
+				let
+				    Dataverse = CommonDataService.Database(DataverseURL,[CreateNavigationProperties=false]),
+				    Source = Value.NativeQuery(Dataverse,"
+				
+				    -- View Filter: Current + Last 3 Allocation Periods
+				
+				    SELECT Base.cai_allocationperiodid
+				        ,Base.cai_allocationperiod_end
+				        ,Base.cai_allocationperiod_start
+				        ,Base.cai_fiscalyearname
+				        ,Base.ownerid
+				        ,Base.owneridname
+				        ,Base.cai_periodname
+				    FROM cai_AllocationPeriod as Base
+				    WHERE (Base.statecode = 0 AND (DATEADD(hour, -6, Base.cai_allocationperiod_start) >= DATEADD(month, DATEDIFF(month, 0, DATEADD(hour, -6, GETUTCDATE())) - 4, 0) AND DATEADD(hour, -6, Base.cai_allocationperiod_start) < DATEADD(month, DATEDIFF(month, 0, DATEADD(hour, -6, GETUTCDATE())) + 1, 0)))
+				
+				    " ,null ,[EnableFolding=true])
+				in
+				    Source
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

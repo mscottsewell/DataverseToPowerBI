@@ -651,7 +651,8 @@ namespace DataverseToPowerBI.Configurator.Forms
                         DisplayName = lookup.DisplayName,
                         IsSnowflake = false,
                         IsActive = isActive,
-                        IsReverse = true  // Mark as reverse (1:many from fact's perspective)
+                        IsReverse = true,  // Mark as reverse (1:many from fact's perspective)
+                        AssumeReferentialIntegrity = lookup.IsRequired  // Set based on whether lookup is required
                     };
 
                     item.SubItems.Add("Fact:Many");  // Cardinality column - from fact's perspective
@@ -745,7 +746,8 @@ namespace DataverseToPowerBI.Configurator.Forms
                         DisplayName = lookup.DisplayName,
                         IsActive = isActive,
                         IsSnowflake = existingRel?.IsSnowflake ?? isSnowflake,  // Preserve existing snowflake status
-                        IsReverse = existingRel?.IsReverse ?? isReverse  // Preserve existing reverse status
+                        IsReverse = existingRel?.IsReverse ?? isReverse,  // Preserve existing reverse status
+                        AssumeReferentialIntegrity = lookup.IsRequired  // Set based on whether lookup is required
                     };
 
                     // Color code
@@ -821,7 +823,7 @@ namespace DataverseToPowerBI.Configurator.Forms
             {
                 statusText += " ⚠";
             }
-            item.SubItems[3].Text = statusText;
+            item.SubItems[4].Text = statusText;  // Status is column index 4, not 3
         }
 
         private void UpdateFinishButtonState()
@@ -1190,7 +1192,8 @@ namespace DataverseToPowerBI.Configurator.Forms
                         TargetTable = target,
                         DisplayName = lookup.DisplayName,
                         IsActive = isActive,
-                        IsSnowflake = true
+                        IsSnowflake = true,
+                        AssumeReferentialIntegrity = lookup.IsRequired  // Set based on whether lookup is required
                     };
 
                     if (multipleLookupsToTarget)

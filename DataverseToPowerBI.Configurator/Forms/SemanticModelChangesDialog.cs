@@ -45,7 +45,7 @@ namespace DataverseToPowerBI.Configurator.Forms
             listViewChanges = new ListView
             {
                 Location = new Point(12, 60),
-                Size = new Size(760, 430),
+                Size = new Size(760, 410),
                 View = View.Details,
                 FullRowSelect = true,
                 GridLines = true,
@@ -59,7 +59,7 @@ namespace DataverseToPowerBI.Configurator.Forms
             // Backup checkbox
             chkBackup = new CheckBox
             {
-                Location = new Point(12, 500),
+                Location = new Point(12, 480),
                 Size = new Size(400, 24),
                 Text = "Create backup of existing PBIP before applying changes",
                 Checked = true
@@ -69,7 +69,7 @@ namespace DataverseToPowerBI.Configurator.Forms
             // Buttons
             btnCancel = new Button
             {
-                Location = new Point(596, 530),
+                Location = new Point(596, 510),
                 Size = new Size(80, 30),
                 Text = "Cancel",
                 DialogResult = DialogResult.Cancel
@@ -79,7 +79,7 @@ namespace DataverseToPowerBI.Configurator.Forms
 
             btnApply = new Button
             {
-                Location = new Point(692, 530),
+                Location = new Point(692, 510),
                 Size = new Size(80, 30),
                 Text = "Apply",
                 DialogResult = DialogResult.OK

@@ -1,0 +1,483 @@
+/// Source: cai_allocation
+table Allocation
+	lineageTag: 32dfad11-cf87-4984-836b-10e54e89fdc6
+
+	/// cai_allocationpercentageotherareas
+	column '% Allocated - Other Areas'
+		dataType: int64
+		formatString: 0
+		sourceProviderType: int
+		lineageTag: 505fa3bc-8246-4dac-96ac-6a9ed013a5bb
+		summarizeBy: sum
+		sourceColumn: cai_allocationpercentageotherareas
+
+		annotation SummarizationSetBy = Automatic
+
+	/// cai_allocationpercentage
+	column '% Allocation'
+		dataType: int64
+		formatString: 0
+		sourceProviderType: int
+		lineageTag: fa4dd79b-f183-41e7-84c6-6d1069e1feff
+		summarizeBy: sum
+		sourceColumn: cai_allocationpercentage
+
+		annotation SummarizationSetBy = Automatic
+
+	/// cai_allocationid
+	column cai_allocationid
+		dataType: string
+		sourceProviderType: uniqueidentifier
+		isHidden
+		isKey
+		lineageTag: 21e89fe8-86a9-4ec6-95d8-4af2026a4c0f
+		summarizeBy: none
+		sourceColumn: cai_allocationid
+
+		annotation SummarizationSetBy = Automatic
+
+	/// cai_name
+	column 'Allocation Name'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: 2b9cb372-380a-4d8c-8fb6-41b02e5162b2
+		isDefaultLabel
+		summarizeBy: none
+		sourceColumn: cai_name
+
+		annotation SummarizationSetBy = Automatic
+
+	/// cai_costcenter
+	column 'Cost Center'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: bfa812ef-9fc0-4965-9ef3-245de82f8dfc
+		summarizeBy: none
+		sourceColumn: cai_costcenter
+
+		annotation SummarizationSetBy = Automatic
+
+	/// cai_alias
+	column 'Employee Alias'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: 739d92dd-31c6-431c-b029-87c48639ae69
+		summarizeBy: none
+		sourceColumn: cai_alias
+
+		annotation SummarizationSetBy = Automatic
+
+	/// cai_employeename
+	column 'Employee Name'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: 8f6c4fb4-2544-4868-881c-39f8dd4d4c45
+		summarizeBy: none
+		sourceColumn: cai_employeename
+
+		annotation SummarizationSetBy = Automatic
+
+	/// cai_level
+	column 'Hierarchy Level'
+		dataType: int64
+		formatString: 0
+		sourceProviderType: int
+		lineageTag: 37fe8107-6503-4e3b-85dd-c95550b8c69e
+		summarizeBy: sum
+		sourceColumn: cai_level
+
+		annotation SummarizationSetBy = Automatic
+
+	/// cai_level_1
+	column 'Hierarchy Level 1'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: ff219d91-b088-4c20-98ac-afe2e50a0540
+		summarizeBy: none
+		sourceColumn: cai_level_1
+
+		annotation SummarizationSetBy = Automatic
+
+	/// cai_level_2
+	column 'Hierarchy Level 2'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: 4a1ecef2-cce0-44f1-838f-115d163d192c
+		summarizeBy: none
+		sourceColumn: cai_level_2
+
+		annotation SummarizationSetBy = Automatic
+
+	/// cai_level_3
+	column 'Hierarchy Level 3'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: 7ef9f898-33a2-4843-988d-5fc31f50ea4b
+		summarizeBy: none
+		sourceColumn: cai_level_3
+
+		annotation SummarizationSetBy = Automatic
+
+	/// cai_level_4
+	column 'Hierarchy Level 4'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: 8767f88f-1361-42df-bd21-ea396a4cb72c
+		summarizeBy: none
+		sourceColumn: cai_level_4
+
+		annotation SummarizationSetBy = Automatic
+
+	/// cai_level_5
+	column 'Hierarchy Level 5'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: 226101b8-2e39-413f-becf-cdd080d4bc71
+		summarizeBy: none
+		sourceColumn: cai_level_5
+
+		annotation SummarizationSetBy = Automatic
+
+	/// cai_level_6
+	column 'Hierarchy Level 6'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: f91b8066-7d22-4688-9104-bf4dde8dc739
+		summarizeBy: none
+		sourceColumn: cai_level_6
+
+		annotation SummarizationSetBy = Automatic
+
+	/// cai_level_7
+	column 'Hierarchy Level 7'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: ec8d8a65-9a40-4def-9d6a-8add62ac03c5
+		summarizeBy: none
+		sourceColumn: cai_level_7
+
+		annotation SummarizationSetBy = Automatic
+
+	/// cai_level_8
+	column 'Hierarchy Level 8'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: b1ac70f5-2ed3-4744-8a95-90a9e7f9d1b3
+		summarizeBy: none
+		sourceColumn: cai_level_8
+
+		annotation SummarizationSetBy = Automatic
+
+	/// cai_level_9
+	column 'Hierarchy Level 9'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: d890a58c-5cf6-4e2d-ae51-5e5d63a99929
+		summarizeBy: none
+		sourceColumn: cai_level_9
+
+		annotation SummarizationSetBy = Automatic
+
+	/// cai_manager_systemuserid
+	column cai_manager_systemuserid
+		dataType: string
+		sourceProviderType: uniqueidentifier
+		isHidden
+		lineageTag: b37d3626-7e03-4690-b25e-aada9cf82c00
+		summarizeBy: none
+		sourceColumn: cai_manager_systemuserid
+
+		annotation SummarizationSetBy = Automatic
+
+	/// cai_manager_systemuseridname
+	column Manager
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: e4846404-d7d5-4d66-bc42-bd8601788633
+		summarizeBy: none
+		sourceColumn: cai_manager_systemuseridname
+
+		annotation SummarizationSetBy = Automatic
+
+	/// cai_managerapprovalstatusname
+	column 'Manager Approval Status'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: 09c6a47a-4c49-4073-a049-d1f9bd66ca5b
+		summarizeBy: none
+		sourceColumn: cai_managerapprovalstatusname
+
+		annotation SummarizationSetBy = Automatic
+
+	/// cai_managerreviewcompletedbyid
+	column cai_managerreviewcompletedbyid
+		dataType: string
+		sourceProviderType: uniqueidentifier
+		isHidden
+		lineageTag: e5d364a8-ef79-4603-bba8-0c4811ccbb33
+		summarizeBy: none
+		sourceColumn: cai_managerreviewcompletedbyid
+
+		annotation SummarizationSetBy = Automatic
+
+	/// cai_managerreviewcompletedbyidname
+	column 'Manager Review Completed By'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: 4991ec1a-49e4-4ee1-9bfd-4055d31598e7
+		summarizeBy: none
+		sourceColumn: cai_managerreviewcompletedbyidname
+
+		annotation SummarizationSetBy = Automatic
+
+	/// cai_managerreviewdate
+	column 'Manager Review Date'
+		dataType: dateTime
+		formatString: Short Date
+		sourceProviderType: datetime2
+		lineageTag: 7fb313e4-8810-42f8-b9d2-04206922b97d
+		summarizeBy: none
+		sourceColumn: cai_managerreviewdate
+
+		changedProperty = DataType
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	/// ownerid
+	column ownerid
+		dataType: string
+		sourceProviderType: uniqueidentifier
+		isHidden
+		lineageTag: 21f26176-6b20-4e0f-9855-54e4ec86a4d4
+		summarizeBy: none
+		sourceColumn: ownerid
+
+		annotation SummarizationSetBy = Automatic
+
+	/// owneridname
+	column Owner
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: 5382ae8e-90f9-4014-9cdc-1ef2418f3e85
+		summarizeBy: none
+		sourceColumn: owneridname
+
+		annotation SummarizationSetBy = Automatic
+
+	/// cai_allocationperiodid
+	column cai_allocationperiodid
+		dataType: string
+		sourceProviderType: uniqueidentifier
+		isHidden
+		lineageTag: 2fd51e9a-c271-40ba-bafb-abeb9e512337
+		summarizeBy: none
+		sourceColumn: cai_allocationperiodid
+
+		annotation SummarizationSetBy = Automatic
+
+	/// cai_allocationperiodidname
+	column Period
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: fdff0fc0-556b-496e-96cb-a026731682b5
+		summarizeBy: none
+		sourceColumn: cai_allocationperiodidname
+
+		annotation SummarizationSetBy = Automatic
+
+	/// tov2_positionid
+	column tov2_positionid
+		dataType: string
+		sourceProviderType: uniqueidentifier
+		isHidden
+		lineageTag: a60fb7a4-d31b-4f29-86bd-3fd7ca3c818c
+		summarizeBy: none
+		sourceColumn: tov2_positionid
+
+		annotation SummarizationSetBy = Automatic
+
+	/// tov2_positionidname
+	column Position
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: cfc98e68-7e5a-4914-9632-8f94030337b7
+		summarizeBy: none
+		sourceColumn: tov2_positionidname
+
+		annotation SummarizationSetBy = Automatic
+
+	/// cai_position_management_status
+	column 'Position Management Status'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: dbb782fd-171f-41b9-9615-861ea2b39ad8
+		summarizeBy: none
+		sourceColumn: cai_position_management_status
+
+		annotation SummarizationSetBy = Automatic
+
+	/// cai_positionstatus
+	column 'Position Status'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: 34e7e009-fcba-443c-bd87-5f57bb971051
+		summarizeBy: none
+		sourceColumn: cai_positionstatus
+
+		annotation SummarizationSetBy = Automatic
+
+	/// cai_position_subtype
+	column 'Position Subtype'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: 0f289694-dab8-4d5c-be7c-2938ef1ba207
+		summarizeBy: none
+		sourceColumn: cai_position_subtype
+
+		annotation SummarizationSetBy = Automatic
+
+	/// cai_position_type
+	column 'Position Type'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: ee72e526-91d2-470f-8167-3d21b09af98d
+		summarizeBy: none
+		sourceColumn: cai_position_type
+
+		annotation SummarizationSetBy = Automatic
+
+	/// cai_reports_to_manager
+	column 'Reports To Manager'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: 72738597-f51a-4476-9462-0809adca6057
+		summarizeBy: none
+		sourceColumn: cai_reports_to_manager
+
+		annotation SummarizationSetBy = Automatic
+
+	/// cai_resourceid
+	column cai_resourceid
+		dataType: string
+		sourceProviderType: uniqueidentifier
+		isHidden
+		lineageTag: af6d7545-8839-44cc-ab8b-978d1a415ce5
+		summarizeBy: none
+		sourceColumn: cai_resourceid
+
+		annotation SummarizationSetBy = Automatic
+
+	/// cai_resourceidname
+	column Resource
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: 08621570-62f2-499c-b4b6-0b92ed645ea2
+		summarizeBy: none
+		sourceColumn: cai_resourceidname
+
+		annotation SummarizationSetBy = Automatic
+
+	/// cai_sec_functional_area
+	column 'SEC Func Area'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: 39c22d0b-3459-4984-bed4-a982642132bc
+		summarizeBy: none
+		sourceColumn: cai_sec_functional_area
+
+		annotation SummarizationSetBy = Automatic
+
+	/// cai_serviceorinitiativeid
+	column cai_serviceorinitiativeid
+		dataType: string
+		sourceProviderType: uniqueidentifier
+		isHidden
+		lineageTag: 75726eac-0d2c-48a3-90b9-5375c3091038
+		summarizeBy: none
+		sourceColumn: cai_serviceorinitiativeid
+
+		annotation SummarizationSetBy = Automatic
+
+	/// cai_serviceorinitiativeidname
+	column 'Service or Initiative'
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: ae95dbd2-7970-43b3-94c4-79607dd909d1
+		summarizeBy: none
+		sourceColumn: cai_serviceorinitiativeidname
+
+		annotation SummarizationSetBy = Automatic
+
+	/// cai_totalallocatedperuserperperiod
+	column 'Total % Allocated for this user this Period'
+		dataType: int64
+		formatString: 0
+		sourceProviderType: int
+		lineageTag: 0c72de8f-4257-439e-b90a-c390701580e9
+		summarizeBy: sum
+		sourceColumn: cai_totalallocatedperuserperperiod
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Allocation = m
+		mode: directQuery
+		source =
+				let
+				    Dataverse = CommonDataService.Database(DataverseURL,[CreateNavigationProperties=false]),
+				    Source = Value.NativeQuery(Dataverse,"
+				
+				    -- View Filter: All Active Allocations
+				
+				    SELECT Base.cai_allocationpercentageotherareas
+				        ,Base.cai_allocationpercentage
+				        ,Base.cai_allocationid
+				        ,Base.cai_name
+				        ,Base.cai_costcenter
+				        ,Base.cai_alias
+				        ,Base.cai_employeename
+				        ,Base.cai_level
+				        ,Base.cai_level_1
+				        ,Base.cai_level_2
+				        ,Base.cai_level_3
+				        ,Base.cai_level_4
+				        ,Base.cai_level_5
+				        ,Base.cai_level_6
+				        ,Base.cai_level_7
+				        ,Base.cai_level_8
+				        ,Base.cai_level_9
+				        ,Base.cai_manager_systemuserid
+				        ,Base.cai_manager_systemuseridname
+				        ,Base.cai_managerapprovalstatusname
+				        ,Base.cai_managerreviewcompletedbyid
+				        ,Base.cai_managerreviewcompletedbyidname
+				        ,CAST(DATEADD(hour, -6, Base.cai_managerreviewdate) AS DATE) AS cai_managerreviewdate
+				        ,Base.ownerid
+				        ,Base.owneridname
+				        ,Base.cai_allocationperiodid
+				        ,Base.cai_allocationperiodidname
+				        ,Base.tov2_positionid
+				        ,Base.tov2_positionidname
+				        ,Base.cai_position_management_status
+				        ,Base.cai_positionstatus
+				        ,Base.cai_position_subtype
+				        ,Base.cai_position_type
+				        ,Base.cai_reports_to_manager
+				        ,Base.cai_resourceid
+				        ,Base.cai_resourceidname
+				        ,Base.cai_sec_functional_area
+				        ,Base.cai_serviceorinitiativeid
+				        ,Base.cai_serviceorinitiativeidname
+				        ,Base.cai_totalallocatedperuserperperiod
+				    FROM cai_Allocation as Base
+				    WHERE (Base.statecode = 0)
+				
+				    " ,null ,[EnableFolding=true])
+				in
+				    Source
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

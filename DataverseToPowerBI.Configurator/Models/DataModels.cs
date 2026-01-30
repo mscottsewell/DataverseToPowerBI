@@ -45,6 +45,7 @@ namespace DataverseToPowerBI.Configurator.Models
         public bool IsActive { get; set; } = true;          // Active relationship (only one active per table pair)
         public bool IsSnowflake { get; set; } = false;      // True if this is a Dimension->ParentDimension relationship
         public bool IsReverse { get; set; } = false;        // True if this is a one-to-many relationship (from fact's perspective)
+        public bool AssumeReferentialIntegrity { get; set; } = false;  // True if lookup field is required (enables performance optimizations)
     }
 
     /// <summary>
@@ -192,6 +193,7 @@ namespace DataverseToPowerBI.Configurator.Models
         public string? SchemaName { get; set; }
         public string? AttributeType { get; set; }
         public bool IsCustomAttribute { get; set; }
+        public bool IsRequired { get; set; } = false;  // True if SystemRequired or ApplicationRequired
         public List<string>? Targets { get; set; }  // For Lookup fields - related table(s)
     }
 
@@ -230,6 +232,7 @@ namespace DataverseToPowerBI.Configurator.Models
         public string? DisplayName { get; set; }
         public bool IsActive { get; set; } = true;
         public bool IsSnowflake { get; set; } = false;      // True if Dimension->ParentDimension
+        public bool AssumeReferentialIntegrity { get; set; } = false;  // True if lookup field is required
     }
 
     public class ExportTable
