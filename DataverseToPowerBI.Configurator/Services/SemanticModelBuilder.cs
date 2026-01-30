@@ -102,12 +102,21 @@ namespace DataverseToPowerBI.Configurator.Services
                 WriteTmdlFile(Path.Combine(tablesFolder, tableFileName), tableTmdl);
             }
 
-            // Build Date table if configured
+            // Build Date table if configured (only if model doesn't already have a date table)
             if (dateTableConfig != null)
             {
-                SetStatus("Building Date table...");
-                var dateTableTmdl = GenerateDateTableTmdl(dateTableConfig);
-                WriteTmdlFile(Path.Combine(tablesFolder, "Date.tmdl"), dateTableTmdl);
+                var existingDateTable = FindExistingDateTable(tablesFolder);
+                if (existingDateTable != null)
+                {
+                    SetStatus($"Date table '{existingDateTable}' already exists in template - preserving it");
+                    DebugLogger.Log($"Skipping Date table generation - found existing date table: {existingDateTable}");
+                }
+                else
+                {
+                    SetStatus("Building Date table...");
+                    var dateTableTmdl = GenerateDateTableTmdl(dateTableConfig);
+                    WriteTmdlFile(Path.Combine(tablesFolder, "Date.tmdl"), dateTableTmdl);
+                }
             }
 
             // Build relationships
@@ -129,7 +138,9 @@ namespace DataverseToPowerBI.Configurator.Services
 
             // Update model.tmdl with table references
             SetStatus("Updating model configuration...");
-            UpdateModelTmdl(pbipFolder, projectName, tables, dateTableConfig != null);
+            // Check if there's an existing date table OR if we created one
+            var hasDateTable = FindExistingDateTable(tablesFolder) != null || dateTableConfig != null;
+            UpdateModelTmdl(pbipFolder, projectName, tables, hasDateTable);
 
             // Verify critical files exist
             VerifyPbipStructure(pbipFolder, projectName);
@@ -534,7 +545,7 @@ namespace DataverseToPowerBI.Configurator.Services
             ExportTable table,
             Dictionary<string, Dictionary<string, AttributeDisplayInfo>> attributeDisplayInfo,
             HashSet<string> requiredLookupColumns,
-            Dictionary<string, ColumnDefinition> existingColumns = null,
+            Dictionary<string, ColumnDefinition>? existingColumns = null,
             DateTableConfig? dateTableConfig = null)
         {
             var columns = new Dictionary<string, ColumnDefinition>(StringComparer.OrdinalIgnoreCase);
@@ -1294,7 +1305,9 @@ namespace DataverseToPowerBI.Configurator.Services
 
             // Update model.tmdl
             SetStatus("Updating model metadata...");
-            UpdateModelTmdl(pbipFolder, projectName, tables, dateTableConfig != null);
+            // Check if there's an existing date table from template
+            var hasDateTable = FindExistingDateTable(tablesFolder) != null;
+            UpdateModelTmdl(pbipFolder, projectName, tables, hasDateTable);
 
             // Verify critical files exist
             VerifyPbipStructure(pbipFolder, projectName);
@@ -1427,8 +1440,19 @@ namespace DataverseToPowerBI.Configurator.Services
             // Create target folder
             Directory.CreateDirectory(targetFolder);
 
-            // Copy all template files
-            CopyDirectory(_templatePath, targetFolder, projectName);
+            // Find the template .pbip file (could be named anything)
+            var templatePbipFiles = Directory.GetFiles(_templatePath, "*.pbip");
+            if (templatePbipFiles.Length == 0)
+            {
+                throw new FileNotFoundException($"No .pbip file found in template folder: {_templatePath}");
+            }
+            
+            var templatePbipFile = templatePbipFiles[0];
+            var templateName = Path.GetFileNameWithoutExtension(templatePbipFile);
+            DebugLogger.Log($"Using template: {templateName}.pbip");
+
+            // Copy all template files, replacing the template name with project name
+            CopyDirectory(_templatePath, targetFolder, projectName, templateName);
             
             // Verify .pbip file was created
             var pbipFile = Path.Combine(targetFolder, $"{projectName}.pbip");
@@ -1439,9 +1463,9 @@ namespace DataverseToPowerBI.Configurator.Services
         }
 
         /// <summary>
-        /// Recursively copies a directory, renaming "Template" to the project name
+        /// Recursively copies a directory, renaming template name to the project name
         /// </summary>
-        private void CopyDirectory(string sourceDir, string targetDir, string projectName)
+        private void CopyDirectory(string sourceDir, string targetDir, string projectName, string templateName)
         {
             // Create target directory
             Directory.CreateDirectory(targetDir);
@@ -1450,8 +1474,8 @@ namespace DataverseToPowerBI.Configurator.Services
             foreach (var file in Directory.GetFiles(sourceDir))
             {
                 var fileName = Path.GetFileName(file);
-                // Rename files containing "Template"
-                var newFileName = fileName.Replace("Template", projectName);
+                // Rename files containing the template name
+                var newFileName = fileName.Replace(templateName, projectName);
                 var targetPath = Path.Combine(targetDir, newFileName);
 
                 DebugLogger.Log($"Copying: {fileName} -> {newFileName}");
@@ -1468,7 +1492,7 @@ namespace DataverseToPowerBI.Configurator.Services
                     var content = File.ReadAllText(file, Utf8WithoutBom);
                     if (extension == ".json" || extension == ".pbip" || extension == ".pbism" || extension == ".pbir")
                     {
-                        content = content.Replace("Template", projectName);
+                        content = content.Replace(templateName, projectName);
                     }
                     WriteTmdlFile(targetPath, content);
                     DebugLogger.Log($"  Written text file: {targetPath}");
@@ -1485,9 +1509,9 @@ namespace DataverseToPowerBI.Configurator.Services
             foreach (var dir in Directory.GetDirectories(sourceDir))
             {
                 var dirName = Path.GetFileName(dir);
-                // Rename directories containing "Template"
-                var newDirName = dirName.Replace("Template", projectName);
-                CopyDirectory(dir, Path.Combine(targetDir, newDirName), projectName);
+                // Rename directories containing the template name
+                var newDirName = dirName.Replace(templateName, projectName);
+                CopyDirectory(dir, Path.Combine(targetDir, newDirName), projectName, templateName);
             }
         }
 
@@ -1501,10 +1525,13 @@ namespace DataverseToPowerBI.Configurator.Services
             if (normalizedUrl.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
                 normalizedUrl = normalizedUrl.Substring(8);
 
-            // Update DataverseURL.tmdl with the DataverseURL
-            var dataverseUrlPath = Path.Combine(pbipFolder, $"{projectName}.SemanticModel", "definition", "tables", "DataverseURL.tmdl");
+            // Ensure DataverseURL table exists
+            var tablesFolder = Path.Combine(pbipFolder, $"{projectName}.SemanticModel", "definition", "tables");
+            var dataverseUrlPath = Path.Combine(tablesFolder, "DataverseURL.tmdl");
+            
             if (File.Exists(dataverseUrlPath))
             {
+                // Update existing DataverseURL table
                 var content = File.ReadAllText(dataverseUrlPath, Utf8WithoutBom);
                 // Replace the DataverseURL value in the partition source
                 content = Regex.Replace(
@@ -1513,6 +1540,14 @@ namespace DataverseToPowerBI.Configurator.Services
                     $"source = \"{normalizedUrl}\" meta"
                 );
                 WriteTmdlFile(dataverseUrlPath, content);
+            }
+            else
+            {
+                // Create DataverseURL table if it doesn't exist
+                DebugLogger.Log("DataverseURL table not found in template - creating it");
+                Directory.CreateDirectory(tablesFolder);
+                var dataverseUrlTmdl = GenerateDataverseUrlTableTmdl(normalizedUrl);
+                WriteTmdlFile(dataverseUrlPath, dataverseUrlTmdl);
             }
 
             // Update .platform file with display name
@@ -1913,6 +1948,75 @@ namespace DataverseToPowerBI.Configurator.Services
         }
 
         /// <summary>
+        /// Generates the DataverseURL parameter table TMDL
+        /// </summary>
+        private string GenerateDataverseUrlTableTmdl(string dataverseUrl)
+        {
+            var sb = new StringBuilder();
+            var lineageTag1 = Guid.NewGuid().ToString();
+            var lineageTag2 = Guid.NewGuid().ToString();
+
+            sb.AppendLine("table DataverseURL");
+            sb.AppendLine("\tisHidden");
+            sb.AppendLine($"\tlineageTag: {lineageTag1}");
+            sb.AppendLine();
+            sb.AppendLine("\tcolumn DataverseURL");
+            sb.AppendLine("\t\tdataType: string");
+            sb.AppendLine("\t\tisHidden");
+            sb.AppendLine($"\t\tlineageTag: {lineageTag2}");
+            sb.AppendLine("\t\tsummarizeBy: none");
+            sb.AppendLine("\t\tsourceColumn: DataverseURL");
+            sb.AppendLine();
+            sb.AppendLine("\t\tchangedProperty = IsHidden");
+            sb.AppendLine();
+            sb.AppendLine("\t\tannotation SummarizationSetBy = Automatic");
+            sb.AppendLine();
+            sb.AppendLine("\tpartition DataverseURL = m");
+            sb.AppendLine("\t\tmode: import");
+            sb.AppendLine($"\t\tsource = \"{dataverseUrl}\" meta [IsParameterQuery=true, Type=\"Text\", IsParameterQueryRequired=true]");
+            sb.AppendLine();
+            sb.AppendLine("\tchangedProperty = IsHidden");
+            sb.AppendLine();
+            sb.AppendLine("\tannotation PBI_NavigationStepName = Navigation");
+            sb.AppendLine();
+            sb.AppendLine("\tannotation PBI_ResultType = Text");
+            sb.AppendLine();
+
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// Finds an existing date table in the model by checking for dataCategory: Time
+        /// </summary>
+        private string? FindExistingDateTable(string tablesFolder)
+        {
+            if (!Directory.Exists(tablesFolder))
+                return null;
+
+            var tmdlFiles = Directory.GetFiles(tablesFolder, "*.tmdl");
+            foreach (var file in tmdlFiles)
+            {
+                try
+                {
+                    var content = File.ReadAllText(file, Utf8WithoutBom);
+                    // Check if this table has dataCategory: Time
+                    if (Regex.IsMatch(content, @"^\s*dataCategory:\s*Time\s*$", RegexOptions.Multiline))
+                    {
+                        var tableName = Path.GetFileNameWithoutExtension(file);
+                        DebugLogger.Log($"Found date table with dataCategory: Time - {tableName}");
+                        return tableName;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    DebugLogger.Log($"Warning: Could not read {file}: {ex.Message}");
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
         /// Generates the Date table TMDL from template with configured year range
         /// </summary>
         private string GenerateDateTableTmdl(DateTableConfig config)
@@ -2114,21 +2218,29 @@ namespace DataverseToPowerBI.Configurator.Services
         /// </summary>
         private void VerifyPbipStructure(string pbipFolder, string projectName)
         {
+            // Discover the template name from the template folder
+            var templatePbipFiles = Directory.GetFiles(_templatePath, "*.pbip");
+            if (templatePbipFiles.Length == 0)
+            {
+                throw new FileNotFoundException($"No .pbip file found in template folder: {_templatePath}");
+            }
+            var templateName = Path.GetFileNameWithoutExtension(templatePbipFiles[0]);
+
             // Check for .pbip file
             var pbipFile = Path.Combine(pbipFolder, $"{projectName}.pbip");
             if (!File.Exists(pbipFile))
             {
                 DebugLogger.Log($"Missing .pbip file, recreating: {pbipFile}");
-                var templatePbip = Path.Combine(_templatePath, "Template.pbip");
+                var templatePbip = Path.Combine(_templatePath, $"{templateName}.pbip");
                 if (File.Exists(templatePbip))
                 {
                     var content = File.ReadAllText(templatePbip, Utf8WithoutBom);
-                    content = content.Replace("Template", projectName);
+                    content = content.Replace(templateName, projectName);
                     WriteTmdlFile(pbipFile, content);
                 }
                 else
                 {
-                    throw new FileNotFoundException($"Template.pbip not found at: {templatePbip}");
+                    throw new FileNotFoundException($"Template .pbip file not found at: {templatePbip}");
                 }
             }
 
@@ -2137,14 +2249,14 @@ namespace DataverseToPowerBI.Configurator.Services
             if (!Directory.Exists(reportFolder))
             {
                 DebugLogger.Log($"Missing Report folder, recreating: {reportFolder}");
-                var templateReport = Path.Combine(_templatePath, "Template.Report");
+                var templateReport = Path.Combine(_templatePath, $"{templateName}.Report");
                 if (Directory.Exists(templateReport))
                 {
-                    CopyDirectory(templateReport, reportFolder, projectName);
+                    CopyDirectory(templateReport, reportFolder, projectName, templateName);
                 }
                 else
                 {
-                    throw new DirectoryNotFoundException($"Template.Report folder not found at: {templateReport}");
+                    throw new DirectoryNotFoundException($"Template Report folder not found at: {templateReport}");
                 }
             }
 
@@ -2153,11 +2265,11 @@ namespace DataverseToPowerBI.Configurator.Services
             if (!File.Exists(platformFile))
             {
                 DebugLogger.Log($"Missing .platform file, recreating: {platformFile}");
-                var templatePlatform = Path.Combine(_templatePath, "Template.SemanticModel", ".platform");
+                var templatePlatform = Path.Combine(_templatePath, $"{templateName}.SemanticModel", ".platform");
                 if (File.Exists(templatePlatform))
                 {
                     var content = File.ReadAllText(templatePlatform, Utf8WithoutBom);
-                    content = content.Replace("Template", projectName);
+                    content = content.Replace(templateName, projectName);
                     WriteTmdlFile(platformFile, content);
                 }
                 else
@@ -2171,11 +2283,11 @@ namespace DataverseToPowerBI.Configurator.Services
             if (!File.Exists(pbismFile))
             {
                 DebugLogger.Log($"Missing definition.pbism file, recreating: {pbismFile}");
-                var templatePbism = Path.Combine(_templatePath, "Template.SemanticModel", "definition.pbism");
+                var templatePbism = Path.Combine(_templatePath, $"{templateName}.SemanticModel", "definition.pbism");
                 if (File.Exists(templatePbism))
                 {
                     var content = File.ReadAllText(templatePbism, Utf8WithoutBom);
-                    content = content.Replace("Template", projectName);
+                    content = content.Replace(templateName, projectName);
                     WriteTmdlFile(pbismFile, content);
                 }
                 else

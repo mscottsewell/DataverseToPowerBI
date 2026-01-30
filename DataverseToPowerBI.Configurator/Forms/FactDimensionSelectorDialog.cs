@@ -915,12 +915,21 @@ namespace DataverseToPowerBI.Configurator.Forms
                     .OrderBy(a => a.DisplayName)
                     .ToList();
 
-                // Filter out lookups that point back to the fact table or to tables already included
-                var existingTargets = listViewRelationships.Items.Cast<ListViewItem>()
-                    .Select(i => ((RelationshipConfig)i.Tag).TargetTable)
-                    .ToHashSet();
-                existingTargets.Add(SelectedFactTable!.LogicalName);
-                existingTargets.Add(dimensionTable.LogicalName);
+                // Filter out lookups that point back to the fact table, to itself, or to parents already added to THIS dimension
+                var existingTargets = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                existingTargets.Add(SelectedFactTable!.LogicalName);  // Prevent dimension -> fact
+                existingTargets.Add(dimensionTable.LogicalName);       // Prevent self-reference
+                
+                // Only exclude parent tables already added to THIS specific dimension
+                // (Allow multiple dimensions to share the same parent table - common in snowflake schemas)
+                var existingParentsForThisDimension = listViewRelationships.Items.Cast<ListViewItem>()
+                    .Select(i => (RelationshipConfig)i.Tag)
+                    .Where(r => r.IsSnowflake && r.SourceTable == dimensionTable.LogicalName)
+                    .Select(r => r.TargetTable);
+                foreach (var target in existingParentsForThisDimension)
+                {
+                    existingTargets.Add(target);
+                }
 
                 var availableLookups = lookups
                     .Where(l => l.Targets!.Any(t => !existingTargets.Contains(t)))

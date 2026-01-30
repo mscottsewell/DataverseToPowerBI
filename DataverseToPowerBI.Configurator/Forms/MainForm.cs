@@ -964,8 +964,10 @@ namespace DataverseToPowerBI.Configurator.Forms
         {
             cboSemanticModels.Items.Clear();
             
-            // Add "+ Create New" option first
+            // Add "+ Create New" and "⚙ Settings..." options first
             cboSemanticModels.Items.Add("+ Create New...");
+            cboSemanticModels.Items.Add("⚙ Settings...");
+            cboSemanticModels.Items.Add("---");  // Separator
             
             // Get all configurations from SettingsManager
             var configurations = _settingsManager.GetConfigurationNames();
@@ -983,14 +985,14 @@ namespace DataverseToPowerBI.Configurator.Forms
                 {
                     cboSemanticModels.SelectedIndex = index;
                 }
-                else if (cboSemanticModels.Items.Count > 1)
+                else if (cboSemanticModels.Items.Count > 3)  // Skip "+ Create New", "⚙ Settings...", and separator
                 {
-                    cboSemanticModels.SelectedIndex = 1;  // Skip "+ Create New"
+                    cboSemanticModels.SelectedIndex = 3;
                 }
             }
             else
             {
-                // Only "+ Create New" is available
+                // Only "+ Create New" and "⚙ Settings..." are available
                 cboSemanticModels.SelectedIndex = 0;
             }
         }
@@ -1010,8 +1012,15 @@ namespace DataverseToPowerBI.Configurator.Forms
                 return;
             }
             
-            // Skip placeholder items
-            if (selectedModel.StartsWith("(No"))
+            // Handle "⚙ Settings..." option
+            if (selectedModel == "⚙ Settings...")
+            {
+                OpenSettingsDialog();
+                return;
+            }
+            
+            // Skip separator and placeholder items
+            if (selectedModel.StartsWith("---") || selectedModel.StartsWith("(No"))
                 return;
             
             // Switch to the corresponding configuration
@@ -1019,6 +1028,127 @@ namespace DataverseToPowerBI.Configurator.Forms
             if (configs.Contains(selectedModel))
             {
                 await SwitchToConfiguration(selectedModel);
+            }
+        }
+
+        private void OpenSettingsDialog()
+        {
+            using var dialog = new SemanticModelSettingsDialog(_settingsManager);
+            if (dialog.ShowDialog(this) == DialogResult.OK)
+            {
+                var hasChanges = dialog.ConfigurationsChanged;
+                var newlyCreated = dialog.NewlyCreatedConfiguration;
+                
+                if (hasChanges)
+                {
+                    // Reload current configuration in case it was modified
+                    var currentConfig = _settingsManager.GetCurrentConfigurationName();
+                    _settings = _settingsManager.LoadSettings();
+                    
+                    // Update UI with potentially changed values
+                    _isLoading = true;
+                    txtEnvironmentUrl.Text = _settings.LastEnvironmentUrl ?? "";
+                    txtProjectName.Text = currentConfig;
+                    txtOutputFolder.Text = _settings.OutputFolder ?? "";
+                    _isLoading = false;
+                    
+                    // Refresh dropdown
+                    RefreshSemanticModelDropdown();
+                    
+                    SetStatus("Settings updated.");
+                }
+                
+                // If a new configuration was created, trigger auto-setup
+                if (!string.IsNullOrEmpty(newlyCreated))
+                {
+                    this.Invoke(new Action(async () =>
+                    {
+                        await Task.Delay(300); // Brief delay for UI to settle
+                        await AutoSetupNewConfiguration(newlyCreated);
+                    }));
+                }
+            }
+            else
+            {
+                // Re-select current configuration (user may have clicked Settings then cancelled)
+                RefreshSemanticModelDropdown();
+            }
+        }
+
+        private async Task AutoSetupNewConfiguration(string configurationName)
+        {
+            try
+            {
+                // Switch to the new configuration
+                var currentConfig = _settingsManager.GetCurrentConfigurationName();
+                if (currentConfig != configurationName)
+                {
+                    await SwitchToConfiguration(configurationName, clearCredentials: true);
+                }
+                
+                // Clear cached metadata for fresh start
+                _cache = new MetadataCache();
+                _settingsManager.SaveCache(_cache, configurationName);
+                
+                // Clear any existing state
+                ClearAllTables();
+                
+                var envUrl = txtEnvironmentUrl.Text.Trim();
+                if (string.IsNullOrWhiteSpace(envUrl))
+                {
+                    MessageBox.Show(
+                        $"Configuration '{configurationName}' created successfully.\n\n" +
+                        "Please configure the Dataverse environment URL in Settings before proceeding.",
+                        "Setup Required",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+                    return;
+                }
+                
+                // Prompt for authentication
+                var result = MessageBox.Show(
+                    $"Configuration '{configurationName}' created successfully.\n\n" +
+                    "Connect to Dataverse and select tables now?",
+                    "Setup New Configuration",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question);
+                
+                if (result == DialogResult.Yes)
+                {
+                    SetStatus($"Connecting to {envUrl}...");
+                    ShowProgress(true);
+                    
+                    // Connect with forced authentication
+                    await ConnectToEnvironmentAsync(clearCredentials: true);
+                    
+                    ShowProgress(false);
+                    
+                    // If connection succeeded, open table selector
+                    if (_client != null)
+                    {
+                        await Task.Delay(500); // Brief delay after connection
+                        
+                        // Open the table selector dialog
+                        BtnSelectTables_Click(null, EventArgs.Empty);
+                    }
+                    else
+                    {
+                        MessageBox.Show(
+                            "Connection failed. You can try again using the 'Connect' button.",
+                            "Connection Failed",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Warning);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ShowProgress(false);
+                MessageBox.Show(
+                    $"Error during configuration setup:\n{ex.Message}",
+                    "Setup Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
             }
         }
 
@@ -1083,38 +1213,10 @@ namespace DataverseToPowerBI.Configurator.Forms
                     };
                     _settingsManager.CreateNewConfiguration(modelName, newSettings);
                     
-                    // Switch to the new configuration
-                    await SwitchToConfiguration(modelName, clearCredentials: true);
-                    
                     SetStatus($"Created new semantic model: {modelName}");
                     
-                    // Ask if user wants to connect and load metadata
-                    var refreshResult = MessageBox.Show(
-                        $"Semantic model '{modelName}' created successfully.\n\n" +
-                        "Connect and load metadata now?",
-                        "Connect?",
-                        MessageBoxButtons.YesNo,
-                        MessageBoxIcon.Question);
-                    
-                    if (refreshResult == DialogResult.Yes)
-                    {
-                        SetStatus($"Connecting to {envUrl}...");
-                        
-                        // Connect and refresh with forced re-authentication
-                        // RefreshMetadataAsync will automatically open the table selector
-                        await RefreshMetadataAsync(promptForConfirmation: false, clearCredentials: true);
-                        
-                        // Check if connection failed
-                        if (_client == null)
-                        {
-                            MessageBox.Show(
-                                "Connection failed.\n\n" +
-                                "You can try again using the 'Refresh Metadata' button.",
-                                "Connection Failed",
-                                MessageBoxButtons.OK,
-                                MessageBoxIcon.Warning);
-                        }
-                    }
+                    // Trigger auto-setup for the new configuration
+                    await AutoSetupNewConfiguration(modelName);
                 }
                 catch (Exception ex)
                 {
@@ -1153,31 +1255,21 @@ namespace DataverseToPowerBI.Configurator.Forms
                 var diagnostics = _settingsManager.GetSettingsDiagnostics();
                 Services.DebugLogger.LogSection("Settings Folder Opened", diagnostics);
                 
-                // Show diagnostics in a message box
-                var result = MessageBox.Show(
-                    $"{diagnostics}\n\nOpen settings folder in Windows Explorer?",
-                    "Settings Storage Information",
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Information);
-                
-                if (result == DialogResult.Yes)
+                // Ensure the folder exists
+                if (!Directory.Exists(settingsFolder))
                 {
-                    // Ensure the folder exists
-                    if (!Directory.Exists(settingsFolder))
-                    {
-                        Directory.CreateDirectory(settingsFolder);
-                    }
-                    
-                    // Open the folder in Windows Explorer
-                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
-                    {
-                        FileName = settingsFolder,
-                        UseShellExecute = true,
-                        Verb = "open"
-                    });
-                    
-                    SetStatus($"Opened settings folder: {settingsFolder}");
+                    Directory.CreateDirectory(settingsFolder);
                 }
+                
+                // Open the folder in Windows Explorer
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = settingsFolder,
+                    UseShellExecute = true,
+                    Verb = "open"
+                });
+                
+                SetStatus($"Opened settings folder: {settingsFolder}");
             }
             catch (Exception ex)
             {
@@ -1186,50 +1278,12 @@ namespace DataverseToPowerBI.Configurator.Forms
             }
         }
 
-        private async void BtnChangeEnvironment_Click(object? sender, EventArgs e)
-        {
-            var currentUrl = txtEnvironmentUrl.Text.Trim();
-            
-            using var dialog = new EnvironmentDialog(currentUrl);
-            if (dialog.ShowDialog(this) == DialogResult.OK)
-            {
-                var url = dialog.EnvironmentUrl;
-                if (url.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
-                    url = url.Substring(8);
-                
-                // Check if environment URL has changed
-                var urlChanged = !currentUrl.Equals(url, StringComparison.OrdinalIgnoreCase);
-                    
-                txtEnvironmentUrl.Text = url;
-                SaveSettings();
-                
-                // If environment changed, clear cache and force re-authentication
-                if (urlChanged)
-                {
-                    // Clear the cache for the current configuration
-                    _cache = new MetadataCache();
-                    var currentConfig = _settingsManager.GetCurrentConfigurationName();
-                    _settingsManager.SaveCache(_cache, currentConfig);
-                    
-                    // Clear client to force re-authentication
-                    _client = null;
-                    lblConnectionStatus.Text = "Not Connected";
-                    lblConnectionStatus.ForeColor = System.Drawing.Color.Red;
-                }
-                
-                if (dialog.ShouldConnect)
-                {
-                    await ConnectToEnvironmentAsync(clearCredentials: urlChanged);
-                }
-            }
-        }
-
         private async Task ConnectToEnvironmentAsync(bool clearCredentials = false)
         {
             var url = txtEnvironmentUrl.Text.Trim();
             if (string.IsNullOrWhiteSpace(url))
             {
-                MessageBox.Show("Please enter an environment URL.", "Validation", 
+                MessageBox.Show("No environment URL configured for this semantic model.\n\nPlease configure it in Settings (⚙ icon in dropdown).", "No Environment URL", 
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
@@ -1262,7 +1316,6 @@ namespace DataverseToPowerBI.Configurator.Forms
 
             try
             {
-                btnChangeEnvironment.Enabled = false;
                 lblConnectionStatus.Text = "Connecting...";
                 lblConnectionStatus.ForeColor = System.Drawing.Color.Orange;
                 SetStatus(clearCredentials ? "Re-authenticating to Dataverse..." : "Authenticating to Dataverse...");
@@ -1294,7 +1347,6 @@ namespace DataverseToPowerBI.Configurator.Forms
             }
             finally
             {
-                btnChangeEnvironment.Enabled = true;
                 ShowProgress(false);
             }
         }
@@ -1378,6 +1430,26 @@ namespace DataverseToPowerBI.Configurator.Forms
             {
                 SetStatus($"Refreshing metadata for {tableName}...");
 
+                    // Before refresh: identify which fields are on the current form but NOT selected
+                    // These are fields the user has explicitly opted out of
+                    var optedOutFields = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                    if (_tableForms.ContainsKey(tableName) && _settings.TableForms.ContainsKey(tableName))
+                    {
+                        var currentForm = _tableForms[tableName].FirstOrDefault(f => f.FormId == _settings.TableForms[tableName]);
+                        if (currentForm?.Fields != null && _selectedAttributes.ContainsKey(tableName))
+                        {
+                            var selectedAttrs = _selectedAttributes[tableName];
+                            foreach (var formField in currentForm.Fields)
+                            {
+                                // If field is on form but NOT selected, user opted out
+                                if (!selectedAttrs.Contains(formField, StringComparer.OrdinalIgnoreCase))
+                                {
+                                    optedOutFields.Add(formField);
+                                }
+                            }
+                        }
+                    }
+
                     // Refresh attributes
                     var currentAttrs = await _client.GetAttributesAsync(tableName);
                     var oldAttrs = _tableAttributes.ContainsKey(tableName) ? _tableAttributes[tableName] : new List<AttributeMetadata>();
@@ -1401,7 +1473,7 @@ namespace DataverseToPowerBI.Configurator.Forms
                         }
                     }
 
-                    // Refresh forms and add new fields from selected form
+                    // Refresh forms and add new fields from selected form (excluding opted-out fields)
                     if (_settings.TableForms.ContainsKey(tableName))
                     {
                         var forms = await _client.GetFormsAsync(tableName, includeXml: false);
@@ -1416,11 +1488,13 @@ namespace DataverseToPowerBI.Configurator.Forms
                                 var formFields = DataverseClient.ExtractFieldsFromFormXml(formXml);
                                 
                                 // Add new fields from form that aren't already selected
+                                // BUT skip fields the user has explicitly opted out of
                                 if (_selectedAttributes.ContainsKey(tableName))
                                 {
                                     var newFieldsFromForm = formFields.Where(f => 
                                         currentAttrNames.Contains(f) && 
-                                        !_selectedAttributes[tableName].Contains(f, StringComparer.OrdinalIgnoreCase)).ToList();
+                                        !_selectedAttributes[tableName].Contains(f, StringComparer.OrdinalIgnoreCase) &&
+                                        !optedOutFields.Contains(f)).ToList();  // Don't re-add opted-out fields
                                     
                                     if (newFieldsFromForm.Any())
                                     {
@@ -1564,7 +1638,7 @@ namespace DataverseToPowerBI.Configurator.Forms
             listViewAttributes.Items.Clear();
         }
 
-        private async void AddTablesInBulk(List<TableInfo> tables, Dictionary<string, HashSet<string>> preservedSelections = null)
+        private async void AddTablesInBulk(List<TableInfo> tables, Dictionary<string, HashSet<string>>? preservedSelections = null)
         {
             // Add all tables to the list first
             foreach (var table in tables)

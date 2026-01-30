@@ -9,33 +9,52 @@ namespace DataverseToPowerBI.Configurator.Forms
         private TextBox txtName = null!;
         private TextBox txtEnvironmentUrl = null!;
         private TextBox txtFolder = null!;
+        private TextBox txtTemplate = null!;
         private Button btnChangeFolder = null!;
+        private Button btnChangeTemplate = null!;
         private Button btnCreate = null!;
         private Button btnCancel = null!;
         private Label lblName = null!;
         private Label lblEnvironmentUrl = null!;
         private Label lblFolder = null!;
+        private Label lblTemplate = null!;
         private Label lblPreview = null!;
         private Label lblPreviewPath = null!;
 
         public string SemanticModelName { get; private set; } = "";
         public string EnvironmentUrl { get; private set; } = "";
         public string WorkingFolder { get; private set; } = "";
+        public string TemplatePath { get; private set; } = "";
         public bool WorkingFolderChanged { get; private set; } = false;
+        public bool TemplateChanged { get; private set; } = false;
 
-        public NewSemanticModelDialog(string currentWorkingFolder, string currentEnvironmentUrl = "")
+        public NewSemanticModelDialog(string currentWorkingFolder, string currentEnvironmentUrl = "", string currentTemplatePath = "")
         {
             WorkingFolder = currentWorkingFolder;
+            
+            // Set default template path
+            if (string.IsNullOrEmpty(currentTemplatePath))
+            {
+                var baseDir = Path.GetDirectoryName(Application.ExecutablePath);
+                TemplatePath = Path.Combine(baseDir ?? "", "..", "..", "..", "..", "PBIP_DefaultTemplate");
+                TemplatePath = Path.GetFullPath(TemplatePath);
+            }
+            else
+            {
+                TemplatePath = currentTemplatePath;
+            }
+            
             InitializeComponent();
             txtFolder.Text = currentWorkingFolder;
             txtEnvironmentUrl.Text = currentEnvironmentUrl;
+            txtTemplate.Text = TemplatePath;
             UpdatePreview();
         }
 
         private void InitializeComponent()
         {
             this.Text = "Create New Semantic Model";
-            this.Size = new System.Drawing.Size(550, 340);
+            this.Size = new System.Drawing.Size(550, 410);
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
@@ -86,16 +105,39 @@ namespace DataverseToPowerBI.Configurator.Forms
 
             btnChangeFolder = new Button
             {
-                Text = "Change Folder...",
+                Text = "Change...",
                 Location = new System.Drawing.Point(410, 169),
                 Size = new System.Drawing.Size(100, 25)
             };
             btnChangeFolder.Click += BtnChangeFolder_Click;
 
+            lblTemplate = new Label
+            {
+                Text = "PBIP Template:",
+                Location = new System.Drawing.Point(20, 210),
+                AutoSize = true
+            };
+
+            txtTemplate = new TextBox
+            {
+                Location = new System.Drawing.Point(20, 235),
+                Size = new System.Drawing.Size(380, 23),
+                ReadOnly = true,
+                BackColor = System.Drawing.SystemColors.Window
+            };
+
+            btnChangeTemplate = new Button
+            {
+                Text = "Change...",
+                Location = new System.Drawing.Point(410, 234),
+                Size = new System.Drawing.Size(100, 25)
+            };
+            btnChangeTemplate.Click += BtnChangeTemplate_Click;
+
             lblPreview = new Label
             {
                 Text = "Will be created at:",
-                Location = new System.Drawing.Point(20, 210),
+                Location = new System.Drawing.Point(20, 275),
                 AutoSize = true,
                 ForeColor = System.Drawing.Color.Gray
             };
@@ -103,7 +145,7 @@ namespace DataverseToPowerBI.Configurator.Forms
             lblPreviewPath = new Label
             {
                 Text = "",
-                Location = new System.Drawing.Point(20, 228),
+                Location = new System.Drawing.Point(20, 293),
                 Size = new System.Drawing.Size(490, 20),
                 ForeColor = System.Drawing.Color.DarkBlue,
                 AutoEllipsis = true
@@ -112,7 +154,7 @@ namespace DataverseToPowerBI.Configurator.Forms
             btnCreate = new Button
             {
                 Text = "Create",
-                Location = new System.Drawing.Point(340, 260),
+                Location = new System.Drawing.Point(340, 330),
                 Size = new System.Drawing.Size(80, 28),
                 DialogResult = DialogResult.OK,
                 Enabled = false
@@ -122,7 +164,7 @@ namespace DataverseToPowerBI.Configurator.Forms
             btnCancel = new Button
             {
                 Text = "Cancel",
-                Location = new System.Drawing.Point(430, 260),
+                Location = new System.Drawing.Point(430, 330),
                 Size = new System.Drawing.Size(80, 28),
                 DialogResult = DialogResult.Cancel
             };
@@ -134,6 +176,9 @@ namespace DataverseToPowerBI.Configurator.Forms
             this.Controls.Add(lblFolder);
             this.Controls.Add(txtFolder);
             this.Controls.Add(btnChangeFolder);
+            this.Controls.Add(lblTemplate);
+            this.Controls.Add(txtTemplate);
+            this.Controls.Add(btnChangeTemplate);
             this.Controls.Add(lblPreview);
             this.Controls.Add(lblPreviewPath);
             this.Controls.Add(btnCreate);
@@ -201,11 +246,37 @@ namespace DataverseToPowerBI.Configurator.Forms
             }
         }
 
+        private void BtnChangeTemplate_Click(object? sender, EventArgs e)
+        {
+            using var dialog = new FolderBrowserDialog
+            {
+                Description = "Select PBIP Template Folder",
+                SelectedPath = txtTemplate.Text
+            };
+
+            if (dialog.ShowDialog(this) == DialogResult.OK)
+            {
+                // Verify it's a valid template folder - look for any .pbip file
+                var pbipFiles = Directory.GetFiles(dialog.SelectedPath, "*.pbip");
+                if (pbipFiles.Length == 0)
+                {
+                    MessageBox.Show("Selected folder does not contain a valid PBIP template (.pbip file not found).",
+                        "Invalid Template", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+                
+                txtTemplate.Text = dialog.SelectedPath;
+                TemplatePath = dialog.SelectedPath;
+                TemplateChanged = true;
+            }
+        }
+
         private void BtnCreate_Click(object? sender, EventArgs e)
         {
             var name = txtName.Text.Trim();
             var envUrl = txtEnvironmentUrl.Text.Trim();
             var folder = txtFolder.Text.Trim();
+            var template = txtTemplate.Text.Trim();
 
             if (string.IsNullOrWhiteSpace(name))
             {
@@ -239,6 +310,14 @@ namespace DataverseToPowerBI.Configurator.Forms
             if (string.IsNullOrEmpty(folder))
             {
                 MessageBox.Show("Please set a working folder first.", "Validation",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                this.DialogResult = DialogResult.None;
+                return;
+            }
+
+            if (string.IsNullOrEmpty(template) || !Directory.Exists(template))
+            {
+                MessageBox.Show("Please select a valid PBIP template folder.", "Validation",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 this.DialogResult = DialogResult.None;
                 return;

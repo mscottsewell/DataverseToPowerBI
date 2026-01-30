@@ -18,7 +18,6 @@ namespace DataverseToPowerBI.Configurator.Forms
             
             // Ribbon ToolStrip
             this.toolStripRibbon = new System.Windows.Forms.ToolStrip();
-            this.btnChangeEnvironment = new System.Windows.Forms.ToolStripButton();
             this.btnRefreshMetadata = new System.Windows.Forms.ToolStripButton();
             this.lblConnectionStatus = new System.Windows.Forms.ToolStripLabel();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
@@ -103,7 +102,6 @@ namespace DataverseToPowerBI.Configurator.Forms
             // toolStripRibbon
             this.toolStripRibbon.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.toolStripRibbon.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-                this.btnChangeEnvironment,
                 this.btnRefreshMetadata,
                 this.lblConnectionStatus,
                 this.toolStripSeparator1,
@@ -127,24 +125,14 @@ namespace DataverseToPowerBI.Configurator.Forms
             this.toolStripSeparator1.Name = "toolStripSeparator1";
             this.toolStripSeparator1.Size = new System.Drawing.Size(6, 28);
 
-            // btnChangeEnvironment
-            this.btnChangeEnvironment.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.ImageAndText;
-            this.btnChangeEnvironment.Image = RibbonIcons.CloudIcon;
-            this.btnChangeEnvironment.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnChangeEnvironment.Name = "btnChangeEnvironment";
-            this.btnChangeEnvironment.Size = new System.Drawing.Size(130, 25);
-            this.btnChangeEnvironment.Text = "Dataverse";
-            this.btnChangeEnvironment.ToolTipText = "Configure the Dataverse environment URL";
-            this.btnChangeEnvironment.Click += new System.EventHandler(this.BtnChangeEnvironment_Click);
-
             // btnRefreshMetadata
             this.btnRefreshMetadata.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.ImageAndText;
             this.btnRefreshMetadata.Image = RibbonIcons.RefreshIcon;
             this.btnRefreshMetadata.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnRefreshMetadata.Name = "btnRefreshMetadata";
             this.btnRefreshMetadata.Size = new System.Drawing.Size(120, 25);
-            this.btnRefreshMetadata.Text = "Metadata";
-            this.btnRefreshMetadata.ToolTipText = "Connect and refresh metadata from the Dataverse environment";
+            this.btnRefreshMetadata.Text = "Connect";
+            this.btnRefreshMetadata.ToolTipText = "Connect to Dataverse and refresh metadata";
             this.btnRefreshMetadata.Click += new System.EventHandler(this.BtnRefreshMetadata_Click);
 
             // lblConnectionStatus
@@ -606,7 +594,6 @@ namespace DataverseToPowerBI.Configurator.Forms
 
         // Ribbon ToolStrip
         private System.Windows.Forms.ToolStrip toolStripRibbon;
-        private System.Windows.Forms.ToolStripButton btnChangeEnvironment;
         private System.Windows.Forms.ToolStripButton btnRefreshMetadata;
         private System.Windows.Forms.ToolStripLabel lblConnectionStatus;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;

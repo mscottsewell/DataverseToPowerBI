@@ -24,3 +24,4 @@ __pycache__/
 # Dataverse cache files
 .dataverse_metadata_cache.json
 Reports
+Reports/*
