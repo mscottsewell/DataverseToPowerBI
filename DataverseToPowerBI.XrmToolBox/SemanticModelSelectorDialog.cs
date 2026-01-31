@@ -70,36 +70,44 @@ namespace DataverseToPowerBI.XrmToolBox
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.StartPosition = FormStartPosition.CenterParent;
+            this.Padding = new Padding(0);
 
             // Left panel - model list
             var lblModels = new Label
             {
                 Text = "Semantic Models (grouped by environment):",
                 Location = new Point(10, 15),
-                AutoSize = true
+                AutoSize = true,
+                Font = new Font(SystemFonts.MessageBoxFont.FontFamily, SystemFonts.MessageBoxFont.Size, FontStyle.Regular)
             };
 
             listViewModels = new ListView
             {
-                Location = new Point(30, 40),
-                Size = new Size(455, 380),
+                Location = new Point(35, 40),
+                Size = new Size(450, 380),
                 View = View.Details,
                 FullRowSelect = true,
                 MultiSelect = false,
                 HideSelection = false
             };
-            listViewModels.Columns.Add("Name", 180);
-            listViewModels.Columns.Add("Fact Table", 120);
+            listViewModels.Columns.Add("Name", 150);
+            listViewModels.Columns.Add("Fact Table", 100);
             listViewModels.Columns.Add("Tables", 60);
-            listViewModels.Columns.Add("Last Used", 95);
+            listViewModels.Columns.Add("Last Used", 140);
             listViewModels.SelectedIndexChanged += ListViewModels_SelectedIndexChanged;
             listViewModels.DoubleClick += ListViewModels_DoubleClick;
+            
+            // Set visual styles for group headers and indentation
+            listViewModels.OwnerDraw = true;
+            listViewModels.DrawItem += ListViewModels_DrawItem;
+            listViewModels.DrawSubItem += ListViewModels_DrawSubItem;
+            listViewModels.DrawColumnHeader += ListViewModels_DrawColumnHeader;
 
             // Buttons for model management
             btnNew = new Button
             {
                 Text = "New...",
-                Location = new Point(30, 430),
+                Location = new Point(35, 430),
                 Size = new Size(70, 28)
             };
             btnNew.Click += BtnNew_Click;
@@ -107,7 +115,7 @@ namespace DataverseToPowerBI.XrmToolBox
             btnCopy = new Button
             {
                 Text = "Copy...",
-                Location = new Point(105, 430),
+                Location = new Point(110, 430),
                 Size = new Size(70, 28),
                 Enabled = false
             };
@@ -116,7 +124,7 @@ namespace DataverseToPowerBI.XrmToolBox
             btnRename = new Button
             {
                 Text = "Rename...",
-                Location = new Point(180, 430),
+                Location = new Point(185, 430),
                 Size = new Size(80, 28),
                 Enabled = false
             };
@@ -125,7 +133,7 @@ namespace DataverseToPowerBI.XrmToolBox
             btnDelete = new Button
             {
                 Text = "Delete",
-                Location = new Point(265, 430),
+                Location = new Point(270, 430),
                 Size = new Size(70, 28),
                 Enabled = false
             };
@@ -439,6 +447,45 @@ namespace DataverseToPowerBI.XrmToolBox
         private void BtnSelect_Click(object sender, EventArgs e)
         {
             ConfirmAndSelect();
+        }
+
+        private void ListViewModels_DrawColumnHeader(object sender, DrawListViewColumnHeaderEventArgs e)
+        {
+            e.DrawDefault = true;
+        }
+
+        private void ListViewModels_DrawItem(object sender, DrawListViewItemEventArgs e)
+        {
+            // Draw group headers at left edge, items indented
+            if (e.Item.Group != null && e.Item.Index == e.Item.Group.Items[0].Index)
+            {
+                // This is the first item in a group - draw the group header
+                // Group headers are automatically drawn by the ListView
+            }
+            e.DrawDefault = false;
+        }
+
+        private void ListViewModels_DrawSubItem(object sender, DrawListViewSubItemEventArgs e)
+        {
+            // Indent all items by 20 pixels
+            var bounds = e.Bounds;
+            if (e.ColumnIndex == 0)
+            {
+                // First column - add indentation
+                bounds = new Rectangle(bounds.X + 20, bounds.Y, bounds.Width - 20, bounds.Height);
+            }
+
+            // Draw background
+            var bgColor = e.Item.Selected ? SystemColors.Highlight : e.Item.BackColor;
+            using (var brush = new SolidBrush(bgColor))
+            {
+                e.Graphics.FillRectangle(brush, e.Bounds);
+            }
+
+            // Draw text
+            var fgColor = e.Item.Selected ? SystemColors.HighlightText : e.Item.ForeColor;
+            TextRenderer.DrawText(e.Graphics, e.SubItem.Text, e.Item.Font, bounds,
+                fgColor, TextFormatFlags.Left | TextFormatFlags.VerticalCenter);
         }
 
         private void ConfirmAndSelect()
