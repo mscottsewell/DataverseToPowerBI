@@ -19,10 +19,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using System.Xml;
 using System.Xml.Linq;
 using Microsoft.Identity.Client;
 using Newtonsoft.Json.Linq;
@@ -93,6 +95,24 @@ namespace DataverseToPowerBI.Core.Services
         /// The "organizations" endpoint allows any Azure AD tenant.
         /// </summary>
         private const string Authority = "https://login.microsoftonline.com/organizations";
+
+        #endregion
+
+        #region Helpers
+
+        /// <summary>
+        /// Securely parses XML to prevent XXE (XML External Entity) attacks.
+        /// </summary>
+        private static XDocument ParseXmlSecurely(string xml)
+        {
+            var settings = new XmlReaderSettings
+            {
+                DtdProcessing = DtdProcessing.Prohibit,
+                XmlResolver = null
+            };
+            using var reader = XmlReader.Create(new StringReader(xml), settings);
+            return XDocument.Load(reader);
+        }
 
         #endregion
 
@@ -305,7 +325,11 @@ namespace DataverseToPowerBI.Core.Services
                         }
                     }
                 }
-                catch { } // Silently skip batch on error - some tables may still be accessible
+                catch (Exception)
+                {
+                    // Silently skip batch on error - some tables may still be accessible
+                    // This allows partial results when a subset of tables have permission issues
+                }
             }
 
             // Return sorted by display name for consistent UI ordering
@@ -574,7 +598,7 @@ namespace DataverseToPowerBI.Core.Services
             var fields = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             try
             {
-                var doc = XDocument.Parse(formXml);
+                var doc = ParseXmlSecurely(formXml);
                 
                 // Find all control elements and extract their datafieldname attribute
                 foreach (var control in doc.Descendants("control"))
@@ -584,7 +608,10 @@ namespace DataverseToPowerBI.Core.Services
                         fields.Add(fieldName.ToLower()); // Normalize to lowercase
                 }
             }
-            catch { } // Ignore XML parsing errors - return whatever fields we found
+            catch (Exception)
+            {
+                // Ignore XML parsing errors - return whatever fields we found
+            }
 
             return fields.OrderBy(f => f).ToList();
         }

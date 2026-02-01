@@ -9,6 +9,11 @@ Reports/ImaginationWorkshop
 **/bin/
 **/obj/
 
+# NuGet package build artifacts
+Package/*.nupkg
+Package/lib/
+Package/content/
+
 # Python (legacy - can be removed once .venv is deleted)
 .venv/
 __pycache__/

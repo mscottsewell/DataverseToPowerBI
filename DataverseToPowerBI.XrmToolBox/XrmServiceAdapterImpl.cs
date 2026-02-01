@@ -30,8 +30,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Xml;
 using System.Xml.Linq;
 using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Query;
@@ -56,6 +58,20 @@ namespace DataverseToPowerBI.XrmToolBox
         private bool _isConnected;
 
         public bool IsConnected => _isConnected;
+
+        /// <summary>
+        /// Securely parses XML to prevent XXE (XML External Entity) attacks.
+        /// </summary>
+        private static XDocument ParseXmlSecurely(string xml)
+        {
+            var settings = new XmlReaderSettings
+            {
+                DtdProcessing = DtdProcessing.Prohibit,
+                XmlResolver = null
+            };
+            using var reader = XmlReader.Create(new StringReader(xml), settings);
+            return XDocument.Load(reader);
+        }
 
         /// <summary>
         /// Creates adapter from IOrganizationService (provided by XrmToolBox)
@@ -425,7 +441,7 @@ namespace DataverseToPowerBI.XrmToolBox
             var fields = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             try
             {
-                var doc = XDocument.Parse(formXml);
+                var doc = ParseXmlSecurely(formXml);
                 foreach (var control in doc.Descendants("control"))
                 {
                     var fieldName = control.Attribute("datafieldname")?.Value;
@@ -433,7 +449,11 @@ namespace DataverseToPowerBI.XrmToolBox
                         fields.Add(fieldName.ToLower());
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                // Log but don't throw - return partial results
+                Services.DebugLogger.Log($"XML parsing error in FormXml: {ex.Message}");
+            }
 
             return fields.OrderBy(f => f).ToList();
         }
@@ -443,7 +463,7 @@ namespace DataverseToPowerBI.XrmToolBox
             var columns = new List<string>();
             try
             {
-                var doc = XDocument.Parse(fetchXml);
+                var doc = ParseXmlSecurely(fetchXml);
                 foreach (var attr in doc.Descendants("attribute"))
                 {
                     var name = attr.Attribute("name")?.Value;
@@ -451,7 +471,11 @@ namespace DataverseToPowerBI.XrmToolBox
                         columns.Add(name.ToLower());
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                // Log but don't throw - return partial results
+                Services.DebugLogger.Log($"XML parsing error in FetchXml: {ex.Message}");
+            }
 
             return columns;
         }

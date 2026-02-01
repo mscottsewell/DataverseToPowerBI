@@ -38,6 +38,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Xml;
 using System.Xml.Linq;
 
 namespace DataverseToPowerBI.XrmToolBox.Services
@@ -55,6 +56,20 @@ namespace DataverseToPowerBI.XrmToolBox.Services
         public FetchXmlToSqlConverter(int utcOffsetHours = -6)
         {
             _utcOffsetHours = utcOffsetHours;
+        }
+
+        /// <summary>
+        /// Securely parses XML to prevent XXE (XML External Entity) attacks.
+        /// </summary>
+        private static XDocument ParseXmlSecurely(string xml)
+        {
+            var settings = new XmlReaderSettings
+            {
+                DtdProcessing = DtdProcessing.Prohibit,
+                XmlResolver = null
+            };
+            using var reader = XmlReader.Create(new StringReader(xml), settings);
+            return XDocument.Load(reader);
         }
 
         public class ConversionResult
@@ -85,7 +100,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                     return CreateResult("", true);
                 }
 
-                var doc = XDocument.Parse(fetchXml);
+                var doc = ParseXmlSecurely(fetchXml);
                 var entity = doc.Root?.Element("entity");
                 
                 if (entity == null)
@@ -587,7 +602,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
         {
             try
             {
-                var doc = XDocument.Parse(xml);
+                var doc = ParseXmlSecurely(xml);
                 return doc.ToString();
             }
             catch
