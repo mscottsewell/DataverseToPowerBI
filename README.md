@@ -24,7 +24,8 @@ This tool solves these problems by:
 4. **Generating a complete Power BI project** ready to open and customize
 5. **Imports Metadata for Formatting** clean and user-friendly model
 ---
-<img width="1421" height="905" alt="image" src="https://github.com/user-attachments/assets/3550d71b-ae00-4c02-bfb7-5618a7e6cd4e" />
+<img width="1600" alt="Screenshot of application" src="https://github.com/user-attachments/assets/6d2603b3-118b-46ba-9d6e-f4cc9dc2215f" />
+
 
 ## ✨ Key Features
 
