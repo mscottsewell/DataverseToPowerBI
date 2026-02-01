@@ -111,6 +111,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <!-- Embed icon PNG files -->
+    <EmbeddedResource Include="Assets\Icons\*.png" />
+  </ItemGroup>
+  <ItemGroup>
     <None Include="..\DataverseToPowerBI.Core\bin\Release\net48\DataverseToPowerBI.Core.dll">
       <Link>DataverseToPowerBI.Core.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

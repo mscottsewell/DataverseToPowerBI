@@ -702,6 +702,14 @@ namespace DataverseToPowerBI.Core.Models
         /// When this solution was last modified.
         /// </summary>
         public DateTime? ModifiedOn { get; set; }
+
+        /// <summary>
+        /// Returns the friendly name for display in ComboBox and other controls.
+        /// </summary>
+        public override string ToString()
+        {
+            return FriendlyName ?? UniqueName ?? "(Unnamed)";
+        }
     }
 
     /// <summary>

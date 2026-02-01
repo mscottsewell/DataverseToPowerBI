@@ -30,9 +30,36 @@ param(
 $ErrorActionPreference = "Stop"
 $repoRoot = $PSScriptRoot
 
-# VERSION CONFIGURATION - Update this version number for new releases
-# The script will automatically update the .nuspec file with this version
-$version = "1.3.40"
+# VERSION CONFIGURATION - Read from AssemblyInfo.cs and auto-increment revision (unless DeployOnly)
+$assemblyInfoPath = Join-Path $repoRoot "DataverseToPowerBI.XrmToolBox\Properties\AssemblyInfo.cs"
+$assemblyContent = Get-Content $assemblyInfoPath -Raw
+
+# Extract current version from AssemblyVersion attribute
+if ($assemblyContent -match '\[assembly: AssemblyVersion\("(\d+)\.(\d+)\.(\d+)\.(\d+)"\)\]') {
+    $major = [int]$Matches[1]
+    $minor = [int]$Matches[2]
+    $revision = [int]$Matches[3]
+    $build = [int]$Matches[4]
+    
+    if (-not $DeployOnly) {
+        # Auto-increment build for new builds
+        $build = $build + 1
+        $fullVersion = "$major.$minor.$revision.$build"
+        
+        # Update AssemblyInfo.cs with new version
+        $assemblyContent = $assemblyContent -replace '\[assembly: AssemblyVersion\(".*?"\)\]', "[assembly: AssemblyVersion(`"$fullVersion`")]"
+        $assemblyContent = $assemblyContent -replace '\[assembly: AssemblyFileVersion\(".*?"\)\]', "[assembly: AssemblyFileVersion(`"$fullVersion`")]"
+        Set-Content -Path $assemblyInfoPath -Value $assemblyContent -NoNewline
+        Write-Host "Auto-incremented version: $major.$minor.$revision (from AssemblyInfo.cs)" -ForegroundColor Magenta
+    } else {
+        $fullVersion = "$major.$minor.$revision.$build"
+        Write-Host "Current version: $major.$minor.$revision (DeployOnly - no increment)" -ForegroundColor Gray
+    }
+    
+    $version = "$major.$minor.$revision"
+} else {
+    throw "Could not parse version from AssemblyInfo.cs"
+}
 
 Write-Host "=====================================" -ForegroundColor Cyan
 Write-Host "DataverseToPowerBI XrmToolBox Plugin" -ForegroundColor Cyan
@@ -60,15 +87,7 @@ if (-not $DeployOnly) {
     dotnet clean "$repoRoot\DataverseMetadata-to-PowerBI-Semantic-Model.sln" -c Release
     if ($LASTEXITCODE -ne 0) { throw "Clean failed" }
     
-    # Update AssemblyInfo.cs with current version
-    $assemblyInfoPath = Join-Path $repoRoot "DataverseToPowerBI.XrmToolBox\Properties\AssemblyInfo.cs"
-    if (Test-Path $assemblyInfoPath) {
-        $assemblyContent = Get-Content $assemblyInfoPath -Raw
-        $assemblyContent = $assemblyContent -replace '\[assembly: AssemblyVersion\(".*?"\)\]', "[assembly: AssemblyVersion(`"$version.0`")]"
-        $assemblyContent = $assemblyContent -replace '\[assembly: AssemblyFileVersion\(".*?"\)\]', "[assembly: AssemblyFileVersion(`"$version.0`")]"
-        Set-Content -Path $assemblyInfoPath -Value $assemblyContent -NoNewline
-        Write-Host "  ✓ Updated AssemblyInfo.cs to version $version.0" -ForegroundColor Green
-    }
+    Write-Host "  ✓ Using version $fullVersion" -ForegroundColor Green
     
     Write-Host "[2/6] Building Core library (.NET Framework 4.8)..." -ForegroundColor Yellow
     dotnet build $coreProject -c Release --no-restore

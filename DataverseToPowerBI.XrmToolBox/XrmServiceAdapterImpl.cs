@@ -589,5 +589,130 @@ namespace DataverseToPowerBI.XrmToolBox
 
             return columns;
         }
+
+        /// <summary>
+        /// Gets one-to-many relationships for a table (tables that reference this table via lookup).
+        /// </summary>
+        public List<OneToManyRelationshipInfo> GetOneToManyRelationshipsSync(IOrganizationService service, string tableName)
+        {
+            var relationships = new List<OneToManyRelationshipInfo>();
+
+            try
+            {
+                var request = new RetrieveEntityRequest
+                {
+                    LogicalName = tableName,
+                    EntityFilters = EntityFilters.Relationships,
+                    RetrieveAsIfPublished = true
+                };
+
+                var response = (RetrieveEntityResponse)service.Execute(request);
+                var entityMetadata = response.EntityMetadata;
+
+                if (entityMetadata?.OneToManyRelationships != null)
+                {
+                    foreach (var rel in entityMetadata.OneToManyRelationships)
+                    {
+                        // Skip self-references
+                        if (rel.ReferencingEntity == tableName)
+                            continue;
+
+                        // Skip system entities that are typically not useful
+                        var referencingEntity = rel.ReferencingEntity ?? "";
+                        if (referencingEntity.StartsWith("msdyn_") && referencingEntity.Contains("_migration"))
+                            continue;
+
+                        // Get lookup display name
+                        string lookupDisplayName = rel.ReferencingAttribute;
+                        // Note: Would need additional metadata call to get lookup display name
+
+                        relationships.Add(new OneToManyRelationshipInfo
+                        {
+                            ReferencingEntity = rel.ReferencingEntity,
+                            ReferencingAttribute = rel.ReferencingAttribute,
+                            ReferencedEntity = rel.ReferencedEntity,
+                            SchemaName = rel.SchemaName,
+                            LookupDisplayName = lookupDisplayName
+                        });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Services.DebugLogger.Log($"Error getting one-to-many relationships for {tableName}: {ex.Message}");
+            }
+
+            return relationships.OrderBy(r => r.ReferencingEntity).ToList();
+        }
+
+        /// <summary>
+        /// Gets a dictionary of all entity logical names to their display names.
+        /// </summary>
+        public Dictionary<string, string> GetAllEntityDisplayNamesSync(IOrganizationService service)
+        {
+            var displayNames = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+            try
+            {
+                var request = new RetrieveAllEntitiesRequest
+                {
+                    EntityFilters = EntityFilters.Entity,
+                    RetrieveAsIfPublished = true
+                };
+
+                var response = (RetrieveAllEntitiesResponse)service.Execute(request);
+
+                if (response.EntityMetadata != null)
+                {
+                    foreach (var entity in response.EntityMetadata)
+                    {
+                        var logicalName = entity.LogicalName ?? "";
+                        var displayName = entity.DisplayName?.UserLocalizedLabel?.Label ?? logicalName;
+                        
+                        if (!string.IsNullOrEmpty(logicalName))
+                        {
+                            displayNames[logicalName] = displayName;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Services.DebugLogger.Log($"Error getting all entity display names: {ex.Message}");
+            }
+
+            return displayNames;
+        }
+    }
+
+    /// <summary>
+    /// Represents a one-to-many relationship where another table references this table.
+    /// </summary>
+    public class OneToManyRelationshipInfo
+    {
+        /// <summary>
+        /// The entity that contains the lookup field (the "many" side).
+        /// </summary>
+        public string ReferencingEntity { get; set; }
+
+        /// <summary>
+        /// The lookup attribute name on the referencing entity.
+        /// </summary>
+        public string ReferencingAttribute { get; set; }
+
+        /// <summary>
+        /// The entity being referenced (the "one" side).
+        /// </summary>
+        public string ReferencedEntity { get; set; }
+
+        /// <summary>
+        /// The schema name of the relationship.
+        /// </summary>
+        public string SchemaName { get; set; }
+
+        /// <summary>
+        /// Display name of the lookup field.
+        /// </summary>
+        public string LookupDisplayName { get; set; }
     }
 }

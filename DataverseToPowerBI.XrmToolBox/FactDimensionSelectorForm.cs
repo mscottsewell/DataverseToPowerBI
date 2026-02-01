@@ -60,6 +60,7 @@ namespace DataverseToPowerBI.XrmToolBox
         private readonly IOrganizationService _service;
         private List<TableInfo> _tables;
         private Dictionary<string, List<CoreAttributeMetadata>> _tableAttributes = new Dictionary<string, List<CoreAttributeMetadata>>();
+        private Dictionary<string, string> _allEntityDisplayNames = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         private List<DataverseSolution> _allSolutions;
         private string _currentSolutionId;
 
@@ -112,6 +113,10 @@ namespace DataverseToPowerBI.XrmToolBox
             _currentRelationships = currentRelationships ?? new List<ExportRelationship>();
             _allSolutions = allSolutions;
             _currentSolutionId = currentSolutionId;
+            
+            // Load all entity display names for resolving target tables outside of the solution
+            _allEntityDisplayNames = adapter.GetAllEntityDisplayNamesSync(service);
+            
             InitializeComponent();
             LoadSolutionDropdown();
             LoadFactTableDropdown();
@@ -120,7 +125,7 @@ namespace DataverseToPowerBI.XrmToolBox
         private void InitializeComponent()
         {
             this.Text = "Select Fact Table and Dimensions";
-            this.Width = 950;
+            this.Width = 1050;
             this.Height = 700;
             this.StartPosition = FormStartPosition.CenterParent;
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
@@ -208,7 +213,7 @@ namespace DataverseToPowerBI.XrmToolBox
             listViewRelationships = new ListView
             {
                 Location = new Point(10, 165),
-                Width = 910,
+                Width = 1010,
                 Height = 390,
                 View = View.Details,
                 FullRowSelect = true,
@@ -219,9 +224,9 @@ namespace DataverseToPowerBI.XrmToolBox
             listViewRelationships.Columns.Add("Lookup Field", 145);
             listViewRelationships.Columns.Add("Lookup Logical Name", 130);
             listViewRelationships.Columns.Add("Target Table", 145);
+            listViewRelationships.Columns.Add("Target Logical Name", 130);
             listViewRelationships.Columns.Add("Status", 80);
             listViewRelationships.Columns.Add("Type", 70);
-            listViewRelationships.Columns.Add("Target Logical Name", 130);
             listViewRelationships.ItemChecked += ListViewRelationships_ItemChecked;
             listViewRelationships.DoubleClick += ListViewRelationships_DoubleClick;
             listViewRelationships.SelectedIndexChanged += ListViewRelationships_SelectedIndexChanged;
@@ -476,6 +481,12 @@ namespace DataverseToPowerBI.XrmToolBox
 
                 PopulateRelationshipsListView(SelectedFactTable.LogicalName, lookups, isSnowflake: false);
 
+                // Add one-to-many relationships if enabled
+                if (chkIncludeOneToMany.Checked)
+                {
+                    LoadOneToManyRelationships();
+                }
+
                 // Restore snowflake relationships
                 var factLookupTargets = lookups
                     .Where(l => l.Targets != null)
@@ -514,6 +525,70 @@ namespace DataverseToPowerBI.XrmToolBox
             }
         }
 
+        private void LoadOneToManyRelationships()
+        {
+            if (SelectedFactTable == null) return;
+
+            try
+            {
+                lblStatus.Text = $"Loading one-to-many relationships for {SelectedFactTable.DisplayName}...";
+                Application.DoEvents();
+
+                // Get one-to-many relationships from the adapter
+                var oneToManyRels = _adapter.GetOneToManyRelationshipsSync(_service, SelectedFactTable.LogicalName);
+
+                foreach (var rel in oneToManyRels)
+                {
+                    // Skip if already exists
+                    if (listViewRelationships.Items.Cast<ListViewItem>()
+                        .Any(i => ((RelationshipTag)i.Tag).SourceTable == rel.ReferencingEntity &&
+                                  ((RelationshipTag)i.Tag).SourceAttribute == rel.ReferencingAttribute))
+                        continue;
+
+                    // Find referencing table display name
+                    var referencingTable = _tables.FirstOrDefault(t => t.LogicalName == rel.ReferencingEntity);
+                    var referencingDisplayName = referencingTable?.DisplayName 
+                        ?? (_allEntityDisplayNames.TryGetValue(rel.ReferencingEntity, out var refDisplayName) ? refDisplayName : rel.ReferencingEntity);
+
+                    var item = new ListViewItem("");
+                    item.Checked = false; // One-to-many not auto-selected
+                    item.SubItems.Add("1:Many");
+                    item.SubItems.Add(rel.LookupDisplayName ?? rel.ReferencingAttribute);
+                    item.SubItems.Add(rel.ReferencingAttribute);
+                    item.SubItems.Add(referencingDisplayName);
+                    item.SubItems.Add(rel.ReferencingEntity);
+                    item.SubItems.Add("Active");
+                    item.SubItems.Add("Reverse");
+                    item.Tag = new RelationshipTag
+                    {
+                        SourceTable = rel.ReferencingEntity,
+                        SourceAttribute = rel.ReferencingAttribute,
+                        TargetTable = SelectedFactTable.LogicalName,
+                        DisplayName = rel.LookupDisplayName ?? rel.ReferencingAttribute,
+                        IsActive = true,
+                        IsSnowflake = false,
+                        IsOneToMany = true,
+                        AssumeReferentialIntegrity = false
+                    };
+                    item.BackColor = Color.LightGreen;
+                    listViewRelationships.Items.Add(item);
+                }
+
+                // Update status
+                var lookupCount = listViewRelationships.Items.Cast<ListViewItem>()
+                    .Count(i => !((RelationshipTag)i.Tag).IsOneToMany);
+                var oneToManyCount = listViewRelationships.Items.Cast<ListViewItem>()
+                    .Count(i => ((RelationshipTag)i.Tag).IsOneToMany);
+                
+                lblStatus.Text = $"Found {lookupCount} lookup fields + {oneToManyCount} one-to-many relationships on {SelectedFactTable.DisplayName}.";
+            }
+            catch (Exception ex)
+            {
+                lblStatus.Text = $"Error loading one-to-many: {ex.Message}";
+                System.Diagnostics.Debug.WriteLine($"Error loading one-to-many relationships: {ex}");
+            }
+        }
+
         private void PopulateRelationshipsListView(string sourceTable, List<CoreAttributeMetadata> lookups, bool isSnowflake)
         {
             if (!isSnowflake)
@@ -542,7 +617,8 @@ namespace DataverseToPowerBI.XrmToolBox
 
                     // Find target table display name
                     var targetTable = _tables.FirstOrDefault(t => t.LogicalName == target);
-                    var targetDisplayName = targetTable?.DisplayName ?? target;
+                    var targetDisplayName = targetTable?.DisplayName 
+                        ?? (_allEntityDisplayNames.TryGetValue(target, out var entityDisplayName) ? entityDisplayName : target);
 
                     // Check for multiple lookups to same target
                     var multipleLookupsToTarget = targetGroups.ContainsKey(target) && targetGroups[target].Count > 1;
@@ -575,9 +651,9 @@ namespace DataverseToPowerBI.XrmToolBox
                     item.SubItems.Add(lookup.DisplayName ?? lookup.LogicalName);
                     item.SubItems.Add(lookup.LogicalName);
                     item.SubItems.Add(targetDisplayName);
+                    item.SubItems.Add(target);
                     item.SubItems.Add(statusText);
                     item.SubItems.Add(typeText);
-                    item.SubItems.Add(target);
                     item.Tag = new RelationshipTag
                     {
                         SourceTable = sourceTable,
@@ -619,13 +695,24 @@ namespace DataverseToPowerBI.XrmToolBox
 
         private void ListViewRelationships_DoubleClick(object sender, EventArgs e)
         {
-            // Toggle Active/Inactive on double-click
-            if (listViewRelationships.SelectedItems.Count == 0) return;
+            // Get the item at the click location
+            var hitTest = listViewRelationships.HitTest(listViewRelationships.PointToClient(Cursor.Position));
+            if (hitTest.Item == null) return;
 
-            var item = listViewRelationships.SelectedItems[0];
+            var item = hitTest.Item;
             var config = (RelationshipTag)item.Tag;
 
-            config.IsActive = !config.IsActive;
+            // If item is not checked, check it and set to active
+            if (!item.Checked)
+            {
+                item.Checked = true;
+                config.IsActive = true;
+            }
+            else
+            {
+                // Toggle Active/Inactive
+                config.IsActive = !config.IsActive;
+            }
 
             // If setting to active, set others with same target to inactive
             if (config.IsActive)
@@ -658,7 +745,7 @@ namespace DataverseToPowerBI.XrmToolBox
 
             var statusText = config.IsActive ? "Active" : "Inactive";
             if (targetCount > 1) statusText += " ⚠";
-            item.SubItems[5].Text = statusText;
+            item.SubItems[6].Text = statusText;
         }
 
         private void UpdateFinishButtonState()
@@ -773,7 +860,8 @@ namespace DataverseToPowerBI.XrmToolBox
                 return;
 
             var targetTable = _tables.FirstOrDefault(t => t.LogicalName == rel.TargetTable);
-            var targetDisplayName = targetTable?.DisplayName ?? rel.TargetTable;
+            var targetDisplayName = targetTable?.DisplayName 
+                ?? (_allEntityDisplayNames.TryGetValue(rel.TargetTable, out var entityDisplayName) ? entityDisplayName : rel.TargetTable);
 
             var item = new ListViewItem("");
             item.Checked = true;
@@ -781,9 +869,9 @@ namespace DataverseToPowerBI.XrmToolBox
             item.SubItems.Add(rel.DisplayName ?? rel.SourceAttribute);
             item.SubItems.Add(rel.SourceAttribute);
             item.SubItems.Add(targetDisplayName);
+            item.SubItems.Add(rel.TargetTable);
             item.SubItems.Add(rel.IsActive ? "Active" : "Inactive");
             item.SubItems.Add("Snowflake");
-            item.SubItems.Add(rel.TargetTable);
             item.Tag = new RelationshipTag
             {
                 SourceTable = rel.SourceTable,
@@ -850,6 +938,7 @@ namespace DataverseToPowerBI.XrmToolBox
             {
                 allTableNames.Add(config.TargetTable);
                 if (config.IsSnowflake) allTableNames.Add(config.SourceTable);
+                if (config.IsOneToMany) allTableNames.Add(config.SourceTable); // For 1:N, add the child table
             }
 
             foreach (var tableName in allTableNames)
@@ -877,6 +966,7 @@ namespace DataverseToPowerBI.XrmToolBox
             public string DisplayName { get; set; }
             public bool IsActive { get; set; }
             public bool IsSnowflake { get; set; }
+            public bool IsOneToMany { get; set; }
             public bool AssumeReferentialIntegrity { get; set; }
         }
     }
