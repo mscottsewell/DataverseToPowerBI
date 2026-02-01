@@ -5,12 +5,15 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Json;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using XrmToolBox.Extensibility;
 using McTools.Xrm.Connection;
 using Microsoft.Xrm.Sdk;
 using DataverseToPowerBI.Core.Interfaces;
 using DataverseToPowerBI.Core.Models;
+using DataverseToPowerBI.XrmToolBox.Services;
+using XrmModels = DataverseToPowerBI.XrmToolBox.Models;
 
 namespace DataverseToPowerBI.XrmToolBox
 {
@@ -47,6 +50,26 @@ namespace DataverseToPowerBI.XrmToolBox
         private bool _attributesSortAscending = true;
         private int _relationshipsSortColumn = -1;
         private bool _relationshipsSortAscending = true;
+
+        /// <summary>
+        /// Extracts the environment name from a Dataverse URL
+        /// Example: "portfolioshapingdev.crm.dynamics.com" returns "portfolioshapingdev"
+        /// </summary>
+        private static string ExtractEnvironmentName(string dataverseUrl)
+        {
+            if (string.IsNullOrEmpty(dataverseUrl))
+                return "default";
+            
+            // Remove protocol if present
+            var url = dataverseUrl.Replace("https://", "").Replace("http://", "");
+            
+            // Get first segment before dot
+            var firstDot = url.IndexOf('.');
+            if (firstDot > 0)
+                return url.Substring(0, firstDot);
+            
+            return url;
+        }
         
         // Solution 
         private string _currentSolutionName;
@@ -62,13 +85,47 @@ namespace DataverseToPowerBI.XrmToolBox
             // Initialize the semantic model manager
             _modelManager = new SemanticModelManager();
             
-            // Determine template path from plugin folder
-            var pluginFolder = Path.GetDirectoryName(GetType().Assembly.Location);
-            _templatePath = Path.Combine(pluginFolder ?? "", "PBIP_DefaultTemplate");
+            // Determine template path - try multiple locations in priority order
+            // 1. Settings folder
+            var settingsTemplate = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                "MscrmTools", "XrmToolBox", "Settings", "DataverseToPowerBI", "PBIP_DefaultTemplate");
             
-            if (!Directory.Exists(_templatePath))
+            if (Directory.Exists(settingsTemplate))
             {
-                _templatePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Plugins", "DataverseToPowerBI", "PBIP_DefaultTemplate");
+                _templatePath = settingsTemplate;
+            }
+            else
+            {
+                // 2. AppData Plugins folder
+                var appDataPlugins = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                    "MscrmTools", "XrmToolBox", "Plugins", "DataverseToPowerBI", "PBIP_DefaultTemplate");
+                
+                if (Directory.Exists(appDataPlugins))
+                {
+                    _templatePath = appDataPlugins;
+                }
+                else
+                {
+                    // 3. Plugin DLL folder with Assets subfolder (development)
+                    var pluginFolder = Path.GetDirectoryName(GetType().Assembly.Location);
+                    var assetsPath = Path.Combine(pluginFolder ?? "", "Assets", "PBIP_DefaultTemplate");
+                    if (Directory.Exists(assetsPath))
+                    {
+                        _templatePath = assetsPath;
+                    }
+                    else
+                    {
+                        _templatePath = Path.Combine(pluginFolder ?? "", "PBIP_DefaultTemplate");
+                        
+                        if (!Directory.Exists(_templatePath))
+                        {
+                            // 4. Base directory fallback
+                            _templatePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Plugins", "DataverseToPowerBI", "PBIP_DefaultTemplate");
+                        }
+                    }
+                }
             }
             
             // Install template to settings folder on first run
@@ -94,10 +151,24 @@ namespace DataverseToPowerBI.XrmToolBox
             lblVersion.Text = $"v{version.Major}.{version.Minor}.{version.Build}";
             
             // Initialize toolbar icons
+            btnRefreshMetadata.Image = RibbonIcons.RefreshIcon;
             btnSelectTables.Image = RibbonIcons.TableIcon;
             btnCalendarTable.Image = RibbonIcons.CalendarIcon;
             btnBuildSemanticModel.Image = RibbonIcons.BuildIcon;
+            btnSemanticModel.Image = RibbonIcons.ModelIcon;
             btnChangeWorkingFolder.Image = RibbonIcons.FolderIcon;
+            btnSettingsFolder.Image = RibbonIcons.FolderIcon;
+            
+            // Add custom paint for semantic model button border
+            btnSemanticModel.Paint += (s, pe) =>
+            {
+                var btn = (ToolStripButton)s;
+                using (var pen = new Pen(Color.FromArgb(50, 100, 200), 1))
+                {
+                    var rect = new Rectangle(0, 0, btn.Width - 1, btn.Height - 1);
+                    pe.Graphics.DrawRectangle(pen, rect);
+                }
+            };
             
             // Disable controls until connected
             btnSelectTables.Enabled = false;
@@ -125,8 +196,7 @@ namespace DataverseToPowerBI.XrmToolBox
                 _currentEnvironmentUrl = NormalizeUrl(environmentUrl);
                 _xrmAdapter = new XrmServiceAdapterImpl(newService, environmentUrl);
 
-                lblConnectionStatus.Text = $"Connected: {detail.OrganizationFriendlyName}";
-                lblConnectionStatus.ForeColor = Color.Green;
+                btnRefreshMetadata.Enabled = true;
                 SetStatus($"Connected to {detail.OrganizationFriendlyName}");
                 
                 // Check for first-run experience
@@ -157,8 +227,7 @@ namespace DataverseToPowerBI.XrmToolBox
                 
                 _xrmAdapter = null;
                 _currentEnvironmentUrl = null;
-                lblConnectionStatus.Text = "Not Connected";
-                lblConnectionStatus.ForeColor = Color.Gray;
+                btnRefreshMetadata.Enabled = false;
                 btnSelectTables.Enabled = false;
                 btnCalendarTable.Enabled = false;
             }
@@ -312,7 +381,8 @@ namespace DataverseToPowerBI.XrmToolBox
                         SourceAttribute = r.SourceAttribute,
                         TargetTable = r.TargetTable,
                         IsActive = r.IsActive,
-                        IsSnowflake = r.IsSnowflake
+                        IsSnowflake = r.IsSnowflake,
+                        AssumeReferentialIntegrity = r.AssumeReferentialIntegrity
                     });
                 }
             }
@@ -395,7 +465,8 @@ namespace DataverseToPowerBI.XrmToolBox
                     SourceAttribute = r.SourceAttribute,
                     TargetTable = r.TargetTable,
                     IsActive = r.IsActive,
-                    IsSnowflake = r.IsSnowflake
+                    IsSnowflake = r.IsSnowflake,
+                    AssumeReferentialIntegrity = r.AssumeReferentialIntegrity
                 }).ToList();
                 
                 // Save table display info for offline display
@@ -462,17 +533,15 @@ namespace DataverseToPowerBI.XrmToolBox
         
         private void UpdateSemanticModelDisplay()
         {
-            cboSemanticModels.Items.Clear();
-            
             if (_currentModel != null)
             {
-                cboSemanticModels.Items.Add(_currentModel.Name);
-                cboSemanticModels.SelectedIndex = 0;
+                btnSemanticModel.Text = _currentModel.Name;
+                btnSemanticModel.ToolTipText = _currentModel.Name;
             }
             else
             {
-                cboSemanticModels.Items.Add("(Click to select...)");
-                cboSemanticModels.SelectedIndex = 0;
+                btnSemanticModel.Text = "(Click to select...)";
+                btnSemanticModel.ToolTipText = "Click to select or manage semantic models";
             }
         }
         
@@ -880,6 +949,9 @@ namespace DataverseToPowerBI.XrmToolBox
             {
                 AddTableToSelectedList(table);
             }
+            
+            // Add Date table if configured
+            AddDateTableToDisplay();
         }
         
         private void AddTableToSelectedList(TableInfo table)
@@ -981,6 +1053,42 @@ namespace DataverseToPowerBI.XrmToolBox
             return view != null ? view.Name : views.First().Name;
         }
         
+        private void AddDateTableToDisplay()
+        {
+            // Remove existing Date Table entry if present (to avoid duplicates)
+            var existingDateItem = listViewSelectedTables.Items.Cast<ListViewItem>()
+                .FirstOrDefault(i => i.Name == "__DateTable");
+            if (existingDateItem != null)
+            {
+                listViewSelectedTables.Items.Remove(existingDateItem);
+            }
+
+            // Add Date Table if configured
+            if (_currentModel?.PluginSettings?.DateTableConfig != null)
+            {
+                var dateConfig = _currentModel.PluginSettings.DateTableConfig;
+                if (!string.IsNullOrEmpty(dateConfig.PrimaryDateTable))
+                {
+                    var yearRange = $"{dateConfig.StartYear}-{dateConfig.EndYear}";
+                    var dateItem = new ListViewItem("📅");  // Calendar icon
+                    dateItem.Name = "__DateTable";
+                    dateItem.SubItems.Add("Dim");
+                    dateItem.SubItems.Add("Date Table");
+                    dateItem.SubItems.Add("");  // No form
+                    dateItem.SubItems.Add(yearRange);  // Year range in Filter column
+                    dateItem.SubItems.Add("365+");  // Approximate row count
+                    dateItem.ForeColor = System.Drawing.Color.DarkGreen;
+                    
+                    // Insert after Fact table (position 1) if there is a fact, otherwise at position 0
+                    var factItemIndex = listViewSelectedTables.Items.Cast<ListViewItem>()
+                        .Select((item, index) => new { item, index })
+                        .FirstOrDefault(x => x.item.SubItems[1].Text.StartsWith("⭐"))?. index;
+                    var insertPosition = factItemIndex.HasValue ? factItemIndex.Value + 1 : 0;
+                    listViewSelectedTables.Items.Insert(insertPosition, dateItem);
+                }
+            }
+        }
+        
         private void UpdateTableCount()
         {
             var count = _selectedTables.Count;
@@ -1005,6 +1113,25 @@ namespace DataverseToPowerBI.XrmToolBox
         private void UpdateRelationshipsDisplay()
         {
             listViewRelationships.Items.Clear();
+            
+            // Display relationship to date table first if configured
+            if (_currentModel?.PluginSettings?.DateTableConfig != null)
+            {
+                var dateConfig = _currentModel.PluginSettings.DateTableConfig;
+                if (!string.IsNullOrEmpty(dateConfig.PrimaryDateTable))
+                {
+                    var dateSourceTable = _selectedTables.ContainsKey(dateConfig.PrimaryDateTable)
+                        ? _selectedTables[dateConfig.PrimaryDateTable].DisplayName ?? dateConfig.PrimaryDateTable
+                        : dateConfig.PrimaryDateTable;
+                    
+                    var item = new ListViewItem($"{dateSourceTable}.{dateConfig.PrimaryDateField}");
+                    item.SubItems.Add("Date Table 📅");
+                    item.SubItems.Add("Active (Date)");
+                    item.ForeColor = System.Drawing.Color.DarkGreen;
+                    
+                    listViewRelationships.Items.Add(item);
+                }
+            }
             
             if (!_relationships.Any())
                 return;
@@ -1575,9 +1702,62 @@ namespace DataverseToPowerBI.XrmToolBox
         
         private void BtnCalendarTable_Click(object sender, EventArgs e)
         {
-            // TODO: Implement calendar table dialog
-            MessageBox.Show("Calendar table configuration not yet implemented in XrmToolBox version.", 
-                "Not Implemented", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            if (_selectedTables.Count == 0)
+            {
+                MessageBox.Show("Please select tables first.", "No Tables", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // Get existing config if any
+            var existingConfig = _currentModel?.PluginSettings?.DateTableConfig;
+
+            using (var dialog = new CalendarTableDialog(
+                _selectedTables,
+                _tableAttributes.ToDictionary(
+                    kvp => kvp.Key,
+                    kvp => kvp.Value.ToDictionary(
+                        a => a.LogicalName,
+                        a => new AttributeDisplayInfo
+                        {
+                            LogicalName = a.LogicalName,
+                            DisplayName = a.DisplayName,
+                            SchemaName = a.SchemaName,
+                            AttributeType = a.AttributeType,
+                            IsRequired = a.IsRequired,
+                            Targets = a.Targets
+                        })),
+                _selectedAttributes,
+                _factTable,
+                existingConfig))
+            {
+                if (dialog.ShowDialog(this) == DialogResult.OK && dialog.Config != null)
+                {
+                    // Save the configuration
+                    if (_currentModel != null)
+                    {
+                        if (_currentModel.PluginSettings == null)
+                            _currentModel.PluginSettings = new PluginSettings();
+
+                        _currentModel.PluginSettings.DateTableConfig = dialog.Config;
+                        _modelManager.SaveModel(_currentModel);
+
+                        // Update UI to show the Date table and relationship
+                        AddDateTableToDisplay();
+                        UpdateRelationshipsDisplay();
+
+                        MessageBox.Show(
+                            $"Calendar table configured:\n\n" +
+                            $"Primary Date Field: {dialog.Config.PrimaryDateTable}.{dialog.Config.PrimaryDateField}\n" +
+                            $"Time Zone: {dialog.Config.TimeZoneId} (UTC {dialog.Config.UtcOffsetHours:+0.0;-0.0})\n" +
+                            $"Year Range: {dialog.Config.StartYear}-{dialog.Config.EndYear}\n" +
+                            $"Additional Fields: {dialog.Config.WrappedFields.Count}",
+                            "Calendar Table Configured",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
+                    }
+                }
+            }
         }
         
         private void BtnBuildSemanticModel_Click(object sender, EventArgs e)
@@ -1594,8 +1774,23 @@ namespace DataverseToPowerBI.XrmToolBox
             {
                 outputPath = _currentModel.WorkingFolder;
                 
+                // Migrate old paths that contain "\Reports\" subfolder (legacy structure)
+                if (outputPath.Contains("\\Reports\\"))
+                {
+                    var oldPath = outputPath;
+                    outputPath = outputPath.Replace("\\Reports\\", "\\");
+                    _currentModel.WorkingFolder = outputPath;
+                    _modelManager.SaveModel(_currentModel);
+                    DebugLogger.Log($"Migrated WorkingFolder from '{oldPath}' to '{outputPath}'");
+                }
+                
+                // Show the actual path where PBIP will be built
+                var modelName = _currentModel?.Name ?? _currentSolutionName ?? "MySemanticModel";
+                var environmentName = ExtractEnvironmentName(_currentEnvironmentUrl);
+                var pbipPath = Path.Combine(outputPath, environmentName, modelName);
+                
                 var result = MessageBox.Show(
-                    $"Build semantic model to:\n{outputPath}\n\nClick No to choose a different folder.",
+                    $"Build semantic model to:\n{pbipPath}\n\nClick No to choose a different folder.",
                     "Confirm Output Folder",
                     MessageBoxButtons.YesNoCancel,
                     MessageBoxIcon.Question);
@@ -1634,97 +1829,226 @@ namespace DataverseToPowerBI.XrmToolBox
         
         private void BuildSemanticModel(string outputPath)
         {
+            // Prepare all data structures first
+            var modelName = _currentModel?.Name ?? _currentSolutionName ?? "MySemanticModel";
+            
+            // Use saved template path if it exists, otherwise use detected path
+            var templatePath = _currentModel?.TemplatePath;
+            if (string.IsNullOrEmpty(templatePath) || !Directory.Exists(templatePath))
+            {
+                templatePath = _templatePath;
+            }
+            
+            var fullUrl = _currentEnvironmentUrl;
+            
+            // Build export tables with full metadata
+            var exportTables = _selectedTables.Values.Select(t =>
+            {
+                var table = new ExportTable
+                {
+                    LogicalName = t.LogicalName,
+                    DisplayName = t.DisplayName,
+                    SchemaName = t.SchemaName,
+                    PrimaryIdAttribute = t.PrimaryIdAttribute,
+                    PrimaryNameAttribute = t.PrimaryNameAttribute,
+                    ObjectTypeCode = t.ObjectTypeCode,
+                    Role = (t.LogicalName == _factTable) ? "Fact" : "Dimension",
+                    Attributes = new List<AttributeMetadata>()
+                };
+                
+                // Add selected attributes
+                if (_selectedAttributes.ContainsKey(t.LogicalName) && _tableAttributes.ContainsKey(t.LogicalName))
+                {
+                    var selectedAttrNames = _selectedAttributes[t.LogicalName];
+                    table.Attributes = _tableAttributes[t.LogicalName]
+                        .Where(a => selectedAttrNames.Contains(a.LogicalName))
+                        .ToList();
+                }
+                
+                // Add selected view (with FetchXML)
+                if (_selectedViewIds.ContainsKey(t.LogicalName) && _tableViews.ContainsKey(t.LogicalName))
+                {
+                    var viewId = _selectedViewIds[t.LogicalName];
+                    var view = _tableViews[t.LogicalName].FirstOrDefault(v => v.ViewId == viewId);
+                    if (view != null)
+                    {
+                        table.View = new ExportView
+                        {
+                            ViewId = view.ViewId,
+                            ViewName = view.Name,
+                            FetchXml = view.FetchXml
+                        };
+                    }
+                }
+                
+                return table;
+            }).ToList();
+            
+            // Build export relationships
+            var exportRelationships = _relationships.Select(r => new ExportRelationship
+            {
+                SourceTable = r.SourceTable,
+                SourceAttribute = r.SourceAttribute,
+                TargetTable = r.TargetTable,
+                DisplayName = r.DisplayName,
+                IsActive = r.IsActive,
+                IsSnowflake = r.IsSnowflake,
+                AssumeReferentialIntegrity = r.AssumeReferentialIntegrity
+            }).ToList();
+            
+            // Get attribute display info
+            var attributeDisplayInfo = new Dictionary<string, Dictionary<string, AttributeDisplayInfo>>();
+            foreach (var kvp in _tableAttributes)
+            {
+                var tableDict = new Dictionary<string, AttributeDisplayInfo>();
+                foreach (var attr in kvp.Value)
+                {
+                    tableDict[attr.LogicalName] = new AttributeDisplayInfo
+                    {
+                        LogicalName = attr.LogicalName,
+                        DisplayName = attr.DisplayName,
+                        SchemaName = attr.SchemaName,
+                        AttributeType = attr.AttributeType,
+                        IsRequired = attr.IsRequired,
+                        Targets = attr.Targets
+                    };
+                }
+                attributeDisplayInfo[kvp.Key] = tableDict;
+            }
+            
+            // Single WorkAsync that does EVERYTHING including showing the dialog
             WorkAsync(new WorkAsyncInfo
             {
-                Message = "Exporting semantic model configuration...",
+                Message = "Building semantic model...",
                 Work = (worker, args) =>
                 {
-                    var modelName = _currentModel?.Name ?? _currentSolutionName ?? "MySemanticModel";
-                    var projectFolder = Path.Combine(outputPath, modelName);
-                    Directory.CreateDirectory(projectFolder);
+                    worker.ReportProgress(0, "Initializing semantic model builder...");
                     
-                    // Build export data
-                    var exportData = new ExportData
+                    var builder = new SemanticModelBuilder(templatePath, msg =>
                     {
-                        EnvironmentUrl = _currentEnvironmentUrl ?? "",
-                        ProjectName = modelName,
-                        FactTable = _factTable,
-                        Tables = _selectedTables.Values.Select(t => new ExportTable
+                        worker.ReportProgress(-1, msg);
+                    });
+                    
+                    worker.ReportProgress(10, "Analyzing changes...");
+                    
+                    // Get date table config from current model
+                    var dateTableConfig = _currentModel?.PluginSettings?.DateTableConfig;
+                    
+                    var changes = builder.AnalyzeChanges(
+                        modelName,
+                        outputPath,
+                        fullUrl,
+                        exportTables,
+                        exportRelationships,
+                        attributeDisplayInfo,
+                        dateTableConfig);
+                    
+                    // Show the dialog on the UI thread and wait for response
+                    bool userApproved = false;
+                    bool createBackup = false;
+                    
+                    this.Invoke(new Action(() =>
+                    {
+                        using (var dialog = new SemanticModelChangesDialog(changes))
                         {
-                            LogicalName = t.LogicalName,
-                            DisplayName = t.DisplayName,
-                            SchemaName = t.SchemaName,
-                            PrimaryIdAttribute = t.PrimaryIdAttribute,
-                            PrimaryNameAttribute = t.PrimaryNameAttribute
-                        }).ToList(),
-                        Relationships = _relationships.Select(r => new SerializedRelationship
-                        {
-                            SourceTable = r.SourceTable,
-                            SourceAttribute = r.SourceAttribute,
-                            TargetTable = r.TargetTable,
-                            IsActive = r.IsActive,
-                            IsSnowflake = r.IsSnowflake
-                        }).ToList(),
-                        SelectedAttributes = _selectedAttributes.ToDictionary(
-                            kvp => kvp.Key,
-                            kvp => kvp.Value.ToList()
-                        ),
-                        SelectedForms = _selectedFormIds,
-                        SelectedViews = _selectedViewIds
+                            if (dialog.ShowDialog(this) == DialogResult.OK && dialog.UserApproved)
+                            {
+                                userApproved = true;
+                                createBackup = dialog.CreateBackup;
+                            }
+                        }
+                    }));
+                    
+                    if (!userApproved)
+                    {
+                        args.Result = new { Success = false, Cancelled = true };
+                        return;
+                    }
+                    
+                    worker.ReportProgress(30, "Applying changes...");
+                    
+                    // Apply the changes
+                    var success = builder.ApplyChanges(
+                        modelName,
+                        outputPath,
+                        fullUrl,
+                        exportTables,
+                        exportRelationships,
+                        attributeDisplayInfo,
+                        createBackup,
+                        dateTableConfig);
+                    
+                    args.Result = new { 
+                        Success = success, 
+                        Cancelled = false,
+                        ModelName = modelName, 
+                        OutputPath = outputPath,
+                        ExportTables = exportTables,
+                        ExportRelationships = exportRelationships
                     };
-                    
-                    // Export as JSON
-                    var jsonPath = Path.Combine(projectFolder, "model-config.json");
-                    using (var ms = new MemoryStream())
-                    {
-                        var serializer = new DataContractJsonSerializer(typeof(ExportData));
-                        serializer.WriteObject(ms, exportData);
-                        File.WriteAllText(jsonPath, Encoding.UTF8.GetString(ms.ToArray()));
-                    }
-                    
-                    // Also create a summary text file
-                    var summaryPath = Path.Combine(projectFolder, "README.txt");
-                    var summary = new StringBuilder();
-                    summary.AppendLine($"Semantic Model: {modelName}");
-                    summary.AppendLine($"Environment: {exportData.EnvironmentUrl}");
-                    summary.AppendLine($"Exported: {DateTime.Now:g}");
-                    summary.AppendLine();
-                    summary.AppendLine($"Fact Table: {_factTable ?? "(none)"}");
-                    summary.AppendLine($"Tables: {_selectedTables.Count}");
-                    summary.AppendLine($"Relationships: {_relationships.Count}");
-                    summary.AppendLine();
-                    summary.AppendLine("Tables:");
-                    foreach (var t in _selectedTables.Values)
-                    {
-                        var attrCount = _selectedAttributes.ContainsKey(t.LogicalName) 
-                            ? _selectedAttributes[t.LogicalName].Count : 0;
-                        summary.AppendLine($"  - {t.DisplayName ?? t.LogicalName} ({t.LogicalName}): {attrCount} attributes");
-                    }
-                    File.WriteAllText(summaryPath, summary.ToString());
-                    
-                    args.Result = projectFolder;
+                },
+                ProgressChanged = (args) =>
+                {
+                    SetStatus(args.UserState?.ToString() ?? "Working...");
                 },
                 PostWorkCallBack = (args) =>
                 {
                     if (args.Error != null)
                     {
-                        MessageBox.Show($"Error: {args.Error.Message}", "Export Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show($"Error: {args.Error.Message}\n\n{args.Error.StackTrace}", "Build Failed",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        SetStatus("Build failed");
                         return;
                     }
                     
-                    var projectFolder = args.Result as string;
-                    SetStatus($"Configuration exported to {projectFolder}");
+                    dynamic result = args.Result;
                     
-                    var result = MessageBox.Show(
-                        $"Configuration exported successfully!\n\n{projectFolder}\n\n" +
-                        "Use the standalone Dataverse Metadata Extractor app to generate the full TMDL semantic model.\n\n" +
-                        "Open folder?",
-                        "Export Complete",
+                    if (result.Cancelled)
+                    {
+                        SetStatus("Build cancelled");
+                        MessageBox.Show("Semantic model build was cancelled.", "Build Cancelled",
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        return;
+                    }
+                    
+                    if (!result.Success)
+                    {
+                        MessageBox.Show("Semantic model build failed.", "Build Failed",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        SetStatus("Build failed");
+                        return;
+                    }
+                    
+                    SetStatus("Semantic model build complete!");
+                    
+                    var environmentName = ExtractEnvironmentName(fullUrl);
+                    var pbipPath = Path.GetFullPath(Path.Combine(result.OutputPath, environmentName, result.ModelName, $"{result.ModelName}.pbip"));
+                    var dialogResult = MessageBox.Show(
+                        $"Semantic model built successfully!\n\n" +
+                        $"Location: {pbipPath}\n\n" +
+                        $"Tables: {result.ExportTables.Count}\n" +
+                        $"Relationships: {result.ExportRelationships.Count}\n\n" +
+                        $"Would you like to open the semantic model in Power BI Desktop?",
+                        "Build Complete",
                         MessageBoxButtons.YesNo,
                         MessageBoxIcon.Information);
                     
-                    if (result == DialogResult.Yes)
-                        System.Diagnostics.Process.Start("explorer.exe", projectFolder);
+                    if (dialogResult == DialogResult.Yes)
+                    {
+                        try
+                        {
+                            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                            {
+                                FileName = pbipPath,
+                                UseShellExecute = true
+                            });
+                        }
+                        catch (Exception openEx)
+                        {
+                            MessageBox.Show($"Failed to open Power BI Desktop:\n{openEx.Message}",
+                                "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                    }
                 }
             });
         }
@@ -1746,20 +2070,8 @@ namespace DataverseToPowerBI.XrmToolBox
             }
         }
         
-        private void CboSemanticModels_SelectedIndexChanged(object sender, EventArgs e)
+        private void BtnSemanticModel_Click(object sender, EventArgs e)
         {
-            // Don't handle during loading
-            if (_isLoading) return;
-            
-            // If dropdown was clicked, show the selector dialog
-            // We trigger this on dropdown open instead
-        }
-        
-        private void CboSemanticModels_DropDown(object sender, EventArgs e)
-        {
-            // Cancel the dropdown and show our dialog instead
-            cboSemanticModels.DroppedDown = false;
-            
             if (string.IsNullOrEmpty(_currentEnvironmentUrl))
             {
                 MessageBox.Show("Please connect to an environment first.",
@@ -1768,6 +2080,18 @@ namespace DataverseToPowerBI.XrmToolBox
             }
             
             ShowSemanticModelSelector();
+        }
+        
+        private void BtnRefreshMetadata_Click(object sender, EventArgs e)
+        {
+            if (_xrmAdapter == null || _currentModel == null)
+            {
+                MessageBox.Show("Please connect to an environment and select a semantic model first.",
+                    "Not Connected", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+            
+            RevalidateMetadata();
         }
         
         private void BtnChangeWorkingFolder_Click(object sender, EventArgs e)
@@ -1820,11 +2144,6 @@ namespace DataverseToPowerBI.XrmToolBox
             lblStatus.Text = message;
         }
         
-        private void ShowProgress(bool show)
-        {
-            progressBar.Visible = show;
-        }
-        
         #endregion
     }
     
@@ -1853,6 +2172,8 @@ namespace DataverseToPowerBI.XrmToolBox
         public Dictionary<string, TableDisplayInfo> TableDisplayInfo { get; set; } = new Dictionary<string, TableDisplayInfo>();
         [System.Runtime.Serialization.DataMember]
         public bool ShowAllAttributes { get; set; } = false;
+        [System.Runtime.Serialization.DataMember]
+        public DateTableConfig DateTableConfig { get; set; } = null;
     }
     
     [System.Runtime.Serialization.DataContract]
@@ -1881,6 +2202,8 @@ namespace DataverseToPowerBI.XrmToolBox
         public bool IsActive { get; set; }
         [System.Runtime.Serialization.DataMember]
         public bool IsSnowflake { get; set; }
+        [System.Runtime.Serialization.DataMember]
+        public bool AssumeReferentialIntegrity { get; set; } = false;  // True if lookup field is required
     }
     
     [System.Runtime.Serialization.DataContract]
@@ -1917,6 +2240,44 @@ namespace DataverseToPowerBI.XrmToolBox
         public string PrimaryIdAttribute { get; set; }
         [System.Runtime.Serialization.DataMember]
         public string PrimaryNameAttribute { get; set; }
+        [System.Runtime.Serialization.DataMember]
+        public int ObjectTypeCode { get; set; }
+        [System.Runtime.Serialization.DataMember]
+        public string Role { get; set; } = "Dimension";  // "Fact" or "Dimension"
+        [System.Runtime.Serialization.DataMember]
+        public bool HasStateCode { get; set; } = false;  // True if table has a statecode attribute
+        [System.Runtime.Serialization.DataMember]
+        public List<Core.Models.AttributeMetadata> Attributes { get; set; } = new List<Core.Models.AttributeMetadata>();
+        [System.Runtime.Serialization.DataMember]
+        public ExportView View { get; set; }
+    }
+    
+    [System.Runtime.Serialization.DataContract]
+    public class ExportView
+    {
+        [System.Runtime.Serialization.DataMember]
+        public string ViewId { get; set; }
+        [System.Runtime.Serialization.DataMember]
+        public string ViewName { get; set; }
+        [System.Runtime.Serialization.DataMember]
+        public string FetchXml { get; set; }
+    }
+    
+    [System.Runtime.Serialization.DataContract]
+    public class AttributeDisplayInfo
+    {
+        [System.Runtime.Serialization.DataMember]
+        public string LogicalName { get; set; }
+        [System.Runtime.Serialization.DataMember]
+        public string DisplayName { get; set; }
+        [System.Runtime.Serialization.DataMember]
+        public string SchemaName { get; set; }
+        [System.Runtime.Serialization.DataMember]
+        public string AttributeType { get; set; }
+        [System.Runtime.Serialization.DataMember]
+        public bool IsRequired { get; set; } = false;
+        [System.Runtime.Serialization.DataMember]
+        public List<string> Targets { get; set; }
     }
     
     #endregion

@@ -1279,12 +1279,21 @@ namespace DataverseToPowerBI.Configurator.Services
                 WriteTmdlFile(tablePath, tableTmdl);
             }
 
-            // Build/Update Date table if configured
+            // Build/Update Date table if configured (only if model doesn't already have a date table)
             if (dateTableConfig != null)
             {
-                SetStatus("Updating Date table...");
-                var dateTableTmdl = GenerateDateTableTmdl(dateTableConfig);
-                WriteTmdlFile(Path.Combine(tablesFolder, "Date.tmdl"), dateTableTmdl);
+                var existingDateTable = FindExistingDateTable(tablesFolder);
+                if (existingDateTable != null)
+                {
+                    SetStatus($"Date table '{existingDateTable}' already exists - preserving it");
+                    DebugLogger.Log($"Skipping Date table generation - found existing date table: {existingDateTable}");
+                }
+                else
+                {
+                    SetStatus("Updating Date table...");
+                    var dateTableTmdl = GenerateDateTableTmdl(dateTableConfig);
+                    WriteTmdlFile(Path.Combine(tablesFolder, "Date.tmdl"), dateTableTmdl);
+                }
             }
 
             // Update relationships

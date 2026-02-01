@@ -181,5 +181,74 @@ namespace DataverseToPowerBI.XrmToolBox
                 return bmp;
             }
         }
+
+        /// <summary>
+        /// Refresh/reload icon with circular arrow
+        /// </summary>
+        public static Image RefreshIcon
+        {
+            get
+            {
+                var bmp = new Bitmap(IconSize, IconSize);
+                using (var g = Graphics.FromImage(bmp))
+                {
+                    g.SmoothingMode = SmoothingMode.AntiAlias;
+                    g.Clear(Color.Transparent);
+                    
+                    using (var pen = new Pen(Color.FromArgb(80, 130, 200), 2f))
+                    {
+                        // Circular arrow (partial arc)
+                        g.DrawArc(pen, 4, 4, 12, 12, 45, 270);
+                        
+                        // Arrow head
+                        using (var brush = new SolidBrush(Color.FromArgb(80, 130, 200)))
+                        {
+                            PointF[] arrowHead = new PointF[]
+                            {
+                                new PointF(13, 3),
+                                new PointF(17, 6),
+                                new PointF(15, 8)
+                            };
+                            g.FillPolygon(brush, arrowHead);
+                        }
+                    }
+                }
+                return bmp;
+            }
+        }
+
+        /// <summary>
+        /// Database/model icon for semantic model selector
+        /// </summary>
+        public static Image ModelIcon
+        {
+            get
+            {
+                var bmp = new Bitmap(IconSize, IconSize);
+                using (var g = Graphics.FromImage(bmp))
+                {
+                    g.SmoothingMode = SmoothingMode.AntiAlias;
+                    g.Clear(Color.Transparent);
+                    
+                    using (var brush = new SolidBrush(Color.FromArgb(50, 100, 200)))
+                    using (var pen = new Pen(Color.FromArgb(30, 70, 150), 1.5f))
+                    {
+                        // Database cylinder top
+                        g.FillEllipse(brush, 4, 3, 12, 4);
+                        g.DrawEllipse(pen, 4, 3, 12, 4);
+                        
+                        // Database cylinder body
+                        g.FillRectangle(brush, 4, 5, 12, 8);
+                        g.DrawLine(pen, 4, 5, 4, 13);
+                        g.DrawLine(pen, 16, 5, 16, 13);
+                        
+                        // Database cylinder bottom
+                        g.FillEllipse(brush, 4, 11, 12, 4);
+                        g.DrawEllipse(pen, 4, 11, 12, 4);
+                    }
+                }
+                return bmp;
+            }
+        }
     }
 }

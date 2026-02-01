@@ -14,6 +14,11 @@ namespace DataverseToPowerBI.Configurator.Forms
         private TextBox txtName = null!;
         private TextBox txtEnvironmentUrl = null!;
         private TextBox txtWorkingFolder = null!;
+        private ComboBox cboConnectionType = null!;
+        private TextBox txtFabricEndpoint = null!;
+        private TextBox txtFabricDatabase = null!;
+        private Label lblFabricEndpoint = null!;
+        private Label lblFabricDatabase = null!;
         private Button btnChangeFolder = null!;
         private Button btnNew = null!;
         private Button btnCopy = null!;
@@ -23,6 +28,7 @@ namespace DataverseToPowerBI.Configurator.Forms
         private Label lblConfigurations = null!;
         private Label lblName = null!;
         private Label lblEnvironmentUrl = null!;
+        private Label lblConnectionType = null!;
         private Label lblWorkingFolder = null!;
         private GroupBox groupDetails = null!;
 
@@ -41,7 +47,7 @@ namespace DataverseToPowerBI.Configurator.Forms
         private void InitializeComponent()
         {
             this.Text = "Manage Semantic Model Configurations";
-            this.Size = new System.Drawing.Size(700, 500);
+            this.Size = new System.Drawing.Size(700, 550);
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
@@ -102,7 +108,7 @@ namespace DataverseToPowerBI.Configurator.Forms
             {
                 Text = "Configuration Details",
                 Location = new System.Drawing.Point(290, 20),
-                Size = new System.Drawing.Size(380, 360)
+                Size = new System.Drawing.Size(380, 440)
             };
 
             lblName = new Label
@@ -119,30 +125,81 @@ namespace DataverseToPowerBI.Configurator.Forms
                 ReadOnly = true
             };
 
+            lblConnectionType = new Label
+            {
+                Text = "Connection Type:",
+                Location = new System.Drawing.Point(15, 95),
+                AutoSize = true
+            };
+
+            cboConnectionType = new ComboBox
+            {
+                Location = new System.Drawing.Point(15, 120),
+                Size = new System.Drawing.Size(350, 23),
+                DropDownStyle = ComboBoxStyle.DropDownList
+            };
+            cboConnectionType.Items.AddRange(new object[] { "Dataverse TDS Endpoint", "FabricLink Lakehouse SQL" });
+            cboConnectionType.SelectedIndex = 0;
+            cboConnectionType.SelectedIndexChanged += CboConnectionType_SelectedIndexChanged;
+
             lblEnvironmentUrl = new Label
             {
                 Text = "Dataverse Environment URL:",
-                Location = new System.Drawing.Point(15, 95),
+                Location = new System.Drawing.Point(15, 160),
                 AutoSize = true
             };
 
             txtEnvironmentUrl = new TextBox
             {
-                Location = new System.Drawing.Point(15, 120),
+                Location = new System.Drawing.Point(15, 185),
                 Size = new System.Drawing.Size(350, 23)
             };
             txtEnvironmentUrl.TextChanged += ConfigDetail_Changed;
 
+            lblFabricEndpoint = new Label
+            {
+                Text = "FabricLink SQL Endpoint:",
+                Location = new System.Drawing.Point(15, 225),
+                AutoSize = true,
+                Visible = false
+            };
+
+            txtFabricEndpoint = new TextBox
+            {
+                Location = new System.Drawing.Point(15, 250),
+                Size = new System.Drawing.Size(350, 23),
+                PlaceholderText = "e.g., xxxxx.msit-datawarehouse.fabric.microsoft.com",
+                Visible = false
+            };
+            txtFabricEndpoint.TextChanged += ConfigDetail_Changed;
+
+            lblFabricDatabase = new Label
+            {
+                Text = "FabricLink SQL Database:",
+                Location = new System.Drawing.Point(15, 290),
+                AutoSize = true,
+                Visible = false
+            };
+
+            txtFabricDatabase = new TextBox
+            {
+                Location = new System.Drawing.Point(15, 315),
+                Size = new System.Drawing.Size(350, 23),
+                PlaceholderText = "e.g., dataverse_xxx_workspace_xxx",
+                Visible = false
+            };
+            txtFabricDatabase.TextChanged += ConfigDetail_Changed;
+
             lblWorkingFolder = new Label
             {
                 Text = "Working Folder:",
-                Location = new System.Drawing.Point(15, 160),
+                Location = new System.Drawing.Point(15, 355),
                 AutoSize = true
             };
 
             txtWorkingFolder = new TextBox
             {
-                Location = new System.Drawing.Point(15, 185),
+                Location = new System.Drawing.Point(15, 380),
                 Size = new System.Drawing.Size(265, 23),
                 ReadOnly = true,
                 BackColor = System.Drawing.SystemColors.Window
@@ -151,15 +208,21 @@ namespace DataverseToPowerBI.Configurator.Forms
             btnChangeFolder = new Button
             {
                 Text = "Change...",
-                Location = new System.Drawing.Point(290, 184),
+                Location = new System.Drawing.Point(290, 379),
                 Size = new System.Drawing.Size(75, 25)
             };
             btnChangeFolder.Click += BtnChangeFolder_Click;
 
             groupDetails.Controls.Add(lblName);
             groupDetails.Controls.Add(txtName);
+            groupDetails.Controls.Add(lblConnectionType);
+            groupDetails.Controls.Add(cboConnectionType);
             groupDetails.Controls.Add(lblEnvironmentUrl);
             groupDetails.Controls.Add(txtEnvironmentUrl);
+            groupDetails.Controls.Add(lblFabricEndpoint);
+            groupDetails.Controls.Add(txtFabricEndpoint);
+            groupDetails.Controls.Add(lblFabricDatabase);
+            groupDetails.Controls.Add(txtFabricDatabase);
             groupDetails.Controls.Add(lblWorkingFolder);
             groupDetails.Controls.Add(txtWorkingFolder);
             groupDetails.Controls.Add(btnChangeFolder);
@@ -167,7 +230,7 @@ namespace DataverseToPowerBI.Configurator.Forms
             btnClose = new Button
             {
                 Text = "Close",
-                Location = new System.Drawing.Point(595, 425),
+                Location = new System.Drawing.Point(595, 465),
                 Size = new System.Drawing.Size(75, 28),
                 DialogResult = DialogResult.OK
             };
@@ -249,6 +312,16 @@ namespace DataverseToPowerBI.Configurator.Forms
             txtName.Text = _selectedConfig.Name;
             txtEnvironmentUrl.Text = _selectedConfig.Settings.LastEnvironmentUrl ?? "";
             txtWorkingFolder.Text = _selectedConfig.Settings.OutputFolder ?? "";
+            
+            // Set connection type
+            var connectionType = _selectedConfig.Settings.ConnectionType ?? "DataverseTDS";
+            cboConnectionType.SelectedIndex = connectionType == "FabricLink" ? 1 : 0;
+            
+            // Set FabricLink fields
+            txtFabricEndpoint.Text = _selectedConfig.Settings.FabricLinkSQLEndpoint ?? "";
+            txtFabricDatabase.Text = _selectedConfig.Settings.FabricLinkSQLDatabase ?? "";
+            
+            UpdateFabricLinkFieldsVisibility();
         }
 
         private void ClearDetails()
@@ -256,6 +329,25 @@ namespace DataverseToPowerBI.Configurator.Forms
             txtName.Text = "";
             txtEnvironmentUrl.Text = "";
             txtWorkingFolder.Text = "";
+            cboConnectionType.SelectedIndex = 0;
+            txtFabricEndpoint.Text = "";
+            txtFabricDatabase.Text = "";
+            UpdateFabricLinkFieldsVisibility();
+        }
+
+        private void CboConnectionType_SelectedIndexChanged(object? sender, EventArgs e)
+        {
+            UpdateFabricLinkFieldsVisibility();
+            ConfigDetail_Changed(sender, e);
+        }
+
+        private void UpdateFabricLinkFieldsVisibility()
+        {
+            bool isFabricLink = cboConnectionType.SelectedIndex == 1;
+            lblFabricEndpoint.Visible = isFabricLink;
+            txtFabricEndpoint.Visible = isFabricLink;
+            lblFabricDatabase.Visible = isFabricLink;
+            txtFabricDatabase.Visible = isFabricLink;
         }
 
         private void ConfigDetail_Changed(object? sender, EventArgs e)
@@ -270,6 +362,10 @@ namespace DataverseToPowerBI.Configurator.Forms
                     url = url.Substring(8);
 
                 _selectedConfig.Settings.LastEnvironmentUrl = url;
+                _selectedConfig.Settings.ConnectionType = cboConnectionType.SelectedIndex == 1 ? "FabricLink" : "DataverseTDS";
+                _selectedConfig.Settings.FabricLinkSQLEndpoint = txtFabricEndpoint.Text.Trim();
+                _selectedConfig.Settings.FabricLinkSQLDatabase = txtFabricDatabase.Text.Trim();
+                
                 _settingsManager.SaveSettings(_selectedConfig.Settings);
                 ConfigurationsChanged = true;
             }
@@ -345,7 +441,10 @@ namespace DataverseToPowerBI.Configurator.Forms
                     {
                         ProjectName = modelName,
                         OutputFolder = folder,
-                        LastEnvironmentUrl = envUrl
+                        LastEnvironmentUrl = envUrl,
+                        ConnectionType = dialog.ConnectionType,
+                        FabricLinkSQLEndpoint = dialog.FabricLinkSQLEndpoint,
+                        FabricLinkSQLDatabase = dialog.FabricLinkSQLDatabase
                     };
                     _settingsManager.CreateNewConfiguration(modelName, newSettings);
 
@@ -452,6 +551,9 @@ namespace DataverseToPowerBI.Configurator.Forms
                         LastEnvironmentUrl = _selectedConfig.Settings.LastEnvironmentUrl,
                         LastSolution = _selectedConfig.Settings.LastSolution,
                         OutputFolder = _selectedConfig.Settings.OutputFolder,
+                        ConnectionType = _selectedConfig.Settings.ConnectionType,
+                        FabricLinkSQLEndpoint = _selectedConfig.Settings.FabricLinkSQLEndpoint,
+                        FabricLinkSQLDatabase = _selectedConfig.Settings.FabricLinkSQLDatabase,
                         SelectedTables = new List<string>(_selectedConfig.Settings.SelectedTables),
                         TableForms = new Dictionary<string, string>(_selectedConfig.Settings.TableForms),
                         TableFormNames = new Dictionary<string, string>(_selectedConfig.Settings.TableFormNames),

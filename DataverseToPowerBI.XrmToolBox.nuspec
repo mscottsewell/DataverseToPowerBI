@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>DataverseToPowerBI.XrmToolBox</id>
+    <version>1.3.38</version>
+    <title>Dataverse to Power BI Semantic Model</title>
+    <authors>Scott Sewell</authors>
+    <owners>Scott Sewell</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <license type="expression">MIT</license>
+    <description>Extract Dataverse metadata and generate Power BI TMDL/PBIP semantic models with automatic table relationships, calendar tables, and incremental change detection.</description>
+    <summary>XrmToolBox plugin for generating Power BI semantic models from Dataverse metadata</summary>
+    <releaseNotes>
+      v1.3.24:
+      - Environment-specific folder organization based on Dataverse URL
+      - Removed extra PBIP subfolder for cleaner path structure
+      - Fixed file opening after build
+      - Full Calendar/Date Table support with relationship configuration
+    </releaseNotes>
+    <copyright>Copyright 2026 Scott Sewell</copyright>
+    <tags>XrmToolBox PowerBI Dataverse TMDL PBIP SemanticModel D365</tags>
+    <projectUrl>https://github.com/scottmsewell/DataverseMetadata-to-PowerBI-Semantic-Model</projectUrl>
+    <iconUrl>https://raw.githubusercontent.com/scottmsewell/DataverseMetadata-to-PowerBI-Semantic-Model/main/icon.png</iconUrl>
+    <dependencies>
+      <dependency id="XrmToolBox" version="1.2024.0.0" />
+    </dependencies>
+  </metadata>
+  <files>
+    <!-- Main plugin DLL -->
+    <file src="DataverseToPowerBI.XrmToolBox\bin\Release\DataverseToPowerBI.XrmToolBox.dll" target="lib\net48\" />
+    
+    <!-- Core dependency DLL -->
+    <file src="DataverseToPowerBI.Core\bin\Release\net48\DataverseToPowerBI.Core.dll" target="lib\net48\" />
+    
+    <!-- Template and content files -->
+    <file src="DataverseToPowerBI.XrmToolBox\Assets\PBIP_DefaultTemplate\**\*.*" target="content\DataverseToPowerBI\PBIP_DefaultTemplate\" />
+  </files>
+</package>

@@ -90,6 +90,11 @@ namespace DataverseToPowerBI.Configurator.Models
         public bool AutoloadCache { get; set; } = true;
         public bool ShowAllAttributes { get; set; } = false;  // false = show selected, true = show all
 
+        // Connection configuration
+        public string ConnectionType { get; set; } = "DataverseTDS";  // "DataverseTDS" or "FabricLink"
+        public string? FabricLinkSQLEndpoint { get; set; }  // FabricLink SQL endpoint
+        public string? FabricLinkSQLDatabase { get; set; }  // FabricLink SQL database name
+
         // Star-schema configuration
         public string? FactTable { get; set; }  // Logical name of the fact table (null if not set)
         public Dictionary<string, TableRole> TableRoles { get; set; } = new();  // table -> role

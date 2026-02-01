@@ -8,6 +8,11 @@ namespace DataverseToPowerBI.Configurator.Forms
     {
         private TextBox txtName = null!;
         private TextBox txtEnvironmentUrl = null!;
+        private ComboBox cboConnectionType = null!;
+        private TextBox txtFabricEndpoint = null!;
+        private TextBox txtFabricDatabase = null!;
+        private Label lblFabricEndpoint = null!;
+        private Label lblFabricDatabase = null!;
         private TextBox txtFolder = null!;
         private TextBox txtTemplate = null!;
         private Button btnChangeFolder = null!;
@@ -16,6 +21,7 @@ namespace DataverseToPowerBI.Configurator.Forms
         private Button btnCancel = null!;
         private Label lblName = null!;
         private Label lblEnvironmentUrl = null!;
+        private Label lblConnectionType = null!;
         private Label lblFolder = null!;
         private Label lblTemplate = null!;
         private Label lblPreview = null!;
@@ -23,6 +29,9 @@ namespace DataverseToPowerBI.Configurator.Forms
 
         public string SemanticModelName { get; private set; } = "";
         public string EnvironmentUrl { get; private set; } = "";
+        public string ConnectionType { get; private set; } = "DataverseTDS";
+        public string FabricLinkSQLEndpoint { get; private set; } = "";
+        public string FabricLinkSQLDatabase { get; private set; } = "";
         public string WorkingFolder { get; private set; } = "";
         public string TemplatePath { get; private set; } = "";
         public bool WorkingFolderChanged { get; private set; } = false;
@@ -54,7 +63,7 @@ namespace DataverseToPowerBI.Configurator.Forms
         private void InitializeComponent()
         {
             this.Text = "Create New Semantic Model";
-            this.Size = new System.Drawing.Size(550, 410);
+            this.Size = new System.Drawing.Size(550, 550);
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
@@ -88,16 +97,65 @@ namespace DataverseToPowerBI.Configurator.Forms
                 PlaceholderText = "e.g., yourorg.crm.dynamics.com"
             };
 
+            lblConnectionType = new Label
+            {
+                Text = "Connection Type:",
+                Location = new System.Drawing.Point(20, 145),
+                AutoSize = true
+            };
+
+            cboConnectionType = new ComboBox
+            {
+                Location = new System.Drawing.Point(20, 170),
+                Size = new System.Drawing.Size(490, 23),
+                DropDownStyle = ComboBoxStyle.DropDownList
+            };
+            cboConnectionType.Items.AddRange(new object[] { "Dataverse TDS Endpoint", "FabricLink Lakehouse SQL" });
+            cboConnectionType.SelectedIndex = 0;
+            cboConnectionType.SelectedIndexChanged += CboConnectionType_SelectedIndexChanged;
+
+            lblFabricEndpoint = new Label
+            {
+                Text = "FabricLink SQL Endpoint:",
+                Location = new System.Drawing.Point(20, 210),
+                AutoSize = true,
+                Visible = false
+            };
+
+            txtFabricEndpoint = new TextBox
+            {
+                Location = new System.Drawing.Point(20, 235),
+                Size = new System.Drawing.Size(490, 23),
+                PlaceholderText = "e.g., xxxxx.msit-datawarehouse.fabric.microsoft.com",
+                Visible = false
+            };
+
+            lblFabricDatabase = new Label
+            {
+                Text = "FabricLink SQL Database:",
+                Location = new System.Drawing.Point(20, 275),
+                AutoSize = true,
+                Visible = false
+            };
+
+            txtFabricDatabase = new TextBox
+            {
+                Location = new System.Drawing.Point(20, 300),
+                Size = new System.Drawing.Size(490, 23),
+                PlaceholderText = "e.g., dataverse_xxx_workspace_xxx",
+                Visible = false
+            };
+
             lblFolder = new Label
             {
                 Text = "Working Folder:",
-                Location = new System.Drawing.Point(20, 145),
+                Location = new System.Drawing.Point(20, 340),
                 AutoSize = true
             };
 
             txtFolder = new TextBox
             {
-                Location = new System.Drawing.Point(20, 170),
+                Location = new System.Drawing.Point(20, 365),
                 Size = new System.Drawing.Size(380, 23),
                 ReadOnly = true,
                 BackColor = System.Drawing.SystemColors.Window
@@ -106,7 +164,7 @@ namespace DataverseToPowerBI.Configurator.Forms
             btnChangeFolder = new Button
             {
                 Text = "Change...",
-                Location = new System.Drawing.Point(410, 169),
+                Location = new System.Drawing.Point(410, 364),
                 Size = new System.Drawing.Size(100, 25)
             };
             btnChangeFolder.Click += BtnChangeFolder_Click;
@@ -114,13 +172,13 @@ namespace DataverseToPowerBI.Configurator.Forms
             lblTemplate = new Label
             {
                 Text = "PBIP Template:",
-                Location = new System.Drawing.Point(20, 210),
+                Location = new System.Drawing.Point(20, 405),
                 AutoSize = true
             };
 
             txtTemplate = new TextBox
             {
-                Location = new System.Drawing.Point(20, 235),
+                Location = new System.Drawing.Point(20, 430),
                 Size = new System.Drawing.Size(380, 23),
                 ReadOnly = true,
                 BackColor = System.Drawing.SystemColors.Window
@@ -129,7 +187,7 @@ namespace DataverseToPowerBI.Configurator.Forms
             btnChangeTemplate = new Button
             {
                 Text = "Change...",
-                Location = new System.Drawing.Point(410, 234),
+                Location = new System.Drawing.Point(410, 429),
                 Size = new System.Drawing.Size(100, 25)
             };
             btnChangeTemplate.Click += BtnChangeTemplate_Click;
@@ -137,7 +195,7 @@ namespace DataverseToPowerBI.Configurator.Forms
             lblPreview = new Label
             {
                 Text = "Will be created at:",
-                Location = new System.Drawing.Point(20, 275),
+                Location = new System.Drawing.Point(20, 465),
                 AutoSize = true,
                 ForeColor = System.Drawing.Color.Gray
             };
@@ -145,7 +203,7 @@ namespace DataverseToPowerBI.Configurator.Forms
             lblPreviewPath = new Label
             {
                 Text = "",
-                Location = new System.Drawing.Point(20, 293),
+                Location = new System.Drawing.Point(20, 483),
                 Size = new System.Drawing.Size(490, 20),
                 ForeColor = System.Drawing.Color.DarkBlue,
                 AutoEllipsis = true
@@ -154,7 +212,7 @@ namespace DataverseToPowerBI.Configurator.Forms
             btnCreate = new Button
             {
                 Text = "Create",
-                Location = new System.Drawing.Point(340, 330),
+                Location = new System.Drawing.Point(340, 515),
                 Size = new System.Drawing.Size(80, 28),
                 DialogResult = DialogResult.OK,
                 Enabled = false
@@ -164,7 +222,7 @@ namespace DataverseToPowerBI.Configurator.Forms
             btnCancel = new Button
             {
                 Text = "Cancel",
-                Location = new System.Drawing.Point(430, 330),
+                Location = new System.Drawing.Point(430, 515),
                 Size = new System.Drawing.Size(80, 28),
                 DialogResult = DialogResult.Cancel
             };
@@ -173,6 +231,12 @@ namespace DataverseToPowerBI.Configurator.Forms
             this.Controls.Add(txtName);
             this.Controls.Add(lblEnvironmentUrl);
             this.Controls.Add(txtEnvironmentUrl);
+            this.Controls.Add(lblConnectionType);
+            this.Controls.Add(cboConnectionType);
+            this.Controls.Add(lblFabricEndpoint);
+            this.Controls.Add(txtFabricEndpoint);
+            this.Controls.Add(lblFabricDatabase);
+            this.Controls.Add(txtFabricDatabase);
             this.Controls.Add(lblFolder);
             this.Controls.Add(txtFolder);
             this.Controls.Add(btnChangeFolder);
@@ -186,6 +250,15 @@ namespace DataverseToPowerBI.Configurator.Forms
 
             this.AcceptButton = btnCreate;
             this.CancelButton = btnCancel;
+        }
+
+        private void CboConnectionType_SelectedIndexChanged(object? sender, EventArgs e)
+        {
+            bool isFabricLink = cboConnectionType.SelectedIndex == 1;
+            lblFabricEndpoint.Visible = isFabricLink;
+            txtFabricEndpoint.Visible = isFabricLink;
+            lblFabricDatabase.Visible = isFabricLink;
+            txtFabricDatabase.Visible = isFabricLink;
         }
 
         private void TxtName_TextChanged(object? sender, EventArgs e)
@@ -338,6 +411,9 @@ namespace DataverseToPowerBI.Configurator.Forms
 
             SemanticModelName = name;
             EnvironmentUrl = envUrl;
+            ConnectionType = cboConnectionType.SelectedIndex == 1 ? "FabricLink" : "DataverseTDS";
+            FabricLinkSQLEndpoint = txtFabricEndpoint.Text.Trim();
+            FabricLinkSQLDatabase = txtFabricDatabase.Text.Trim();
             WorkingFolder = folder;
         }
     }

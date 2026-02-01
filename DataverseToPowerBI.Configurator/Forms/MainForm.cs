@@ -2658,8 +2658,10 @@ namespace DataverseToPowerBI.Configurator.Forms
             if (_dateTableConfig != null)
             {
                 var result = MessageBox.Show(
-                    "A Calendar Table has already been configured. Do you want to update its configuration?",
-                    "Calendar Table Exists",
+                    "A Calendar Table configuration already exists. Do you want to update it?\n\n" +
+                    "Note: This will only update the primary date relationship and timezone adjustments.\n" +
+                    "If a Date table already exists in your model, it will be preserved.",
+                    "Update Calendar Configuration",
                     MessageBoxButtons.YesNo,
                     MessageBoxIcon.Question);
                 if (result != DialogResult.Yes) return;

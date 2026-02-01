@@ -17,14 +17,14 @@ namespace DataverseToPowerBI.XrmToolBox
         {
             // Ribbon ToolStrip
             this.toolStripRibbon = new System.Windows.Forms.ToolStrip();
-            this.lblConnectionStatus = new System.Windows.Forms.ToolStripLabel();
+            this.btnRefreshMetadata = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.btnSelectTables = new System.Windows.Forms.ToolStripButton();
             this.btnCalendarTable = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.btnBuildSemanticModel = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.lblSemanticModel = new System.Windows.Forms.ToolStripLabel();
-            this.cboSemanticModels = new System.Windows.Forms.ToolStripComboBox();
+            this.btnSemanticModel = new System.Windows.Forms.ToolStripButton();
             this.btnChangeWorkingFolder = new System.Windows.Forms.ToolStripButton();
             this.btnSettingsFolder = new System.Windows.Forms.ToolStripButton();
 
@@ -41,6 +41,7 @@ namespace DataverseToPowerBI.XrmToolBox
             this.colAttrs = new System.Windows.Forms.ColumnHeader();
             this.panelTableInfo = new System.Windows.Forms.Panel();
             this.lblTableCount = new System.Windows.Forms.Label();
+            this.lblVersion = new System.Windows.Forms.Label();
 
             this.groupBoxRelationships = new System.Windows.Forms.GroupBox();
             this.listViewRelationships = new System.Windows.Forms.ListView();
@@ -69,10 +70,6 @@ namespace DataverseToPowerBI.XrmToolBox
             this.panelStatus = new System.Windows.Forms.Panel();
             this.lblStatus = new System.Windows.Forms.Label();
 
-            this.statusStrip = new System.Windows.Forms.StatusStrip();
-            this.progressBar = new System.Windows.Forms.ToolStripProgressBar();
-            this.lblVersion = new System.Windows.Forms.ToolStripStatusLabel();
-
             this.toolStripRibbon.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainerMain)).BeginInit();
             this.splitContainerMain.Panel1.SuspendLayout();
@@ -89,20 +86,19 @@ namespace DataverseToPowerBI.XrmToolBox
             this.panelAttrFilter.SuspendLayout();
             this.panelAttrButtons.SuspendLayout();
             this.panelStatus.SuspendLayout();
-            this.statusStrip.SuspendLayout();
             this.SuspendLayout();
 
             // toolStripRibbon
             this.toolStripRibbon.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.toolStripRibbon.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-                this.lblConnectionStatus,
+                this.btnRefreshMetadata,
                 this.toolStripSeparator1,
                 this.btnSelectTables,
                 this.btnCalendarTable,
+                this.toolStripSeparator3,
                 this.btnBuildSemanticModel,
                 this.toolStripSeparator2,
-                this.lblSemanticModel,
-                this.cboSemanticModels,
+                this.btnSemanticModel,
                 this.btnChangeWorkingFolder,
                 this.btnSettingsFolder
             });
@@ -117,11 +113,14 @@ namespace DataverseToPowerBI.XrmToolBox
             this.toolStripSeparator1.Name = "toolStripSeparator1";
             this.toolStripSeparator1.Size = new System.Drawing.Size(6, 28);
 
-            // lblConnectionStatus
-            this.lblConnectionStatus.Name = "lblConnectionStatus";
-            this.lblConnectionStatus.Size = new System.Drawing.Size(88, 25);
-            this.lblConnectionStatus.Text = "Not connected";
-            this.lblConnectionStatus.ForeColor = System.Drawing.Color.Gray;
+            // btnRefreshMetadata
+            this.btnRefreshMetadata.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.ImageAndText;
+            this.btnRefreshMetadata.Name = "btnRefreshMetadata";
+            this.btnRefreshMetadata.Size = new System.Drawing.Size(140, 25);
+            this.btnRefreshMetadata.Text = "Refresh Metadata";
+            this.btnRefreshMetadata.ToolTipText = "Refresh metadata from Dataverse";
+            this.btnRefreshMetadata.Enabled = false;
+            this.btnRefreshMetadata.Click += new System.EventHandler(this.BtnRefreshMetadata_Click);
 
             // btnSelectTables
             this.btnSelectTables.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.ImageAndText;
@@ -153,18 +152,21 @@ namespace DataverseToPowerBI.XrmToolBox
             this.toolStripSeparator2.Name = "toolStripSeparator2";
             this.toolStripSeparator2.Size = new System.Drawing.Size(6, 28);
 
-            // lblSemanticModel
-            this.lblSemanticModel.Name = "lblSemanticModel";
-            this.lblSemanticModel.Size = new System.Drawing.Size(95, 25);
-            this.lblSemanticModel.Text = "Semantic Model:";
+            // toolStripSeparator3
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(6, 28);
 
-            // cboSemanticModels
-            this.cboSemanticModels.Name = "cboSemanticModels";
-            this.cboSemanticModels.Size = new System.Drawing.Size(180, 28);
-            this.cboSemanticModels.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cboSemanticModels.ToolTipText = "Click to select or manage semantic models";
-            this.cboSemanticModels.SelectedIndexChanged += new System.EventHandler(this.CboSemanticModels_SelectedIndexChanged);
-            this.cboSemanticModels.DropDown += new System.EventHandler(this.CboSemanticModels_DropDown);
+            // btnSemanticModel
+            this.btnSemanticModel.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.ImageAndText;
+            this.btnSemanticModel.Name = "btnSemanticModel";
+            this.btnSemanticModel.AutoSize = true;
+            this.btnSemanticModel.Text = "(Click to select...)";
+            this.btnSemanticModel.ToolTipText = "Click to select or manage semantic models";
+            this.btnSemanticModel.Font = new System.Drawing.Font(this.btnSemanticModel.Font, System.Drawing.FontStyle.Bold);
+            this.btnSemanticModel.ForeColor = System.Drawing.Color.FromArgb(50, 100, 200);
+            this.btnSemanticModel.BackColor = System.Drawing.Color.White;
+            this.btnSemanticModel.Margin = new System.Windows.Forms.Padding(2, 1, 2, 2);
+            this.btnSemanticModel.Click += new System.EventHandler(this.BtnSemanticModel_Click);
 
             // btnChangeWorkingFolder
             this.btnChangeWorkingFolder.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.ImageAndText;
@@ -175,9 +177,9 @@ namespace DataverseToPowerBI.XrmToolBox
             this.btnChangeWorkingFolder.Click += new System.EventHandler(this.BtnChangeWorkingFolder_Click);
 
             // btnSettingsFolder
-            this.btnSettingsFolder.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.btnSettingsFolder.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.ImageAndText;
             this.btnSettingsFolder.Name = "btnSettingsFolder";
-            this.btnSettingsFolder.Size = new System.Drawing.Size(100, 25);
+            this.btnSettingsFolder.Size = new System.Drawing.Size(120, 25);
             this.btnSettingsFolder.Text = "Settings Folder";
             this.btnSettingsFolder.ToolTipText = "Open the settings/configuration folder";
             this.btnSettingsFolder.Click += new System.EventHandler(this.BtnSettingsFolder_Click);
@@ -200,7 +202,7 @@ namespace DataverseToPowerBI.XrmToolBox
             this.splitContainerLeft.Panel1.Controls.Add(this.groupBoxSelectedTables);
             this.splitContainerLeft.Panel2.Controls.Add(this.groupBoxRelationships);
             this.splitContainerLeft.Size = new System.Drawing.Size(590, 520);
-            this.splitContainerLeft.SplitterDistance = 340;
+            this.splitContainerLeft.SplitterDistance = 260;
             this.splitContainerLeft.TabIndex = 0;
 
             // groupBoxSelectedTables
@@ -216,20 +218,11 @@ namespace DataverseToPowerBI.XrmToolBox
             this.groupBoxSelectedTables.Text = "Selected Tables && Forms";
 
             // panelTableInfo
-            this.panelTableInfo.Controls.Add(this.lblTableCount);
             this.panelTableInfo.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panelTableInfo.Location = new System.Drawing.Point(5, 310);
             this.panelTableInfo.Name = "panelTableInfo";
             this.panelTableInfo.Size = new System.Drawing.Size(580, 25);
             this.panelTableInfo.TabIndex = 1;
-
-            // lblTableCount
-            this.lblTableCount.AutoSize = true;
-            this.lblTableCount.Location = new System.Drawing.Point(3, 5);
-            this.lblTableCount.Name = "lblTableCount";
-            this.lblTableCount.Size = new System.Drawing.Size(112, 15);
-            this.lblTableCount.TabIndex = 0;
-            this.lblTableCount.Text = "No tables selected";
 
             // listViewSelectedTables
             this.listViewSelectedTables.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
@@ -318,7 +311,7 @@ namespace DataverseToPowerBI.XrmToolBox
 
             // colRelType
             this.colRelType.Text = "Type";
-            this.colRelType.Width = 150;
+            this.colRelType.Width = 75;
 
             // groupBoxAttributes
             this.groupBoxAttributes.Controls.Add(this.listViewAttributes);
@@ -415,11 +408,13 @@ namespace DataverseToPowerBI.XrmToolBox
 
             // colAttrSelected
             this.colAttrSelected.Text = "Sel";
-            this.colAttrSelected.Width = 40;
+            this.colAttrSelected.Width = 35;
+            this.colAttrSelected.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
 
             // colAttrOnForm
             this.colAttrOnForm.Text = "Form";
-            this.colAttrOnForm.Width = 50;
+            this.colAttrOnForm.Width = 40;
+            this.colAttrOnForm.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
 
             // colAttrDisplay
             this.colAttrDisplay.Text = "Display Name";
@@ -471,7 +466,9 @@ namespace DataverseToPowerBI.XrmToolBox
             this.btnSelectFromForm.Click += new System.EventHandler(this.BtnSelectFromForm_Click);
 
             // panelStatus
+            this.panelStatus.Controls.Add(this.lblTableCount);
             this.panelStatus.Controls.Add(this.lblStatus);
+            this.panelStatus.Controls.Add(this.lblVersion);
             this.panelStatus.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panelStatus.Location = new System.Drawing.Point(10, 588);
             this.panelStatus.Name = "panelStatus";
@@ -479,34 +476,31 @@ namespace DataverseToPowerBI.XrmToolBox
             this.panelStatus.Size = new System.Drawing.Size(1180, 30);
             this.panelStatus.TabIndex = 3;
 
+            // lblTableCount
+            this.lblTableCount.AutoSize = true;
+            this.lblTableCount.Location = new System.Drawing.Point(3, 8);
+            this.lblTableCount.Name = "lblTableCount";
+            this.lblTableCount.Size = new System.Drawing.Size(112, 15);
+            this.lblTableCount.TabIndex = 0;
+            this.lblTableCount.Text = "No tables selected";
+
             // lblStatus
             this.lblStatus.AutoSize = true;
-            this.lblStatus.Location = new System.Drawing.Point(3, 8);
+            this.lblStatus.Location = new System.Drawing.Point(200, 8);
             this.lblStatus.Name = "lblStatus";
             this.lblStatus.Size = new System.Drawing.Size(39, 15);
-            this.lblStatus.TabIndex = 0;
+            this.lblStatus.TabIndex = 1;
             this.lblStatus.Text = "Ready";
 
-            // statusStrip
-            this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { this.progressBar, this.lblVersion });
-            this.statusStrip.Location = new System.Drawing.Point(0, 628);
-            this.statusStrip.Name = "statusStrip";
-            this.statusStrip.Size = new System.Drawing.Size(1200, 22);
-            this.statusStrip.SizingGrip = true;
-            this.statusStrip.TabIndex = 5;
-
-            // progressBar
-            this.progressBar.Name = "progressBar";
-            this.progressBar.Size = new System.Drawing.Size(200, 16);
-            this.progressBar.Style = System.Windows.Forms.ProgressBarStyle.Marquee;
-            this.progressBar.Visible = false;
-
             // lblVersion
+            this.lblVersion.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblVersion.AutoSize = true;
+            this.lblVersion.Location = new System.Drawing.Point(1120, 8);
             this.lblVersion.Name = "lblVersion";
-            this.lblVersion.Size = new System.Drawing.Size(100, 17);
+            this.lblVersion.Size = new System.Drawing.Size(55, 15);
+            this.lblVersion.TabIndex = 2;
             this.lblVersion.Text = "v1.0.0";
-            this.lblVersion.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.lblVersion.Spring = false;
+            this.lblVersion.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 
             // PluginControl
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -514,7 +508,6 @@ namespace DataverseToPowerBI.XrmToolBox
             this.Controls.Add(this.splitContainerMain);
             this.Controls.Add(this.panelStatus);
             this.Controls.Add(this.toolStripRibbon);
-            this.Controls.Add(this.statusStrip);
             this.Name = "PluginControl";
             this.Padding = new System.Windows.Forms.Padding(10, 10, 10, 10);
             this.Size = new System.Drawing.Size(1200, 650);
@@ -540,22 +533,20 @@ namespace DataverseToPowerBI.XrmToolBox
             this.panelAttrButtons.ResumeLayout(false);
             this.panelStatus.ResumeLayout(false);
             this.panelStatus.PerformLayout();
-            this.statusStrip.ResumeLayout(false);
-            this.statusStrip.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
         }
 
         // Ribbon ToolStrip
         private System.Windows.Forms.ToolStrip toolStripRibbon;
-        private System.Windows.Forms.ToolStripLabel lblConnectionStatus;
+        private System.Windows.Forms.ToolStripButton btnRefreshMetadata;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripButton btnSelectTables;
         private System.Windows.Forms.ToolStripButton btnBuildSemanticModel;
         private System.Windows.Forms.ToolStripButton btnCalendarTable;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
-        private System.Windows.Forms.ToolStripLabel lblSemanticModel;
-        private System.Windows.Forms.ToolStripComboBox cboSemanticModels;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
+        private System.Windows.Forms.ToolStripButton btnSemanticModel;
         private System.Windows.Forms.ToolStripButton btnChangeWorkingFolder;
         private System.Windows.Forms.ToolStripButton btnSettingsFolder;
 
@@ -571,7 +562,6 @@ namespace DataverseToPowerBI.XrmToolBox
         private System.Windows.Forms.ColumnHeader colView;
         private System.Windows.Forms.ColumnHeader colAttrs;
         private System.Windows.Forms.Panel panelTableInfo;
-        private System.Windows.Forms.Label lblTableCount;
 
         private System.Windows.Forms.GroupBox groupBoxRelationships;
         private System.Windows.Forms.ListView listViewRelationships;
@@ -598,10 +588,8 @@ namespace DataverseToPowerBI.XrmToolBox
         private System.Windows.Forms.Button btnSelectFromForm;
 
         private System.Windows.Forms.Panel panelStatus;
+        private System.Windows.Forms.Label lblTableCount;
         private System.Windows.Forms.Label lblStatus;
-
-        private System.Windows.Forms.StatusStrip statusStrip;
-        private System.Windows.Forms.ToolStripProgressBar progressBar;
-        private System.Windows.Forms.ToolStripStatusLabel lblVersion;
+        private System.Windows.Forms.Label lblVersion;
     }
 }

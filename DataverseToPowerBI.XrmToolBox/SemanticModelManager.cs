@@ -421,6 +421,24 @@ namespace DataverseToPowerBI.XrmToolBox
         public DateTime LastUsed { get; set; }
 
         /// <summary>
+        /// Connection type: "DataverseTDS" or "FabricLink"
+        /// </summary>
+        [DataMember]
+        public string ConnectionType { get; set; } = "DataverseTDS";
+
+        /// <summary>
+        /// FabricLink SQL endpoint (only used when ConnectionType is FabricLink)
+        /// </summary>
+        [DataMember]
+        public string FabricLinkSQLEndpoint { get; set; } = "";
+
+        /// <summary>
+        /// FabricLink SQL database name (only used when ConnectionType is FabricLink)
+        /// </summary>
+        [DataMember]
+        public string FabricLinkSQLDatabase { get; set; } = "";
+
+        /// <summary>
         /// Embedded plugin settings for this model
         /// </summary>
         [DataMember]
