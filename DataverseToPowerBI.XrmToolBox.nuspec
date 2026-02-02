@@ -1,33 +1,29 @@
-<?xml version="1.0" encoding="utf-8"?>
-<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
-  <metadata>
+<?xml version="1.0"?>
+<package>
+	<metadata>
     <id>DataverseToPowerBI.XrmToolBox</id>
-    <version>1.2026.1.1</version>
+    <version>1.2026.2.21</version>
     <title>Dataverse to Power BI Semantic Model</title>
     <authors>Scott Sewell</authors>
-    <owners>Scott Sewell</owners>
+    <owners>mScottSewell</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <license type="expression">MIT</license>
     <description>Extract Dataverse metadata and generate Power BI TMDL/PBIP semantic models with automatic table relationships, calendar tables, and incremental change detection.</description>
     <summary>XrmToolBox plugin for generating Power BI semantic models from Dataverse metadata</summary>
-    <releaseNotes>
-      v1.2026.1.1:
-      - Initial Release - See Readme for details
-      A XrmToolBox Utility to use Dataverse Metadata to automatically build a TDS/Direct Query based Power BI Semantic Model
-    </releaseNotes>
-    <copyright>Copyright 2026 Scott Sewell</copyright>
-    <tags>XrmToolBox PowerBI Dataverse TMDL PBIP SemanticModel D365</tags>
+    <releaseNotes>Review CHANGELOG or git history for details.</releaseNotes>
+    <tags>XrmToolBox PowerBI Dataverse TMDL PBIP SemanticModel</tags>
     <projectUrl>https://github.com/mscottsewell/DataverseMetadata-to-PowerBI-Semantic-Model</projectUrl>
-    <iconUrl>https://github.com/mscottsewell/DataverseMetadata-to-PowerBI-Semantic-Model/blob/0e43211d814d8f0f717abc3ad96824434fb7f250/.Images/DataverseToPowerBI_128.png</iconUrl>
+    <iconUrl>https://raw.githubusercontent.com/mscottsewell/DataverseMetadata-to-PowerBI-Semantic-Model/main/Images/DataverseToPowerBI_128.png</iconUrl>
+    <dependencies>
+        <dependency id="XrmToolBox" version="1.2025.10.74" />
+    </dependencies>
   </metadata>
   <files>
-    <!-- Main plugin DLL -->
-    <file src="DataverseToPowerBI.XrmToolBox\bin\Release\DataverseToPowerBI.XrmToolBox.dll" target="lib\net48\" />
-    
-    <!-- Core dependency DLL -->
-    <file src="DataverseToPowerBI.Core\bin\Release\net48\DataverseToPowerBI.Core.dll" target="lib\net48\" />
-    
-    <!-- Template and content files -->
+    <file src="DataverseToPowerBI.XrmToolBox\bin\Release\DataverseToPowerBI.XrmToolBox.dll" target="lib\net48\Plugins\" />
+    <file src="DataverseToPowerBI.Core\bin\Release\net48\DataverseToPowerBI.Core.dll" target="lib\net48\Plugins\" />
     <file src="DataverseToPowerBI.XrmToolBox\Assets\PBIP_DefaultTemplate\**\*.*" target="content\DataverseToPowerBI\PBIP_DefaultTemplate\" />
+    <file src=".images\DataverseToPowerBI_80.png" target="icon.png" />
+    <file src="README.md" target="README.md" />
+    <file src="LICENSE" target="LICENSE" />
   </files>
-</package>
+</package>   

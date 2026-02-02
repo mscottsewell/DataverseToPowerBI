@@ -147,11 +147,11 @@ Write-Host ""
 if (-not $DeployOnly) {
     Write-Host "[5/6] Building NuGet package..." -ForegroundColor Yellow
     
-    # Update version in .nuspec file
+    # Update version in .nuspec file with full version including build number
     $nuspecContent = Get-Content $nuspecFile -Raw
-    $nuspecContent = $nuspecContent -replace '<version>.*?</version>', "<version>$version</version>"
+    $nuspecContent = $nuspecContent -replace '<version>.*?</version>', "<version>$fullVersion</version>"
     Set-Content -Path $nuspecFile -Value $nuspecContent -NoNewline
-    Write-Host "  ✓ Updated .nuspec version to $version" -ForegroundColor Green
+    Write-Host "  ✓ Updated .nuspec version to $fullVersion" -ForegroundColor Green
     
     # Check for nuget.exe
     $nugetExe = Get-Command nuget -ErrorAction SilentlyContinue
@@ -165,7 +165,7 @@ if (-not $DeployOnly) {
         $nugetExe = $nugetExe.Source
     }
     
-    & $nugetExe pack $nuspecFile -OutputDirectory $packageRoot -Version $version
+    & $nugetExe pack $nuspecFile -OutputDirectory $packageRoot -Version $fullVersion
     if ($LASTEXITCODE -ne 0) { throw "NuGet pack failed" }
     
     $nupkgFile = Get-ChildItem "$packageRoot\*.nupkg" | Select-Object -First 1
