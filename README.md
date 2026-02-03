@@ -26,7 +26,6 @@ This tool solves these problems by:
 ---
 <img width="1600" alt="Screenshot of application" src="https://github.com/user-attachments/assets/6d2603b3-118b-46ba-9d6e-f4cc9dc2215f" />
 
-
 ## ✨ Key Features
 
 | Feature | What It Does For You |
@@ -83,7 +82,7 @@ Sometimes a dimension table has its own lookup to another table (for example, Cu
 - [Star Schema in Power BI](https://learn.microsoft.com/power-bi/guidance/star-schema)
 - [Understand Star Schema Design](https://learn.microsoft.com/power-bi/guidance/star-schema#star-schema-overview)
 - [Importance of Star Schema](https://learn.microsoft.com/power-bi/guidance/star-schema#importance-of-star-schema-design)
-- I like this explanation from [Brian Julius](https://www.linkedin.com/in/brianjuliusdc/): 
+- I like this explanation from [Brian Julius](https://www.linkedin.com/in/brianjuliusdc/):
 <img width="2048" alt="image of a Star Schema" src="https://github.com/user-attachments/assets/d558cd15-5b8d-4ae4-9a91-3d8413783ba1" />
 
 ---
@@ -131,7 +130,7 @@ Sometimes a dimension table has its own lookup to another table (for example, Cu
 - The **form** determines which columns are selected by default to appear in your model
 - The **view** determines which rows are included (filtering data to current data helps improve performance.)
 - Check/Uncheck Attributes in the right column to include/exclude fields from the query.
-- **Tip:** Start with a only the needed columns to optimize performance. 
+- **Tip:** Start with a only the needed columns to optimize performance.
 - Memo (text area) fields with lots of text are the slowest fields to retrieve - use sparingly.
 
 #### Step 7: Add a Date Table (Recommended)
@@ -227,10 +226,11 @@ Your generated model uses **DirectQuery** by default. Here's what that means and
 | Smaller .pbix file size | Complex calculations may timeout |
 | Users see only their permitted data | Best with fewer concurrent users |
 
-**Best for:** 
+**Best for:**
 - Real-time operational dashboards  
 - Security-sensitive data where each user should only see their records
 - Data that changes frequently throughout the day
+- Queries that reference 'Current_User' in the filter (e.g. "My Opportunities")
 
 ### Import Mode
 
@@ -244,7 +244,7 @@ Your generated model uses **DirectQuery** by default. Here's what that means and
 | No per-query API limits | Security must be applied at report level (RLS) |
 | Handles many concurrent users | Dataverse security not automatic |
 
-**Best for:** 
+**Best for:**
 - Historical trend analysis
 - Complex calculations requiring full DAX
 - Published reports with many users
@@ -270,6 +270,8 @@ You can use **different storage modes for different tables**—this is often the
 3. Select the table you want to change
 4. In the **Properties** pane, change **Storage mode** from "DirectQuery" to "Import"
 5. Configure a refresh schedule when you publish to Power BI Service
+
+> **Please Note** that any table that was built with a view that referenced the **current user** will need to be updated to use a different view/filter.
 
 📚 **Learn More:**
 - [DirectQuery in Power BI](https://learn.microsoft.com/en-us/power-bi/connect-data/desktop-directquery-about)
@@ -352,7 +354,7 @@ Create drill-down paths in your dimension tables:
 
 ### 4. Hide Technical Columns
 By default, this utility follows the best practice of hiding columns that end users don't need:
-- GUID/ID columns (like `accountid`) 
+- GUID/ID columns (like `accountid`)
 - They are kept in the model for relationships, but hidden from report view
 - If you find that you have additional values that are only needed for formulas, you can hide them as well.
 
@@ -391,7 +393,11 @@ If using Import mode, implement RLS to control data access:
 **A:** Columns are pre-selected by default from your selected form. If a field isn't on the form, it won't pre-selected to be in the model by default. You can add columns that aren't on the form by switching to view "All" attributes and checking the selection box beside any additional ones you need.
 
 ### Q: How do I handle many-to-many relationships?
-**A:** The tool creates standard many-to-one relationships. For many-to-many scenarios (like Contacts associated with multiple Accounts), you may need to include the intersection table and create a bridge pattern manually. - These can become complex and require more expertise in proper modeling to ensure your results are reflective of your intent.
+**A:** The tool creates standard many-to-one relationships. For many-to-many
+scenarios (like Contacts associated with multiple Accounts), you may need to
+include the intersection table and create a bridge pattern manually. These can
+become complex and require more expertise in proper modeling to ensure your
+results are reflective of your intent.
 
 ### Q: My report is slow—what can I do?
 **A:** Try these optimizations:
@@ -416,7 +422,7 @@ If using Import mode, implement RLS to control data access:
 - Check that you have read permissions in Dataverse
 - Try disconnecting and reconnecting
 - Ensure your access to the TDS endpoint is not blocked by either permissions inside dataverse or via network policy
-- See more here: https://learn.microsoft.com/power-apps/developer/data-platform/dataverse-sql-query
+- See more here: <https://learn.microsoft.com/power-apps/developer/data-platform/dataverse-sql-query>
 
 ### "Build failed with errors"
 - Check the working folder path is valid and writable
