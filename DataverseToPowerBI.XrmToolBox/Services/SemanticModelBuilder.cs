@@ -1134,18 +1134,28 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                 var tableDisplayName = tableDisplayNames.ContainsKey(dateTableConfig.PrimaryDateTable) 
                     ? tableDisplayNames[dateTableConfig.PrimaryDateTable] 
                     : dateTableConfig.PrimaryDateTable;
-                
-                // Look up the display name for the primary date field
-                var primaryDateFieldName = dateTableConfig.PrimaryDateField;
-                if (attributeDisplayInfo.TryGetValue(dateTableConfig.PrimaryDateTable, out var tableAttrs) &&
-                    tableAttrs.TryGetValue(dateTableConfig.PrimaryDateField, out var fieldDisplayInfo))
+                var sourceTable = tables.FirstOrDefault(t =>
+                    t.LogicalName.Equals(dateTableConfig.PrimaryDateTable, StringComparison.OrdinalIgnoreCase));
+                var dateAttr = sourceTable?.Attributes
+                    .FirstOrDefault(a => a.LogicalName.Equals(dateTableConfig.PrimaryDateField, StringComparison.OrdinalIgnoreCase));
+
+                if (dateAttr != null)
                 {
-                    primaryDateFieldName = fieldDisplayInfo.DisplayName ?? dateTableConfig.PrimaryDateField;
+                    var primaryDateFieldName = dateAttr.DisplayName ?? dateAttr.SchemaName ?? dateAttr.LogicalName;
+                    if (attributeDisplayInfo.TryGetValue(dateTableConfig.PrimaryDateTable, out var tableAttrs) &&
+                        tableAttrs.TryGetValue(dateTableConfig.PrimaryDateField, out var fieldDisplayInfo))
+                    {
+                        primaryDateFieldName = fieldDisplayInfo.DisplayName ?? primaryDateFieldName;
+                    }
+
+                    var dateRelString = $"{tableDisplayName}.{primaryDateFieldName}→Date.Date";
+                    rels.Add(dateRelString);
+                    DebugLogger.Log($"  Generated Date table relationship: {dateRelString}");
                 }
-                
-                var dateRelString = $"{tableDisplayName}.{primaryDateFieldName}→Date.Date";
-                rels.Add(dateRelString);
-                DebugLogger.Log($"  Generated Date table relationship: {dateRelString}");
+                else
+                {
+                    DebugLogger.Log($"Date relationship skipped: '{dateTableConfig.PrimaryDateTable}.{dateTableConfig.PrimaryDateField}' not found in selected attributes.");
+                }
             }
 
             return rels;
@@ -1237,7 +1247,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                 // Create backup if requested
                 if (createBackup && pbipExists)
                 {
-                    CreateBackup(pbipFolder, outputFolder, semanticModelName);
+                    CreateBackup(pbipFolder, outputFolder, environmentName, semanticModelName);
                 }
 
                 // Apply changes
@@ -1263,13 +1273,13 @@ namespace DataverseToPowerBI.XrmToolBox.Services
         /// <summary>
         /// Creates a timestamped backup of the PBIP folder
         /// </summary>
-        private void CreateBackup(string pbipFolder, string outputFolder, string semanticModelName)
+        private void CreateBackup(string pbipFolder, string outputFolder, string environmentName, string semanticModelName)
         {
             try
             {
                 SetStatus("Creating backup...");
                 var timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-                var backupFolder = Path.Combine(outputFolder, semanticModelName, "Backup", $"PBIP_Backup_{timestamp}");
+            var backupFolder = Path.Combine(outputFolder, environmentName, semanticModelName, "Backup", $"PBIP_Backup_{timestamp}");
                 
                 // Simple directory copy for backup (no template replacement needed)
                 CopyDirectorySimple(pbipFolder, backupFolder);
@@ -2245,7 +2255,9 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                 var targetTableDisplay = tableDisplayNames[rel.TargetTable];
                 var targetPrimaryKey = tablePrimaryKeys[rel.TargetTable];
 
-                // The source attribute (lookup column) references the target's primary key
+                // CRITICAL: In TMDL, relationships must reference columns by their logical names
+                // as they appear in the column declarations, not by display names.
+                // Column names in TMDL are the logical names (e.g., 'parentaccountid', 'stageid')
                 var sourceColumn = rel.SourceAttribute;
                 var targetColumn = targetPrimaryKey;
 
@@ -2263,8 +2275,8 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                     sb.AppendLine($"\tisActive: false");
                 }
 
-                sb.AppendLine($"\tfromColumn: {QuoteTmdlName(sourceTableDisplay)}.{sourceColumn}");
-                sb.AppendLine($"\ttoColumn: {QuoteTmdlName(targetTableDisplay)}.{targetColumn}");
+                sb.AppendLine($"\tfromColumn: {QuoteTmdlName(sourceTableDisplay)}.{QuoteTmdlName(sourceColumn)}");
+                sb.AppendLine($"\ttoColumn: {QuoteTmdlName(targetTableDisplay)}.{QuoteTmdlName(targetColumn)}");
                 sb.AppendLine();
             }
 
@@ -2275,28 +2287,38 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                 tableDisplayNames.ContainsKey(dateTableConfig.PrimaryDateTable))
             {
                 var sourceTableDisplay = tableDisplayNames[dateTableConfig.PrimaryDateTable];
-                
-                // Look up the display name for the primary date field
-                var primaryDateFieldName = dateTableConfig.PrimaryDateField;
-                var isDateFieldRequired = false;
-                if (attributeDisplayInfo.TryGetValue(dateTableConfig.PrimaryDateTable, out var tableAttrs) &&
-                    tableAttrs.TryGetValue(dateTableConfig.PrimaryDateField, out var fieldDisplayInfo))
+                var sourceTable = tables.FirstOrDefault(t =>
+                    t.LogicalName.Equals(dateTableConfig.PrimaryDateTable, StringComparison.OrdinalIgnoreCase));
+                var dateAttr = sourceTable?.Attributes
+                    .FirstOrDefault(a => a.LogicalName.Equals(dateTableConfig.PrimaryDateField, StringComparison.OrdinalIgnoreCase));
+
+                if (dateAttr != null)
                 {
-                    primaryDateFieldName = fieldDisplayInfo.DisplayName ?? dateTableConfig.PrimaryDateField;
-                    isDateFieldRequired = fieldDisplayInfo.IsRequired;
+                    var isDateFieldRequired = false;
+                    var primaryDateFieldName = dateAttr.DisplayName ?? dateAttr.SchemaName ?? dateAttr.LogicalName;
+                    if (attributeDisplayInfo.TryGetValue(dateTableConfig.PrimaryDateTable, out var tableAttrs) &&
+                        tableAttrs.TryGetValue(dateTableConfig.PrimaryDateField, out var fieldDisplayInfo))
+                    {
+                        isDateFieldRequired = fieldDisplayInfo.IsRequired;
+                        primaryDateFieldName = fieldDisplayInfo.DisplayName ?? primaryDateFieldName;
+                    }
+
+                    sb.AppendLine($"relationship {Guid.NewGuid()}");
+                    
+                    // Add relyOnReferentialIntegrity if the date field is required
+                    if (isDateFieldRequired)
+                    {
+                        sb.AppendLine($"\trelyOnReferentialIntegrity");
+                    }
+                    
+                    sb.AppendLine($"\tfromColumn: {QuoteTmdlName(sourceTableDisplay)}.{QuoteTmdlName(primaryDateFieldName)}");
+                    sb.AppendLine($"\ttoColumn: Date.Date");
+                    sb.AppendLine();
                 }
-                
-                sb.AppendLine($"relationship {Guid.NewGuid()}");
-                
-                // Add relyOnReferentialIntegrity if the date field is required
-                if (isDateFieldRequired)
+                else
                 {
-                    sb.AppendLine($"\trelyOnReferentialIntegrity");
+                    DebugLogger.Log($"Date relationship skipped: '{dateTableConfig.PrimaryDateTable}.{dateTableConfig.PrimaryDateField}' not found in selected attributes.");
                 }
-                
-                sb.AppendLine($"\tfromColumn: {QuoteTmdlName(sourceTableDisplay)}.{QuoteTmdlName(primaryDateFieldName)}");
-                sb.AppendLine($"\ttoColumn: Date.Date");
-                sb.AppendLine();
             }
 
             return sb.ToString();

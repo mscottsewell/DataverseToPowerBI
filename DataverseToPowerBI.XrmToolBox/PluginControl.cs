@@ -190,7 +190,7 @@ namespace DataverseToPowerBI.XrmToolBox
             
             // Set version from assembly
             var version = GetType().Assembly.GetName().Version;
-            lblVersion.Text = $"v{version.Major}.{version.Minor}.{version.Build}";
+            lblVersion.Text = $"v{version.Major}.{version.Minor}.{version.Build}.{version.Revision}";
             
             // Initialize toolbar icons
             btnRefreshMetadata.Image = RibbonIcons.RefreshIcon;
@@ -874,6 +874,45 @@ namespace DataverseToPowerBI.XrmToolBox
                         catch (Exception ex)
                         {
                             System.Diagnostics.Debug.WriteLine($"Error loading metadata for {tableName}: {ex.Message}");
+                            
+                            // Even if metadata loading fails, create minimal attribute list with at least the primary key
+                            // This ensures relationships can still be generated
+                            if (_selectedTables.ContainsKey(tableName))
+                            {
+                                var table = _selectedTables[tableName];
+                                var minimalAttrs = new List<AttributeMetadata>();
+                                
+                                // Add primary ID attribute
+                                if (!string.IsNullOrEmpty(table.PrimaryIdAttribute))
+                                {
+                                    minimalAttrs.Add(new AttributeMetadata
+                                    {
+                                        LogicalName = table.PrimaryIdAttribute,
+                                        DisplayName = table.PrimaryIdAttribute,
+                                        SchemaName = table.PrimaryIdAttribute,
+                                        AttributeType = "Uniqueidentifier",
+                                        IsRequired = true
+                                    });
+                                }
+                                
+                                // Add primary name attribute if different
+                                if (!string.IsNullOrEmpty(table.PrimaryNameAttribute) &&
+                                    table.PrimaryNameAttribute != table.PrimaryIdAttribute)
+                                {
+                                    minimalAttrs.Add(new AttributeMetadata
+                                    {
+                                        LogicalName = table.PrimaryNameAttribute,
+                                        DisplayName = table.PrimaryNameAttribute,
+                                        SchemaName = table.PrimaryNameAttribute,
+                                        AttributeType = "String"
+                                    });
+                                }
+                                
+                                if (minimalAttrs.Any())
+                                {
+                                    attrResults[tableName] = minimalAttrs;
+                                }
+                            }
                         }
                     }
                     args.Result = new Tuple<Dictionary<string, List<AttributeMetadata>>, Dictionary<string, List<FormMetadata>>, Dictionary<string, List<ViewMetadata>>>(attrResults, formResults, viewResults);
@@ -899,6 +938,56 @@ namespace DataverseToPowerBI.XrmToolBox
                             _tableForms[kvp.Key] = kvp.Value;
                         foreach (var kvp in result.Item3)
                             _tableViews[kvp.Key] = kvp.Value;
+                        
+                        // Update TableInfo with actual metadata from loaded attributes
+                        foreach (var tableName in _selectedTables.Keys.ToList())
+                        {
+                            if (_tableAttributes.ContainsKey(tableName))
+                            {
+                                var table = _selectedTables[tableName];
+                                var attrs = _tableAttributes[tableName];
+                                
+                                // Update primary key if not set or using the inferred default
+                                if (string.IsNullOrEmpty(table.PrimaryIdAttribute) || 
+                                    table.PrimaryIdAttribute == tableName + "id")
+                                {
+                                    // Find the actual primary ID attribute
+                                    var primaryId = attrs.FirstOrDefault(a => 
+                                        a.LogicalName.Equals(tableName + "id", StringComparison.OrdinalIgnoreCase) ||
+                                        a.AttributeType == "Uniqueidentifier");
+                                    
+                                    if (primaryId != null)
+                                    {
+                                        table.PrimaryIdAttribute = primaryId.LogicalName;
+                                    }
+                                }
+                                
+                                // Update primary name if not set
+                                if (string.IsNullOrEmpty(table.PrimaryNameAttribute) || 
+                                    table.PrimaryNameAttribute == "name")
+                                {
+                                    // Common primary name attributes in Dataverse
+                                    var primaryName = attrs.FirstOrDefault(a =>
+                                        a.LogicalName.Equals("name", StringComparison.OrdinalIgnoreCase) ||
+                                        a.LogicalName.Equals(tableName + "name", StringComparison.OrdinalIgnoreCase) ||
+                                        a.LogicalName.Equals("fullname", StringComparison.OrdinalIgnoreCase));
+                                    
+                                    if (primaryName != null)
+                                    {
+                                        table.PrimaryNameAttribute = primaryName.LogicalName;
+                                    }
+                                }
+                                
+                                // Ensure primary key and name attributes are selected (critical for relationships)
+                                if (!_selectedAttributes.ContainsKey(tableName))
+                                    _selectedAttributes[tableName] = new HashSet<string>();
+                                
+                                if (!string.IsNullOrEmpty(table.PrimaryIdAttribute))
+                                    _selectedAttributes[tableName].Add(table.PrimaryIdAttribute);
+                                if (!string.IsNullOrEmpty(table.PrimaryNameAttribute))
+                                    _selectedAttributes[tableName].Add(table.PrimaryNameAttribute);
+                            }
+                        }
                         
                         // Auto-select form and its fields for each table if not already set
                         foreach (var tableName in _selectedTables.Keys)
@@ -1987,6 +2076,37 @@ namespace DataverseToPowerBI.XrmToolBox
             {
                 MessageBox.Show("Please select tables first.", "No Tables", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
+            }
+            
+            // Check if all selected tables have their metadata loaded
+            var tablesWithoutMetadata = _selectedTables.Keys
+                .Where(tableName => !_tableAttributes.ContainsKey(tableName))
+                .ToList();
+            
+            if (tablesWithoutMetadata.Any())
+            {
+                var tableNames = string.Join(", ", tablesWithoutMetadata.Select(t => 
+                    _selectedTables.ContainsKey(t) ? _selectedTables[t].DisplayName ?? t : t));
+                
+                var result = MessageBox.Show(
+                    $"Metadata has not been loaded for the following tables:\n{tableNames}\n\n" +
+                    "This usually happens when tables are selected from outside your current solution. " +
+                    "Would you like to load their metadata now?\n\n" +
+                    "(Click Yes to load metadata, No to cancel)",
+                    "Metadata Required",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Warning);
+                
+                if (result == DialogResult.Yes)
+                {
+                    // Load metadata for missing tables
+                    LoadMetadataForAllTables();
+                    return; // Exit - user can click Build again after metadata loads
+                }
+                else
+                {
+                    return; // Cancel build
+                }
             }
             
             // Use current model's working folder if available

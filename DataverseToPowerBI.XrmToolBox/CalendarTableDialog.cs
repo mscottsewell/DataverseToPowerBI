@@ -490,10 +490,13 @@ namespace DataverseToPowerBI.XrmToolBox
             {
                 var tableName = selected.Value;
                 
-                if (_attributeDisplayInfo.TryGetValue(tableName, out var attrs))
+                // VALIDATION: Only show date fields that are included in the selected attributes
+                if (_attributeDisplayInfo.TryGetValue(tableName, out var attrs) &&
+                    _selectedAttributes.TryGetValue(tableName, out var selectedAttrNames))
                 {
                     var dateTimeAttrs = attrs.Values
-                        .Where(a => !string.IsNullOrWhiteSpace(a.AttributeType) && 
+                        .Where(a => selectedAttrNames.Contains(a.LogicalName) &&  // CRITICAL: Must be in selected attributes
+                                   !string.IsNullOrWhiteSpace(a.AttributeType) && 
                                    IsDateTimeType(a.AttributeType))
                         .OrderBy(a => a.DisplayName ?? a.LogicalName)
                         .ToList();
@@ -520,6 +523,17 @@ namespace DataverseToPowerBI.XrmToolBox
                         }
                     }
                     cboDateField.SelectedIndex = createdonIdx >= 0 ? createdonIdx : 0;
+                }
+                else
+                {
+                    // No date fields available - show helpful message
+                    MessageBox.Show(
+                        $"No date fields are selected for the '{selected.Display}' table.\n\n" +
+                        "Please ensure you have included at least one date/datetime field in your query " +
+                        "before configuring the Date table relationship.",
+                        "No Date Fields Available",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
                 }
             }
 

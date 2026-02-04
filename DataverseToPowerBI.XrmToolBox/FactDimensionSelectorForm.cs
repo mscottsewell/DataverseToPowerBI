@@ -946,11 +946,30 @@ namespace DataverseToPowerBI.XrmToolBox
                 if (tableName.Equals(SelectedFactTable.LogicalName, StringComparison.OrdinalIgnoreCase))
                     continue;
 
+                // Check if already added to avoid duplicates
+                if (AllSelectedTables.Any(t => t.LogicalName.Equals(tableName, StringComparison.OrdinalIgnoreCase)))
+                    continue;
+
                 var table = _tables.FirstOrDefault(t => t.LogicalName.Equals(tableName, StringComparison.OrdinalIgnoreCase));
-                if (table != null && !AllSelectedTables.Any(t => t.LogicalName.Equals(tableName, StringComparison.OrdinalIgnoreCase)))
+                
+                // If table not in current solution, create a minimal TableInfo from known metadata
+                if (table == null)
                 {
-                    AllSelectedTables.Add(table);
+                    var displayName = _allEntityDisplayNames.TryGetValue(tableName, out var entityDisplayName) 
+                        ? entityDisplayName 
+                        : tableName;
+                    
+                    table = new TableInfo
+                    {
+                        LogicalName = tableName,
+                        DisplayName = displayName,
+                        SchemaName = tableName, // Best guess - will be updated when metadata loads
+                        PrimaryIdAttribute = tableName + "id", // Dataverse convention: tablename + "id"
+                        PrimaryNameAttribute = "name" // Common default - will be updated when metadata loads
+                    };
                 }
+                
+                AllSelectedTables.Add(table);
             }
 
             this.DialogResult = DialogResult.OK;
