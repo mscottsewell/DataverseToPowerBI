@@ -373,6 +373,17 @@ namespace DataverseToPowerBI.XrmToolBox
             
             if (entityMetadata?.Attributes != null)
             {
+                // First pass: Build a dictionary of all attributes by logical name
+                var allAttributes = new Dictionary<string, Microsoft.Xrm.Sdk.Metadata.AttributeMetadata>(StringComparer.OrdinalIgnoreCase);
+                foreach (var attr in entityMetadata.Attributes)
+                {
+                    if (!string.IsNullOrEmpty(attr.LogicalName))
+                    {
+                        allAttributes[attr.LogicalName] = attr;
+                    }
+                }
+                
+                // Second pass: Process attributes and find virtual attribute mappings
                 foreach (var attr in entityMetadata.Attributes)
                 {
                     var logicalName = attr.LogicalName;
@@ -403,6 +414,64 @@ namespace DataverseToPowerBI.XrmToolBox
                         targets = lookupAttr.Targets.ToList();
                     }
                     
+                    // For Picklist, Boolean, State, and Status attributes, find the associated virtual attribute
+                    string? virtualAttributeName = null;
+                    if (attr is PicklistAttributeMetadata || attr is BooleanAttributeMetadata || 
+                        attr is StateAttributeMetadata || attr is StatusAttributeMetadata)
+                    {
+                        // Try standard pattern first: {logicalname}name
+                        var standardVirtualName = logicalName + "name";
+                        if (allAttributes.ContainsKey(standardVirtualName))
+                        {
+                            virtualAttributeName = standardVirtualName;
+                        }
+                        else
+                        {
+                            // Search for any virtual attribute that might be associated
+                            // Virtual attributes often have names related to the base attribute
+                            // For example: donotsendmm -> donotsendmarketingmaterial
+                            foreach (var kvp in allAttributes)
+                            {
+                                var candidateAttr = kvp.Value;
+                                
+                                // Check if this is a virtual attribute
+                                if (candidateAttr.AttributeTypeName?.Value == "VirtualType")
+                                {
+                                    // Check if the virtual attribute name contains the base attribute name
+                                    // or if there's a logical connection
+                                    var candidateName = candidateAttr.LogicalName ?? "";
+                                    
+                                    // Look for virtual attributes that:
+                                    // 1. Start with the base attribute name (e.g., donotsend... -> donotsend...)
+                                    // 2. Are not already mapped
+                                    // 3. Have "name" in the suffix or are clearly related
+                                    if (candidateName.StartsWith(logicalName ?? "", StringComparison.OrdinalIgnoreCase) &&
+                                        candidateName.Length > (logicalName?.Length ?? 0))
+                                    {
+                                        // Prefer attributes with "name" in the logical name
+                                        if (candidateName.IndexOf("name", StringComparison.OrdinalIgnoreCase) >= 0)
+                                        {
+                                            virtualAttributeName = candidateName;
+                                            break;
+                                        }
+                                        // Otherwise, take the first match as a fallback
+                                        else if (virtualAttributeName == null)
+                                        {
+                                            virtualAttributeName = candidateName;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        
+                        // If we still haven't found a virtual attribute, fall back to the standard pattern
+                        // This ensures backward compatibility even if the virtual attribute doesn't exist
+                        if (virtualAttributeName == null)
+                        {
+                            virtualAttributeName = standardVirtualName;
+                        }
+                    }
+                    
                     attributes.Add(new CoreAttributeMetadata
                     {
                         LogicalName = logicalName ?? "",
@@ -411,7 +480,8 @@ namespace DataverseToPowerBI.XrmToolBox
                         AttributeType = MapAttributeType(typeValue ?? ""),
                         IsCustomAttribute = isCustomAttribute,
                         IsRequired = isRequired,
-                        Targets = targets.Count > 0 ? targets : null
+                        Targets = targets.Count > 0 ? targets : null,
+                        VirtualAttributeName = virtualAttributeName
                     });
                 }
             }

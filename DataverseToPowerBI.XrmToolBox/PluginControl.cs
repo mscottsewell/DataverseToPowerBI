@@ -408,6 +408,9 @@ namespace DataverseToPowerBI.XrmToolBox
                 {
                     try
                     {
+                        // Clear any existing metadata before creating the first model
+                        ClearAllMetadata();
+                        
                         var newModel = new SemanticModelConfig
                         {
                             Name = dialog.SemanticModelName,
@@ -415,7 +418,8 @@ namespace DataverseToPowerBI.XrmToolBox
                             WorkingFolder = dialog.WorkingFolder,
                             TemplatePath = dialog.TemplatePath,
                             LastUsed = DateTime.Now,
-                            CreatedDate = DateTime.Now
+                            CreatedDate = DateTime.Now,
+                            PluginSettings = new PluginSettings()  // Explicitly initialize with empty settings
                         };
 
                         _modelManager.CreateModel(newModel);
@@ -536,6 +540,34 @@ namespace DataverseToPowerBI.XrmToolBox
             });
         }
         
+        /// <summary>
+        /// Clears all metadata for selected tables, attributes, forms, views, and relationships.
+        /// Used when starting a fresh semantic model to ensure no previous selections remain.
+        /// </summary>
+        private void ClearAllMetadata()
+        {
+            _selectedTables.Clear();
+            _tableForms.Clear();
+            _tableViews.Clear();
+            _tableAttributes.Clear();
+            _selectedAttributes.Clear();
+            _selectedFormIds.Clear();
+            _selectedViewIds.Clear();
+            _loadingStates.Clear();
+            _factTable = null;
+            _relationships.Clear();
+            _currentSolutionName = null;
+            _currentSolutionId = null;
+            _solutionTables.Clear();
+            
+            // Clear UI displays
+            listViewSelectedTables.Items.Clear();
+            listViewRelationships.Items.Clear();
+            listViewAttributes.Items.Clear();
+            UpdateTableCount();
+            UpdateSemanticModelDisplay();
+        }
+        
         private void LoadSemanticModel(SemanticModelConfig model)
         {
             _currentModel = model;
@@ -547,6 +579,12 @@ namespace DataverseToPowerBI.XrmToolBox
             _currentSolutionName = settings.LastSolutionName;
             _currentSolutionId = settings.LastSolutionId;
             _factTable = settings.FactTable;
+            
+            // If this is a brand new model with no tables, ensure fact table is null
+            if (settings.SelectedTableNames == null || settings.SelectedTableNames.Count == 0)
+            {
+                _factTable = null;
+            }
             
             // Restore selected attributes
             _selectedAttributes.Clear();
@@ -707,7 +745,10 @@ namespace DataverseToPowerBI.XrmToolBox
                 }
                 else if (dialog.ConfigurationsChanged && !string.IsNullOrEmpty(dialog.NewlyCreatedConfiguration))
                 {
-                    // A new model was created, load it and start table selection
+                    // A new model was created - clear all existing metadata first
+                    ClearAllMetadata();
+                    
+                    // Load the new model
                     var newModel = _modelManager.GetModel(dialog.NewlyCreatedConfiguration);
                     if (newModel != null)
                     {
@@ -1009,29 +1050,32 @@ namespace DataverseToPowerBI.XrmToolBox
                                 var table = _selectedTables[tableName];
                                 var attrs = _tableAttributes[tableName];
                                 
-                                // Update primary key if not set or using the inferred default
-                                if (string.IsNullOrEmpty(table.PrimaryIdAttribute) || 
-                                    table.PrimaryIdAttribute == tableName + "id")
+                                // Primary key and name are retrieved from entity metadata.
+                                // Only use fallback logic if metadata didn't provide them (which should be rare)
+                                if (string.IsNullOrEmpty(table.PrimaryIdAttribute))
                                 {
-                                    // Find the actual primary ID attribute
+                                    // Fallback: Try standard naming pattern (tablename + "id")
                                     var primaryId = attrs.FirstOrDefault(a => 
-                                        a.LogicalName.Equals(tableName + "id", StringComparison.OrdinalIgnoreCase) ||
-                                        a.AttributeType == "Uniqueidentifier");
+                                        a.LogicalName.Equals(tableName + "id", StringComparison.OrdinalIgnoreCase));
                                     
                                     if (primaryId != null)
                                     {
                                         table.PrimaryIdAttribute = primaryId.LogicalName;
                                     }
+                                    else
+                                    {
+                                        // Log warning if we can't determine primary key
+                                        DebugLogger.Log($"Warning: Could not determine primary key for table '{tableName}'");
+                                    }
                                 }
                                 
                                 // Update primary name if not set
-                                if (string.IsNullOrEmpty(table.PrimaryNameAttribute) || 
-                                    table.PrimaryNameAttribute == "name")
+                                if (string.IsNullOrEmpty(table.PrimaryNameAttribute))
                                 {
-                                    // Common primary name attributes in Dataverse
+                                    // Fallback: Try common primary name patterns
                                     var primaryName = attrs.FirstOrDefault(a =>
-                                        a.LogicalName.Equals("name", StringComparison.OrdinalIgnoreCase) ||
                                         a.LogicalName.Equals(tableName + "name", StringComparison.OrdinalIgnoreCase) ||
+                                        a.LogicalName.Equals("name", StringComparison.OrdinalIgnoreCase) ||
                                         a.LogicalName.Equals("fullname", StringComparison.OrdinalIgnoreCase));
                                     
                                     if (primaryName != null)
@@ -1662,6 +1706,10 @@ namespace DataverseToPowerBI.XrmToolBox
                 var isRequired = requiredAttrs.Contains(attr.LogicalName);
                 var onForm = formFields.Contains(attr.LogicalName);
                 
+                // Exclude virtual attributes from the list
+                if (attr.AttributeType?.Equals("Virtual", StringComparison.OrdinalIgnoreCase) == true && !isRequired)
+                    continue;
+                
                 // Apply filters (required attributes always shown)
                 if (showSelected && !isSelected && !isRequired) continue;
                 if (!string.IsNullOrEmpty(searchText))
@@ -2112,7 +2160,8 @@ namespace DataverseToPowerBI.XrmToolBox
                             SchemaName = a.SchemaName,
                             AttributeType = a.AttributeType,
                             IsRequired = a.IsRequired,
-                            Targets = a.Targets
+                            Targets = a.Targets,
+                            VirtualAttributeName = a.VirtualAttributeName
                         })),
                 _selectedAttributes,
                 _factTable,
@@ -2343,7 +2392,8 @@ namespace DataverseToPowerBI.XrmToolBox
                         SchemaName = attr.SchemaName,
                         AttributeType = attr.AttributeType,
                         IsRequired = attr.IsRequired,
-                        Targets = attr.Targets
+                        Targets = attr.Targets,
+                        VirtualAttributeName = attr.VirtualAttributeName
                     };
                 }
                 attributeDisplayInfo[kvp.Key] = tableDict;
@@ -2711,6 +2761,8 @@ namespace DataverseToPowerBI.XrmToolBox
         public bool IsRequired { get; set; } = false;
         [System.Runtime.Serialization.DataMember]
         public List<string>? Targets { get; set; }
+        [System.Runtime.Serialization.DataMember]
+        public string? VirtualAttributeName { get; set; }
     }
     
     #endregion

@@ -726,7 +726,8 @@ namespace DataverseToPowerBI.XrmToolBox
                             WorkingFolder = dialog.WorkingFolder,
                             TemplatePath = dialog.TemplatePath,
                             LastUsed = DateTime.Now,
-                            CreatedDate = DateTime.Now
+                            CreatedDate = DateTime.Now,
+                            PluginSettings = new PluginSettings()  // Explicitly initialize with empty settings
                         };
 
                         _modelManager.CreateModel(newModel);

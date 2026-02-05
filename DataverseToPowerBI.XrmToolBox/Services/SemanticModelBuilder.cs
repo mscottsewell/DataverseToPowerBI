@@ -18,10 +18,10 @@
 //       ├─ {ModelName}.pbip              - Power BI Project file
 //       ├─ {ModelName}.SemanticModel/    - Semantic model folder
 //       │  ├─ definition/
-//       │  │  ├─ model.tmdl            - Model metadata and table refs
+//       │  │  ├─ model.tmdl            - Model metadata and table/expression refs
+//       │  │  ├─ expressions.tmdl      - DataverseURL and other expressions
 //       │  │  ├─ relationships.tmdl    - All relationship definitions
 //       │  │  └─ tables/               - Individual table TMDL files
-//       │  │     ├─ DataverseURL.tmdl
 //       │  │     ├─ Date.tmdl (if configured)
 //       │  │     └─ {TableName}.tmdl ...
 //       │  └─ .platform                 - Fabric platform metadata
@@ -162,7 +162,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
             SetStatus($"Building {tables.Count} tables...");
             var tablesFolder = Path.Combine(pbipFolder, $"{projectName}.SemanticModel", "definition", "tables");
             
-            // Clear any existing tables from template (except Date table and DataverseURL if present)
+            // Clear any existing tables from template (except Date table if present)
             if (Directory.Exists(tablesFolder))
             {
                 var existingDateTable = FindExistingDateTable(tablesFolder);
@@ -170,9 +170,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                     .Where(f => 
                     {
                         var fileName = Path.GetFileName(f);
-                        // Preserve Date table and DataverseURL table
-                        if (fileName.Equals("DataverseURL.tmdl", StringComparison.OrdinalIgnoreCase))
-                            return false;
+                        // Preserve Date table
                         if (existingDateTable != null && fileName.Equals(existingDateTable, StringComparison.OrdinalIgnoreCase))
                             return false;
                         return true;
@@ -783,8 +781,9 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                     }
                     else if (isChoice || isBoolean)
                     {
-                        // Choice/Boolean: use fieldname with "name" appended
-                        var nameColumn = attr.LogicalName + "name";
+                        // Choice/Boolean: use the virtual attribute name from metadata
+                        // Most follow pattern {attributename}name, but there are exceptions (e.g., donotsendmm -> donotsendmarketingmaterial)
+                        var nameColumn = attrDisplayInfo?.VirtualAttributeName ?? (attr.LogicalName + "name");
                         columns[attrDisplayName] = new ColumnDefinition
                         {
                             DisplayName = attrDisplayName,
@@ -944,7 +943,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                                    attrType.Equals("State", StringComparison.OrdinalIgnoreCase) ||
                                    attrType.Equals("Status", StringComparison.OrdinalIgnoreCase);
                     var isBoolean = attrType.Equals("Boolean", StringComparison.OrdinalIgnoreCase);
-                    var isPrimaryKey = attr.LogicalName == table.PrimaryIdAttribute;
+                    var isPrimaryKey = attr.LogicalName.Equals(table.PrimaryIdAttribute, StringComparison.OrdinalIgnoreCase);
 
                     if (isLookup)
                     {
@@ -1241,16 +1240,16 @@ namespace DataverseToPowerBI.XrmToolBox.Services
         /// </summary>
         private string ExtractDataverseUrl(string pbipFolder, string projectName)
         {
-            // DataverseURL is stored as a table in tables/DataverseURL.tmdl
-            var dataverseUrlPath = Path.Combine(pbipFolder, $"{projectName}.SemanticModel", "definition", "tables", "DataverseURL.tmdl");
-            if (!File.Exists(dataverseUrlPath))
+            // DataverseURL is stored as an expression in expressions.tmdl
+            var expressionsPath = Path.Combine(pbipFolder, $"{projectName}.SemanticModel", "definition", "expressions.tmdl");
+            if (!File.Exists(expressionsPath))
                 return string.Empty;
 
             try
             {
-                var content = File.ReadAllText(dataverseUrlPath);
-                // Extract the URL from the partition source: source = "portfolioshapingdev.crm.dynamics.com" meta [...]
-                var urlMatch = Regex.Match(content, @"source\s*=\s*""([^""]+)""");
+                var content = File.ReadAllText(expressionsPath);
+                // Extract the URL from the expression: expression DataverseURL = "portfolioshapingdev.crm.dynamics.com" meta [...]
+                var urlMatch = Regex.Match(content, @"expression\s+DataverseURL\s*=\s*""([^""]+)""");
                 if (urlMatch.Success)
                     return urlMatch.Groups[1].Value;
             }
@@ -1768,29 +1767,74 @@ namespace DataverseToPowerBI.XrmToolBox.Services
             if (normalizedUrl.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
                 normalizedUrl = normalizedUrl.Substring(8);
 
-            // Ensure DataverseURL table exists
-            var tablesFolder = Path.Combine(pbipFolder, $"{projectName}.SemanticModel", "definition", "tables");
-            var dataverseUrlPath = Path.Combine(tablesFolder, "DataverseURL.tmdl");
-            
-            if (File.Exists(dataverseUrlPath))
+            // Clean up old DataverseURL table if it exists (migration from table to expression)
+            var definitionFolder = Path.Combine(pbipFolder, $"{projectName}.SemanticModel", "definition");
+            var oldTablePath = Path.Combine(definitionFolder, "tables", "DataverseURL.tmdl");
+            if (File.Exists(oldTablePath))
             {
-                // Update existing DataverseURL table
-                var content = File.ReadAllText(dataverseUrlPath, Utf8WithoutBom);
-                // Replace the DataverseURL value in the partition source
-                content = Regex.Replace(
-                    content,
-                    @"source = ""[^""]*"" meta",
-                    $"source = \"{normalizedUrl}\" meta"
-                );
-                WriteTmdlFile(dataverseUrlPath, content);
+                DebugLogger.Log("Removing old DataverseURL table (migrating to expression)");
+                File.Delete(oldTablePath);
+                
+                // Also update model.tmdl to remove ref table DataverseURL
+                var modelPath = Path.Combine(definitionFolder, "model.tmdl");
+                if (File.Exists(modelPath))
+                {
+                    var modelContent = File.ReadAllText(modelPath, Utf8WithoutBom);
+                    // Remove ref table DataverseURL line
+                    modelContent = Regex.Replace(modelContent, @"^\s*ref\s+table\s+DataverseURL\s*$", "", RegexOptions.Multiline);
+                    // Add ref expression DataverseURL if not present
+                    if (!Regex.IsMatch(modelContent, @"ref\s+expression\s+DataverseURL"))
+                    {
+                        // Find the position after annotations and before other refs
+                        var insertMatch = Regex.Match(modelContent, @"(annotation\s+PBI_ProTooling\s*=\s*\[[^\]]+\]\s*\r?\n)");
+                        if (insertMatch.Success)
+                        {
+                            modelContent = modelContent.Substring(0, insertMatch.Index + insertMatch.Length) +
+                                          "\nref expression DataverseURL\n" +
+                                          modelContent.Substring(insertMatch.Index + insertMatch.Length);
+                        }
+                    }
+                    WriteTmdlFile(modelPath, modelContent);
+                }
+            }
+
+            // Ensure DataverseURL expression exists in expressions.tmdl
+            var expressionsPath = Path.Combine(definitionFolder, "expressions.tmdl");
+            
+            if (File.Exists(expressionsPath))
+            {
+                // Update existing DataverseURL expression in expressions.tmdl
+                var content = File.ReadAllText(expressionsPath, Utf8WithoutBom);
+                
+                // Check if DataverseURL expression already exists
+                if (Regex.IsMatch(content, @"expression\s+DataverseURL\s*="))
+                {
+                    // Replace the existing DataverseURL expression value
+                    content = Regex.Replace(
+                        content,
+                        @"expression\s+DataverseURL\s*=\s*""[^""]*""",
+                        $"expression DataverseURL = \"{normalizedUrl}\""
+                    );
+                    WriteTmdlFile(expressionsPath, content);
+                }
+                else
+                {
+                    // Append DataverseURL expression to existing file
+                    var dataverseUrlExpression = GenerateDataverseUrlExpression(normalizedUrl);
+                    // Ensure file ends with newline before appending
+                    if (!content.EndsWith("\n"))
+                        content += Environment.NewLine;
+                    content += dataverseUrlExpression;
+                    WriteTmdlFile(expressionsPath, content);
+                }
             }
             else
             {
-                // Create DataverseURL table if it doesn't exist
-                DebugLogger.Log("DataverseURL table not found in template - creating it");
-                Directory.CreateDirectory(tablesFolder);
-                var dataverseUrlTmdl = GenerateDataverseUrlTableTmdl(normalizedUrl);
-                WriteTmdlFile(dataverseUrlPath, dataverseUrlTmdl);
+                // Create expressions.tmdl with DataverseURL expression
+                DebugLogger.Log("expressions.tmdl not found in template - creating it");
+                Directory.CreateDirectory(definitionFolder);
+                var dataverseUrlExpression = GenerateDataverseUrlExpression(normalizedUrl);
+                WriteTmdlFile(expressionsPath, dataverseUrlExpression);
             }
 
             // Update .platform file with display name
@@ -1981,8 +2025,8 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                                attrType.Equals("State", StringComparison.OrdinalIgnoreCase) ||
                                attrType.Equals("Status", StringComparison.OrdinalIgnoreCase);
                 var isBoolean = attrType.Equals("Boolean", StringComparison.OrdinalIgnoreCase);
-                var isPrimaryKey = attr.LogicalName == table.PrimaryIdAttribute;
-                var isPrimaryName = attr.LogicalName == table.PrimaryNameAttribute;
+                var isPrimaryKey = attr.LogicalName.Equals(table.PrimaryIdAttribute, StringComparison.OrdinalIgnoreCase);
+                var isPrimaryName = attr.LogicalName.Equals(table.PrimaryNameAttribute, StringComparison.OrdinalIgnoreCase);
 
                 // Build description
                 var description = BuildDescription(attr.SchemaName ?? attr.LogicalName, attrType, targets);
@@ -2019,8 +2063,9 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                 }
                 else if (isChoice || isBoolean)
                 {
-                    // For Choice/Boolean: use fieldname with "name" appended
-                    var nameColumn = attr.LogicalName + "name";
+                    // For Choice/Boolean: use the virtual attribute name from metadata
+                    // Most follow pattern {attributename}name, but there are exceptions (e.g., donotsendmm -> donotsendmarketingmaterial)
+                    var nameColumn = attrDisplayInfo?.VirtualAttributeName ?? (attr.LogicalName + "name");
                     columns.Add(new ColumnInfo
                     {
                         LogicalName = nameColumn,
@@ -2191,39 +2236,17 @@ namespace DataverseToPowerBI.XrmToolBox.Services
         }
 
         /// <summary>
-        /// Generates the DataverseURL parameter table TMDL
+        /// Generates the DataverseURL parameter expression TMDL
         /// </summary>
-        private string GenerateDataverseUrlTableTmdl(string dataverseUrl)
+        private string GenerateDataverseUrlExpression(string dataverseUrl)
         {
             var sb = new StringBuilder();
-            var lineageTag1 = Guid.NewGuid().ToString();
-            var lineageTag2 = Guid.NewGuid().ToString();
+            var lineageTag = Guid.NewGuid().ToString();
 
-            sb.AppendLine("table DataverseURL");
-            sb.AppendLine("\tisHidden");
-            sb.AppendLine($"\tlineageTag: {lineageTag1}");
-            sb.AppendLine();
-            sb.AppendLine("\tcolumn DataverseURL");
-            sb.AppendLine("\t\tdataType: string");
-            sb.AppendLine("\t\tisHidden");
-            sb.AppendLine($"\t\tlineageTag: {lineageTag2}");
-            sb.AppendLine("\t\tsummarizeBy: none");
-            sb.AppendLine("\t\tsourceColumn: DataverseURL");
-            sb.AppendLine();
-            sb.AppendLine("\t\tchangedProperty = IsHidden");
-            sb.AppendLine();
-            sb.AppendLine("\t\tannotation SummarizationSetBy = Automatic");
-            sb.AppendLine();
-            sb.AppendLine("\tpartition DataverseURL = m");
-            sb.AppendLine("\t\tmode: import");
-            sb.AppendLine($"\t\tsource = \"{dataverseUrl}\" meta [IsParameterQuery=true, Type=\"Text\", IsParameterQueryRequired=true]");
-            sb.AppendLine();
-            sb.AppendLine("\tchangedProperty = IsHidden");
-            sb.AppendLine();
-            sb.AppendLine("\tannotation PBI_NavigationStepName = Navigation");
+            sb.AppendLine($"expression DataverseURL = \"{dataverseUrl}\" meta [IsParameterQuery=true, Type=\"Any\", IsParameterQueryRequired=true]");
+            sb.AppendLine($"\tlineageTag: {lineageTag}");
             sb.AppendLine();
             sb.AppendLine("\tannotation PBI_ResultType = Text");
-            sb.AppendLine();
 
             return sb.ToString();
         }

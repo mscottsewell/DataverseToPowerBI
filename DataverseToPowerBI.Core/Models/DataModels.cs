@@ -499,6 +499,31 @@ namespace DataverseToPowerBI.Core.Models
         /// Most lookups have a single target, but polymorphic lookups have multiple.
         /// </summary>
         public List<string>? Targets { get; set; }
+
+        /// <summary>
+        /// For Picklist (Choice) and Boolean attributes, the logical name of the associated virtual attribute
+        /// that contains the display text/label value.
+        /// </summary>
+        /// <remarks>
+        /// Most choice fields use the pattern "{attributename}name" (e.g., "statecode" -> "statecode name"),
+        /// but there are exceptions (e.g., "donotsendmm" -> "donotsendmarketingmaterial").
+        /// This property captures the actual virtual attribute name from metadata.
+        /// </remarks>
+        /// <example>"statuscodename", "donotsendmarketingmaterial"</example>
+        public string? VirtualAttributeName { get; set; }
+
+        /// <summary>
+        /// For Picklist attributes, indicates whether the optionset is global.
+        /// Global optionsets use GlobalOptionsetMetadata table in FabricLink queries,
+        /// while entity-specific optionsets use OptionsetMetadata table.
+        /// </summary>
+        public bool? IsGlobal { get; set; }
+
+        /// <summary>
+        /// For Picklist attributes, the logical name of the optionset.
+        /// Used for JOINs to metadata tables in FabricLink queries.
+        /// </summary>
+        public string? OptionSetName { get; set; }
     }
 
     #endregion
@@ -788,6 +813,18 @@ namespace DataverseToPowerBI.Core.Models
         /// </summary>
         /// <example>["account"], ["contact", "account", "lead"]</example>
         public List<string>? Targets { get; set; }
+
+        /// <summary>
+        /// For Picklist (Choice) and Boolean attributes, the logical name of the associated virtual attribute
+        /// that contains the display text/label value.
+        /// </summary>
+        /// <remarks>
+        /// Most choice fields use the pattern "{attributename}name" (e.g., "statecode" -> "statecode name"),
+        /// but there are exceptions (e.g., "donotsendmm" -> "donotsendmarketingmaterial").
+        /// This property captures the actual virtual attribute name from metadata.
+        /// </remarks>
+        /// <example>"statuscodename", "donotsendmarketingmaterial"</example>
+        public string? VirtualAttributeName { get; set; }
     }
 
     /// <summary>

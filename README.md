@@ -188,12 +188,12 @@ YourModelName/
 ├── YourModelName.SemanticModel/
 │   └── definition/
 │       ├── model.tmdl          ← Model configuration
+│       ├── expressions.tmdl    ← DataverseURL and other expressions
 │       ├── relationships.tmdl  ← Table relationships
 │       └── tables/             ← Individual table definitions
 │           ├── Account.tmdl
 │           ├── Contact.tmdl
-│           ├── Date.tmdl
-│           └── DataverseURL.tmdl
+│           └── Date.tmdl
 └── YourModelName.Report/
     └── (report definition files)
 ```
