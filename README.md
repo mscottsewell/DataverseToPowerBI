@@ -190,7 +190,9 @@ These measures are regenerated on each build. Your own custom measures are alway
 
 ## 📁 Understanding Your Generated Project
 
-The tool creates a **Power BI Project (PBIP)** folder structure. The exact layout depends on your connection mode:
+The project creates a **Power BI Project (PBIP)** which is a format that allows for editing, change management and collaboration. - A PBIP can be saved as a PBIX file for distribution by simply clicking save-as and choosing the PBIX format.
+
+The tool creates a PBIP folder structure. The exact layout depends on your connection mode:
 
 ### Dataverse TDS Mode (Default)
 
