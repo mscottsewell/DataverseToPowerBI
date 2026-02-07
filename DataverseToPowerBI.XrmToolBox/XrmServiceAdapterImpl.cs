@@ -419,7 +419,8 @@ namespace DataverseToPowerBI.XrmToolBox
                     bool? isGlobal = null;
                     string? optionSetName = null;
 
-                    if (attr is PicklistAttributeMetadata || attr is BooleanAttributeMetadata ||
+                    if (attr is PicklistAttributeMetadata || attr is MultiSelectPicklistAttributeMetadata ||
+                        attr is BooleanAttributeMetadata ||
                         attr is StateAttributeMetadata || attr is StatusAttributeMetadata)
                     {
                         // Capture IsGlobal and OptionSetName for FabricLink queries
@@ -427,6 +428,11 @@ namespace DataverseToPowerBI.XrmToolBox
                         {
                             isGlobal = picklistAttr.OptionSet.IsGlobal;
                             optionSetName = picklistAttr.OptionSet.Name;
+                        }
+                        else if (attr is MultiSelectPicklistAttributeMetadata multiPicklistAttr && multiPicklistAttr.OptionSet != null)
+                        {
+                            isGlobal = multiPicklistAttr.OptionSet.IsGlobal;
+                            optionSetName = multiPicklistAttr.OptionSet.Name;
                         }
 
                         // Try standard pattern first: {logicalname}name
@@ -519,6 +525,7 @@ namespace DataverseToPowerBI.XrmToolBox
                 case "OwnerType": return "Owner";
                 case "UniqueidentifierType": return "Uniqueidentifier";
                 case "PicklistType": return "Picklist";
+                case "MultiSelectPicklistType": return "MultiSelectPicklist";
                 case "StateType": return "State";
                 case "StatusType": return "Status";
                 case "EntityNameType": return "EntityName";

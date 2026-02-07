@@ -149,13 +149,14 @@ namespace DataverseToPowerBI.XrmToolBox
 
             lblTableHelp = new Label
             {
-                Text = "Select the main table and date field that will link to the Date dimension.",
+                Text = "Select the main table and date field that will link to the Date dimension.\n" +
+                       "Only DateTime fields included in the selected columns for this table are shown.",
                 Location = new Point(20, y),
-                Size = new Size(500, 15),
+                Size = new Size(500, 30),
                 ForeColor = Color.Gray
             };
             this.Controls.Add(lblTableHelp);
-            y += 30;
+            y += 40;
 
             // Timezone Section
             var lblTimezoneSection = new Label

@@ -138,6 +138,11 @@ namespace DataverseToPowerBI.XrmToolBox.Services
         /// </summary>
         private void WriteDataverseUrlTable(string path, string normalizedUrl)
         {
+            // Ensure the parent directory exists (tables/ may not exist yet during initial build)
+            var dir = Path.GetDirectoryName(path);
+            if (!string.IsNullOrEmpty(dir))
+                Directory.CreateDirectory(dir);
+
             var sb = new StringBuilder();
             sb.AppendLine("table DataverseURL");
             sb.AppendLine("\tisHidden");
@@ -850,6 +855,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                     var isChoice = attrType.Equals("Picklist", StringComparison.OrdinalIgnoreCase) ||
                                    attrType.Equals("State", StringComparison.OrdinalIgnoreCase) ||
                                    attrType.Equals("Status", StringComparison.OrdinalIgnoreCase);
+                    var isMultiSelectChoice = attrType.Equals("MultiSelectPicklist", StringComparison.OrdinalIgnoreCase);
                     var isBoolean = attrType.Equals("Boolean", StringComparison.OrdinalIgnoreCase);
 
                     if (isLookup)
@@ -904,6 +910,19 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                                 FormatString = null
                             };
                         }
+                    }
+                    else if (isMultiSelectChoice)
+                    {
+                        // Multi-select choice: produces a string label column (same output for TDS and FabricLink)
+                        var nameColumn = attr.LogicalName + "name";
+                        columns[attrDisplayName] = new ColumnDefinition
+                        {
+                            DisplayName = attrDisplayName,
+                            LogicalName = nameColumn,
+                            DataType = "string",
+                            SourceColumn = nameColumn,
+                            FormatString = null
+                        };
                     }
                     else
                     {
@@ -1024,6 +1043,8 @@ namespace DataverseToPowerBI.XrmToolBox.Services
             var fromTable = IsFabricLink ? table.LogicalName : (table.SchemaName ?? table.LogicalName);
             var sqlFields = new List<string>();
             var joinClauses = new List<string>(); // FabricLink: metadata table JOINs
+            var cteClauses = new List<string>(); // FabricLink: CTE definitions for multi-select choice fields
+            var cteJoinClauses = new List<string>(); // FabricLink: JOIN to CTE results
             var processedColumns = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
             // Get attribute display info for this table
@@ -1071,6 +1092,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                     var isChoice = attrType.Equals("Picklist", StringComparison.OrdinalIgnoreCase) ||
                                    attrType.Equals("State", StringComparison.OrdinalIgnoreCase) ||
                                    attrType.Equals("Status", StringComparison.OrdinalIgnoreCase);
+                    var isMultiSelectChoice = attrType.Equals("MultiSelectPicklist", StringComparison.OrdinalIgnoreCase);
                     var isBoolean = attrType.Equals("Boolean", StringComparison.OrdinalIgnoreCase);
                     var isPrimaryKey = attr.LogicalName.Equals(table.PrimaryIdAttribute, StringComparison.OrdinalIgnoreCase);
 
@@ -1111,6 +1133,30 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                         else
                         {
                             // TDS: add virtual name column only
+                            sqlFields.Add($"Base.{attr.LogicalName}name");
+                        }
+                    }
+                    else if (isMultiSelectChoice)
+                    {
+                        var nameColumn = attr.LogicalName + "name";
+
+                        if (IsFabricLink)
+                        {
+                            // FabricLink: CTE with CROSS APPLY STRING_SPLIT + JOIN to metadata table
+                            var attrDisplayInfo2 = attrInfo.ContainsKey(attr.LogicalName) ? attrInfo[attr.LogicalName] : null;
+                            var cteAlias = $"CTE_{table.LogicalName}_{attr.LogicalName}";
+                            var joinAlias2 = $"{table.LogicalName}_{attr.LogicalName}";
+                            var isGlobal = attr.IsGlobal ?? attrDisplayInfo2?.IsGlobal ?? false;
+                            var optionSetName = attr.OptionSetName ?? attrDisplayInfo2?.OptionSetName ?? attr.LogicalName;
+                            var metadataTable = isGlobal ? "GlobalOptionsetMetadata" : "OptionsetMetadata";
+
+                            cteClauses.Add($"{cteAlias} AS (SELECT i.{primaryKey}, STRING_AGG({joinAlias2}.[LocalizedLabel], ', ') AS {nameColumn} FROM [{table.LogicalName}] AS i CROSS APPLY STRING_SPLIT(CAST(i.{attr.LogicalName} AS VARCHAR(4000)), ',') AS split JOIN [{metadataTable}] AS {joinAlias2} ON {joinAlias2}.[OptionSetName]='{optionSetName}' AND {joinAlias2}.[EntityName]='{table.LogicalName}' AND {joinAlias2}.[LocalizedLabelLanguageCode]={_languageCode} AND {joinAlias2}.[Option]=CAST(LTRIM(RTRIM(split.value)) AS INT) WHERE i.{attr.LogicalName} IS NOT NULL GROUP BY i.{primaryKey})");
+                            cteJoinClauses.Add($"LEFT JOIN {cteAlias} ON {cteAlias}.{primaryKey}=Base.{primaryKey}");
+                            sqlFields.Add($"{cteAlias}.{nameColumn}");
+                        }
+                        else
+                        {
+                            // TDS: use the virtual name column (same as single-select)
                             sqlFields.Add($"Base.{attr.LogicalName}name");
                         }
                     }
@@ -1163,8 +1209,12 @@ namespace DataverseToPowerBI.XrmToolBox.Services
             
             // Build JOIN clauses string for FabricLink
             var joinSection = joinClauses.Count > 0 ? " " + string.Join(" ", joinClauses) : "";
+            var cteJoinSection = cteJoinClauses.Count > 0 ? " " + string.Join(" ", cteJoinClauses) : "";
 
-            return NormalizeQuery($"SELECT {selectList} FROM {fromTable} AS Base{joinSection}{whereClause}");
+            // Build CTE prefix for multi-select choice fields
+            var ctePrefix = cteClauses.Count > 0 ? "WITH " + string.Join(", ", cteClauses) + " " : "";
+
+            return NormalizeQuery($"{ctePrefix}SELECT {selectList} FROM {fromTable} AS Base{joinSection}{cteJoinSection}{whereClause}");
         }
 
         /// <summary>
@@ -2181,6 +2231,8 @@ namespace DataverseToPowerBI.XrmToolBox.Services
             var columns = new List<ColumnInfo>();
             var sqlFields = new List<string>();
             var joinClauses = new List<string>(); // FabricLink: metadata table JOINs for choice fields
+            var cteClauses = new List<string>(); // FabricLink: CTE definitions for multi-select choice fields
+            var cteJoinClauses = new List<string>(); // FabricLink: JOIN to CTE results
             var processedColumns = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
             // Get attribute info for this table
@@ -2249,6 +2301,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                 var isChoice = attrType.Equals("Picklist", StringComparison.OrdinalIgnoreCase) ||
                                attrType.Equals("State", StringComparison.OrdinalIgnoreCase) ||
                                attrType.Equals("Status", StringComparison.OrdinalIgnoreCase);
+                var isMultiSelectChoice = attrType.Equals("MultiSelectPicklist", StringComparison.OrdinalIgnoreCase);
                 var isBoolean = attrType.Equals("Boolean", StringComparison.OrdinalIgnoreCase);
                 var isPrimaryKey = attr.LogicalName.Equals(table.PrimaryIdAttribute, StringComparison.OrdinalIgnoreCase);
                 var isPrimaryName = attr.LogicalName.Equals(table.PrimaryNameAttribute, StringComparison.OrdinalIgnoreCase);
@@ -2379,6 +2432,58 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                     });
                     sqlFields.Add($"Base.{nameColumn}");
                     }
+                }
+                else if (isMultiSelectChoice)
+                {
+                    // Multi-select choice fields store comma-separated integer values
+                    var nameColumn = attr.LogicalName + "name";
+
+                    if (IsFabricLink)
+                    {
+                        // FabricLink: use CTE with CROSS APPLY STRING_SPLIT + JOIN to metadata table
+                        var cteAlias = $"CTE_{table.LogicalName}_{attr.LogicalName}";
+                        var joinAlias = $"{table.LogicalName}_{attr.LogicalName}";
+                        var isGlobal = attr.IsGlobal ?? attrDisplayInfo?.IsGlobal ?? false;
+                        var optionSetName = attr.OptionSetName ?? attrDisplayInfo?.OptionSetName ?? attr.LogicalName;
+                        var metadataTable = isGlobal ? "GlobalOptionsetMetadata" : "OptionsetMetadata";
+
+                        cteClauses.Add(
+                            $"{cteAlias} AS (\n" +
+                            $"\t\t\t\t        SELECT i.{primaryKey}, STRING_AGG({joinAlias}.[LocalizedLabel], ', ') AS {nameColumn}\n" +
+                            $"\t\t\t\t        FROM [{table.LogicalName}] AS i\n" +
+                            $"\t\t\t\t        CROSS APPLY STRING_SPLIT(CAST(i.{attr.LogicalName} AS VARCHAR(4000)), ',') AS split\n" +
+                            $"\t\t\t\t        JOIN [{metadataTable}] AS {joinAlias}\n" +
+                            $"\t\t\t\t            ON  {joinAlias}.[OptionSetName] = '{optionSetName}'\n" +
+                            $"\t\t\t\t            AND {joinAlias}.[EntityName] = '{table.LogicalName}'\n" +
+                            $"\t\t\t\t            AND {joinAlias}.[LocalizedLabelLanguageCode] = {_languageCode}\n" +
+                            $"\t\t\t\t            AND {joinAlias}.[Option] = CAST(LTRIM(RTRIM(split.value)) AS INT)\n" +
+                            $"\t\t\t\t        WHERE i.{attr.LogicalName} IS NOT NULL\n" +
+                            $"\t\t\t\t        GROUP BY i.{primaryKey}\n" +
+                            $"\t\t\t\t    )");
+
+                        cteJoinClauses.Add(
+                            $"LEFT JOIN {cteAlias}\n" +
+                            $"\t\t\t\t            ON  {cteAlias}.{primaryKey} = Base.{primaryKey}");
+
+                        sqlFields.Add($"{cteAlias}.{nameColumn}");
+                    }
+                    else
+                    {
+                        // TDS: use the virtual name column (same as single-select)
+                        var virtualNameColumn = attrDisplayInfo?.VirtualAttributeName ?? (attr.LogicalName + "name");
+                        sqlFields.Add($"Base.{virtualNameColumn}");
+                    }
+
+                    columns.Add(new ColumnInfo
+                    {
+                        LogicalName = nameColumn,
+                        DisplayName = attrDisplayName,
+                        SourceColumn = nameColumn,
+                        IsHidden = false,
+                        IsRowLabel = isPrimaryName,
+                        Description = description,
+                        AttributeType = "string"  // Multi-select labels are always strings
+                    });
                 }
                 else
                 {
@@ -2549,6 +2654,12 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                 }
                 sb.AppendLine($"\t\t\t\t");
             }
+
+            // FabricLink: add CTE definitions for multi-select choice fields before the main SELECT
+            if (cteClauses.Count > 0)
+            {
+                sb.AppendLine($"\t\t\t\t    WITH {string.Join(",\n\t\t\t\t    ", cteClauses)}");
+            }
             
             sb.AppendLine($"\t\t\t\t    {sqlSelectList}");
             sb.AppendLine($"\t\t\t\t    FROM {fromTable} as Base");
@@ -2557,6 +2668,12 @@ namespace DataverseToPowerBI.XrmToolBox.Services
             foreach (var joinClause in joinClauses)
             {
                 sb.AppendLine($"\t\t\t\t    {joinClause}");
+            }
+
+            // FabricLink: add JOIN clauses for multi-select choice CTEs
+            foreach (var cteJoin in cteJoinClauses)
+            {
+                sb.AppendLine($"\t\t\t\t    {cteJoin}");
             }
             
             // Build WHERE clause - use view filter if present, otherwise default statecode filter
@@ -2842,7 +2959,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                     "lookup" or "owner" or "customer" or "uniqueidentifier" => ("string", null, "uniqueidentifier", "none"),
                     
                     // Text types
-                    "string" or "memo" or "picklist" or "state" or "status" => ("string", null, "nvarchar", "none"),
+                    "string" or "memo" or "picklist" or "state" or "status" or "multiselectpicklist" => ("string", null, "nvarchar", "none"),
                     
                     _ => ("string", null, "nvarchar", "none")
                 };
@@ -2870,7 +2987,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                 "lookup" or "owner" or "customer" or "uniqueidentifier" => ("string", null, "uniqueidentifier", "none"),
                 
                 // Text types
-                "string" or "memo" or "picklist" or "state" or "status" => ("string", null, "nvarchar", "none"),
+                "string" or "memo" or "picklist" or "state" or "status" or "multiselectpicklist" => ("string", null, "nvarchar", "none"),
                 
                 _ => ("string", null, "nvarchar", "none")
             };
