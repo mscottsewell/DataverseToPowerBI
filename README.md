@@ -11,6 +11,7 @@ This XrmToolBox plugin helps you create optimized Power BI data models from your
 ## 🎯 What Does This Tool Do?
 
 If you've ever tried to connect Power BI to Dataverse, you know it can be challenging:
+
 - Which tables should you include?
 - How do you handle relationships?
 - I chose the defaults, why is my report so slow?
@@ -23,13 +24,33 @@ This tool solves these problems by:
 3. **Creating an optimized star-schema** for fast, intuitive reporting
 4. **Generating a complete Power BI project** ready to open and customize
 5. **Imports Metadata for Formatting** clean and user-friendly model
+
 ---
+
+## 📑 Table of Contents
+
+- [Key Features](#-key-features)
+- [Understanding Star-Schema Design](docs/star-schema.md)
+- [Getting Started](#-getting-started)
+- [Best Practices We Apply Automatically](#️-best-practices-we-apply-automatically)
+- [Understanding Your Generated Project](docs/understanding-the-project.md)
+- [Connection Modes: TDS vs FabricLink](#-connection-modes-tds-vs-fabriclink)
+- [Direct Query vs. Import Mode](docs/direct-query-vs-import.md)
+- [Publishing and Deployment](#-publishing-and-deployment)
+- [Suggested Next Steps](docs/next-steps.md)
+- [Frequently Asked Questions](#-frequently-asked-questions)
+- [Troubleshooting](docs/troubleshooting.md)
+- [Getting Help](#-getting-help)
+- [For Developers](#-for-developers)
+
+---
+
 <img width="1600" alt="Screenshot of application" src="https://github.com/user-attachments/assets/6d2603b3-118b-46ba-9d6e-f4cc9dc2215f" />
 
 ## ✨ Key Features
 
 | Feature | What It Does For You |
-|---------|---------------------|
+| ------- | ------------------- |
 | **Star-Schema Wizard** | Helps you designate fact and dimension tables for optimal performance |
 | **Dual Connection Support** | Choose between **Dataverse TDS** (Direct to Dataverse for medium and small datasets) or **FabricLink** (Using the FabricLink Lakehouse for larger volumes of data) — see [Connection Modes](#-connection-modes-tds-vs-fabriclink) |
 | **Smart Column Selection** | Uses your Dataverse forms and views to include only relevant fields |
@@ -39,53 +60,6 @@ This tool solves these problems by:
 | **View-Based Filtering** | Applies your Dataverse view filters directly to the data model |
 | **Auto-Generated Measures** | Creates a record count and a clickable URL link measure on your fact table |
 | **Incremental Updates** | Safely update your model while preserving custom measures and calculations |
-
----
-
-## 📊 Understanding Star-Schema Design
-
-This tool guides you into building a **star-schema** data model, which is the recommended design pattern for Power BI. Understanding this concept will help you build better reports.
-
-### What is a Star-Schema?
-
-A star-schema organizes your data into two types of tables:
-
-**Fact Tables** (the center of the star ⭐)
-- Contains your transactional or event data
-- Examples: Orders, Opportunities, Cases, Appointments
-- Has many rows that grow over time
-- Contains the numbers you want to analyze (amounts, quantities, counts)
-
-**Dimension Tables** (the points of the star)
-- Contains descriptive attributes for filtering and grouping
-- Examples: Customers, Products, Employees, Territories
-- Changes less frequently
-- Provides the "who, what, where, when" context for your facts
-
-### Why Star-Schema Matters
-
-- ✅ **Faster Performance** — Power BI's engine is optimized for this pattern  
-- ✅ **Simpler DAX** — Calculations are easier to write and understand  
-- ✅ **Intuitive Filtering** — Filters flow naturally from dimensions to facts  
-- ✅ **Smaller Model Size** — Less data duplication than flat tables
-
-### A Note About Snowflake Schemas
-
-Sometimes a dimension table has its own lookup to another table (for example, Customer → Territory → Region). This creates a "snowflake" pattern where dimensions branch into sub-dimensions.
-
-⚠️ **Be cautious with snowflaking:**
-- Each additional level adds complexity
-- Filters must travel through more relationships
-- Performance can degrade with deep hierarchies
-
-**Our recommendation:** Keep your schema as flat as possible. Only add parent dimensions when you truly need to filter or group by those attributes.
-
-📚 **Learn More:**
-- [Star Schema in Power BI](https://learn.microsoft.com/power-bi/guidance/star-schema)
-- [Understand Star Schema Design](https://learn.microsoft.com/power-bi/guidance/star-schema#star-schema-overview)
-- [Importance of Star Schema](https://learn.microsoft.com/power-bi/guidance/star-schema#importance-of-star-schema-design)
-- I like this explanation from [Brian Julius](https://www.linkedin.com/in/brianjuliusdc/):
-<img width="2048" alt="image of a Star Schema" src="https://github.com/user-attachments/assets/d558cd15-5b8d-4ae4-9a91-3d8413783ba1" />
 
 ---
 
@@ -102,24 +76,30 @@ Sometimes a dimension table has its own lookup to another table (for example, Cu
 ### Creating Your First Model
 
 #### Step 1: Connect to Your Environment
+
 - In XrmToolBox, connect to your Dataverse environment
 - Open the "**Dataverse to Power BI Semantic Model**" plugin
 
 #### Step 2: Create or Select a Configuration
+
 - Click **Semantic Model** to create a new configuration
 - Give it a meaningful name (e.g., "Sales Analytics" or "Case Management")
 - Set your **Working Folder** where the Power BI project will be saved
 
 #### Step 3: Select Your Solution and tables
+
 - Click **Select Tables** to open the solution and table picker
 - **Choose your unmanaged solution** — this filters the list to tables relevant to your business app
+
 > **Why solutions matter:** Dataverse contains hundreds of system tables. By selecting your solution first, you'll only see the tables your team has customized—making it much easier to find what you need.
 
 #### Step 4: Choose your Fact Table
+
 - Select your **Fact Table** to designate the central entity of your model
 - Select the tables you want in your model from that solution
 
 #### Step 5: Choose your Dimension Tables
+
 - The tool will show all lookup relationships from your fact table
 - Check which dimensions to include and activate the relationship where needed.
 - Only one active relationship should exist between the Fact and a Dimension
@@ -128,6 +108,7 @@ Sometimes a dimension table has its own lookup to another table (for example, Cu
 - **Finish Selection** when you're done.
 
 #### Step 6: Customize the Queries
+
 - For each table, click the ✏️ icon to select a form and view
 - The **form** determines which columns are selected by default to appear in your model
 - The **view** determines which rows are included (filtering data to current data helps improve performance.)
@@ -136,6 +117,7 @@ Sometimes a dimension table has its own lookup to another table (for example, Cu
 - Memo (text area) fields with lots of text are the slowest fields to retrieve - use sparingly.
 
 #### Step 7: Add a Date Table (Recommended)
+
 - Click **Dates** to configure your date dimension
 - Select your primary date field (e.g., "Created On")
 - Choose the year range for your date table
@@ -143,6 +125,7 @@ Sometimes a dimension table has its own lookup to another table (for example, Cu
 - Identify any other fields that you want standardized to the chosen timezone.
 
 #### Step 8: Build Your Model
+
 - Click **Build Semantic Model**
 - Review the changes that will be made
 - Click **Apply** to generate your Power BI project
@@ -156,91 +139,43 @@ Sometimes a dimension table has its own lookup to another table (for example, Cu
 This tool implements several Power BI best practices behind the scenes:
 
 ### 📝 Friendly Column Names
+
 All columns are renamed from their logical names (like `cai_primarycontactid`) to their display names (like `Primary Contact`). This makes your reports much easier to understand and your field list cleaner to navigate.
 
 ### 🎯 Optimized Queries
+
 We only include the columns you selected—no unnecessary data is pulled from Dataverse. This keeps your model lean and improves query performance.
 
 ### 🔍 View-Based Filtering
+
 When you select a Dataverse view, its filter criteria are applied directly to the Power Query expression. This means only relevant rows are included (e.g., "Active Accounts Only" or "My Open Cases").
 
 > **Important:** If the view definition changes in Dataverse, your Power BI model won't automatically update. You'll need to run this tool again to refresh the model's metadata and pick up the new view filters.
 
 ### 🔗 Referential Integrity
+
 For required lookup fields (where a value must be provided), we enable "Assume Referential Integrity" on relationships. This allows Power BI to use more efficient INNER JOIN operations instead of OUTER JOINs.
 
 ### 📅 Date Handling
+
 DateTime fields are converted to Date-only values with proper timezone adjustment. Dataverse stores all dates in UTC, but your reports need local dates for accurate daily analysis. We apply the timezone offset you specify so "January 15th" means January 15th in *your* timezone.
 
 ### ↔️ Relationship Cardinality
+
 All relationships are correctly configured as Many-to-One from fact to dimension tables, with proper cross-filter direction for optimal DAX performance.
 
 ### 🏷️ Hidden Technical Columns
+
 Primary key columns (like `accountid`) are included for relationships but hidden from the report view. This keeps your field list clean while maintaining proper data model structure.
 
 ### 📊 Auto-Generated Measures
+
 For your fact table, the tool automatically creates two starter measures:
 
 - **{TableName} Count** — `COUNTROWS` of the fact table for quick record counts
 - **Link to {TableName}** — A clickable URL that opens each record directly in Dataverse, using the `WEBURL` DAX function
 
 These measures are regenerated on each build. Your own custom measures are always preserved.
-
----
-
-## 📁 Understanding Your Generated Project
-
-The project creates a **Power BI Project (PBIP)** which is a format that allows for editing, change management and collaboration. - A PBIP can be saved as a PBIX file for distribution by simply clicking save-as and choosing the PBIX format.
-
-The tool creates a PBIP folder structure. The exact layout depends on your connection mode:
-
-### Dataverse TDS Mode (Default)
-
-```
-YourModelName/
-├── YourModelName.pbip              ← Open this file in Power BI Desktop
-├── YourModelName.SemanticModel/
-│   └── definition/
-│       ├── model.tmdl              ← Model configuration and table references
-│       ├── relationships.tmdl      ← Table relationships
-│       └── tables/                 ← Individual table definitions
-│           ├── DataverseURL.tmdl   ← Hidden parameter table (connection URL)
-│           ├── Date.tmdl           ← Calendar dimension (if configured)
-│           ├── Account.tmdl
-│           └── Contact.tmdl ...
-└── YourModelName.Report/
-    └── (report definition files)
-```
-
-### FabricLink Mode
-
-```
-YourModelName/
-├── YourModelName.pbip              ← Open this file in Power BI Desktop
-├── YourModelName.SemanticModel/
-│   └── definition/
-│       ├── model.tmdl              ← Model configuration and expression references
-│       ├── expressions.tmdl        ← DataverseURL, FabricSQLEndpoint, FabricLakehouse
-│       ├── relationships.tmdl      ← Table relationships
-│       └── tables/                 ← Individual table definitions
-│           ├── Date.tmdl           ← Calendar dimension (if configured)
-│           ├── Account.tmdl
-│           └── Contact.tmdl ...
-└── YourModelName.Report/
-    └── (report definition files)
-```
-
-> **Key difference:** In TDS mode, the Dataverse URL is stored as a hidden parameter *table* (`DataverseURL.tmdl`) — this is required for Power BI Desktop to properly resolve the `CommonDataService.Database` connector. In FabricLink mode, connection details are stored as *expressions* in `expressions.tmdl`.
-
-The PBIP format is a folder-based project that's perfect for:
-- Version control with Git
-- Collaboration with other developers
-- Seeing exactly what changed between versions
-
-📚 **Learn More About PBIP:**
-- [Power BI Project Files Overview](https://learn.microsoft.com/en-us/power-bi/developer/projects/projects-overview)
-- [Working with PBIP in Power BI Desktop](https://learn.microsoft.com/en-us/power-bi/developer/projects/projects-build)
-- [Power BI Desktop Developer Mode](https://learn.microsoft.com/en-us/power-bi/developer/projects/projects-overview#developer-mode)
 
 ---
 
@@ -253,7 +188,7 @@ This tool supports two different connection modes for accessing Dataverse data. 
 Uses the **Dataverse TDS Endpoint** — a SQL-compatible interface built directly into Dataverse.
 
 | Aspect | Detail |
-|--------|--------|
+| ------ | ------ |
 | **Connector** | `CommonDataService.Database` |
 | **Query Style** | Native SQL via `Value.NativeQuery(...)` with `[EnableFolding=true]` |
 | **Best For** | Direct Dataverse access without Fabric infrastructure |
@@ -264,83 +199,13 @@ Uses the **Dataverse TDS Endpoint** — a SQL-compatible interface built directl
 Uses **Microsoft Fabric Link for Dataverse** — data is synced to a Fabric Lakehouse and queried via the Fabric SQL endpoint.
 
 | Aspect | Detail |
-|--------|--------|
+| ------ | ------ |
 | **Connector** | `Sql.Database(FabricSQLEndpoint, FabricLakehouse)` |
 | **Query Style** | Standard SQL queries with metadata JOINs for display names |
 | **Best For** | Large datasets, advanced analytics, when Fabric is already in use |
 | **Requirements** | Fabric workspace with Dataverse Link configured |
 
 > **FabricLink queries** automatically JOIN to `OptionsetMetadata` / `GlobalOptionsetMetadata` and `StatusMetadata` tables for human-readable choice labels and status values. TDS mode uses virtual "name" attributes for the same purpose.
-
----
-
-## ⚡ Direct Query vs. Import Mode
-
-Your generated model uses **DirectQuery** by default. Here's what that means and how to choose the right mode for your needs.
-
-### DirectQuery Mode (Default)
-
-**How it works:** Every time you interact with your report, Power BI sends a query to Dataverse and retrieves fresh data.
-
-| ✅ Advantages | ⚠️ Considerations |
-|--------------|-------------------|
-| Always shows the latest data | Slower interactivity (1-5 second delays) |
-| Respects Dataverse row-level security | Some DAX functions not available |
-| No scheduled refresh needed | Subject to Dataverse API limits |
-| Smaller .pbix file size | Complex calculations may timeout |
-| Users see only their permitted data | Best with fewer concurrent users |
-
-**Best for:**
-- Real-time operational dashboards  
-- Security-sensitive data where each user should only see their records
-- Data that changes frequently throughout the day
-- Queries that reference 'Current_User' in the filter (e.g. "My Opportunities")
-
-### Import Mode
-
-**How it works:** Data is copied into the Power BI file and stored in memory. Reports query this in-memory cache.
-
-| ✅ Advantages | ⚠️ Considerations |
-|--------------|-------------------|
-| Blazing fast interactivity | Data must be refreshed regularly |
-| Full DAX functionality | Requires scheduled refresh (up to 8x/day) |
-| Works offline | Larger file sizes |
-| No per-query API limits | Security must be applied at report level (RLS) |
-| Handles many concurrent users | Dataverse security not automatic |
-
-**Best for:**
-- Historical trend analysis
-- Complex calculations requiring full DAX
-- Published reports with many users
-- Executive dashboards refreshed daily
-
-### Dual Mode (The Best of Both Worlds)
-
-You can use **different storage modes for different tables**—this is often the optimal approach:
-
-- Keep your large, frequently-changing **fact table in DirectQuery**
-- Import smaller, stable **dimension tables** for fast filtering
-
-| ✅ Advantages | ⚠️ Considerations |
-|--------------|-------------------|
-| Fast dimension filtering and slicing | Requires refresh schedule for dimensions |
-| Always-current fact data | Slightly more complex to configure |
-| Efficient for large fact tables | Must plan which tables to import |
-| Reduces Dataverse API calls | |
-
-**To switch a table to Import mode:**
-1. Open your model in Power BI Desktop
-2. Go to **Model** view
-3. Select the table you want to change
-4. In the **Properties** pane, change **Storage mode** from "DirectQuery" to "Import"
-5. Configure a refresh schedule when you publish to Power BI Service
-
-> **Please Note** that any table that was built with a view that referenced the **current user** will need to be updated to use a different view/filter.
-
-📚 **Learn More:**
-- [DirectQuery in Power BI](https://learn.microsoft.com/en-us/power-bi/connect-data/desktop-directquery-about)
-- [Storage Mode in Power BI Desktop](https://learn.microsoft.com/en-us/power-bi/transform-model/desktop-storage-mode)
-- [Composite Models in Power BI](https://learn.microsoft.com/en-us/power-bi/transform-model/desktop-composite-models)
 
 ---
 
@@ -371,6 +236,7 @@ For DirectQuery models connected to Dataverse, you must configure authentication
 9. Click **Sign in** and authenticate
 
 This critical setting ensures:
+
 - Each user's Dataverse security roles are respected
 - Users only see records they have permission to view
 - No shared service account is used
@@ -386,76 +252,33 @@ If you've switched any tables to Import or Dual mode:
 5. Configure failure notifications
 
 📚 **Learn More:**
+
 - [Publish from Power BI Desktop](https://learn.microsoft.com/en-us/power-bi/create-reports/desktop-upload-desktop-files)
 - [Configure Scheduled Refresh](https://learn.microsoft.com/en-us/power-bi/connect-data/refresh-scheduled-refresh)
 - [Configure Data Source Credentials](https://learn.microsoft.com/en-us/power-bi/connect-data/service-gateway-data-sources)
 
 ---
 
-## 📈 Suggested Next Steps
-
-Once you've built and opened your model in Power BI Desktop, here are recommended enhancements:
-
-### 1. Create Key Measures
-The tool auto-generates a record count and URL link measure on your fact table. Build on those with your own business metrics:
-```dax
-Total Revenue = SUM(Orders[Amount])
-Average Order Value = DIVIDE([Total Revenue], [Order Count])
-Win Rate = DIVIDE(
-    COUNTROWS(FILTER(Opportunities, Opportunities[Status] = "Won")),
-    COUNTROWS(Opportunities)
-)
-```
-
-### 2. Build Hierarchies
-Create drill-down paths in your dimension tables:
-- **Date:** Year → Quarter → Month → Week → Day
-- **Geography:** Country → State/Province → City
-- **Organization:** Business Unit → Team → Owner
-
-### 3. Apply Any Additional Formatting Desired
-
-### 4. Hide Technical Columns
-By default, this utility follows the best practice of hiding columns that end users don't need:
-- GUID/ID columns (like `accountid`)
-- They are kept in the model for relationships, but hidden from report view
-- If you find that you have additional values that are only needed for formulas, you can hide them as well.
-
-### 5. Create a Model Documentation Page
-Add a report page that shows:
-- Your data model diagram
-- Key measure definitions
-- Data refresh information
-- Known limitations
-
-### 6. Consider Row-Level Security (for Import Mode)
-If using Import mode, implement RLS to control data access:
-1. Go to **Modeling** → **Manage roles**
-2. Create roles that filter data based on user context
-3. Assign users to roles in Power BI Service
-
-📚 **Learn More:**
-- [Create Measures in Power BI](https://learn.microsoft.com/en-us/power-bi/transform-model/desktop-measures)
-- [Create Hierarchies](https://learn.microsoft.com/en-us/power-bi/transform-model/desktop-create-and-manage-relationships)
-- [Row-Level Security in Power BI](https://learn.microsoft.com/en-us/power-bi/enterprise/service-admin-rls)
-
----
-
 ## ❓ Frequently Asked Questions
 
 ### Q: Can I add more tables after the initial build?
+
 **A:** Yes! Run the tool again, select additional tables, and rebuild. Your existing customizations (measures, formatting, hierarchies) will be preserved.
 
 ### Q: What happens if our Dataverse schema changes?
+
 **A:** The tool will detect changes when you run it again. It shows you a preview of what's new, modified, or removed before applying updates—you're always in control.
 
 ### Q: Can I use this with Dynamics 365 apps?
+
 **A:** Absolutely! This works with any Dataverse environment, including Dynamics 365 Sales, Customer Service, Field Service, Marketing, and custom Power Apps. It supports both the Dataverse TDS endpoint and FabricLink connections.
 
 ### Q: Why are some of my columns missing?
+
 **A:** Columns are pre-selected by default from your selected form. If a field isn't on the form, it won't pre-selected to be in the model by default. You can add columns that aren't on the form by switching to view "All" attributes and checking the selection box beside any additional ones you need.
 
 ### Q: How do I handle many-to-many relationships?
+
 **A:** The tool creates standard many-to-one relationships. For many-to-many
 scenarios (like Contacts associated with multiple Accounts), you may need to
 include the intersection table and create a bridge pattern manually. These can
@@ -463,44 +286,12 @@ become complex and require more expertise in proper modeling to ensure your
 results are reflective of your intent.
 
 ### Q: My report is slow—what can I do?
-**A:** Try these optimizations:
-1. Reduce the number of columns (only include what you need)
-2. Remove long text fields such as text area fields.
-3. Use view more aggressive filters to limit rows to only those typically relevant to the user.
-4. Switch dimension tables to Dual mode
-5. Simplify visuals (fewer visuals per page)
-6. Use aggregations for large fact tables
-7. For larger datasets, moving the fact table to Import Mode will make the interaction more responsive.
-8. Filtering on large Date Ranges using a Direct Query source with the Date Table can cause timeouts based on the way the query is constructed. You may want to apply the query to the date field directly from within the query pane rather than relying on the Date Table.
+
+**A:** See our [Troubleshooting Guide](docs/troubleshooting.md) for detailed optimization steps.
 
 ### Q: Can I version control my Power BI project?
+
 **A:** Yes! The PBIP format is designed for Git. Each table, relationship, and report element is a separate text file that shows meaningful changes in version control.
-
----
-
-## 🔧 Troubleshooting
-
-### "Cannot connect to Dataverse"
-- Verify your XrmToolBox connection is active
-- Check that you have read permissions in Dataverse
-- Try disconnecting and reconnecting
-- Ensure your access to the TDS endpoint is not blocked by either permissions inside dataverse or via network policy
-- See more here: <https://learn.microsoft.com/power-apps/developer/data-platform/dataverse-sql-query>
-
-### "Build failed with errors"
-- Check the working folder path is valid and writable
-- Ensure you have selected at least one table
-- Review the error message for specific guidance
-
-### "Power BI Desktop won't open the .pbip file"
-- Ensure you have Power BI Desktop (November 2023 or later)
-- Enable Developer Mode: File → Options → Preview features → Power BI Project files
-- Check that all files in the folder exist and aren't corrupted
-
-### "Missing relationships in the model"
-- Verify your lookup columns were included in the selected form
-- Check that both source and target tables are in the model
-- Re-run the table selection and view the created tables
 
 ---
 
@@ -516,6 +307,7 @@ results are reflective of your intent.
 ## 👩‍💻 For Developers
 
 Want to contribute, extend, or build from source? See our [Developer Guide](CONTRIBUTING.md) for:
+
 - Repository structure
 - Build instructions
 - Architecture overview
