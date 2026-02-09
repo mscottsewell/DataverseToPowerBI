@@ -6,9 +6,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
-## [1.2026.3.0] - 2026-02-16
+## [1.2026.3.10] - 2026-02-08
 
 ### Added
+
+- **Pre-Build Integrity Validation** — Automatic detection of incomplete PBIP structures before incremental builds
+  - Validates presence of critical files: `.pbip`, `.platform`, `definition.pbism`, `model.tmdl`, `tables/` folder, Report folder
+  - If structural files are missing, automatically performs full rebuild instead of failing on incremental update
+  - Adds Warning-type changes to preview dialog showing each missing element
+  - Prevents `DirectoryNotFoundException` and other build failures from corrupted project folders
+
+- **Relationship-Required Column Locking** — Lookup fields used by active relationships are now automatically locked in the attribute selection UI
+  - Lookup columns required for dimension relationships cannot be unchecked while the target dimension is in the model
+  - Shows 🔒 icon with blue/bold styling for locked relationship columns
+  - Survives metadata refresh and deselect-all operations
+  - Prevents relationship breakage from accidental column deselection
 
 - **FabricLink Connection Mode** — Full support for building semantic models that query Dataverse data via Microsoft Fabric Link (Lakehouse SQL endpoint)
   - FabricLink queries use `Sql.Database(FabricSQLEndpoint, FabricLakehouse, [Query="..."])` connector
@@ -34,6 +46,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - Resolves `KeyNotFoundException` that occurred during `CommonDataService.Database` refresh when DataverseURL was an expression
   - The parameter table pattern matches how Power BI Desktop natively handles Power Query parameters
 
+- **DataverseURL Architecture (FabricLink)** — DataverseURL is now a hidden parameter *table* (not an expression in `expressions.tmdl`)
+  - Both TDS and FabricLink now use identical DataverseURL table pattern for consistency
+  - FabricLink `expressions.tmdl` contains only `FabricSQLEndpoint` and `FabricLakehouse` (DataverseURL moved to table)
+  - Enables DAX measure references to work correctly in both connection modes
+
+- **DAX Measure Table References** — Auto-generated measures now always use single-quoted table names: `'{displayName}'` instead of conditional quoting
+  - Ensures consistent DAX syntax regardless of table name characters
+  - Prevents syntax errors in measures when table names contain spaces or special characters
+
 - **Money/Decimal Data Type Mapping** — Both TDS and FabricLink now map `money` and `decimal` types to `double` (matching Power BI Desktop's runtime behavior) to eliminate false "dataType changed" notifications on incremental rebuilds
 
 - **Status/State Metadata JOINs (FabricLink)** — `statecode` uses `Base.statecode` (not `Base.statecodename`) and JOINs on `State` column (not `Option`); `statuscode` JOINs on both `State` and `Option` columns for correct label resolution
@@ -41,6 +62,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - **Stale Artifact Cleanup** — When switching between TDS and FabricLink modes, the builder now removes stale artifacts from the previous mode (e.g., removes `expressions.tmdl` when building TDS, removes `DataverseURL.tmdl` when building FabricLink)
 
 ### Fixed
+
+- **Duplicate Column Generation** — Fixed bug where selecting both a lookup/choice ID field AND its virtual name column caused duplicate columns in TMDL
+  - Example: Selecting `pbi_reportedbyid` and `pbi_reportedbyidname` no longer generates `pbi_reportedbyidname` twice
+  - Applies to lookup name columns, choice/boolean label columns, and multi-select choice columns
+  - All three generation methods (`GenerateTableTmdl`, `GenerateExpectedColumns`, `GenerateMQuery`) now check if synthesized name columns already exist before adding them
+  - Prevents SQL query errors from duplicate column names in SELECT list
 
 - Fixed `DataSource.Error` caused by virtual attribute name mismatch (e.g., `donotsendmmname` did not exist — actual name is `donotsendmarketingmaterial`)
 - Fixed `KeyNotFoundException` during TDS model refresh by replacing expression-based DataverseURL with parameter table pattern
