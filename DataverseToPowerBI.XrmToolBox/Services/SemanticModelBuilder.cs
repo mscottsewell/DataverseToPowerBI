@@ -1095,9 +1095,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
             // TDS: uses schemaName (e.g. Opportunity, Account)
             var fromTable = IsFabricLink ? table.LogicalName : (table.SchemaName ?? table.LogicalName);
             var sqlFields = new List<string>();
-            var joinClauses = new List<string>(); // FabricLink: metadata table JOINs
-            var cteClauses = new List<string>(); // FabricLink: CTE definitions for multi-select choice fields
-            var cteJoinClauses = new List<string>(); // FabricLink: JOIN to CTE results
+            var joinClauses = new List<string>(); // FabricLink: metadata table JOINs and OUTER APPLY
             var processedColumns = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
             // Get attribute display info for this table
@@ -1212,19 +1210,18 @@ namespace DataverseToPowerBI.XrmToolBox.Services
 
                         if (IsFabricLink)
                         {
-                            // FabricLink: CTE with CROSS APPLY STRING_SPLIT + JOIN to metadata table
+                            // FabricLink: use OUTER APPLY instead of CTE for DirectQuery compatibility
                             var attrDisplayInfo2 = attrInfo.ContainsKey(attr.LogicalName) ? attrInfo[attr.LogicalName] : null;
-                            var cteAlias = $"CTE_{table.LogicalName}_{attr.LogicalName}";
-                            var joinAlias2 = $"{table.LogicalName}_{attr.LogicalName}";
+                            var applyAlias = $"mspl_{attr.LogicalName}";
+                            var joinAlias2 = $"meta_{attr.LogicalName}";
                             var isGlobal = attr.IsGlobal ?? attrDisplayInfo2?.IsGlobal ?? false;
                             var optionSetName = attr.OptionSetName ?? attrDisplayInfo2?.OptionSetName ?? attr.LogicalName;
                             var metadataTable = isGlobal ? "GlobalOptionsetMetadata" : "OptionsetMetadata";
 
-                            cteClauses.Add($"{cteAlias} AS (SELECT i.{primaryKey}, STRING_AGG({joinAlias2}.[LocalizedLabel], ', ') AS {nameColumn} FROM [{table.LogicalName}] AS i CROSS APPLY STRING_SPLIT(CAST(i.{attr.LogicalName} AS VARCHAR(4000)), ',') AS split JOIN [{metadataTable}] AS {joinAlias2} ON {joinAlias2}.[OptionSetName]='{optionSetName}' AND {joinAlias2}.[EntityName]='{table.LogicalName}' AND {joinAlias2}.[LocalizedLabelLanguageCode]={_languageCode} AND {joinAlias2}.[Option]=CAST(LTRIM(RTRIM(split.value)) AS INT) WHERE i.{attr.LogicalName} IS NOT NULL GROUP BY i.{primaryKey})");
-                            cteJoinClauses.Add($"LEFT JOIN {cteAlias} ON {cteAlias}.{primaryKey}=Base.{primaryKey}");
+                            joinClauses.Add($"OUTER APPLY (SELECT STRING_AGG({joinAlias2}.[LocalizedLabel], ', ') AS {nameColumn} FROM STRING_SPLIT(CAST(Base.{attr.LogicalName} AS VARCHAR(4000)), ',') AS split JOIN [{metadataTable}] AS {joinAlias2} ON {joinAlias2}.[OptionSetName]='{optionSetName}' AND {joinAlias2}.[EntityName]='{table.LogicalName}' AND {joinAlias2}.[LocalizedLabelLanguageCode]={_languageCode} AND {joinAlias2}.[Option]=CAST(LTRIM(RTRIM(split.value)) AS INT) WHERE Base.{attr.LogicalName} IS NOT NULL) {applyAlias}");
                             if (!processedColumns.Contains(nameColumn))
                             {
-                                sqlFields.Add($"{cteAlias}.{nameColumn}");
+                                sqlFields.Add($"{applyAlias}.{nameColumn}");
                             }
                         }
                         else
@@ -1286,14 +1283,10 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                 whereClause = " WHERE Base.statecode=0";
             }
             
-            // Build JOIN clauses string for FabricLink
+            // Build JOIN clauses string for FabricLink (includes OUTER APPLY for multi-select fields)
             var joinSection = joinClauses.Count > 0 ? " " + string.Join(" ", joinClauses) : "";
-            var cteJoinSection = cteJoinClauses.Count > 0 ? " " + string.Join(" ", cteJoinClauses) : "";
 
-            // Build CTE prefix for multi-select choice fields
-            var ctePrefix = cteClauses.Count > 0 ? "WITH " + string.Join(", ", cteClauses) + " " : "";
-
-            return NormalizeQuery($"{ctePrefix}SELECT {selectList} FROM {fromTable} AS Base{joinSection}{cteJoinSection}{whereClause}");
+            return NormalizeQuery($"SELECT {selectList} FROM {fromTable} AS Base{joinSection}{whereClause}");
         }
 
         /// <summary>
@@ -2403,9 +2396,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
             // Collect columns and SQL fields
             var columns = new List<ColumnInfo>();
             var sqlFields = new List<string>();
-            var joinClauses = new List<string>(); // FabricLink: metadata table JOINs for choice fields
-            var cteClauses = new List<string>(); // FabricLink: CTE definitions for multi-select choice fields
-            var cteJoinClauses = new List<string>(); // FabricLink: JOIN to CTE results
+            var joinClauses = new List<string>(); // FabricLink: metadata table JOINs and OUTER APPLY for multi-select fields
             var processedColumns = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
             // Get attribute info for this table
@@ -2629,34 +2620,30 @@ namespace DataverseToPowerBI.XrmToolBox.Services
 
                     if (IsFabricLink)
                     {
-                        // FabricLink: use CTE with CROSS APPLY STRING_SPLIT + JOIN to metadata table
-                        var cteAlias = $"CTE_{table.LogicalName}_{attr.LogicalName}";
-                        var joinAlias = $"{table.LogicalName}_{attr.LogicalName}";
+                        // FabricLink: use OUTER APPLY with subquery instead of CTE for DirectQuery compatibility
+                        // CTEs can break Power BI's query folding, so we use OUTER APPLY which is better supported
+                        var applyAlias = $"mspl_{attr.LogicalName}";
+                        var joinAlias = $"meta_{attr.LogicalName}";
                         var isGlobal = attr.IsGlobal ?? attrDisplayInfo?.IsGlobal ?? false;
                         var optionSetName = attr.OptionSetName ?? attrDisplayInfo?.OptionSetName ?? attr.LogicalName;
                         var metadataTable = isGlobal ? "GlobalOptionsetMetadata" : "OptionsetMetadata";
 
-                        cteClauses.Add(
-                            $"{cteAlias} AS (\n" +
-                            $"\t\t\t\t        SELECT i.{primaryKey}, STRING_AGG({joinAlias}.[LocalizedLabel], ', ') AS {nameColumn}\n" +
-                            $"\t\t\t\t        FROM [{table.LogicalName}] AS i\n" +
-                            $"\t\t\t\t        CROSS APPLY STRING_SPLIT(CAST(i.{attr.LogicalName} AS VARCHAR(4000)), ',') AS split\n" +
+                        // Use OUTER APPLY with a correlated subquery
+                        joinClauses.Add(
+                            $"OUTER APPLY (\n" +
+                            $"\t\t\t\t        SELECT STRING_AGG({joinAlias}.[LocalizedLabel], ', ') AS {nameColumn}\n" +
+                            $"\t\t\t\t        FROM STRING_SPLIT(CAST(Base.{attr.LogicalName} AS VARCHAR(4000)), ',') AS split\n" +
                             $"\t\t\t\t        JOIN [{metadataTable}] AS {joinAlias}\n" +
                             $"\t\t\t\t            ON  {joinAlias}.[OptionSetName] = '{optionSetName}'\n" +
                             $"\t\t\t\t            AND {joinAlias}.[EntityName] = '{table.LogicalName}'\n" +
                             $"\t\t\t\t            AND {joinAlias}.[LocalizedLabelLanguageCode] = {_languageCode}\n" +
                             $"\t\t\t\t            AND {joinAlias}.[Option] = CAST(LTRIM(RTRIM(split.value)) AS INT)\n" +
-                            $"\t\t\t\t        WHERE i.{attr.LogicalName} IS NOT NULL\n" +
-                            $"\t\t\t\t        GROUP BY i.{primaryKey}\n" +
-                            $"\t\t\t\t    )");
-
-                        cteJoinClauses.Add(
-                            $"LEFT JOIN {cteAlias}\n" +
-                            $"\t\t\t\t            ON  {cteAlias}.{primaryKey} = Base.{primaryKey}");
+                            $"\t\t\t\t        WHERE Base.{attr.LogicalName} IS NOT NULL\n" +
+                            $"\t\t\t\t    ) {applyAlias}");
 
                         if (!processedColumns.Contains(nameColumn))
                         {
-                            sqlFields.Add($"{cteAlias}.{nameColumn}");
+                            sqlFields.Add($"{applyAlias}.{nameColumn}");
                         }
                     }
                     else
@@ -2841,8 +2828,10 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                 sb.AppendLine($"\t\t\t\t    Dataverse = CommonDataService.Database(DataverseURL,[CreateNavigationProperties=false]),");
                 sb.AppendLine($"\t\t\t\t    Source = Value.NativeQuery(Dataverse,\"");
             }
-            sb.AppendLine($"\t\t\t\t");
             
+            // Add blank line after query opening
+            sb.AppendLine($"\t\t\t\t");
+
             // Add filter comment if present
             if (!string.IsNullOrWhiteSpace(viewFilterComment))
             {
@@ -2855,26 +2844,14 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                 }
                 sb.AppendLine($"\t\t\t\t");
             }
-
-            // FabricLink: add CTE definitions for multi-select choice fields before the main SELECT
-            if (cteClauses.Count > 0)
-            {
-                sb.AppendLine($"\t\t\t\t    WITH {string.Join(",\n\t\t\t\t    ", cteClauses)}");
-            }
             
             sb.AppendLine($"\t\t\t\t    {sqlSelectList}");
             sb.AppendLine($"\t\t\t\t    FROM {fromTable} as Base");
 
-            // FabricLink: add JOIN clauses for choice/optionset metadata
+            // FabricLink: add JOIN and OUTER APPLY clauses for choice/optionset metadata
             foreach (var joinClause in joinClauses)
             {
                 sb.AppendLine($"\t\t\t\t    {joinClause}");
-            }
-
-            // FabricLink: add JOIN clauses for multi-select choice CTEs
-            foreach (var cteJoin in cteJoinClauses)
-            {
-                sb.AppendLine($"\t\t\t\t    {cteJoin}");
             }
             
             // Build WHERE clause - use view filter if present, otherwise default statecode filter
@@ -2888,7 +2865,6 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                 // No view filter - apply default active records filter
                 sb.AppendLine($"\t\t\t\t    WHERE Base.statecode = 0");
             }
-            sb.AppendLine($"\t\t\t\t");
             if (IsFabricLink)
             {
                 sb.AppendLine($"\t\t\t\t        \"");
