@@ -90,5 +90,10 @@ namespace DataverseToPowerBI.XrmToolBox
         /// Database/model icon for semantic model selector
         /// </summary>
         public static Image ModelIcon => LoadIcon("ModelIcon");
+
+        /// <summary>
+        /// Preview icon for TMDL Preview
+        /// </summary>
+        public static Image PreviewIcon => LoadIcon("TMDLPreviewIcon");
     }
 }

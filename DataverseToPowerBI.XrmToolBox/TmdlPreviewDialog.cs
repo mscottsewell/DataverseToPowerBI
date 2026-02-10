@@ -27,12 +27,12 @@ namespace DataverseToPowerBI.XrmToolBox
 {
     public class TmdlPreviewDialog : Form
     {
-        private ListView listViewTables;
-        private TextBox txtTmdl;
-        private Button btnCopy;
-        private Button btnSave;
-        private Button btnSaveAll;
-        private Button btnClose;
+        private ListView listViewTables = null!;
+        private TextBox txtTmdl = null!;
+        private Button btnCopy = null!;
+        private Button btnSave = null!;
+        private Button btnSaveAll = null!;
+        private Button btnClose = null!;
 
         private readonly Dictionary<string, TmdlPreviewEntry> _entries;
         private readonly string _connectionType;

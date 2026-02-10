@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+---
+
+## [1.2026.4.0] - 2026-02-10
+
 ### Added
 
 - **TMDL Preview Feature** — Replaced "View SQL" with "Preview TMDL" showing the exact TMDL statements that will be written to the semantic model

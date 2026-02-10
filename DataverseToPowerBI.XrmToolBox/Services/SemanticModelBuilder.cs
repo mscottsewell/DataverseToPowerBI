@@ -2610,9 +2610,9 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                             // StateMetadata: join on EntityName, LanguageCode, State
                             // statecode is never null, so use INNER JOIN for performance
                             joinClauses.Add(
-                                $"JOIN [StateMetadata] {joinAlias}\n" +
-                                $"\t\t\t\t            ON  {joinAlias}.[EntityName] = '{table.LogicalName}'\n" +
-                                $"\t\t\t\t            AND {joinAlias}.[LocalizedLabelLanguageCode] = {_languageCode}\n" +
+                                $"JOIN [StateMetadata] {joinAlias}\r\n" +
+                                $"\t\t\t\t            ON  {joinAlias}.[EntityName] = '{table.LogicalName}'\r\n" +
+                                $"\t\t\t\t            AND {joinAlias}.[LocalizedLabelLanguageCode] = {_languageCode}\r\n" +
                                 $"\t\t\t\t            AND {joinAlias}.[State] = Base.{attr.LogicalName}");
                         }
                         else if (isStatus)
@@ -2623,10 +2623,10 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                             // Both conditions are needed to get the specific status label (avoid row fan-out)
                             // statuscode is never null, so use INNER JOIN for performance
                             joinClauses.Add(
-                                $"JOIN [StatusMetadata] {joinAlias}\n" +
-                                $"\t\t\t\t            ON  {joinAlias}.[EntityName] = '{table.LogicalName}'\n" +
-                                $"\t\t\t\t            AND {joinAlias}.[LocalizedLabelLanguageCode] = {_languageCode}\n" +
-                                $"\t\t\t\t            AND {joinAlias}.[State] = Base.statecode\n" +
+                                $"JOIN [StatusMetadata] {joinAlias}\r\n" +
+                                $"\t\t\t\t            ON  {joinAlias}.[EntityName] = '{table.LogicalName}'\r\n" +
+                                $"\t\t\t\t            AND {joinAlias}.[LocalizedLabelLanguageCode] = {_languageCode}\r\n" +
+                                $"\t\t\t\t            AND {joinAlias}.[State] = Base.statecode\r\n" +
                                 $"\t\t\t\t            AND {joinAlias}.[Status] = Base.statuscode");
                         }
                         else if (isBoolean)
@@ -2634,10 +2634,10 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                             // Boolean fields: use GlobalOptionsetMetadata with LEFT JOIN (value can be null)
                             var optionSetName = attr.OptionSetName ?? attrDisplayInfo?.OptionSetName ?? attr.LogicalName;
                             joinClauses.Add(
-                                $"LEFT JOIN [GlobalOptionsetMetadata] {joinAlias}\n" +
-                                $"\t\t\t\t            ON  {joinAlias}.[OptionSetName] = '{optionSetName}'\n" +
-                                $"\t\t\t\t            AND {joinAlias}.[EntityName] = '{table.LogicalName}'\n" +
-                                $"\t\t\t\t            AND {joinAlias}.[LocalizedLabelLanguageCode] = {_languageCode}\n" +
+                                $"LEFT JOIN [GlobalOptionsetMetadata] {joinAlias}\r\n" +
+                                $"\t\t\t\t            ON  {joinAlias}.[OptionSetName] = '{optionSetName}'\r\n" +
+                                $"\t\t\t\t            AND {joinAlias}.[EntityName] = '{table.LogicalName}'\r\n" +
+                                $"\t\t\t\t            AND {joinAlias}.[LocalizedLabelLanguageCode] = {_languageCode}\r\n" +
                                 $"\t\t\t\t            AND {joinAlias}.[Option] = Base.{attr.LogicalName}");
                         }
                         else
@@ -2647,10 +2647,10 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                             var optionSetName = attr.OptionSetName ?? attrDisplayInfo?.OptionSetName ?? attr.LogicalName;
                             var metadataTable = isGlobal ? "GlobalOptionsetMetadata" : "OptionsetMetadata";
                             joinClauses.Add(
-                                $"LEFT JOIN [{metadataTable}] {joinAlias}\n" +
-                                $"\t\t\t\t            ON  {joinAlias}.[OptionSetName] = '{optionSetName}'\n" +
-                                $"\t\t\t\t            AND {joinAlias}.[EntityName] = '{table.LogicalName}'\n" +
-                                $"\t\t\t\t            AND {joinAlias}.[LocalizedLabelLanguageCode] = {_languageCode}\n" +
+                                $"LEFT JOIN [{metadataTable}] {joinAlias}\r\n" +
+                                $"\t\t\t\t            ON  {joinAlias}.[OptionSetName] = '{optionSetName}'\r\n" +
+                                $"\t\t\t\t            AND {joinAlias}.[EntityName] = '{table.LogicalName}'\r\n" +
+                                $"\t\t\t\t            AND {joinAlias}.[LocalizedLabelLanguageCode] = {_languageCode}\r\n" +
                                 $"\t\t\t\t            AND {joinAlias}.[Option] = Base.{attr.LogicalName}");
                         }
 
@@ -2737,15 +2737,15 @@ namespace DataverseToPowerBI.XrmToolBox.Services
 
                         // Use OUTER APPLY with a correlated subquery
                         joinClauses.Add(
-                            $"OUTER APPLY (\n" +
-                            $"\t\t\t\t        SELECT STRING_AGG({joinAlias}.[LocalizedLabel], ', ') AS {nameColumn}\n" +
-                            $"\t\t\t\t        FROM STRING_SPLIT(CAST(Base.{attr.LogicalName} AS VARCHAR(4000)), ',') AS split\n" +
-                            $"\t\t\t\t        JOIN [{metadataTable}] AS {joinAlias}\n" +
-                            $"\t\t\t\t            ON  {joinAlias}.[OptionSetName] = '{optionSetName}'\n" +
-                            $"\t\t\t\t            AND {joinAlias}.[EntityName] = '{table.LogicalName}'\n" +
-                            $"\t\t\t\t            AND {joinAlias}.[LocalizedLabelLanguageCode] = {_languageCode}\n" +
-                            $"\t\t\t\t            AND {joinAlias}.[Option] = CAST(LTRIM(RTRIM(split.value)) AS INT)\n" +
-                            $"\t\t\t\t        WHERE Base.{attr.LogicalName} IS NOT NULL\n" +
+                            $"OUTER APPLY (\r\n" +
+                            $"\t\t\t\t        SELECT STRING_AGG({joinAlias}.[LocalizedLabel], ', ') AS {nameColumn}\r\n" +
+                            $"\t\t\t\t        FROM STRING_SPLIT(CAST(Base.{attr.LogicalName} AS VARCHAR(4000)), ',') AS split\r\n" +
+                            $"\t\t\t\t        JOIN [{metadataTable}] AS {joinAlias}\r\n" +
+                            $"\t\t\t\t            ON  {joinAlias}.[OptionSetName] = '{optionSetName}'\r\n" +
+                            $"\t\t\t\t            AND {joinAlias}.[EntityName] = '{table.LogicalName}'\r\n" +
+                            $"\t\t\t\t            AND {joinAlias}.[LocalizedLabelLanguageCode] = {_languageCode}\r\n" +
+                            $"\t\t\t\t            AND {joinAlias}.[Option] = CAST(LTRIM(RTRIM(split.value)) AS INT)\r\n" +
+                            $"\t\t\t\t        WHERE Base.{attr.LogicalName} IS NOT NULL\r\n" +
                             $"\t\t\t\t    ) {applyAlias}");
 
                         if (!processedColumns.Contains(nameColumn))
@@ -2891,7 +2891,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                 }
                 else
                 {
-                    sqlSelectList.Append($"\n\t\t\t\t        ,{sqlFields[i]}");
+                    sqlSelectList.Append($"\r\n\t\t\t\t        ,{sqlFields[i]}");
                 }
             }
 
@@ -2957,7 +2957,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
             }
             
             sb.AppendLine($"\t\t\t\t    {sqlSelectList}");
-            sb.AppendLine($"\t\t\t\t    FROM {fromTable} as Base");
+            sb.AppendLine($"\t\t\t\t    FROM {fromTable} AS Base");
 
             // FabricLink: add JOIN and OUTER APPLY clauses for choice/optionset metadata
             foreach (var joinClause in joinClauses)

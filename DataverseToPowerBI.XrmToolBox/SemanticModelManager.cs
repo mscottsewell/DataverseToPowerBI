@@ -448,6 +448,12 @@ namespace DataverseToPowerBI.XrmToolBox
     [DataContract]
     public class SemanticModelConfig
     {
+        [OnDeserializing]
+        private void SetDefaults(StreamingContext context)
+        {
+            UseDisplayNameAliasesInSql = true;
+        }
+
         [DataMember]
         public string Name { get; set; } = "";
 

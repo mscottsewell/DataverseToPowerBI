@@ -227,6 +227,7 @@ namespace DataverseToPowerBI.XrmToolBox
             btnSemanticModel.Image = RibbonIcons.ModelIcon;
             btnChangeWorkingFolder.Image = RibbonIcons.FolderIcon;
             btnSettingsFolder.Image = RibbonIcons.FolderIcon;
+            btnPreviewTmdl.Image = RibbonIcons.PreviewIcon;
             
             // Add custom paint for semantic model button border
             btnSemanticModel.Paint += (s, pe) =>
@@ -2709,6 +2710,13 @@ namespace DataverseToPowerBI.XrmToolBox
                         .ToList();
                 }
                 
+                // Check if table has statecode attribute (for WHERE clause generation)
+                if (_tableAttributes.ContainsKey(t.LogicalName))
+                {
+                    table.HasStateCode = _tableAttributes[t.LogicalName]
+                        .Any(a => a.LogicalName.Equals("statecode", StringComparison.OrdinalIgnoreCase));
+                }
+
                 // Add selected view (with FetchXML)
                 if (_selectedViewIds.ContainsKey(t.LogicalName) && _tableViews.ContainsKey(t.LogicalName))
                 {
@@ -2755,7 +2763,9 @@ namespace DataverseToPowerBI.XrmToolBox
                         AttributeType = attr.AttributeType,
                         IsRequired = attr.IsRequired,
                         Targets = attr.Targets,
-                        VirtualAttributeName = attr.VirtualAttributeName
+                        VirtualAttributeName = attr.VirtualAttributeName,
+                        IsGlobal = attr.IsGlobal,
+                        OptionSetName = attr.OptionSetName
                     };
                     
                     // Populate override display name from runtime state
