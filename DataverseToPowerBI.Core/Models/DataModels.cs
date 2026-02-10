@@ -812,6 +812,11 @@ namespace DataverseToPowerBI.Core.Models
         public string? SchemaName { get; set; }
 
         /// <summary>
+        /// The description from Dataverse metadata.
+        /// </summary>
+        public string? Description { get; set; }
+
+        /// <summary>
         /// The Dataverse attribute type.
         /// </summary>
         /// <example>"String", "Integer", "Decimal", "Lookup", "DateTime", "Picklist", "Boolean"</example>

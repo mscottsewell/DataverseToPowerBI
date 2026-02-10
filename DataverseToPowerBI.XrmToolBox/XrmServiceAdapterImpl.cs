@@ -398,6 +398,13 @@ namespace DataverseToPowerBI.XrmToolBox
                         displayName = attr.DisplayName.UserLocalizedLabel.Label ?? logicalName ?? "";
                     }
                     
+                    // Get description
+                    string? description = null;
+                    if (attr.Description?.UserLocalizedLabel != null)
+                    {
+                        description = attr.Description.UserLocalizedLabel.Label;
+                    }
+                    
                     // Check if required
                     bool isRequired = false;
                     if (attr.RequiredLevel?.Value != null)
@@ -518,6 +525,7 @@ namespace DataverseToPowerBI.XrmToolBox
                         LogicalName = logicalName ?? "",
                         DisplayName = displayName,
                         SchemaName = schemaName ?? "",
+                        Description = description,
                         AttributeType = MapAttributeType(typeValue ?? ""),
                         IsCustomAttribute = isCustomAttribute,
                         IsRequired = isRequired,

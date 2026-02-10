@@ -8,7 +8,7 @@
 // including table declarations, columns, measures, and partition M expressions.
 //
 // FEATURES:
-// - Sorted list: Expressions → Date table → Fact table → Dimension tables (alpha)
+// - Sorted list: Fact tables → Dimension tables → Date table → Expressions (alpha)
 // - Copy selected TMDL to clipboard
 // - Save individual .tmdl file
 // - Save all .tmdl files to a folder
@@ -47,7 +47,7 @@ namespace DataverseToPowerBI.XrmToolBox
             _entries = entries ?? throw new ArgumentNullException(nameof(entries));
             _connectionType = connectionType;
 
-            // Sort entries: Expression(0) → DateTable(1) → FactTable(2) → DimensionTable(3), then alphabetically within each type
+            // Sort entries: FactTable(0) → DimensionTable(1) → DateTable(2) → Expression(3), then alphabetically within each type
             _sortedKeys = _entries
                 .OrderBy(kvp => (int)kvp.Value.EntryType)
                 .ThenBy(kvp => kvp.Key, StringComparer.OrdinalIgnoreCase)

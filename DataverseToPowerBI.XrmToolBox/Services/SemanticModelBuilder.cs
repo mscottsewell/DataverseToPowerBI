@@ -2488,7 +2488,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                     SourceColumn = primaryKey,
                     IsHidden = true,
                     IsKey = true,
-                    Description = "Primary Key",
+                    Description = $"Source: {table.LogicalName}.{primaryKey}",
                     AttributeType = "uniqueidentifier"
                 });
                 sqlFields.Add($"Base.{primaryKey}");
@@ -2506,7 +2506,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                         DisplayName = lookupCol,
                         SourceColumn = lookupCol,
                         IsHidden = true,
-                        Description = "Lookup column for relationship",
+                        Description = $"Source: {table.LogicalName}.{lookupCol}",
                         AttributeType = "lookup"
                     });
                     sqlFields.Add($"Base.{lookupCol}");
@@ -2550,7 +2550,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                 var isPrimaryName = attr.LogicalName.Equals(table.PrimaryNameAttribute, StringComparison.OrdinalIgnoreCase);
 
                 // Build description
-                var description = BuildDescription(attr.SchemaName ?? attr.LogicalName, attrType, targets);
+                var description = BuildDescription(table.LogicalName, attr.LogicalName, attr.SchemaName ?? attr.LogicalName, attr.Description, targets);
 
                 if (isLookup)
                 {
@@ -2564,7 +2564,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                         SourceColumn = attr.LogicalName,
                         IsHidden = true,
                         IsKey = isPrimaryKey,
-                        Description = $"{attr.SchemaName ?? attr.LogicalName} | Targets: {string.Join(", ", targets ?? new List<string>())}",
+                        Description = description,
                         AttributeType = "lookup"
                     });
                     sqlFields.Add($"Base.{attr.LogicalName}");
@@ -2586,7 +2586,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                             SourceColumn = lookupSourceCol,
                             IsHidden = false,
                             IsRowLabel = isPrimaryName,
-                            Description = $"{attr.SchemaName ?? attr.LogicalName} | Targets: {string.Join(", ", targets ?? new List<string>())}",
+                            Description = description,
                             AttributeType = "string"  // Name columns are always strings
                         });
                         sqlFields.Add(ApplySqlAlias($"Base.{nameColumn}", effectiveName, nameColumn, false));
@@ -3194,10 +3194,20 @@ namespace DataverseToPowerBI.XrmToolBox.Services
         /// <summary>
         /// Builds a description string for a column
         /// </summary>
-        private string BuildDescription(string schemaName, string attrType, List<string>? targets)
+        private string BuildDescription(string tableLogicalName, string attrLogicalName, string schemaName, string? dataverseDescription, List<string>? targets)
         {
-            var parts = new List<string> { schemaName };
+            var parts = new List<string>();
 
+            // Add Dataverse description first if available
+            if (!string.IsNullOrWhiteSpace(dataverseDescription))
+            {
+                parts.Add(dataverseDescription);
+            }
+
+            // Add Source information
+            parts.Add($"Source: {tableLogicalName}.{attrLogicalName}");
+
+            // Add targets if available
             if (targets != null && targets.Any())
             {
                 parts.Add($"Targets: {string.Join(", ", targets)}");
@@ -3510,10 +3520,10 @@ namespace DataverseToPowerBI.XrmToolBox.Services
     /// </summary>
     public enum TmdlEntryType
     {
-        Expression = 0,
-        DateTable = 1,
-        FactTable = 2,
-        DimensionTable = 3
+        FactTable = 0,
+        DimensionTable = 1,
+        DateTable = 2,
+        Expression = 3
     }
 
     /// <summary>
