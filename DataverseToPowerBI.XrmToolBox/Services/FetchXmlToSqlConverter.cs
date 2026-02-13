@@ -17,11 +17,17 @@
 // Date Relative: today, yesterday, this-week, last-month, etc.
 // Date Dynamic: last-x-days, next-x-months, older-x-years, etc.
 // List Operations: in, not-in
-// User Context: eq-userid, ne-userid (partial support)
+// User Context: eq-userid, ne-userid, eq-userteams, ne-userteams (TDS only, not FabricLink)
 //
 // TIMEZONE HANDLING:
 // All date comparisons include UTC offset adjustment using DATEADD(hour, offset, column)
 // to convert UTC-stored dates to the user's local timezone.
+//
+// FABRICLINK LIMITATIONS:
+// User context operators (eq-userid, ne-userid, eq-userteams, ne-userteams) are NOT
+// supported in FabricLink mode because Direct Lake queries cannot use CURRENT_USER
+// constructs. These filters are skipped and logged as unsupported when isFabricLink=true.
+// Use DataverseTDS connection mode if row-level security based on current user is required.
 //
 // OUTPUT FORMAT:
 // Returns a ConversionResult containing:
@@ -51,10 +57,12 @@ namespace DataverseToPowerBI.XrmToolBox.Services
         private readonly List<string> _unsupportedFeatures = new();
         private bool _hasUnsupportedFeatures = false;
         private readonly int _utcOffsetHours;
+        private readonly bool _isFabricLink;
 
-        public FetchXmlToSqlConverter(int utcOffsetHours = -6)
+        public FetchXmlToSqlConverter(int utcOffsetHours = -6, bool isFabricLink = false)
         {
             _utcOffsetHours = utcOffsetHours;
+            _isFabricLink = isFabricLink;
         }
 
         /// <summary>
@@ -274,11 +282,11 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                     "on-or-after" => $"DATEADD(hour, {_utcOffsetHours}, {columnRef}) >= {FormatValue(safeValue)}",
                     "on-or-before" => $"DATEADD(hour, {_utcOffsetHours}, {columnRef}) <= {FormatValue(safeValue)}",
                     
-                    // User context operators
-                    "eq-userid" => $"{columnRef} = CURRENT_USER",
-                    "ne-userid" => $"{columnRef} <> CURRENT_USER",
-                    "eq-userteams" => ConvertUserTeamsOperator(columnRef, true),
-                    "ne-userteams" => ConvertUserTeamsOperator(columnRef, false),
+                    // User context operators (only supported for TDS, not FabricLink)
+                    "eq-userid" => _isFabricLink ? UnsupportedInFabricLink("eq-userid", attribute) : $"{columnRef} = CURRENT_USER",
+                    "ne-userid" => _isFabricLink ? UnsupportedInFabricLink("ne-userid", attribute) : $"{columnRef} <> CURRENT_USER",
+                    "eq-userteams" => _isFabricLink ? UnsupportedInFabricLink("eq-userteams", attribute) : ConvertUserTeamsOperator(columnRef, true),
+                    "ne-userteams" => _isFabricLink ? UnsupportedInFabricLink("ne-userteams", attribute) : ConvertUserTeamsOperator(columnRef, false),
                     
                     // List operators
                     "in" => ProcessInOperator(condition, columnRef),
@@ -455,6 +463,14 @@ namespace DataverseToPowerBI.XrmToolBox.Services
             var message = $"Operator '{operatorValue}' for attribute '{attribute ?? ""}'";
             LogUnsupported(message);
             _debugLog.Add($"  UNSUPPORTED: {message}");
+            return "";
+        }
+
+        private string UnsupportedInFabricLink(string operatorValue, string? attribute)
+        {
+            var message = $"Operator '{operatorValue}' for attribute '{attribute ?? ""}' - not supported in FabricLink (use TDS for current user filters)";
+            LogUnsupported(message);
+            _debugLog.Add($"  UNSUPPORTED IN FABRICLINK: {message}");
             return "";
         }
 

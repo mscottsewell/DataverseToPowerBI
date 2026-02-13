@@ -103,11 +103,17 @@ This tool solves these problems by:
 #### Step 5: Choose your Dimension Tables
 
 - The tool will show all lookup relationships from your fact table
-- Check which dimensions to include and activate the relationship where needed.
-- Only one active relationship should exist between the Fact and a Dimension
+- Check which dimensions to include
+- **Multiple relationships to the same dimension** are automatically grouped together with a visual header for easy identification
+- **Only one relationship can be active** between the Fact and each Dimension—when you check or double-click a relationship, all others to that dimension automatically become "Inactive"
+- Inactive relationships can still be used in DAX with the `USERELATIONSHIP()` function
+- Use the **"Solution tables only"** checkbox (enabled by default) to focus on tables in your solution
+- Use the **Search box** to filter relationships by field or table names
 - Optionally add "snowflake" parent dimensions if needed
-- **Tip:** Start with a only a few tables to optimize performance.
+- **Tip:** Start with only a few tables to optimize performance.
 - **Finish Selection** when you're done.
+
+> **Understanding Multiple Relationships:** It's common to have multiple lookup fields pointing to the same table (e.g., "Primary Contact" and "Secondary Contact" both reference the Contact table). Power BI requires exactly one "Active" relationship between two tables—others must be "Inactive." The tool makes this easy by grouping these relationships together and automatically managing their Active/Inactive status as you make selections. See [Managing Multiple Relationships](#-managing-multiple-relationships) below for details.
 
 #### Step 6: Customize the Queries
 
@@ -209,6 +215,25 @@ DateTime fields are converted to Date-only values with proper timezone adjustmen
 
 All relationships are correctly configured as Many-to-One from fact to dimension tables, with proper cross-filter direction for optimal DAX performance.
 
+### 🔀 Managing Multiple Relationships
+
+When multiple lookup fields point to the same dimension table (e.g., "Primary Contact," "Secondary Contact," and "Responsible Contact" all referencing the Contact table), the tool helps you manage them intelligently:
+
+- **Visual Grouping**: Relationships are grouped under headers like "Contact (Multiple Relationships)" for easy identification
+- **Smart Selection**: Checking any relationship automatically marks ALL other relationships to that dimension as "Inactive"
+- **Active by Default**: All relationships start as "Active" for clarity—you choose which one to keep active
+- **Double-Click Toggle**: Double-click any relationship to toggle its Active/Inactive status
+- **Automatic Conflict Prevention**: When you activate one relationship, all others to that dimension become inactive automatically (even unchecked ones)
+- **Conflict Detection**: Red highlighting appears if multiple ACTIVE relationships exist to the same dimension—you must resolve these before building
+- **Visual Clarity**: Inactive relationships show "(Inactive)" in the Type column with white background; active conflicts show red background
+
+This ensures your model always has exactly one active relationship per dimension pair, while preserving inactive relationships for use with the DAX `USERELATIONSHIP()` function.
+
+**Example:** If your Case table has "Primary Contact," "Reported By," and "Modified By" lookups—all pointing to Contact—you might:
+1. Check "Primary Contact" and "Reported By" to include both
+2. The tool automatically makes "Primary Contact" Active and "Reported By" Inactive
+3. In your DAX measures, use `CALCULATE([Total Cases], USERELATIONSHIP(Case[reportedbyid], Contact[contactid]))` to analyze by Reported By
+
 ### 🏷️ Hidden Technical Columns
 
 Primary key columns (like `accountid`) are included for relationships but hidden from the report view. This keeps your field list clean while maintaining proper data model structure.
@@ -268,7 +293,16 @@ Your semantic model (dataset) and report are now available in the cloud!
 
 ### Configuring DirectQuery Authentication
 
-For DirectQuery models connected to Dataverse, you must configure authentication so each report viewer uses their own identity:
+For DirectQuery models connected to Dataverse, you must configure authentication so each report viewer uses their own identity.
+
+#### For DataverseTDS Connections (DirectQuery)
+
+**⚠️ Critical: You MUST enable Single Sign-On (SSO) for TDS-based DirectQuery reports** to ensure that:
+- Reports are filtered based on each user's credentials
+- Dataverse row-level security is enforced
+- View filters using current user context (e.g., "My Opportunities") work correctly
+
+**Steps to configure SSO:**
 
 1. Go to [Power BI Service](https://app.powerbi.com)
 2. Navigate to your **Workspace**
@@ -277,14 +311,24 @@ For DirectQuery models connected to Dataverse, you must configure authentication
 5. Expand **Data source credentials**
 6. Click **Edit credentials**
 7. Set Authentication method to **OAuth2**
-8. ✅ **Enable: "Report viewers can only access this data source with their own Power BI identities"**
+8. ✅ **REQUIRED: Check "End users use their own OAuth2 credentials when accessing this data source via DirectQuery"** (Single Sign-On)
 9. Click **Sign in** and authenticate
 
 This critical setting ensures:
 
 - Each user's Dataverse security roles are respected
 - Users only see records they have permission to view
+- Current user filters in views work correctly
 - No shared service account is used
+
+📚 **Learn More:** [Enable Single Sign-On for DirectQuery](https://learn.microsoft.com/power-bi/connect-data/service-azure-sql-database-with-direct-connect#single-sign-on)
+
+#### For FabricLink Connections (Direct Lake)
+
+FabricLink uses Direct Lake storage mode and authenticates differently:
+- Authentication is handled automatically through Fabric workspace permissions
+- No additional SSO configuration is required
+- Users must have appropriate Fabric workspace roles
 
 ### Setting Up Scheduled Refresh (Import/Dual Models)
 
@@ -329,6 +373,17 @@ scenarios (like Contacts associated with multiple Accounts), you may need to
 include the intersection table and create a bridge pattern manually. These can
 become complex and require more expertise in proper modeling to ensure your
 results are reflective of your intent.
+
+### Q: What if I have multiple lookup fields pointing to the same table?
+
+**A:** This is very common (e.g., \"Primary Contact,\" \"Reported By,\" and \"Modified By\" all pointing to Contact). The tool handles this automatically:
+
+- Multiple relationships to the same dimension are **visually grouped** together for easy identification
+- **Only one can be Active**—when you check or double-click a relationship, all others to that dimension automatically become Inactive
+- You can still use inactive relationships in DAX with `USERELATIONSHIP()` function
+- Example: `CALCULATE([Total Cases], USERELATIONSHIP(Case[reportedbyid], Contact[contactid]))`
+
+See [Managing Multiple Relationships](#-managing-multiple-relationships) for more details.
 
 ### Q: My report is slow—what can I do?
 

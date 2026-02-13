@@ -2230,10 +2230,10 @@ namespace DataverseToPowerBI.XrmToolBox
         {
             if (listViewAttributes.Width <= 0) return;
             
-            // Fixed-width columns: Sel (40), Form (50), Type (100)
+            // Fixed-width columns: Sel (40), Form (50), Type (140)
             const int selWidth = 40;
             const int formWidth = 50;
-            const int typeWidth = 100;
+            const int typeWidth = 140;
             const int scrollBarWidth = 20;
             
             var availableWidth = listViewAttributes.Width - selWidth - formWidth - typeWidth - scrollBarWidth;
@@ -2276,10 +2276,9 @@ namespace DataverseToPowerBI.XrmToolBox
             var availableWidth = listViewSelectedTables.Width - editWidth - roleWidth - attrsWidth - scrollBarWidth;
             if (availableWidth <= 0) return;
             
-            // Distribute remaining evenly: Table (33.33%), Form (33.33%), Filter (33.33%)
-            var columnWidth = availableWidth / 3;
-            var tableWidth = columnWidth;
-            var formWidth = columnWidth;
+            // Distribute remaining: Table (25%), Form (25%), Filter (50%)
+            var tableWidth = (int)(availableWidth * 0.25);
+            var formWidth = (int)(availableWidth * 0.25);
             var filterWidth = availableWidth - tableWidth - formWidth;
             
             listViewSelectedTables.BeginUpdate();

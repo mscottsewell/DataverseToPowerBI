@@ -6,6 +6,77 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.2026.5.1] - 2026-02-12
+
+### Added
+
+- **Visual Grouping for Multiple Relationships** — Dimensions with multiple relationships are now visually grouped in the relationship selector
+  - Group headers display dimension name with "(Multiple Relationships)" label
+  - Only tables with 2+ relationships are grouped; single relationships remain ungrouped for clarity
+  - Applied to both main Fact/Dimension selector dialog and "Add Parent Tables" snowflake dialog
+  - Makes it easier to identify which relationships belong to the same dimension
+
+- **Solution Tables Filter** — Added "Solution tables only" checkbox next to Solution dropdown
+  - Enabled by default to show only relationships to tables in the current solution
+  - Unchecking shows relationships to all tables (including those outside the solution)
+  - Works seamlessly with search filter
+  - Reduces clutter when working with specific solutions
+
+- **Relationship Search** — Added search box to filter relationships by field names and dimension table names
+  - Real-time filtering as you type
+  - Searches across: Lookup Field name, Lookup Logical Name, Target Table name, Target Logical Name
+  - Validation still checks all relationships (not just filtered ones)
+  - Preserves checked state when filtering
+
+### Changed
+
+- **Default Relationship Status** — All relationships now default to "Active" status
+  - Previous behavior: Multi-relationship dimensions defaulted to "Inactive"
+  - New behavior: All relationships start as "Active" for clearer initial state
+  - Users explicitly choose which relationship to make inactive when multiple exist
+
+- **Smart Relationship Selection** — Enhanced automatic inactivation when selecting relationships
+  - Checking a relationship automatically marks ALL other relationships to that same dimension as "Inactive"
+  - Applied whether the other relationships are checked or not
+  - Double-clicking a relationship to make it Active automatically inactivates all others to that dimension
+  - Prevents conflicts and ensures only one active relationship per dimension
+
+- **Column Width Optimization** — Adjusted column widths for better data visibility
+  - **Main grid (Selected Tables & Forms)**: Type column increased from 100px to 140px; Filter column now gets 50% of flexible space (up from 33.33%)
+  - **Main grid (Attributes)**: Type column increased from 100px to 140px to prevent truncation of "Uniqueidentifier" and other long type names
+  - **Fact/Dimension Selector**: Reduced width from 1050px to 900px (150px narrower); column widths adjusted to fit
+  - **Add Parent Tables dialog**: Lookup Field and Parent Table columns reduced to 150px (75% of original 200px) to fit Logical Name column without scrolling
+
+- **Dialog Layout Improvements** — Reorganized Fact/Dimension selector for better usability
+  - "Include one-to-many relationships" checkbox moved to left (first position)
+  - Search box moved to far right, aligned with grid's right edge
+  - Finish and Cancel buttons repositioned to remain fully visible at new dialog width
+
+- **Improved Relationship Conflict Highlighting** — Enhanced visual indicators for relationship status
+  - Type column now displays "(Inactive)" suffix for inactive relationships (e.g., "Direct (Inactive)")
+  - Red highlighting (light salmon) now only appears when multiple ACTIVE relationships exist to the same dimension (conflict state)
+  - Inactive relationships no longer highlighted — clean white background for clarity
+  - Applied to both main Fact/Dimension selector and "Add Parent Tables" snowflake dialog
+  - Makes it immediately clear which relationships have conflicts vs. which are safely inactive
+
+### Fixed
+
+- **NullReferenceException in ItemChecked Event** — Fixed crash when opening Fact/Dimension selector dialog
+  - Added `_suppressItemCheckedEvent` flag to prevent events during list manipulation
+  - Added comprehensive null checks in all event handlers (`ItemChecked`, `DoubleClick`, `UpdateItemStatus`, `UpdateSnowflakeButtonState`)
+  - Protected LINQ queries with `.Where(i => i.Tag != null)` filters
+  - Fixed iteration to use `_allRelationshipItems` instead of `listViewRelationships.Items` for complete coverage
+  - Applied same safety features to snowflake "Add Parent Tables" dialog
+
+- **FabricLink Current User Filter** — FetchXML filters with current user operators now handled correctly for FabricLink
+  - User context operators (`eq-userid`, `ne-userid`, `eq-userteams`, `ne-userteams`) are now skipped in FabricLink mode
+  - These operators continue to work with DataverseTDS connection mode
+  - Skipped operators are logged as "not supported in FabricLink (use TDS for current user filters)"
+  - Prevents SQL syntax errors in Direct Lake scenarios that don't support `CURRENT_USER` constructs
+  - Debug logs clearly indicate which operators were skipped due to FabricLink limitations
+
+---
+
 ## [1.2026.4.16] - 2026-02-10
 
 ### Added

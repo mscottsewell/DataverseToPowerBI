@@ -40,8 +40,25 @@ If using Import mode, implement RLS to control data access:
 2. Create roles that filter data based on user context
 3. Assign users to roles in Power BI Service
 
+## 7. Deploy to Power BI Service
+
+Once you publish your report to Power BI Service:
+
+### For DirectQuery (TDS) Models:
+**⚠️ Critical:** Enable Single Sign-On (SSO) in data source credentials:
+- This ensures each user sees only their permitted data
+- Required for Dataverse row-level security to work
+- Enables view filters based on current user context
+- See the [Publishing and Deployment](../README.md#-publishing-and-deployment) section for detailed steps
+
+### For Import or Dual Mode:
+- Configure scheduled refresh (up to 8 times per day)
+- Set up failure notifications
+- Consider implementing Power BI RLS if needed (see step 6)
+
 ## Learn More
 
 - [Create Measures in Power BI](https://learn.microsoft.com/en-us/power-bi/transform-model/desktop-measures)
 - [Create Hierarchies](https://learn.microsoft.com/en-us/power-bi/transform-model/desktop-create-and-manage-relationships)
 - [Row-Level Security in Power BI](https://learn.microsoft.com/en-us/power-bi/enterprise/service-admin-rls)
+- [Enable Single Sign-On for DirectQuery](https://learn.microsoft.com/power-bi/connect-data/service-azure-sql-database-with-direct-connect#single-sign-on)

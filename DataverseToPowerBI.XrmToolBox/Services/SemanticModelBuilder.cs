@@ -1383,7 +1383,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
             {
                 // Convert FetchXML to SQL WHERE clause for comparison
                 var utcOffset = (int)(dateTableConfig?.UtcOffsetHours ?? -6);
-                var converter = new FetchXmlToSqlConverter(utcOffset);
+                var converter = new FetchXmlToSqlConverter(utcOffset, IsFabricLink);
                 var conversionResult = converter.ConvertToWhereClause(table.View.FetchXml, "Base");
                 
                 if (!string.IsNullOrWhiteSpace(conversionResult.SqlWhereClause))
@@ -2461,7 +2461,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
             if (table.View != null && !string.IsNullOrWhiteSpace(table.View.FetchXml))
             {
                 var utcOffset = (int)(dateTableConfig?.UtcOffsetHours ?? -6);
-                var converter = new FetchXmlToSqlConverter(utcOffset);
+                var converter = new FetchXmlToSqlConverter(utcOffset, IsFabricLink);
                 var conversionResult = converter.ConvertToWhereClause(table.View.FetchXml, "Base");
                 
                 if (!string.IsNullOrWhiteSpace(conversionResult.SqlWhereClause))

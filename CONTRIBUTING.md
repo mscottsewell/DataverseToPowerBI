@@ -222,7 +222,7 @@ public bool ApplyChanges(...);  // Apply with optional backup
 Translates Dataverse view FetchXML filters to T-SQL WHERE clauses for DirectQuery:
 
 ```csharp
-var converter = new FetchXmlToSqlConverter(utcOffsetHours: -6);
+var converter = new FetchXmlToSqlConverter(utcOffsetHours: -6, isFabricLink: false);
 var result = converter.ConvertToWhereClause(fetchXml, tableAlias: "Base");
 // Result: "Base.statecode = 0 AND Base.createdon >= '2024-01-01'"
 ```
@@ -233,6 +233,9 @@ var result = converter.ConvertToWhereClause(fetchXml, tableAlias: "Base");
 - String: `like`, `begins-with`, `ends-with`
 - Date: `today`, `yesterday`, `this-week`, `last-x-days`, etc.
 - Lists: `in`, `not-in`
+- User Context (TDS only): `eq-userid`, `ne-userid`, `eq-userteams`, `ne-userteams`
+
+> **Note:** User context operators are not supported in FabricLink mode due to Direct Lake limitations. Set `isFabricLink: true` to skip these operators.
 
 ### SemanticModelManager.cs
 

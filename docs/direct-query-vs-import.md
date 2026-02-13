@@ -20,6 +20,9 @@ Your generated model uses **DirectQuery** by default. Here's what that means and
 - Data that changes frequently throughout the day
 - Queries that reference 'Current_User' in the filter (e.g. "My Opportunities")
 
+**⚠️ Deployment Requirement for TDS DirectQuery:**
+When publishing to Power BI Service, you **must enable Single Sign-On (SSO)** in the data source credentials settings to ensure reports are filtered based on each user's credentials and Dataverse security is enforced. See [Publishing and Deployment](../README.md#-publishing-and-deployment) for configuration steps.
+
 ## Import Mode
 
 **How it works:** Data is copied into the Power BI file and stored in memory. Reports query this in-memory cache.

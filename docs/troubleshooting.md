@@ -34,3 +34,27 @@ Try these optimizations:
 6. Use aggregations for large fact tables
 7. For larger datasets, moving the fact table to Import Mode will make the interaction more responsive.
 8. Filtering on large Date Ranges using a Direct Query source with the Date Table can cause timeouts based on the way the query is constructed. You may want to apply the query to the date field directly from within the query pane rather than relying on the Date Table.
+
+### "Users see data they shouldn't see (DirectQuery TDS)"
+**Cause:** Single Sign-On (SSO) is not enabled in Power BI Service
+
+If users can see records they shouldn't have access to based on Dataverse security, or if "current user" view filters aren't working:
+
+1. Go to [Power BI Service](https://app.powerbi.com)
+2. Navigate to your workspace and find your semantic model
+3. Click **...** → **Settings**
+4. Expand **Data source credentials**
+5. Click **Edit credentials**
+6. **✅ REQUIRED:** Check "End users use their own OAuth2 credentials when accessing this data source via DirectQuery"
+7. Click **Sign in** and authenticate
+
+Without SSO enabled, the report uses a shared service account instead of each user's credentials, bypassing Dataverse security.
+
+📚 **Learn More:** [Enable Single Sign-On for DirectQuery](https://learn.microsoft.com/power-bi/connect-data/service-azure-sql-database-with-direct-connect#single-sign-on)
+
+### "Current user filters not applied (FabricLink mode)"
+**Cause:** Current user operators are not supported in FabricLink
+
+View filters using `eq-userid`, `ne-userid`, `eq-userteams`, or `ne-userteams` cannot be used with FabricLink connections. These filters are automatically skipped and logged in the FetchXML debug output.
+
+**Solution:** Use DataverseTDS connection mode instead if you need row-level security based on current user context.

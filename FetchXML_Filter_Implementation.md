@@ -50,6 +50,14 @@ The Dataverse Metadata Extractor now automatically converts FetchXML view filter
 - `in` → `IN (val1, val2, ...)`
 - `not-in` → `NOT IN (val1, val2, ...)`
 
+#### User Context Operators (TDS Only)
+- `eq-userid` → `= CURRENT_USER` (⚠️ Not supported in FabricLink)
+- `ne-userid` → `<> CURRENT_USER` (⚠️ Not supported in FabricLink)
+- `eq-userteams` → Team membership check (⚠️ Not supported in FabricLink)
+- `ne-userteams` → Negative team membership check (⚠️ Not supported in FabricLink)
+
+> **Important:** Current user filters (`eq-userid`, `ne-userid`, `eq-userteams`, `ne-userteams`) are **only supported when using DataverseTDS connection mode**. These operators will be **skipped in FabricLink mode** because Direct Lake queries cannot use `CURRENT_USER` constructs. If you need row-level security based on current user, use TDS connection mode instead.
+
 #### Complex Features
 - ✅ Nested filter groups (`<filter type="and">` / `<filter type="or">`)
 - ✅ Mixed AND/OR logic
@@ -139,6 +147,11 @@ If a filter contains unsupported features:
 - Verify attribute names match schema
 - Report issue with debug log for investigation
 
+**Issue:** Current user filter not applied (FabricLink mode)
+- User context operators (`eq-userid`, `ne-userid`, `eq-userteams`, `ne-userteams`) are not supported in FabricLink
+- Switch to DataverseTDS connection mode if row-level security based on current user is required
+- Debug log will show "not supported in FabricLink (use TDS for current user filters)"
+
 ## Sharing Debug Information
 
 To share a filter conversion issue:
@@ -156,15 +169,13 @@ To share a filter conversion issue:
 ## Future Enhancements
 
 ### Planned Support
-- More date operators (last-x-days, next-x-months, etc.)
-- User context operators (eq-userid, eq-userteams, etc.)
 - Link-entity filter translation
 - Between operator
 - Attribute-to-attribute comparisons
 
 ### Known Limitations
+- **Current user filters not supported in FabricLink** - User context operators (`eq-userid`, `ne-userid`, `eq-userteams`, `ne-userteams`) only work with DataverseTDS connection mode
 - Link-entity filters not supported (only main entity)
-- Some advanced date operators not implemented
 - No support for calculated values in conditions
 
 ## Testing Your Filters
