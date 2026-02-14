@@ -881,7 +881,12 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                 if (Directory.Exists(tablesFolder))
                 {
                     var existingMode = DetectExistingStorageMode(tablesFolder);
-                    if (existingMode != null && !existingMode.Equals(_storageMode, StringComparison.OrdinalIgnoreCase))
+                    // Normalize for comparison: "DualSelect" mode writes per-table "dual" or "directQuery",
+                    // which DetectExistingStorageMode reads back as "Dual" or "DirectQuery".
+                    // Both "Dual" and "DualSelect" produce compatible TMDL output.
+                    var normalizedExisting = NormalizeStorageMode(existingMode);
+                    var normalizedCurrent = NormalizeStorageMode(_storageMode);
+                    if (normalizedExisting != null && !normalizedExisting.Equals(normalizedCurrent, StringComparison.OrdinalIgnoreCase))
                     {
                         // Normalize for comparison: existing file says "directQuery"/"import"/"dual", config says "DirectQuery"/"Import"/"Dual"
                         changes.Add(new SemanticModelChange
@@ -2356,6 +2361,20 @@ namespace DataverseToPowerBI.XrmToolBox.Services
         }
 
         /// <summary>
+        /// Normalizes storage mode names for comparison.
+        /// "Dual" and "DualSelect" both produce dual/directQuery TMDL output, so they are equivalent.
+        /// </summary>
+        private static string? NormalizeStorageMode(string? mode)
+        {
+            if (mode == null) return null;
+            // Treat "Dual" and "DualSelect" as the same category for comparison
+            if (mode.Equals("Dual", StringComparison.OrdinalIgnoreCase) ||
+                mode.Equals("DualSelect", StringComparison.OrdinalIgnoreCase))
+                return "Dual";
+            return mode;
+        }
+
+        /// <summary>
         /// Deletes the cache.abf file to prevent stale imported data after a storage mode change.
         /// </summary>
         private void DeleteCacheAbf(string pbipFolder, string projectName)
@@ -2423,7 +2442,9 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                     if (Directory.Exists(tablesFolder))
                     {
                         var existingMode = DetectExistingStorageMode(tablesFolder);
-                        if (existingMode != null && !existingMode.Equals(_storageMode, StringComparison.OrdinalIgnoreCase))
+                        var normExisting = NormalizeStorageMode(existingMode);
+                        var normCurrent = NormalizeStorageMode(_storageMode);
+                        if (normExisting != null && !normExisting.Equals(normCurrent, StringComparison.OrdinalIgnoreCase))
                         {
                             DeleteCacheAbf(pbipFolder, semanticModelName);
                         }
