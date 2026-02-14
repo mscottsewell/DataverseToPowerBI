@@ -123,6 +123,360 @@ namespace DataverseToPowerBI.XrmToolBox.Services
         }
 
         /// <summary>
+        /// Parses an existing TMDL file and extracts lineageTags, keyed by entity identifier.
+        /// For tables: key = "table" → lineageTag
+        /// For columns: key = "col:{sourceColumn}" → lineageTag
+        /// For measures: key = "measure:{measureName}" → lineageTag
+        /// For expressions: key = "expr:{expressionName}" → lineageTag
+        /// </summary>
+        private Dictionary<string, string> ParseExistingLineageTags(string tmdlPath)
+        {
+            var tags = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            if (!File.Exists(tmdlPath))
+                return tags;
+
+            try
+            {
+                var lines = File.ReadAllLines(tmdlPath);
+                string? currentEntity = null;
+                string? currentSourceColumn = null;
+
+                for (int i = 0; i < lines.Length; i++)
+                {
+                    var line = lines[i];
+                    var trimmed = line.TrimStart();
+
+                    // Table-level lineageTag (not indented with double tab)
+                    if (trimmed.StartsWith("table "))
+                    {
+                        currentEntity = "table";
+                        currentSourceColumn = null;
+                    }
+                    else if (trimmed.StartsWith("column "))
+                    {
+                        currentEntity = "column";
+                        currentSourceColumn = null;
+                    }
+                    else if (trimmed.StartsWith("measure "))
+                    {
+                        var nameMatch = Regex.Match(trimmed, @"^measure\s+'([^']+)'|^measure\s+(\S+)");
+                        var measureName = nameMatch.Groups[1].Success ? nameMatch.Groups[1].Value : nameMatch.Groups[2].Value;
+                        currentEntity = $"measure:{measureName}";
+                        currentSourceColumn = null;
+                    }
+                    else if (trimmed.StartsWith("expression "))
+                    {
+                        var nameMatch = Regex.Match(trimmed, @"^expression\s+(\S+)");
+                        if (nameMatch.Success)
+                            currentEntity = $"expr:{nameMatch.Groups[1].Value}";
+                        currentSourceColumn = null;
+                    }
+                    else if (trimmed.StartsWith("sourceColumn:") && currentEntity == "column")
+                    {
+                        currentSourceColumn = trimmed.Substring("sourceColumn:".Length).Trim();
+                    }
+                    else if (trimmed.StartsWith("lineageTag:"))
+                    {
+                        var tag = trimmed.Substring("lineageTag:".Length).Trim();
+                        if (currentEntity == "table")
+                        {
+                            tags["table"] = tag;
+                        }
+                        else if (currentEntity == "column" && currentSourceColumn != null)
+                        {
+                            tags[$"col:{currentSourceColumn}"] = tag;
+                        }
+                        else if (currentEntity == "column")
+                        {
+                            // lineageTag appears before sourceColumn — scan ahead for sourceColumn
+                            for (int j = i + 1; j < lines.Length && j < i + 10; j++)
+                            {
+                                var ahead = lines[j].TrimStart();
+                                if (ahead.StartsWith("sourceColumn:"))
+                                {
+                                    var sc = ahead.Substring("sourceColumn:".Length).Trim();
+                                    tags[$"col:{sc}"] = tag;
+                                    break;
+                                }
+                                if (ahead.StartsWith("column ") || ahead.StartsWith("measure ") || ahead.StartsWith("partition "))
+                                    break;
+                            }
+                        }
+                        else if (currentEntity?.StartsWith("measure:") == true || currentEntity?.StartsWith("expr:") == true)
+                        {
+                            tags[currentEntity] = tag;
+                        }
+                    }
+                    else if (trimmed.StartsWith("partition "))
+                    {
+                        currentEntity = null;
+                        currentSourceColumn = null;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                DebugLogger.Log($"Warning: Could not parse lineageTags from {tmdlPath}: {ex.Message}");
+            }
+
+            return tags;
+        }
+
+        /// <summary>
+        /// Parses existing TMDL to extract per-column metadata (description, formatString, summarizeBy, annotations).
+        /// Key = sourceColumn value. Used by Phases 3-5 to preserve user customizations.
+        /// </summary>
+        private Dictionary<string, ExistingColumnInfo> ParseExistingColumnMetadata(string tmdlPath)
+        {
+            var columns = new Dictionary<string, ExistingColumnInfo>(StringComparer.OrdinalIgnoreCase);
+            if (!File.Exists(tmdlPath))
+                return columns;
+
+            try
+            {
+                var content = File.ReadAllText(tmdlPath);
+                // Match each column block: starts with \tcolumn and continues until next column/measure/partition/annotation at column indent level
+                var colPattern = @"^\tcolumn\s+.+?\r?\n((?:\t\t.+\r?\n|\s*\r?\n)*)";
+                var matches = Regex.Matches(content, colPattern, RegexOptions.Multiline);
+
+                foreach (Match match in matches)
+                {
+                    var block = match.Value;
+                    var sourceMatch = Regex.Match(block, @"sourceColumn:\s*(.+)$", RegexOptions.Multiline);
+                    if (!sourceMatch.Success) continue;
+
+                    var sourceColumn = sourceMatch.Groups[1].Value.Trim();
+                    var info = new ExistingColumnInfo { SourceColumn = sourceColumn };
+
+                    var descMatch = Regex.Match(block, @"description:\s*(.+)$", RegexOptions.Multiline);
+                    if (descMatch.Success) info.Description = descMatch.Groups[1].Value.Trim();
+
+                    // Multi-line description (```-delimited)
+                    var multiDescMatch = Regex.Match(block, @"description:\s*\r?\n\t\t\t(.+?)(?=\r?\n\t\t[a-z])", RegexOptions.Singleline);
+                    if (multiDescMatch.Success) info.Description = multiDescMatch.Groups[1].Value.Trim();
+
+                    var fmtMatch = Regex.Match(block, @"formatString:\s*(.+)$", RegexOptions.Multiline);
+                    if (fmtMatch.Success) info.FormatString = fmtMatch.Groups[1].Value.Trim();
+
+                    var sumMatch = Regex.Match(block, @"summarizeBy:\s*(.+)$", RegexOptions.Multiline);
+                    if (sumMatch.Success) info.SummarizeBy = sumMatch.Groups[1].Value.Trim();
+
+                    var dtMatch = Regex.Match(block, @"dataType:\s*(.+)$", RegexOptions.Multiline);
+                    if (dtMatch.Success) info.DataType = dtMatch.Groups[1].Value.Trim();
+
+                    // Extract annotations (key = value pairs)
+                    var annotMatches = Regex.Matches(block, @"annotation\s+(\S+)\s*=\s*(.+)$", RegexOptions.Multiline);
+                    foreach (Match ann in annotMatches)
+                    {
+                        info.Annotations[ann.Groups[1].Value.Trim()] = ann.Groups[2].Value.Trim();
+                    }
+
+                    columns[sourceColumn] = info;
+                }
+            }
+            catch (Exception ex)
+            {
+                DebugLogger.Log($"Warning: Could not parse column metadata from {tmdlPath}: {ex.Message}");
+            }
+
+            return columns;
+        }
+
+        /// <summary>
+        /// Metadata parsed from an existing column in a TMDL file.
+        /// </summary>
+        private class ExistingColumnInfo
+        {
+            public string SourceColumn { get; set; } = "";
+            public string? Description { get; set; }
+            public string? FormatString { get; set; }
+            public string? SummarizeBy { get; set; }
+            public string? DataType { get; set; }
+            public Dictionary<string, string> Annotations { get; set; } = new(StringComparer.OrdinalIgnoreCase);
+        }
+
+        /// <summary>
+        /// Parses existing relationships.tmdl and returns a map of relationship keys to their GUIDs.
+        /// Key format: "fromTable.fromColumn→toTable.toColumn" (using display names as they appear in TMDL).
+        /// </summary>
+        private Dictionary<string, string> ParseExistingRelationshipGuids(string relationshipsPath)
+        {
+            var guids = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            if (!File.Exists(relationshipsPath))
+                return guids;
+
+            try
+            {
+                var content = File.ReadAllText(relationshipsPath);
+                var relPattern = @"^relationship\s+(\S+)\s*\r?\n(.*?)(?=^relationship\s|\z)";
+                var matches = Regex.Matches(content, relPattern, RegexOptions.Multiline | RegexOptions.Singleline);
+
+                foreach (Match match in matches)
+                {
+                    var guid = match.Groups[1].Value;
+                    var body = match.Groups[2].Value;
+
+                    var fromMatch = Regex.Match(body, @"fromColumn:\s*(.+)$", RegexOptions.Multiline);
+                    var toMatch = Regex.Match(body, @"toColumn:\s*(.+)$", RegexOptions.Multiline);
+
+                    if (fromMatch.Success && toMatch.Success)
+                    {
+                        var key = $"{fromMatch.Groups[1].Value.Trim()}→{toMatch.Groups[1].Value.Trim()}";
+                        guids[key] = guid;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                DebugLogger.Log($"Warning: Could not parse relationship GUIDs from {relationshipsPath}: {ex.Message}");
+            }
+
+            return guids;
+        }
+
+        /// <summary>
+        /// Parses existing relationships.tmdl and returns full relationship blocks keyed by their
+        /// fromColumn→toColumn key. Used to identify user-added relationships that should be preserved.
+        /// </summary>
+        private Dictionary<string, string> ParseExistingRelationshipBlocks(string relationshipsPath)
+        {
+            var blocks = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            if (!File.Exists(relationshipsPath))
+                return blocks;
+
+            try
+            {
+                var content = File.ReadAllText(relationshipsPath);
+                var relPattern = @"^(relationship\s+\S+\s*\r?\n(?:.*?\r?\n)*?)(?=^relationship\s|\z)";
+                var matches = Regex.Matches(content, relPattern, RegexOptions.Multiline | RegexOptions.Singleline);
+
+                foreach (Match match in matches)
+                {
+                    var block = match.Groups[1].Value;
+                    var fromMatch = Regex.Match(block, @"fromColumn:\s*(.+)$", RegexOptions.Multiline);
+                    var toMatch = Regex.Match(block, @"toColumn:\s*(.+)$", RegexOptions.Multiline);
+
+                    if (fromMatch.Success && toMatch.Success)
+                    {
+                        var key = $"{fromMatch.Groups[1].Value.Trim()}→{toMatch.Groups[1].Value.Trim()}";
+                        blocks[key] = block;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                DebugLogger.Log($"Warning: Could not parse relationship blocks from {relationshipsPath}: {ex.Message}");
+            }
+
+            return blocks;
+        }
+
+        /// <summary>
+        /// Identifies user-added relationships by comparing existing relationship blocks against
+        /// the set of tool-generated relationship keys. Returns the TMDL text for user relationships.
+        /// </summary>
+        private string? ExtractUserRelationships(
+            Dictionary<string, string> existingBlocks,
+            HashSet<string> toolGeneratedKeys)
+        {
+            var sb = new StringBuilder();
+            foreach (var kvp in existingBlocks)
+            {
+                if (!toolGeneratedKeys.Contains(kvp.Key))
+                {
+                    // This relationship was not generated by the tool — preserve it
+                    var block = kvp.Value;
+                    // Add marker comment if not already present
+                    if (!block.Contains("/// User-added relationship"))
+                    {
+                        block = $"/// User-added relationship (preserved by DataverseToPowerBI)\r\n{block}";
+                    }
+                    sb.Append(block);
+                    if (!block.EndsWith("\n"))
+                        sb.AppendLine();
+                    DebugLogger.Log($"Preserving user-added relationship: {kvp.Key}");
+                }
+            }
+
+            return sb.Length > 0 ? sb.ToString() : null;
+        }
+
+        /// <summary>
+        /// Builds the set of relationship keys that the tool would generate, without actually generating TMDL.
+        /// Used to identify which existing relationships are user-added (not in this set).
+        /// </summary>
+        private HashSet<string> BuildToolRelationshipKeys(
+            List<ExportTable> tables,
+            List<ExportRelationship> relationships,
+            Dictionary<string, Dictionary<string, AttributeDisplayInfo>> attributeDisplayInfo,
+            DateTableConfig? dateTableConfig)
+        {
+            var keys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+            var tableDisplayNames = tables.ToDictionary(
+                t => t.LogicalName,
+                t => t.DisplayName ?? t.SchemaName ?? t.LogicalName,
+                StringComparer.OrdinalIgnoreCase);
+
+            var tablePrimaryKeys = tables.ToDictionary(
+                t => t.LogicalName,
+                t => t.PrimaryIdAttribute ?? t.LogicalName + "id",
+                StringComparer.OrdinalIgnoreCase);
+
+            foreach (var rel in relationships)
+            {
+                if (!tableDisplayNames.ContainsKey(rel.SourceTable) || !tableDisplayNames.ContainsKey(rel.TargetTable))
+                    continue;
+
+                var sourceTableDisplay = tableDisplayNames[rel.SourceTable];
+                var targetTableDisplay = tableDisplayNames[rel.TargetTable];
+                var targetPrimaryKey = tablePrimaryKeys[rel.TargetTable];
+
+                var fromRef = $"{QuoteTmdlName(sourceTableDisplay)}.{QuoteTmdlName(rel.SourceAttribute)}";
+                var toRef = $"{QuoteTmdlName(targetTableDisplay)}.{QuoteTmdlName(targetPrimaryKey)}";
+                keys.Add($"{fromRef}→{toRef}");
+            }
+
+            // Date table relationship
+            if (dateTableConfig != null &&
+                !string.IsNullOrEmpty(dateTableConfig.PrimaryDateTable) &&
+                !string.IsNullOrEmpty(dateTableConfig.PrimaryDateField) &&
+                tableDisplayNames.ContainsKey(dateTableConfig.PrimaryDateTable))
+            {
+                var sourceTableDisplay = tableDisplayNames[dateTableConfig.PrimaryDateTable];
+                var sourceTable = tables.FirstOrDefault(t =>
+                    t.LogicalName.Equals(dateTableConfig.PrimaryDateTable, StringComparison.OrdinalIgnoreCase));
+                var dateAttr = sourceTable?.Attributes
+                    .FirstOrDefault(a => a.LogicalName.Equals(dateTableConfig.PrimaryDateField, StringComparison.OrdinalIgnoreCase));
+
+                if (dateAttr != null)
+                {
+                    var primaryDateFieldName = dateAttr.DisplayName ?? dateAttr.SchemaName ?? dateAttr.LogicalName;
+                    if (attributeDisplayInfo.TryGetValue(dateTableConfig.PrimaryDateTable, out var tableAttrs) &&
+                        tableAttrs.TryGetValue(dateTableConfig.PrimaryDateField, out var fieldDisplayInfo))
+                    {
+                        primaryDateFieldName = GetEffectiveDisplayName(fieldDisplayInfo, fieldDisplayInfo.DisplayName ?? primaryDateFieldName);
+                    }
+
+                    var fromRef = $"{QuoteTmdlName(sourceTableDisplay)}.{QuoteTmdlName(primaryDateFieldName)}";
+                    keys.Add($"{fromRef}→Date.Date");
+                }
+            }
+
+            return keys;
+        }
+
+        /// <summary>
+        /// Gets a lineageTag from the existing tags dictionary, or generates a new one.
+        /// </summary>
+        private string GetOrNewLineageTag(Dictionary<string, string>? existingTags, string key)
+        {
+            if (existingTags != null && existingTags.TryGetValue(key, out var tag))
+                return tag;
+            return Guid.NewGuid().ToString();
+        }
+
+        /// <summary>
         /// Returns the TMDL partition mode string for a table based on the global storage mode setting.
         /// DirectQuery: all tables use directQuery.
         /// Dual: fact table uses directQuery, dimensions use dual.
@@ -231,17 +585,17 @@ namespace DataverseToPowerBI.XrmToolBox.Services
         /// The table must have Enable Load checked (which is the default for tables) — without it,
         /// PBI Desktop throws KeyNotFoundException during CommonDataService.Database refresh.
         /// </summary>
-        private string GenerateDataverseUrlTableTmdl(string normalizedUrl)
+        private string GenerateDataverseUrlTableTmdl(string normalizedUrl, Dictionary<string, string>? existingTags = null)
         {
             var sb = new StringBuilder();
             sb.AppendLine("table DataverseURL");
             sb.AppendLine("\tisHidden");
-            sb.AppendLine("\tlineageTag: " + Guid.NewGuid().ToString());
+            sb.AppendLine("\tlineageTag: " + GetOrNewLineageTag(existingTags, "table"));
             sb.AppendLine();
             sb.AppendLine("\tcolumn DataverseURL");
             sb.AppendLine("\t\tdataType: string");
             sb.AppendLine("\t\tisHidden");
-            sb.AppendLine("\t\tlineageTag: " + Guid.NewGuid().ToString());
+            sb.AppendLine("\t\tlineageTag: " + GetOrNewLineageTag(existingTags, "col:DataverseURL"));
             sb.AppendLine("\t\tsummarizeBy: none");
             sb.AppendLine("\t\tsourceColumn: DataverseURL");
             sb.AppendLine();
@@ -265,14 +619,14 @@ namespace DataverseToPowerBI.XrmToolBox.Services
         /// <summary>
         /// Writes the DataverseURL parameter table TMDL file.
         /// </summary>
-        private void WriteDataverseUrlTable(string path, string normalizedUrl)
+        private void WriteDataverseUrlTable(string path, string normalizedUrl, Dictionary<string, string>? existingTags = null)
         {
             // Ensure the parent directory exists (tables/ may not exist yet during initial build)
             var dir = Path.GetDirectoryName(path);
             if (!string.IsNullOrEmpty(dir))
                 Directory.CreateDirectory(dir);
 
-            WriteTmdlFile(path, GenerateDataverseUrlTableTmdl(normalizedUrl));
+            WriteTmdlFile(path, GenerateDataverseUrlTableTmdl(normalizedUrl, existingTags));
             DebugLogger.Log($"Generated DataverseURL parameter table: {normalizedUrl}");
         }
 
@@ -2121,9 +2475,9 @@ namespace DataverseToPowerBI.XrmToolBox.Services
             var pbipFolder = Path.Combine(outputFolder, environmentName, semanticModelName);
             var projectName = semanticModelName;
 
-            // Update project configuration (DataverseURL)
+            // Update project configuration (DataverseURL) — preserve existing IDs
             SetStatus("Updating Dataverse URL...");
-            UpdateProjectConfiguration(pbipFolder, projectName, dataverseUrl);
+            UpdateProjectConfiguration(pbipFolder, projectName, dataverseUrl, preserveIds: true);
 
             // Build relationship columns lookup
             var relationshipColumnsPerTable = new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
@@ -2149,6 +2503,10 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                     ? relationshipColumnsPerTable[table.LogicalName]
                     : new HashSet<string>();
 
+                // Parse existing lineage tags and column metadata before overwriting
+                var existingTags = ParseExistingLineageTags(tablePath);
+                var existingColMeta = ParseExistingColumnMetadata(tablePath);
+
                 // Extract user measures if table exists
                 string? userMeasuresSection = null;
                 if (File.Exists(tablePath))
@@ -2156,8 +2514,8 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                     userMeasuresSection = ExtractUserMeasuresSection(tablePath, table);
                 }
 
-                // Generate new table TMDL
-                var tableTmdl = GenerateTableTmdl(table, attributeDisplayInfo, requiredLookupColumns, dateTableConfig);
+                // Generate new table TMDL with preserved lineage tags and column metadata
+                var tableTmdl = GenerateTableTmdl(table, attributeDisplayInfo, requiredLookupColumns, dateTableConfig, existingLineageTags: existingTags, existingColumnMetadata: existingColMeta);
 
                 // Append user measures if any
                 if (!string.IsNullOrEmpty(userMeasuresSection))
@@ -2205,20 +2563,42 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                 }
             }
 
-            // Update relationships
+            // Update relationships — preserve existing GUIDs and user-added relationships
             var relationshipsPath = Path.Combine(pbipFolder, $"{projectName}.SemanticModel", "definition", "relationships.tmdl");
+            var existingRelGuids = ParseExistingRelationshipGuids(relationshipsPath);
+            var existingRelBlocks = ParseExistingRelationshipBlocks(relationshipsPath);
             
             if (relationships.Any() || dateTableConfig != null)
             {
                 SetStatus("Updating relationships...");
-                var relationshipsTmdl = GenerateRelationshipsTmdl(tables, relationships, attributeDisplayInfo, dateTableConfig);
+                var relationshipsTmdl = GenerateRelationshipsTmdl(tables, relationships, attributeDisplayInfo, dateTableConfig, existingRelGuids);
+
+                // Build set of tool-generated relationship keys to identify user-added ones
+                var toolRelKeys = BuildToolRelationshipKeys(tables, relationships, attributeDisplayInfo, dateTableConfig);
+                var userRelSection = ExtractUserRelationships(existingRelBlocks, toolRelKeys);
+                if (!string.IsNullOrEmpty(userRelSection))
+                {
+                    relationshipsTmdl += userRelSection;
+                    SetStatus($"Preserved user-added relationships");
+                }
+
                 WriteTmdlFile(relationshipsPath, relationshipsTmdl);
             }
             else if (File.Exists(relationshipsPath))
             {
-                // Remove relationships file if it exists but no relationships are defined
-                SetStatus("Removing relationships file (no relationships defined)...");
-                File.Delete(relationshipsPath);
+                // Check for user-added relationships even when no tool relationships exist
+                var toolRelKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                var userRelSection = ExtractUserRelationships(existingRelBlocks, toolRelKeys);
+                if (!string.IsNullOrEmpty(userRelSection))
+                {
+                    WriteTmdlFile(relationshipsPath, userRelSection!);
+                    SetStatus("Preserved user-added relationships (no tool relationships)");
+                }
+                else
+                {
+                    SetStatus("Removing relationships file (no relationships defined)...");
+                    File.Delete(relationshipsPath);
+                }
             }
 
             // Update model.tmdl
@@ -2502,7 +2882,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
         /// <summary>
         /// Updates the project configuration files
         /// </summary>
-        private void UpdateProjectConfiguration(string pbipFolder, string projectName, string dataverseUrl)
+        private void UpdateProjectConfiguration(string pbipFolder, string projectName, string dataverseUrl, bool preserveIds = false)
         {
             // Normalize the Dataverse URL (remove https:// if present)
             var normalizedUrl = dataverseUrl;
@@ -2514,24 +2894,29 @@ namespace DataverseToPowerBI.XrmToolBox.Services
             var expressionsPath = Path.Combine(definitionFolder, "expressions.tmdl");
             var dataverseUrlTablePath = Path.Combine(definitionFolder, "tables", "DataverseURL.tmdl");
 
+            // Parse existing lineage tags if preserving
+            Dictionary<string, string>? dvUrlTags = null;
+            Dictionary<string, string>? exprTags = null;
+            if (preserveIds)
+            {
+                dvUrlTags = ParseExistingLineageTags(dataverseUrlTablePath);
+                exprTags = ParseExistingLineageTags(expressionsPath);
+            }
+
             if (IsFabricLink)
             {
                 // FabricLink: Create expressions for FabricSQLEndpoint and FabricLakehouse
                 var fabricExpressions = GenerateFabricLinkExpressions(
-                    _fabricLinkEndpoint ?? "", _fabricLinkDatabase ?? "");
+                    _fabricLinkEndpoint ?? "", _fabricLinkDatabase ?? "", exprTags);
                 WriteTmdlFile(expressionsPath, fabricExpressions);
                 
                 // FabricLink ALSO needs DataverseURL as a table (for DAX measure references)
-                WriteDataverseUrlTable(dataverseUrlTablePath, normalizedUrl);
+                WriteDataverseUrlTable(dataverseUrlTablePath, normalizedUrl, dvUrlTags);
             }
             else
             {
                 // TDS: DataverseURL is a hidden parameter table with mode: import and Enable Load.
-                // This is the PBI Desktop pattern for Power Query parameters — the table name
-                // acts as the parameter name in M queries (DataverseURL in CommonDataService.Database(DataverseURL,...)).
-                // The table MUST have Enable Load checked (default for tables) — without it,
-                // PBI Desktop throws KeyNotFoundException during refresh.
-                WriteDataverseUrlTable(dataverseUrlTablePath, normalizedUrl);
+                WriteDataverseUrlTable(dataverseUrlTablePath, normalizedUrl, dvUrlTags);
 
                 // Remove any stale expressions.tmdl from previous FabricLink or legacy builds
                 if (File.Exists(expressionsPath))
@@ -2541,7 +2926,6 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                 }
 
                 // For TDS: strip any stale ref expression DataverseURL from model.tmdl
-                // (may exist from earlier tool versions with expression-based DataverseURL)
                 var modelCleanupPath = Path.Combine(definitionFolder, "model.tmdl");
                 if (File.Exists(modelCleanupPath))
                 {
@@ -2555,7 +2939,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                 }
             }
 
-            // Update .platform file with display name
+            // Update .platform file with display name (preserve logicalId during incremental updates)
             var platformPath = Path.Combine(pbipFolder, $"{projectName}.SemanticModel", ".platform");
             if (File.Exists(platformPath))
             {
@@ -2566,8 +2950,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                     {
                         json["metadata"]!["displayName"] = projectName;
                     }
-                    // Generate new logicalId for uniqueness
-                    if (json["config"] != null)
+                    if (!preserveIds && json["config"] != null)
                     {
                         json["config"]!["logicalId"] = Guid.NewGuid().ToString();
                     }
@@ -2590,8 +2973,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                     {
                         json["metadata"]!["displayName"] = projectName;
                     }
-                    // Generate new logicalId for uniqueness
-                    if (json["config"] != null)
+                    if (!preserveIds && json["config"] != null)
                     {
                         json["config"]!["logicalId"] = Guid.NewGuid().ToString();
                     }
@@ -2607,11 +2989,11 @@ namespace DataverseToPowerBI.XrmToolBox.Services
         /// <summary>
         /// Generates TMDL content for a table
         /// </summary>
-        private string GenerateTableTmdl(ExportTable table, Dictionary<string, Dictionary<string, AttributeDisplayInfo>> attributeDisplayInfo, HashSet<string> requiredLookupColumns, DateTableConfig? dateTableConfig = null, string? outputFolder = null)
+        private string GenerateTableTmdl(ExportTable table, Dictionary<string, Dictionary<string, AttributeDisplayInfo>> attributeDisplayInfo, HashSet<string> requiredLookupColumns, DateTableConfig? dateTableConfig = null, string? outputFolder = null, Dictionary<string, string>? existingLineageTags = null, Dictionary<string, ExistingColumnInfo>? existingColumnMetadata = null)
         {
             var sb = new StringBuilder();
             var displayName = table.DisplayName ?? table.SchemaName ?? table.LogicalName;
-            var tableLineageTag = Guid.NewGuid().ToString();
+            var tableLineageTag = GetOrNewLineageTag(existingLineageTags, "table");
 
             // Process view filter if present
             string viewFilterClause = "";
@@ -3036,9 +3418,15 @@ namespace DataverseToPowerBI.XrmToolBox.Services
             }
 
             // Write columns
+            // Known tool-generated annotations (these will always be regenerated)
+            var toolAnnotations = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "SummarizationSetBy", "UnderlyingDateTimeDataType"
+            };
+
             foreach (var col in columns)
             {
-                // Add column description
+                // Add column description as TMDL doc comment
                 if (!string.IsNullOrEmpty(col.Description))
                 {
                     sb.AppendLine($"\t/// {col.Description}");
@@ -3048,6 +3436,32 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                 var (dataType, formatString, sourceProviderType, summarizeBy) = MapDataType(col.AttributeType);
                 var isDateTime = col.AttributeType?.Equals("dateonly", StringComparison.OrdinalIgnoreCase) == true ||
                                  col.AttributeType?.Equals("datetime", StringComparison.OrdinalIgnoreCase) == true;
+
+                // Check for existing column metadata to preserve user customizations
+                ExistingColumnInfo? existingCol = null;
+                existingColumnMetadata?.TryGetValue(col.SourceColumn, out existingCol);
+
+                // Preserve user formatting if data type hasn't changed
+                if (existingCol != null && existingCol.DataType == dataType)
+                {
+                    if (existingCol.FormatString != null) formatString = existingCol.FormatString;
+                    if (existingCol.SummarizeBy != null) summarizeBy = existingCol.SummarizeBy;
+                }
+
+                // Determine description: prefer user-edited description over tool-generated
+                string? descriptionValue = null;
+                if (existingCol?.Description != null)
+                {
+                    // If existing description doesn't match tool pattern, it's user-edited — preserve it
+                    if (!existingCol.Description.Contains("| Source:"))
+                        descriptionValue = existingCol.Description;
+                    else
+                        descriptionValue = col.Description;
+                }
+                else if (!string.IsNullOrEmpty(col.Description))
+                {
+                    descriptionValue = col.Description;
+                }
 
                 sb.AppendLine($"\tcolumn {QuoteTmdlName(col.DisplayName)}");
                 sb.AppendLine($"\t\tdataType: {dataType}");
@@ -3067,13 +3481,17 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                 {
                     sb.AppendLine($"\t\tisKey");
                 }
-                sb.AppendLine($"\t\tlineageTag: {Guid.NewGuid()}");
+                sb.AppendLine($"\t\tlineageTag: {GetOrNewLineageTag(existingLineageTags, $"col:{col.SourceColumn}")}");
                 if (col.IsRowLabel)
                 {
                     sb.AppendLine($"\t\tisDefaultLabel");
                 }
                 sb.AppendLine($"\t\tsummarizeBy: {summarizeBy}");
                 sb.AppendLine($"\t\tsourceColumn: {col.SourceColumn}");
+                if (!string.IsNullOrEmpty(descriptionValue))
+                {
+                    sb.AppendLine($"\t\tdescription: {descriptionValue}");
+                }
                 sb.AppendLine();
                 if (isDateTime)
                 {
@@ -3086,6 +3504,20 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                     sb.AppendLine();
                     sb.AppendLine($"\t\tannotation UnderlyingDateTimeDataType = Date");
                 }
+
+                // Preserve user-added annotations
+                if (existingCol != null)
+                {
+                    foreach (var ann in existingCol.Annotations)
+                    {
+                        if (!toolAnnotations.Contains(ann.Key))
+                        {
+                            sb.AppendLine();
+                            sb.AppendLine($"\t\tannotation {ann.Key} = {ann.Value}");
+                        }
+                    }
+                }
+
                 sb.AppendLine();
             }
 
@@ -3123,14 +3555,14 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                 sb.AppendLine($"\t\t\t\"https://\" & DataverseURL & \"/main.aspx?pagetype=entityrecord&etn={entityLogicalName}&id=\" ");
                 sb.AppendLine($"\t\t\t\t& SELECTEDVALUE('{displayName}'[{factPrimaryKey}], BLANK())");
                 sb.AppendLine($"\t\t\t```");
-                sb.AppendLine($"\t\tlineageTag: {Guid.NewGuid()}");
+                sb.AppendLine($"\t\tlineageTag: {GetOrNewLineageTag(existingLineageTags, $"measure:Link to {displayName}")}");
                 sb.AppendLine($"\t\tdataCategory: WebUrl");
                 sb.AppendLine();
 
                 // Count measure: counts rows in the fact table
                 sb.AppendLine($"\tmeasure '{displayName} Count' = COUNTROWS('{displayName}')");
                 sb.AppendLine($"\t\tformatString: 0");
-                sb.AppendLine($"\t\tlineageTag: {Guid.NewGuid()}");
+                sb.AppendLine($"\t\tlineageTag: {GetOrNewLineageTag(existingLineageTags, $"measure:{displayName} Count")}");
                 sb.AppendLine();
             }
 
@@ -3212,18 +3644,18 @@ namespace DataverseToPowerBI.XrmToolBox.Services
         /// <summary>
         /// Generates FabricLink expressions TMDL (FabricSQLEndpoint, FabricLakehouse, and DataverseURL parameters)
         /// </summary>
-        private string GenerateFabricLinkExpressions(string endpoint, string database)
+        private string GenerateFabricLinkExpressions(string endpoint, string database, Dictionary<string, string>? existingTags = null)
         {
             var sb = new StringBuilder();
 
             sb.AppendLine($"expression FabricSQLEndpoint = \"{endpoint}\" meta [IsParameterQuery=true, Type=\"Any\", IsParameterQueryRequired=true]");
-            sb.AppendLine($"\tlineageTag: {Guid.NewGuid()}");
+            sb.AppendLine($"\tlineageTag: {GetOrNewLineageTag(existingTags, "expr:FabricSQLEndpoint")}");
             sb.AppendLine();
             sb.AppendLine("\tannotation PBI_ResultType = Text");
             sb.AppendLine();
 
             sb.AppendLine($"expression FabricLakehouse = \"{database}\" meta [IsParameterQuery=true, Type=\"Any\", IsParameterQueryRequired=true]");
-            sb.AppendLine($"\tlineageTag: {Guid.NewGuid()}");
+            sb.AppendLine($"\tlineageTag: {GetOrNewLineageTag(existingTags, "expr:FabricLakehouse")}");
             sb.AppendLine();
             sb.AppendLine("\tannotation PBI_NavigationStepName = Navigation");
             sb.AppendLine();
@@ -3309,7 +3741,8 @@ namespace DataverseToPowerBI.XrmToolBox.Services
             List<ExportTable> tables,
             List<ExportRelationship> relationships,
             Dictionary<string, Dictionary<string, AttributeDisplayInfo>> attributeDisplayInfo,
-            DateTableConfig? dateTableConfig = null)
+            DateTableConfig? dateTableConfig = null,
+            Dictionary<string, string>? existingRelGuids = null)
         {
             var sb = new StringBuilder();
 
@@ -3341,7 +3774,14 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                 var sourceColumn = rel.SourceAttribute;
                 var targetColumn = targetPrimaryKey;
 
-                sb.AppendLine($"relationship {Guid.NewGuid()}");
+                // Build relationship key to match existing GUID
+                var fromRef = $"{QuoteTmdlName(sourceTableDisplay)}.{QuoteTmdlName(sourceColumn)}";
+                var toRef = $"{QuoteTmdlName(targetTableDisplay)}.{QuoteTmdlName(targetColumn)}";
+                var relKey = $"{fromRef}→{toRef}";
+                var relGuid = existingRelGuids != null && existingRelGuids.TryGetValue(relKey, out var existing) 
+                    ? existing : Guid.NewGuid().ToString();
+
+                sb.AppendLine($"relationship {relGuid}");
                 
                 // Add relyOnReferentialIntegrity if lookup is required OR if snowflake
                 if (rel.AssumeReferentialIntegrity || rel.IsSnowflake)
@@ -3383,7 +3823,13 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                         primaryDateFieldName = GetEffectiveDisplayName(fieldDisplayInfo, fieldDisplayInfo.DisplayName ?? primaryDateFieldName);
                     }
 
-                    sb.AppendLine($"relationship {Guid.NewGuid()}");
+                    var dateFromRef = $"{QuoteTmdlName(sourceTableDisplay)}.{QuoteTmdlName(primaryDateFieldName)}";
+                    var dateToRef = "Date.Date";
+                    var dateRelKey = $"{dateFromRef}→{dateToRef}";
+                    var dateRelGuid = existingRelGuids != null && existingRelGuids.TryGetValue(dateRelKey, out var existingDateGuid)
+                        ? existingDateGuid : Guid.NewGuid().ToString();
+
+                    sb.AppendLine($"relationship {dateRelGuid}");
                     
                     // Add relyOnReferentialIntegrity if the date field is required
                     if (isDateFieldRequired)

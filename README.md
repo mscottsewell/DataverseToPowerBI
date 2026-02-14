@@ -350,11 +350,48 @@ If you've switched any tables to Import or Dual mode:
 
 ---
 
+## 🔄 Incremental Updates: What's Preserved
+
+When you rebuild an existing model, the tool performs an **incremental update** that preserves your customizations while regenerating metadata from Dataverse. Understanding what survives an update helps you work confidently with the generated model.
+
+### ✅ Preserved During Updates
+
+| Customization | How It's Preserved |
+|---|---|
+| **User-created measures** | Extracted before rebuild and re-inserted (auto-generated measures like "Link to X" and "X Count" are regenerated fresh) |
+| **User-added relationships** | Relationships not matching Dataverse metadata are detected and preserved with a `/// User-added relationship` marker |
+| **Column descriptions** | User-edited descriptions (those not matching the tool's `Source:` pattern) are preserved; tool descriptions are regenerated |
+| **Column formatting** | User changes to `formatString` and `summarizeBy` are preserved when the column's data type hasn't changed |
+| **User annotations** | Custom annotations on columns are preserved; tool annotations (`SummarizationSetBy`, `UnderlyingDateTimeDataType`) are regenerated |
+| **LineageTags & IDs** | Table, column, measure, relationship, and expression lineageTags are preserved across updates — report visuals and refresh history stay connected |
+| **Platform logicalIds** | `.platform` file IDs are preserved during incremental updates |
+| **Date table** | Existing date tables (detected by `dataCategory: Time`) are never overwritten |
+| **RLS roles** | The `definition/roles/` folder is not modified by the tool |
+| **Cultures/translations** | The `definition/cultures/` folder is not modified by the tool |
+
+### ⚠️ Regenerated on Each Update
+
+| Content | Why |
+|---|---|
+| **SQL queries & partitions** | This is the tool's core purpose — queries are regenerated from current metadata |
+| **Column definitions** | Columns are regenerated from Dataverse attributes (new columns added, removed columns deleted) |
+| **Tool-managed relationships** | Relationships matching Dataverse metadata are regenerated (with preserved GUIDs) |
+| **model.tmdl** | Table references, annotations, and query order are regenerated |
+| **Auto-generated measures** | "Link to X" and "X Count" measures are always regenerated |
+
+### ❌ Not Managed (Use With Caution)
+
+| Content | Notes |
+|---|---|
+| **Perspectives** | Not preserved if added to model.tmdl — will be overwritten |
+| **Model-level measures** | Place measures in table files (not model.tmdl) for preservation |
+| **Calculated tables/columns** | Not managed by the tool — may survive in table files but are not guaranteed |
+
 ## ❓ Frequently Asked Questions
 
 ### Q: Can I add more tables after the initial build?
 
-**A:** Yes! Run the tool again, select additional tables, and rebuild. Your existing customizations (measures, formatting, hierarchies) will be preserved.
+**A:** Yes! Run the tool again, select additional tables, and rebuild. Your existing customizations (user measures, descriptions, formatting, relationships) are automatically preserved. See [Incremental Updates: What's Preserved](#-incremental-updates-whats-preserved) for full details.
 
 ### Q: What happens if our Dataverse schema changes?
 
