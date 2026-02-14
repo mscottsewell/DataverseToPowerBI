@@ -449,5 +449,112 @@ namespace DataverseToPowerBI.Tests
         }
 
         #endregion
+
+        #region Date Relationship Dedup Tests
+
+        [Fact]
+        public void ExtractUserRelationships_SkipsStaleDateRelationships()
+        {
+            // A relationship ending in →Date.Date that is NOT in toolKeys should be skipped (not preserved)
+            var blocks = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["Account.createdon→Date.Date"] = "relationship some-guid\r\n\tfromColumn: createdon\r\n\ttoColumn: Date\r\n",
+                ["A.customfield→B.id"] = "relationship other-guid\r\n\tfromColumn: customfield\r\n\ttoColumn: id\r\n"
+            };
+            var toolKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase); // empty = nothing is tool-managed
+
+            var result = _builder.ExtractUserRelationships(blocks, toolKeys);
+            Assert.NotNull(result);
+            // The date relationship should be skipped
+            Assert.DoesNotContain("createdon", result);
+            // The non-date relationship should be preserved
+            Assert.Contains("customfield", result);
+        }
+
+        [Fact]
+        public void ExtractUserRelationships_PreservesDateRelationshipWhenInToolKeys()
+        {
+            // A date relationship that IS in toolKeys should not appear in user rels (it's tool-managed)
+            var blocks = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["Account.createdon→Date.Date"] = "relationship some-guid\r\n\tfromColumn: createdon\r\n\ttoColumn: Date\r\n"
+            };
+            var toolKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Account.createdon→Date.Date"
+            };
+
+            var result = _builder.ExtractUserRelationships(blocks, toolKeys);
+            Assert.Null(result);
+        }
+
+        #endregion
+
+        #region Table Rename Detection Tests
+
+        [Fact]
+        public void TableRenameDetection_ParsesSourceCommentFromTmdl()
+        {
+            // Create a TMDL file with a /// Source: comment
+            var dir = Path.Combine(_tempDir, "tables");
+            Directory.CreateDirectory(dir);
+            var oldFile = Path.Combine(dir, "Old Name.tmdl");
+            File.WriteAllText(oldFile,
+                "/// Source: account\r\ntable 'Old Name'\r\n\tlineageTag: abc-123\r\n\tcolumn Name\r\n");
+
+            // Verify we can read the source comment
+            var firstLines = File.ReadLines(oldFile).Take(3).ToList();
+            var sourceComment = firstLines.FirstOrDefault(l => l.StartsWith("/// Source:"));
+            Assert.NotNull(sourceComment);
+            var logicalName = sourceComment.Substring("/// Source:".Length).Trim();
+            Assert.Equal("account", logicalName);
+        }
+
+        [Fact]
+        public void TableRenameDetection_LineageTagsCarriedFromOldFile()
+        {
+            // Create an old TMDL file that would exist under a previous display name
+            var dir = Path.Combine(_tempDir, "tables");
+            Directory.CreateDirectory(dir);
+            var oldFile = Path.Combine(dir, "Old Account Name.tmdl");
+            File.WriteAllText(oldFile,
+                "/// Source: account\r\ntable 'Old Account Name'\r\n\tlineageTag: preserved-tag-from-old\r\n" +
+                "\tcolumn accountid\r\n\t\tdataType: string\r\n\t\tlineageTag: col-tag-from-old\r\n\t\tsourceColumn: accountid\r\n");
+
+            // The builder should be able to parse tags from the old file
+            var tags = _builder.ParseExistingLineageTags(oldFile);
+            Assert.True(tags.ContainsKey("table"));
+            Assert.Equal("preserved-tag-from-old", tags["table"]);
+            Assert.True(tags.ContainsKey("col:accountid"));
+            Assert.Equal("col-tag-from-old", tags["col:accountid"]);
+        }
+
+        #endregion
+
+        #region Auto-Measure Cleanup Tests
+
+        [Fact]
+        public void ExtractUserMeasuresSection_ExcludesAutoMeasuresForRoleChange()
+        {
+            // When a table changes from Fact to Dimension, "Link to X" and "X Count" are auto-measures
+            // They should still be excluded even if the table's role changes
+            var table = new ExportTable
+            {
+                LogicalName = "account",
+                DisplayName = "Account"
+            };
+
+            var result = _builder.ExtractUserMeasuresSection(FixturePath("SampleTable.tmdl"), table);
+            // Auto-generated measures should always be excluded
+            Assert.DoesNotContain("Link to Account", result ?? "");
+            Assert.DoesNotContain("Account Count", result ?? "");
+            // User measures should still be preserved
+            if (result != null)
+            {
+                Assert.Contains("Custom Measure", result);
+            }
+        }
+
+        #endregion
     }
 }

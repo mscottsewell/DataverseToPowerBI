@@ -387,6 +387,18 @@ When you rebuild an existing model, the tool performs an **incremental update** 
 | **Model-level measures** | Place measures in table files (not model.tmdl) for preservation |
 | **Calculated tables/columns** | Not managed by the tool — may survive in table files but are not guaranteed |
 
+### 🔀 Change Scenarios
+
+| Scenario | Behavior |
+|---|---|
+| **Table renamed in Dataverse** | Detected via `/// Source:` comment — lineage tags, user measures, and metadata carried over from old file; old file deleted |
+| **Date field changed** | Old date→Date relationship removed automatically; new date relationship created |
+| **Storage mode change** | Warning shown in change preview; `cache.abf` deleted to prevent stale data |
+| **Connection type change (TDS↔FabricLink)** | Warning shown in change preview; all table queries restructured; user measures and relationships preserved |
+| **Table role change (Fact↔Dimension)** | Auto-generated measures (Link to X, X Count) are excluded from preservation; user measures kept |
+| **Column added/removed** | New columns added; removed columns dropped from output; existing column metadata preserved |
+| **Column type changed** | Column regenerated with new type; user formatting reset (formatString/summarizeBy) |
+
 ## ❓ Frequently Asked Questions
 
 ### Q: Can I add more tables after the initial build?
