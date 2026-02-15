@@ -29,6 +29,32 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - Import loads a configuration file, auto-renames if name conflicts, and reminds user to update folder paths
   - Enables sharing configurations between machines or team members
 
+- **Incremental Update Preservation** — Comprehensive preservation of user customizations during model rebuilds
+  - **LineageTag preservation**: Table, column, measure, expression, and relationship lineageTags preserved across updates — report visuals and refresh history stay connected
+  - **User relationship preservation**: Relationships not matching Dataverse metadata detected and preserved with `/// User-added relationship` marker
+  - **Column description preservation**: User-edited descriptions (those not matching the tool's `Source:` pattern) preserved; tool descriptions regenerated
+  - **Column formatting preservation**: User changes to `formatString` and `summarizeBy` preserved when column data type is unchanged
+  - **User annotation preservation**: Custom annotations on columns preserved; tool annotations (`SummarizationSetBy`, `UnderlyingDateTimeDataType`) regenerated
+  - **Platform ID preservation**: `.platform` file logical IDs preserved during incremental updates
+
+- **Table Rename Detection** — Detects table display name changes via `/// Source:` comment in TMDL files
+  - LineageTags, user measures, and column metadata carried over from old file
+  - Old file automatically deleted after successful migration
+
+- **Date Relationship Dedup** — Stale date→Date.Date relationships automatically cleaned up when date field configuration changes
+  - Prevents old date relationships from being preserved as "user-added"
+
+- **Connection Type Change Warnings** — AnalyzeChanges now warns when connection type differs between existing model and new configuration (TDS↔FabricLink)
+
+- **Redesigned Change Preview Dialog** — Complete redesign of the pre-build change preview
+  - **Grouped TreeView**: Changes organized under ⚠ Warnings, 📋 Tables, 🔗 Relationships, 🔌 Data Sources
+  - **Summary statistics bar**: Colored badges showing warning/new/updated/preserved counts at a glance
+  - **Filter toggles**: Show/hide Warnings, New, Updates, Preserved items (Preserved hidden by default)
+  - **Impact indicators**: Each change tagged as Safe, Additive, Moderate, or Destructive
+  - **Detail pane**: Dark-themed Consolas panel showing before/after context, column lists, and contextual guidance
+  - **Expand/collapse**: Table nodes expand to show column-level changes; preserved categories collapse by default
+  - **Resizable dialog**: Proper anchoring and minimum size constraints
+
 - **Vista Folder Picker** — Modern Windows Explorer-style folder selection dialogs
   - Replaced legacy `FolderBrowserDialog` with Vista `IFileOpenDialog` (COM interop, no external dependencies)
   - Full navigation, search, breadcrumb bar, and favorites pane
@@ -38,6 +64,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - Attributes sorted once during refresh, cached for instant display when switching tables or filter modes
   - Uses `Items.AddRange()` batch insertion instead of individual adds
   - Added `_isLoading` guard to prevent `ItemChecked` events from corrupting selection state during list population
+
+- **Unit Test Project** — 43 xUnit tests covering preservation logic
+  - Tests for lineage tag parsing, column metadata extraction, relationship GUID preservation, user measure extraction, date relationship dedup, table rename detection, and auto-measure cleanup
+  - TMDL fixture files for reproducible testing
+  - `InternalsVisibleTo` for testability of 14 internal methods
+
+- **Comprehensive README** — Major documentation update
+  - New sections: Storage Modes, Model Configuration Management, Change Preview & Impact Analysis
+  - Expanded FetchXML operator support table (20+ operators across 7 categories)
+  - FabricLink user context limitation documented
+  - New FAQs for config sharing and storage mode selection
+  - Updated positioning and feature highlights
 
 ### Changed
 
@@ -51,6 +89,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - Fixed `ResizeTableColumns()` resize handler to respect new proportions (was overriding Designer widths)
   - Mode column included in proportional resize calculations
 
+- **Storage Mode Comparison** — Added `NormalizeStorageMode()` to treat "Dual" and "DualSelect" as equivalent
+  - Prevents false storage mode change warnings when rebuilding without changes
+
+- **Boolean Field Query Comparison** — `GenerateMQuery` now uses `GlobalOptionsetMetadata` for Boolean fields
+  - Matches `GenerateTableTmdl` behavior; eliminates false "query structure changed" warnings
+
 ### Fixed
 
 - **DATEDIFF Bug in FetchXML Converter** — Fixed `older-than-x-*` operators passing integer where date expression was expected
@@ -61,6 +105,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - **Font GDI Resource Leaks** — Cached Font objects in `PluginControl` and `TmdlPreviewDialog` to prevent GDI handle exhaustion
   - Added proper `Dispose` overrides to clean up cached fonts
+
+- **False Storage Mode Warning** — Fixed spurious "Changing from Dual to DualSelect" warning on immediate rebuild
+  - Both modes produce identical TMDL output and are now treated as equivalent
+
+- **False Query Change Warning** — Fixed spurious "query structure changed" for tables with Boolean fields in FabricLink mode
+  - `GenerateMQuery` now correctly uses `GlobalOptionsetMetadata` for Boolean attributes
 
 ---
 

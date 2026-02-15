@@ -2,11 +2,7 @@
 <package>
 	<metadata>
     <id>DataverseToPowerBI.XrmToolBox</id>
-<<<<<<< HEAD
-    <version>1.2026.5.29</version>
-=======
-    <version>1.2026.5.31</version>
->>>>>>> main
+    <version>1.2026.5.21</version>
     <title>Dataverse to Power BI Semantic Model</title>
     <authors>Scott Sewell</authors>
     <owners>mScottSewell</owners>
@@ -15,21 +11,27 @@
     <description>Extract Dataverse metadata and generate Power BI TMDL/PBIP semantic models with automatic table relationships, calendar tables, and incremental change detection.</description>
     <summary>XrmToolBox plugin for generating Power BI semantic models from Dataverse metadata</summary>
     <releaseNotes>
-v1.2026.5.21:
-- **Storage Mode Support** — Choose between Direct Query, Dual (All Dimensions), Dual (Select Tables), or Import mode per semantic model
-- **Per-Table Storage Mode** — Toggle individual dimension tables between Direct Query and Dual; auto-switches model to "Dual - Select Tables" with notification
-- **Export/Import Configurations** — Share semantic model configurations as JSON files between machines or team members
-- **Vista Folder Picker** — Modern Explorer-style folder dialogs replace legacy folder browser (breadcrumbs, search, favorites)
-- **Attribute List Performance** — Pre-sorted cache built during metadata refresh for instant table/filter switching
-- **Bug Fixes** — Fixed DATEDIFF in older-than-x operators, date table relationship display names, Font GDI resource leaks
+v1.2026.5.21 — Comprehensive update with storage modes, preservation logic, and redesigned change preview.
 
-v1.2026.5.1:
-- **Visual Grouping for Multiple Relationships** — Dimensions with multiple relationships grouped with "(Multiple Relationships)" header
-- **Solution Tables Filter** — "Solution tables only" checkbox to show only in-solution relationships
-- **Relationship Search** — Real-time search across lookup fields and dimension table names
-- **Smart Relationship Selection** — Auto-inactivates other relationships to the same dimension when one is selected
-- **NullReferenceException Fixes** — Comprehensive null checks and event suppression during list manipulation
-- **FabricLink Current User Filter** — User context operators now properly skipped in FabricLink mode
+New Features:
+- Storage Mode Support — DirectQuery, Dual (All/Select), and Import mode per semantic model with per-table overrides
+- Export/Import Configurations — Share model configs as JSON files between machines or team members
+- Change Preview Redesign — Grouped TreeView with impact analysis (Safe/Additive/Moderate/Destructive), filter toggles, and detail pane
+- Incremental Update Preservation — LineageTags, user relationships, column descriptions, formatting, annotations, and platform IDs preserved across rebuilds
+- Table Rename Detection — Detects renamed tables via source comment and carries over all customizations
+- Vista Folder Picker — Modern Explorer-style folder dialogs with breadcrumbs, search, and favorites
+
+Improvements:
+- FetchXML View Filtering — 20+ operator support including relative dates, user context, string matching, and logical grouping
+- Date Relationship Dedup — Stale date relationships automatically cleaned up when date field changes
+- Connection Type Warnings — Change preview warns when switching between TDS and FabricLink
+- Attribute List Performance — Pre-sorted cache for instant table/filter switching
+- Comprehensive README — New sections for Storage Modes, Configuration Management, Change Preview, and FetchXML operators
+
+Bug Fixes:
+- Fixed false "Storage Mode Change" warning when using Dual Select mode (Dual vs DualSelect equivalence)
+- Fixed false "query structure changed" warning for Boolean fields in FabricLink (GlobalOptionsetMetadata vs OptionsetMetadata)
+- Fixed DATEDIFF in older-than-x FetchXML operators, date table relationship display names, Font GDI resource leaks
     </releaseNotes>
     <tags>XrmToolBox PowerBI Dataverse TMDL PBIP SemanticModel</tags>
     <projectUrl>https://github.com/mscottsewell/DataverseMetadata-to-PowerBI-Semantic-Model</projectUrl>
