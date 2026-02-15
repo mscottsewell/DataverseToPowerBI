@@ -2,28 +2,30 @@
 
 # Dataverse to Power BI Semantic Model Generator
 
-**Transform your Dataverse data into professional Power BI reports in minutes, not days.**
+**The fastest way to build production-ready Power BI semantic models from Dataverse — in minutes, not days.**
 
-This XrmToolBox plugin helps you create optimized Power BI data models from your Dataverse tables—no coding required. It guides you through building a proper star-schema design, automatically applies best practices, and generates a ready-to-use Power BI project.
+This XrmToolBox plugin generates optimized Power BI data models (PBIP/TMDL format) directly from your Dataverse metadata. It guides you through building a proper star-schema design, automatically applies best practices, and produces a complete Power BI project you can open, customize, and publish immediately.
 
 ---
 
 ## 🎯 What Does This Tool Do?
 
-If you've ever tried to connect Power BI to Dataverse, you know it can be challenging:
+Building Power BI reports on Dataverse is harder than it should be:
 
-- Which tables should you include?
-- How do you handle relationships?
-- I chose the defaults, why is my report so slow?
-- Why can't I see the tables' and fields' Display Names?
+- Which tables should you include? There are hundreds.
+- How do you handle relationships between them?
+- Why is my DirectQuery report so slow?
+- Why can't I see the display names for tables and fields?
+- How do I switch between DirectQuery, Import, and Dual storage modes?
 
-This tool solves these problems by:
+This tool eliminates all of that complexity:
 
-1. **Guiding you through table selection** from your Dataverse solutions
-2. **Automatically building relationships** based on your lookup fields
-3. **Creating an optimized star-schema** for fast, intuitive reporting
-4. **Generating a complete Power BI project** ready to open and customize
-5. **Imports Metadata for Formatting** clean and user-friendly model
+1. **Guides you through table selection** from your Dataverse solutions
+2. **Automatically builds relationships** based on your lookup fields
+3. **Creates an optimized star-schema** for fast, intuitive reporting
+4. **Generates a complete Power BI project** (PBIP) ready to open and customize
+5. **Imports metadata for formatting** — display names, descriptions, and choice labels
+6. **Safely updates your model** — preserving your custom measures, formatting, and relationships
 
 ---
 
@@ -32,10 +34,14 @@ This tool solves these problems by:
 - [Key Features](#-key-features)
 - [Understanding Star-Schema Design](docs/star-schema.md)
 - [Getting Started](#-getting-started)
+- [Storage Modes](#-storage-modes)
 - [Best Practices We Apply Automatically](#️-best-practices-we-apply-automatically)
 - [Understanding Your Generated Project](docs/understanding-the-project.md)
 - [Connection Modes: TDS vs FabricLink](#-connection-modes-tds-vs-fabriclink)
 - [Direct Query vs. Import Mode](docs/direct-query-vs-import.md)
+- [Model Configuration Management](#-model-configuration-management)
+- [Change Preview & Impact Analysis](#-change-preview--impact-analysis)
+- [Incremental Updates: What's Preserved](#-incremental-updates-whats-preserved)
 - [Publishing and Deployment](#-publishing-and-deployment)
 - [Suggested Next Steps](docs/next-steps.md)
 - [Frequently Asked Questions](#-frequently-asked-questions)
@@ -52,16 +58,19 @@ This tool solves these problems by:
 | Feature | What It Does For You |
 | ------- | ------------------- |
 | **Star-Schema Wizard** | Helps you designate fact and dimension tables for optimal performance |
-| **Dual Connection Support** | Choose between **Dataverse TDS** (Direct to Dataverse for medium and small datasets) or **FabricLink** (Using the FabricLink Lakehouse for larger volumes of data) — see [Connection Modes](#-connection-modes-tds-vs-fabriclink) |
+| **Dual Connection Support** | Choose between **Dataverse TDS** (direct to Dataverse) or **FabricLink** (via Fabric Lakehouse) — see [Connection Modes](#-connection-modes-tds-vs-fabriclink) |
+| **Storage Mode Control** | DirectQuery, Import, or Dual — set globally or per-table. See [Storage Modes](#-storage-modes) |
 | **Smart Column Selection** | Uses your Dataverse forms and views to include only relevant fields |
 | **Friendly Field Names** | Automatically renames columns to their display names (no more "cai_accountid"!) |
 | **Display Name Customization** | Override display names per-attribute with inline double-click editing; automatic conflict detection prevents duplicate names |
 | **TMDL Preview** | See the exact TMDL code that will be generated before building, with copy/save capabilities for individual tables or entire model |
-| **Relationship Detection** | Finds and creates relationships from your lookup fields |
+| **Relationship Detection** | Finds and creates relationships from your lookup fields, with search/filter and multi-relationship management |
 | **Date Table Generation** | Creates a proper calendar dimension with timezone support |
-| **View-Based Filtering** | Applies your Dataverse view filters directly to the data model |
+| **View-Based Filtering** | Applies your Dataverse view filters (FetchXML) directly to the data model — supports 20+ filter operators |
 | **Auto-Generated Measures** | Creates a record count and a clickable URL link measure on your fact table |
-| **Incremental Updates** | Safely update your model while preserving custom measures and calculations |
+| **Incremental Updates** | Safely update your model while preserving custom measures, descriptions, formatting, and relationships |
+| **Change Preview** | TreeView-based change preview with impact analysis (Safe/Additive/Moderate/Destructive) before applying any changes |
+| **Configuration Management** | Save, load, export, and import model configurations — share configs across machines or team members |
 
 ---
 
@@ -173,6 +182,31 @@ This tool solves these problems by:
 
 ---
 
+## ⚡ Storage Modes
+
+The tool supports three storage modes that control how Power BI accesses your Dataverse data. You can set the mode globally or override it per-table.
+
+| Mode | Description | Best For |
+|------|-------------|----------|
+| **DirectQuery** (default) | All queries go live to Dataverse — always up-to-date, no refresh needed | Real-time dashboards, smaller datasets, row-level security |
+| **Import** | Data is cached locally in Power BI — fast performance but requires scheduled refresh | Large lookup tables, offline analysis, complex calculations |
+| **Dual** | Tables available in both DirectQuery and Import — Power BI chooses the best mode per query | Dimension tables that benefit from caching while fact tables stay live |
+
+### Per-Table Storage Mode
+
+When using **Dual** mode, you can configure individual dimension tables with different storage modes:
+
+- **Dual (All)** — All dimension tables use Dual mode, fact tables stay DirectQuery
+- **Dual (Select)** — Choose which dimension tables use Dual mode; unselected dimensions stay DirectQuery
+
+This is ideal when you have some large dimension tables (like Product or Account) that benefit from Import caching, while smaller or frequently-changing dimensions should stay DirectQuery.
+
+> **Tip:** Start with DirectQuery for simplicity. If you notice performance issues with specific dimension tables, switch to Dual mode for those tables. Import mode is best reserved for large static lookup tables.
+
+📚 **Learn More:** [Direct Query vs. Import Mode](docs/direct-query-vs-import.md)
+
+---
+
 ## 🛠️ Best Practices We Apply Automatically
 
 This tool implements several Power BI best practices behind the scenes:
@@ -201,9 +235,24 @@ We only include the columns you selected—no unnecessary data is pulled from Da
 
 ### 🔍 View-Based Filtering
 
-When you select a Dataverse view, its filter criteria are applied directly to the Power Query expression. This means only relevant rows are included (e.g., "Active Accounts Only" or "My Open Cases").
+When you select a Dataverse view, its filter criteria are automatically translated to SQL WHERE clauses in your Power Query expression. This means only relevant rows are included (e.g., "Active Accounts Only" or "My Open Cases").
+
+**Supported FetchXML operators:**
+
+| Category | Operators |
+|----------|-----------|
+| **Comparison** | `eq`, `ne`, `gt`, `ge`, `lt`, `le` |
+| **Null checks** | `null`, `not-null` |
+| **String matching** | `like`, `not-like`, `begins-with`, `ends-with`, `contains`, `not-contain` |
+| **Date (relative)** | `today`, `yesterday`, `this-week`, `this-month`, `this-year`, `last-week`, `last-month`, `last-year` |
+| **Date (dynamic)** | `last-x-days`, `next-x-days`, `last-x-months`, `next-x-months`, `last-x-years`, `next-x-years`, `older-than-x-days` |
+| **Lists** | `in`, `not-in` |
+| **User context** | `eq-userid`, `ne-userid`, `eq-userteams`, `ne-userteams` (TDS/DirectQuery only) |
+| **Logical** | `AND`/`OR` grouping via FetchXML filter `type` attribute |
 
 > **Important:** If the view definition changes in Dataverse, your Power BI model won't automatically update. You'll need to run this tool again to refresh the model's metadata and pick up the new view filters.
+
+> **FabricLink limitation:** User context operators (`eq-userid`, etc.) are not available in FabricLink mode because Direct Lake does not support row-level user filtering at the query level. These conditions are automatically skipped.
 
 ### 🔗 Referential Integrity
 
@@ -350,6 +399,57 @@ If you've switched any tables to Import or Dual mode:
 
 ---
 
+## 📦 Model Configuration Management
+
+The tool saves your complete model configuration — tables, columns, relationships, forms, views, storage mode, and display name overrides — so you can pick up right where you left off.
+
+### Managing Configurations
+
+- **Multiple models per environment** — Create separate configurations for different reporting needs (e.g., "Sales Analytics", "Case Management")
+- **Auto-save on build** — Your configuration is saved automatically each time you build
+- **Working directory & PBIP directory** — Configure where the generated Power BI project files are saved
+
+### Export & Import
+
+Share configurations across machines or team members:
+
+- **Export** — Saves the selected configuration as a standalone JSON file
+- **Import** — Loads a configuration from a JSON file, adding it to your configuration list
+
+This is useful for:
+- Setting up the same model on a colleague's machine
+- Backing up configurations before major changes
+- Standardizing model definitions across a team
+
+---
+
+## 🔍 Change Preview & Impact Analysis
+
+Before applying any changes, the tool shows a detailed preview of exactly what will happen — grouped by category with impact indicators so you can evaluate changes before committing.
+
+### Preview Features
+
+- **Grouped TreeView** — Changes organized under Warnings, Tables, Relationships, and Data Sources
+- **Expand/collapse** — Table nodes expand to show column-level detail; preserved items collapse by default
+- **Impact indicators** — Each change tagged as **Safe**, **Additive**, **Moderate**, or **Destructive**
+- **Filter toggles** — Show/hide Warnings, New, Updated, or Preserved items
+- **Detail pane** — Click any change to see expanded context, before/after values, and guidance
+
+### Impact Levels
+
+| Level | Meaning | Examples |
+|-------|---------|----------|
+| **Safe** | No risk to existing work | Preserved tables, unchanged relationships |
+| **Additive** | New content being added | New tables, new columns, new relationships |
+| **Moderate** | Existing content modified, user data preserved | Column type changes, query updates, connection changes |
+| **Destructive** | Structural change with potential impact | Connection type switch, incomplete model rebuild |
+
+### Backup Option
+
+Before applying changes, you can check **"Create backup"** to save a timestamped copy of your entire PBIP folder — providing a recovery point if anything goes wrong.
+
+---
+
 ## 🔄 Incremental Updates: What's Preserved
 
 When you rebuild an existing model, the tool performs an **incremental update** that preserves your customizations while regenerating metadata from Dataverse. Understanding what survives an update helps you work confidently with the generated model.
@@ -443,6 +543,14 @@ See [Managing Multiple Relationships](#-managing-multiple-relationships) for mor
 ### Q: Can I version control my Power BI project?
 
 **A:** Yes! The PBIP format is designed for Git. Each table, relationship, and report element is a separate text file that shows meaningful changes in version control.
+
+### Q: Can I share my model configuration with my team?
+
+**A:** Yes! Use the **Export** button in the Semantic Model Manager to save your configuration as a JSON file. Team members can **Import** it on their machine. The configuration includes all table selections, column choices, display name overrides, relationship settings, and storage mode preferences.
+
+### Q: What storage mode should I use?
+
+**A:** Start with **DirectQuery** (the default) for simplicity and real-time data. If you notice performance issues with large dimension tables, switch to **Dual** mode for those tables — Power BI will cache them locally while keeping fact tables live. Use **Import** only for very large static lookup tables or when you need offline access. See [Storage Modes](#-storage-modes) for details.
 
 ### Q: I see a security warning about "multiple data sources" when opening my project. Is this safe?
 > <img width="400" alt="Composite Model Security Warning" src="https://github.com/user-attachments/assets/3ddd7d1a-9e5c-43ed-9528-4368d64a9409" />
