@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
-## [1.2026.5.21] - 2026-02-14
+## [1.2026.5.24] - 2026-02-14
 
 ### Added
 
@@ -96,6 +96,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - Matches `GenerateTableTmdl` behavior; eliminates false "query structure changed" warnings
 
 ### Fixed
+
+- **Relationship Active/Inactive Normalization** — Fixed unchecked relationships incorrectly showing "Active" status
+  - When unchecking a relationship, Active/Inactive states are now normalized for that dimension
+  - If exactly one relationship to a dimension remains checked, it's automatically set to Active and all others to Inactive
+  - If zero relationships remain checked, all are marked Active (ready for user to select whichever one they want)
+  - If multiple remain checked, first one is automatically set to Active and others to Inactive (user can double-click another to change which is Active)
+  - Double-clicking any relationship toggles it to Active and automatically marks all others to that dimension as Inactive
+  - Applied to both main Fact/Dimension selector and "Add Parent Tables" snowflake dialog
+
+- **Collection Modification Exception** — Fixed crash when reopening relationship dialog after filtering by solution tables
+  - Added safety checks to `FilterRelationships()` to prevent manipulation during form disposal
+  - Added try-catch protection and null/disposed checks before manipulating ListView items
+  - Prevents `InvalidOperationException: Collection was modified` errors
+
+- **Relationship Conflict Highlighting Bug** — Fixed red highlighting appearing on unchecked relationships
+  - `UpdateItemStatus` now only counts checked relationships when detecting conflicts
+  - Unchecked relationships are ignored for conflict detection even if they have `IsActive = true`
+  - Applied to both main Fact/Dimension selector and "Add Parent Tables" snowflake dialog
 
 - **DATEDIFF Bug in FetchXML Converter** — Fixed `older-than-x-*` operators passing integer where date expression was expected
   - `DATEDIFF(day, column, 30)` → `DATEDIFF(day, column, GETDATE()) > 30`
