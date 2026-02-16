@@ -1,0 +1,11 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const BranchForkFilled: FluentIcon;
+export declare const BranchForkRegular: FluentIcon;
+export declare const BranchFork16Regular: FluentIcon;
+export declare const BranchFork16Filled: FluentIcon;
+export declare const BranchFork20Regular: FluentIcon;
+export declare const BranchFork20Filled: FluentIcon;
+export declare const BranchFork24Regular: FluentIcon;
+export declare const BranchFork24Filled: FluentIcon;
+export declare const BranchFork32Regular: FluentIcon;
+export declare const BranchFork32Filled: FluentIcon;

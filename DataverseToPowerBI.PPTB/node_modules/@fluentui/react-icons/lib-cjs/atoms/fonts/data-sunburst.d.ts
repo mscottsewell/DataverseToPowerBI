@@ -1,0 +1,13 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const DataSunburstFilled: FluentFontIcon;
+export declare const DataSunburstRegular: FluentFontIcon;
+export declare const DataSunburst20Regular: FluentFontIcon;
+export declare const DataSunburst20Filled: FluentFontIcon;
+export declare const DataSunburst24Regular: FluentFontIcon;
+export declare const DataSunburst24Filled: FluentFontIcon;
+export declare const DataSunburst28Regular: FluentFontIcon;
+export declare const DataSunburst28Filled: FluentFontIcon;
+export declare const DataSunburst32Regular: FluentFontIcon;
+export declare const DataSunburst32Filled: FluentFontIcon;
+export declare const DataSunburst48Regular: FluentFontIcon;
+export declare const DataSunburst48Filled: FluentFontIcon;

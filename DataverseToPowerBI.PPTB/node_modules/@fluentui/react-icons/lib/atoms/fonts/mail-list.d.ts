@@ -1,0 +1,14 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const MailListFilled: FluentFontIcon;
+export declare const MailListRegular: FluentFontIcon;
+export declare const MailList16Regular: FluentFontIcon;
+export declare const MailList16Filled: FluentFontIcon;
+export declare const MailList20Regular: FluentFontIcon;
+export declare const MailList20Filled: FluentFontIcon;
+export declare const MailList24Regular: FluentFontIcon;
+export declare const MailList24Filled: FluentFontIcon;
+export declare const MailList28Regular: FluentFontIcon;
+export declare const MailList28Filled: FluentFontIcon;
+export declare const MailList32Regular: FluentFontIcon;
+export declare const MailList32Filled: FluentFontIcon;
+export declare const MailList32Light: FluentFontIcon;

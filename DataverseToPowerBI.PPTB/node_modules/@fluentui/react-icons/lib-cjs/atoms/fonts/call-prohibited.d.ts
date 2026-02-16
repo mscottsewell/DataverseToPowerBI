@@ -1,0 +1,13 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const CallProhibitedFilled: FluentFontIcon;
+export declare const CallProhibitedRegular: FluentFontIcon;
+export declare const CallProhibited16Regular: FluentFontIcon;
+export declare const CallProhibited16Filled: FluentFontIcon;
+export declare const CallProhibited20Regular: FluentFontIcon;
+export declare const CallProhibited20Filled: FluentFontIcon;
+export declare const CallProhibited24Regular: FluentFontIcon;
+export declare const CallProhibited24Filled: FluentFontIcon;
+export declare const CallProhibited28Regular: FluentFontIcon;
+export declare const CallProhibited28Filled: FluentFontIcon;
+export declare const CallProhibited48Regular: FluentFontIcon;
+export declare const CallProhibited48Filled: FluentFontIcon;

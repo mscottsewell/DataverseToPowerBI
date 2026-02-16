@@ -1,0 +1,13 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const FullScreenMaximizeFilled: FluentFontIcon;
+export declare const FullScreenMaximizeRegular: FluentFontIcon;
+export declare const FullScreenMaximize16Regular: FluentFontIcon;
+export declare const FullScreenMaximize16Filled: FluentFontIcon;
+export declare const FullScreenMaximize20Regular: FluentFontIcon;
+export declare const FullScreenMaximize20Filled: FluentFontIcon;
+export declare const FullScreenMaximize24Regular: FluentFontIcon;
+export declare const FullScreenMaximize24Filled: FluentFontIcon;
+export declare const FullScreenMaximize28Regular: FluentFontIcon;
+export declare const FullScreenMaximize28Filled: FluentFontIcon;
+export declare const FullScreenMaximize32Regular: FluentFontIcon;
+export declare const FullScreenMaximize32Filled: FluentFontIcon;

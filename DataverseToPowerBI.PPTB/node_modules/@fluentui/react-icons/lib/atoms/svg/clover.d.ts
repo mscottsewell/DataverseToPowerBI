@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const CloverFilled: FluentIcon;
+export declare const CloverRegular: FluentIcon;
+export declare const Clover16Regular: FluentIcon;
+export declare const Clover16Filled: FluentIcon;
+export declare const Clover20Regular: FluentIcon;
+export declare const Clover20Filled: FluentIcon;
+export declare const Clover24Regular: FluentIcon;
+export declare const Clover24Filled: FluentIcon;
+export declare const Clover28Regular: FluentIcon;
+export declare const Clover28Filled: FluentIcon;
+export declare const Clover32Regular: FluentIcon;
+export declare const Clover32Filled: FluentIcon;
+export declare const Clover48Regular: FluentIcon;
+export declare const Clover48Filled: FluentIcon;

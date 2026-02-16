@@ -1,0 +1,10 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const NotebookQuestionMarkColor: FluentIcon;
+export declare const NotebookQuestionMarkFilled: FluentIcon;
+export declare const NotebookQuestionMarkRegular: FluentIcon;
+export declare const NotebookQuestionMark20Regular: FluentIcon;
+export declare const NotebookQuestionMark20Filled: FluentIcon;
+export declare const NotebookQuestionMark20Color: FluentIcon;
+export declare const NotebookQuestionMark24Regular: FluentIcon;
+export declare const NotebookQuestionMark24Filled: FluentIcon;
+export declare const NotebookQuestionMark24Color: FluentIcon;

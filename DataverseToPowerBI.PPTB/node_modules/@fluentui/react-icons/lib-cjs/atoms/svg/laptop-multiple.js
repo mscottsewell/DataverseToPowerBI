@@ -1,0 +1,7 @@
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.LaptopMultiple24Filled = exports.LaptopMultiple24Regular = void 0;
+const createFluentIcon_1 = require("../../utils/createFluentIcon");
+exports.LaptopMultiple24Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('LaptopMultiple24Regular', "24", ["M6.63 5c.3-.87 1.14-1.5 2.12-1.5h8.5c2.35 0 4.25 1.9 4.25 4.25v4.5c0 .98-.63 1.81-1.5 2.12V7.75A2.75 2.75 0 0 0 17.25 5H6.63ZM4 8.25C4 7.01 5 6 6.25 6h10.5C17.99 6 19 7 19 8.25v6.5c0 1.24-1 2.25-2.25 2.25H6.25C5.01 17 4 16 4 14.75v-6.5Zm2.25-.75a.75.75 0 0 0-.75.75v6.5c0 .41.34.75.75.75h10.5c.41 0 .75-.34.75-.75v-6.5a.75.75 0 0 0-.75-.75H6.25Zm-3.5 11a.75.75 0 0 0 0 1.5h17.5a.75.75 0 0 0 0-1.5H2.75Z"]));
+exports.LaptopMultiple24Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('LaptopMultiple24Filled', "24", ["M6.63 5h10.62A2.75 2.75 0 0 1 20 7.75v6.62c.87-.3 1.5-1.14 1.5-2.12v-4.5c0-2.35-1.9-4.25-4.25-4.25h-8.5c-.98 0-1.81.63-2.12 1.5Zm-.38 1C5.01 6 4 7 4 8.25v6.5C4 15.99 5 17 6.25 17h10.5c1.24 0 2.25-1 2.25-2.25v-6.5C19 7.01 18 6 16.75 6H6.25Zm-3.5 12.5a.75.75 0 0 0 0 1.5h17.5a.75.75 0 0 0 0-1.5H2.75Z"]));

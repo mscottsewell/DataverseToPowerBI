@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const ItemCompareFilled: FluentFontIcon;
+export declare const ItemCompareRegular: FluentFontIcon;
+export declare const ItemCompare16Regular: FluentFontIcon;
+export declare const ItemCompare16Filled: FluentFontIcon;
+export declare const ItemCompare20Regular: FluentFontIcon;
+export declare const ItemCompare20Filled: FluentFontIcon;
+export declare const ItemCompare24Regular: FluentFontIcon;
+export declare const ItemCompare24Filled: FluentFontIcon;
+export declare const ItemCompare28Regular: FluentFontIcon;
+export declare const ItemCompare28Filled: FluentFontIcon;
+export declare const ItemCompare32Regular: FluentFontIcon;
+export declare const ItemCompare32Filled: FluentFontIcon;
+export declare const ItemCompare48Regular: FluentFontIcon;
+export declare const ItemCompare48Filled: FluentFontIcon;

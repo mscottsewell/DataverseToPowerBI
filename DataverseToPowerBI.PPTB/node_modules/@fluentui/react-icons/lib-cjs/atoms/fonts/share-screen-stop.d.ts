@@ -1,0 +1,13 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const ShareScreenStopFilled: FluentFontIcon;
+export declare const ShareScreenStopRegular: FluentFontIcon;
+export declare const ShareScreenStop16Regular: FluentFontIcon;
+export declare const ShareScreenStop16Filled: FluentFontIcon;
+export declare const ShareScreenStop20Regular: FluentFontIcon;
+export declare const ShareScreenStop20Filled: FluentFontIcon;
+export declare const ShareScreenStop24Regular: FluentFontIcon;
+export declare const ShareScreenStop24Filled: FluentFontIcon;
+export declare const ShareScreenStop28Regular: FluentFontIcon;
+export declare const ShareScreenStop28Filled: FluentFontIcon;
+export declare const ShareScreenStop48Regular: FluentFontIcon;
+export declare const ShareScreenStop48Filled: FluentFontIcon;

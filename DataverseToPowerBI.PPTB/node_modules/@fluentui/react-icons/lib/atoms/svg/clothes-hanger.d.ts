@@ -1,0 +1,11 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const ClothesHangerFilled: FluentIcon;
+export declare const ClothesHangerRegular: FluentIcon;
+export declare const ClothesHanger12Regular: FluentIcon;
+export declare const ClothesHanger12Filled: FluentIcon;
+export declare const ClothesHanger16Regular: FluentIcon;
+export declare const ClothesHanger16Filled: FluentIcon;
+export declare const ClothesHanger20Regular: FluentIcon;
+export declare const ClothesHanger20Filled: FluentIcon;
+export declare const ClothesHanger24Regular: FluentIcon;
+export declare const ClothesHanger24Filled: FluentIcon;

@@ -1,0 +1,12 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const PeopleCheckmarkFilled: FluentIcon;
+export declare const PeopleCheckmarkRegular: FluentIcon;
+export declare const PeopleCheckmark16Regular: FluentIcon;
+export declare const PeopleCheckmark16Filled: FluentIcon;
+export declare const PeopleCheckmark20Regular: FluentIcon;
+export declare const PeopleCheckmark20Filled: FluentIcon;
+export declare const PeopleCheckmark24Regular: FluentIcon;
+export declare const PeopleCheckmark24Filled: FluentIcon;
+export declare const PeopleCheckmark32Regular: FluentIcon;
+export declare const PeopleCheckmark32Filled: FluentIcon;
+export declare const PeopleCheckmark32Light: FluentIcon;

@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const PersonSoundSpatialFilled: FluentFontIcon;
+export declare const PersonSoundSpatialRegular: FluentFontIcon;
+export declare const PersonSoundSpatial16Regular: FluentFontIcon;
+export declare const PersonSoundSpatial16Filled: FluentFontIcon;
+export declare const PersonSoundSpatial20Regular: FluentFontIcon;
+export declare const PersonSoundSpatial20Filled: FluentFontIcon;
+export declare const PersonSoundSpatial24Regular: FluentFontIcon;
+export declare const PersonSoundSpatial24Filled: FluentFontIcon;
+export declare const PersonSoundSpatial28Regular: FluentFontIcon;
+export declare const PersonSoundSpatial28Filled: FluentFontIcon;
+export declare const PersonSoundSpatial32Regular: FluentFontIcon;
+export declare const PersonSoundSpatial32Filled: FluentFontIcon;
+export declare const PersonSoundSpatial48Regular: FluentFontIcon;
+export declare const PersonSoundSpatial48Filled: FluentFontIcon;

@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const RulerFilled: FluentIcon;
+export declare const RulerRegular: FluentIcon;
+export declare const Ruler16Regular: FluentIcon;
+export declare const Ruler16Filled: FluentIcon;
+export declare const Ruler20Regular: FluentIcon;
+export declare const Ruler20Filled: FluentIcon;
+export declare const Ruler24Regular: FluentIcon;
+export declare const Ruler24Filled: FluentIcon;
+export declare const Ruler28Regular: FluentIcon;
+export declare const Ruler28Filled: FluentIcon;
+export declare const Ruler32Regular: FluentIcon;
+export declare const Ruler32Filled: FluentIcon;
+export declare const Ruler48Regular: FluentIcon;
+export declare const Ruler48Filled: FluentIcon;

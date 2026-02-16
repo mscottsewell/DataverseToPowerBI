@@ -1,0 +1,13 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const ChannelSubtractFilled: FluentFontIcon;
+export declare const ChannelSubtractRegular: FluentFontIcon;
+export declare const ChannelSubtract16Regular: FluentFontIcon;
+export declare const ChannelSubtract16Filled: FluentFontIcon;
+export declare const ChannelSubtract20Regular: FluentFontIcon;
+export declare const ChannelSubtract20Filled: FluentFontIcon;
+export declare const ChannelSubtract24Regular: FluentFontIcon;
+export declare const ChannelSubtract24Filled: FluentFontIcon;
+export declare const ChannelSubtract28Regular: FluentFontIcon;
+export declare const ChannelSubtract28Filled: FluentFontIcon;
+export declare const ChannelSubtract48Regular: FluentFontIcon;
+export declare const ChannelSubtract48Filled: FluentFontIcon;

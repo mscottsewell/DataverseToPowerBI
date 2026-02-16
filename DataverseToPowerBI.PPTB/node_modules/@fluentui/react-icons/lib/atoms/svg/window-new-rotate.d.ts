@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const WindowNewRotate180Regular: FluentIcon;
+export declare const WindowNewRotate180Filled: FluentIcon;
+export declare const WindowNewRotate18016Regular: FluentIcon;
+export declare const WindowNewRotate18016Filled: FluentIcon;
+export declare const WindowNewRotate18020Regular: FluentIcon;
+export declare const WindowNewRotate18020Filled: FluentIcon;
+export declare const WindowNewRotate18024Regular: FluentIcon;
+export declare const WindowNewRotate18024Filled: FluentIcon;
+export declare const WindowNewRotate18028Regular: FluentIcon;
+export declare const WindowNewRotate18028Filled: FluentIcon;
+export declare const WindowNewRotate18032Regular: FluentIcon;
+export declare const WindowNewRotate18032Filled: FluentIcon;
+export declare const WindowNewRotate18048Regular: FluentIcon;
+export declare const WindowNewRotate18048Filled: FluentIcon;

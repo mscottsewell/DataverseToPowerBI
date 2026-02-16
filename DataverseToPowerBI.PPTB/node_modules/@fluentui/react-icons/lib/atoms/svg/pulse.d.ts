@@ -1,0 +1,11 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const PulseFilled: FluentIcon;
+export declare const PulseRegular: FluentIcon;
+export declare const Pulse20Regular: FluentIcon;
+export declare const Pulse20Filled: FluentIcon;
+export declare const Pulse24Regular: FluentIcon;
+export declare const Pulse24Filled: FluentIcon;
+export declare const Pulse28Regular: FluentIcon;
+export declare const Pulse28Filled: FluentIcon;
+export declare const Pulse32Regular: FluentIcon;
+export declare const Pulse32Filled: FluentIcon;

@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const VehicleCarCollisionFilled: FluentFontIcon;
+export declare const VehicleCarCollisionRegular: FluentFontIcon;
+export declare const VehicleCarCollision16Regular: FluentFontIcon;
+export declare const VehicleCarCollision16Filled: FluentFontIcon;
+export declare const VehicleCarCollision20Regular: FluentFontIcon;
+export declare const VehicleCarCollision20Filled: FluentFontIcon;
+export declare const VehicleCarCollision24Regular: FluentFontIcon;
+export declare const VehicleCarCollision24Filled: FluentFontIcon;
+export declare const VehicleCarCollision28Regular: FluentFontIcon;
+export declare const VehicleCarCollision28Filled: FluentFontIcon;
+export declare const VehicleCarCollision32Regular: FluentFontIcon;
+export declare const VehicleCarCollision32Filled: FluentFontIcon;
+export declare const VehicleCarCollision48Regular: FluentFontIcon;
+export declare const VehicleCarCollision48Filled: FluentFontIcon;

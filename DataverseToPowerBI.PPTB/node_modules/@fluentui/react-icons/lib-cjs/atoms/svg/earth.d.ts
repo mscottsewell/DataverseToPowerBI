@@ -1,0 +1,13 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const EarthFilled: FluentIcon;
+export declare const EarthRegular: FluentIcon;
+export declare const Earth16Regular: FluentIcon;
+export declare const Earth16Filled: FluentIcon;
+export declare const Earth20Regular: FluentIcon;
+export declare const Earth20Filled: FluentIcon;
+export declare const Earth24Regular: FluentIcon;
+export declare const Earth24Filled: FluentIcon;
+export declare const Earth32Regular: FluentIcon;
+export declare const Earth32Filled: FluentIcon;
+export declare const Earth48Regular: FluentIcon;
+export declare const Earth48Filled: FluentIcon;

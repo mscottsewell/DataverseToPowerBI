@@ -1,0 +1,11 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const RemixAddFilled: FluentFontIcon;
+export declare const RemixAddRegular: FluentFontIcon;
+export declare const RemixAdd16Regular: FluentFontIcon;
+export declare const RemixAdd16Filled: FluentFontIcon;
+export declare const RemixAdd20Regular: FluentFontIcon;
+export declare const RemixAdd20Filled: FluentFontIcon;
+export declare const RemixAdd24Regular: FluentFontIcon;
+export declare const RemixAdd24Filled: FluentFontIcon;
+export declare const RemixAdd32Regular: FluentFontIcon;
+export declare const RemixAdd32Filled: FluentFontIcon;

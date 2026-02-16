@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const AlignRightFilled: FluentIcon;
+export declare const AlignRightRegular: FluentIcon;
+export declare const AlignRight16Regular: FluentIcon;
+export declare const AlignRight16Filled: FluentIcon;
+export declare const AlignRight20Regular: FluentIcon;
+export declare const AlignRight20Filled: FluentIcon;
+export declare const AlignRight24Regular: FluentIcon;
+export declare const AlignRight24Filled: FluentIcon;
+export declare const AlignRight28Regular: FluentIcon;
+export declare const AlignRight28Filled: FluentIcon;
+export declare const AlignRight32Regular: FluentIcon;
+export declare const AlignRight32Filled: FluentIcon;
+export declare const AlignRight48Regular: FluentIcon;
+export declare const AlignRight48Filled: FluentIcon;

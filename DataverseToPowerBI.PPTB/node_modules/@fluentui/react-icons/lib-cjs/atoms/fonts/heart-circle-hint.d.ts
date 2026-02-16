@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const HeartCircleHintFilled: FluentFontIcon;
+export declare const HeartCircleHintRegular: FluentFontIcon;
+export declare const HeartCircleHint16Regular: FluentFontIcon;
+export declare const HeartCircleHint16Filled: FluentFontIcon;
+export declare const HeartCircleHint20Regular: FluentFontIcon;
+export declare const HeartCircleHint20Filled: FluentFontIcon;
+export declare const HeartCircleHint24Regular: FluentFontIcon;
+export declare const HeartCircleHint24Filled: FluentFontIcon;
+export declare const HeartCircleHint28Regular: FluentFontIcon;
+export declare const HeartCircleHint28Filled: FluentFontIcon;
+export declare const HeartCircleHint32Regular: FluentFontIcon;
+export declare const HeartCircleHint32Filled: FluentFontIcon;
+export declare const HeartCircleHint48Regular: FluentFontIcon;
+export declare const HeartCircleHint48Filled: FluentFontIcon;

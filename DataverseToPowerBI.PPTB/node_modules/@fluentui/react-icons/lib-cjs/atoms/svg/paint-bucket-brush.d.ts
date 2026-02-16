@@ -1,0 +1,11 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const PaintBucketBrushFilled: FluentIcon;
+export declare const PaintBucketBrushRegular: FluentIcon;
+export declare const PaintBucketBrush16Regular: FluentIcon;
+export declare const PaintBucketBrush16Filled: FluentIcon;
+export declare const PaintBucketBrush20Regular: FluentIcon;
+export declare const PaintBucketBrush20Filled: FluentIcon;
+export declare const PaintBucketBrush24Regular: FluentIcon;
+export declare const PaintBucketBrush24Filled: FluentIcon;
+export declare const PaintBucketBrush28Regular: FluentIcon;
+export declare const PaintBucketBrush28Filled: FluentIcon;

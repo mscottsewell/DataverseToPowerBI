@@ -1,0 +1,11 @@
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ArrowEnterUp24Filled = exports.ArrowEnterUp24Regular = exports.ArrowEnterUp20Filled = exports.ArrowEnterUp20Regular = exports.ArrowEnterUpRegular = exports.ArrowEnterUpFilled = void 0;
+const createFluentIcon_1 = require("../../utils/createFluentIcon");
+exports.ArrowEnterUpFilled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('ArrowEnterUpFilled', "1em", ["M8.8 2.24a.75.75 0 0 0-1.1 0l-4 4.25A.75.75 0 1 0 4.8 7.5l2.7-2.87v10.11c0 1.8 1.46 3.25 3.25 3.25h4.5a.75.75 0 0 0 0-1.5h-4.5c-.97 0-1.75-.78-1.75-1.75V4.65l2.7 2.86a.75.75 0 1 0 1.1-1.02l-4-4.25Z"]));
+exports.ArrowEnterUpRegular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('ArrowEnterUpRegular', "1em", ["M8.86 2.16a.5.5 0 0 0-.72 0l-4 4.25a.5.5 0 0 0 .72.68L8 3.76V15a3 3 0 0 0 3 3h4.5a.5.5 0 0 0 0-1H11a2 2 0 0 1-2-2V3.76l3.14 3.33a.5.5 0 0 0 .72-.68l-4-4.25Z"]));
+exports.ArrowEnterUp20Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('ArrowEnterUp20Regular', "20", ["M8.86 2.16a.5.5 0 0 0-.72 0l-4 4.25a.5.5 0 0 0 .72.68L8 3.76V15a3 3 0 0 0 3 3h4.5a.5.5 0 0 0 0-1H11a2 2 0 0 1-2-2V3.76l3.14 3.33a.5.5 0 0 0 .72-.68l-4-4.25Z"]));
+exports.ArrowEnterUp20Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('ArrowEnterUp20Filled', "20", ["M8.8 2.24a.75.75 0 0 0-1.1 0l-4 4.25A.75.75 0 1 0 4.8 7.5l2.7-2.87v10.11c0 1.8 1.46 3.25 3.25 3.25h4.5a.75.75 0 0 0 0-1.5h-4.5c-.97 0-1.75-.78-1.75-1.75V4.65l2.7 2.86a.75.75 0 1 0 1.1-1.02l-4-4.25Z"]));
+exports.ArrowEnterUp24Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('ArrowEnterUp24Regular', "24", ["M20 21.25c0 .41-.34.75-.75.75h-6.5A3.75 3.75 0 0 1 9 18.25V4.6L5.28 8.3a.75.75 0 0 1-.98.07l-.08-.07a.75.75 0 0 1-.07-.98l.07-.08 5-5a.75.75 0 0 1 .98-.08l.08.08 5 5a.75.75 0 0 1-.98 1.13l-.08-.07-3.72-3.72v13.66c0 1.2.93 2.17 2.1 2.25h6.65c.41 0 .75.34.75.75Z"]));
+exports.ArrowEnterUp24Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('ArrowEnterUp24Filled', "24", ["M20 21a1 1 0 0 1-.88 1H12.5A3.5 3.5 0 0 1 9 18.7V5.4l-3.3 3.3a1 1 0 0 1-1.31.08l-.1-.08a1 1 0 0 1-.08-1.32l.08-.1 5-5a1 1 0 0 1 .11-.1l.12-.07.1-.05.11-.03.12-.03h.06L10 2h.08l.12.02.11.03.11.04.1.06.1.06.09.08 5 5a1 1 0 0 1-1.32 1.5l-.1-.08L11 5.4V18.5c0 .78.6 1.42 1.36 1.5H19a1 1 0 0 1 1 1Z"]));

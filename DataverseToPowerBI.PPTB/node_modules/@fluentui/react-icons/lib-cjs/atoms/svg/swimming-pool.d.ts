@@ -1,0 +1,11 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const SwimmingPoolFilled: FluentIcon;
+export declare const SwimmingPoolRegular: FluentIcon;
+export declare const SwimmingPool20Regular: FluentIcon;
+export declare const SwimmingPool20Filled: FluentIcon;
+export declare const SwimmingPool24Regular: FluentIcon;
+export declare const SwimmingPool24Filled: FluentIcon;
+export declare const SwimmingPool32Regular: FluentIcon;
+export declare const SwimmingPool32Filled: FluentIcon;
+export declare const SwimmingPool48Regular: FluentIcon;
+export declare const SwimmingPool48Filled: FluentIcon;

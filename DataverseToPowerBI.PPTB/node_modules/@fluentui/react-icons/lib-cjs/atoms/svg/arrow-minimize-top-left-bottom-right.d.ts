@@ -1,0 +1,11 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const ArrowMinimizeTopLeftBottomRightFilled: FluentIcon;
+export declare const ArrowMinimizeTopLeftBottomRightRegular: FluentIcon;
+export declare const ArrowMinimizeTopLeftBottomRight16Regular: FluentIcon;
+export declare const ArrowMinimizeTopLeftBottomRight16Filled: FluentIcon;
+export declare const ArrowMinimizeTopLeftBottomRight20Regular: FluentIcon;
+export declare const ArrowMinimizeTopLeftBottomRight20Filled: FluentIcon;
+export declare const ArrowMinimizeTopLeftBottomRight24Regular: FluentIcon;
+export declare const ArrowMinimizeTopLeftBottomRight24Filled: FluentIcon;
+export declare const ArrowMinimizeTopLeftBottomRight28Regular: FluentIcon;
+export declare const ArrowMinimizeTopLeftBottomRight28Filled: FluentIcon;

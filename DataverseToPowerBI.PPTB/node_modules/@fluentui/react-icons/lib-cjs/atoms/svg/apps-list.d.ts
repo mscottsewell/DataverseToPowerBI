@@ -1,0 +1,13 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const AppsListColor: FluentIcon;
+export declare const AppsListFilled: FluentIcon;
+export declare const AppsListRegular: FluentIcon;
+export declare const AppsList20Regular: FluentIcon;
+export declare const AppsList20Filled: FluentIcon;
+export declare const AppsList20Color: FluentIcon;
+export declare const AppsList24Regular: FluentIcon;
+export declare const AppsList24Filled: FluentIcon;
+export declare const AppsList24Color: FluentIcon;
+export declare const AppsList32Regular: FluentIcon;
+export declare const AppsList32Filled: FluentIcon;
+export declare const AppsList32Color: FluentIcon;

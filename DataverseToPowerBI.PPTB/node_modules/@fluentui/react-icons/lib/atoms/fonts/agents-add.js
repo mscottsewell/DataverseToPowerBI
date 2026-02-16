@@ -1,0 +1,10 @@
+"use client";
+import { createFluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export const AgentsAddFilled = ( /*#__PURE__*/createFluentFontIcon("AgentsAddFilled", "", 2, undefined));
+export const AgentsAddRegular = ( /*#__PURE__*/createFluentFontIcon("AgentsAddRegular", "", 2, undefined));
+export const AgentsAdd16Regular = ( /*#__PURE__*/createFluentFontIcon("AgentsAdd16Regular", "󰪌", 1, 16));
+export const AgentsAdd16Filled = ( /*#__PURE__*/createFluentFontIcon("AgentsAdd16Filled", "󰬈", 0, 16));
+export const AgentsAdd20Regular = ( /*#__PURE__*/createFluentFontIcon("AgentsAdd20Regular", "󰧒", 1, 20));
+export const AgentsAdd20Filled = ( /*#__PURE__*/createFluentFontIcon("AgentsAdd20Filled", "󰩏", 0, 20));
+export const AgentsAdd24Regular = ( /*#__PURE__*/createFluentFontIcon("AgentsAdd24Regular", "󰧓", 1, 24));
+export const AgentsAdd24Filled = ( /*#__PURE__*/createFluentFontIcon("AgentsAdd24Filled", "󰩐", 0, 24));

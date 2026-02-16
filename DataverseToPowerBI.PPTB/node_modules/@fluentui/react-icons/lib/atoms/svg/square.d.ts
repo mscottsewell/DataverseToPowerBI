@@ -1,0 +1,17 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const SquareFilled: FluentIcon;
+export declare const SquareRegular: FluentIcon;
+export declare const Square12Regular: FluentIcon;
+export declare const Square12Filled: FluentIcon;
+export declare const Square16Regular: FluentIcon;
+export declare const Square16Filled: FluentIcon;
+export declare const Square20Regular: FluentIcon;
+export declare const Square20Filled: FluentIcon;
+export declare const Square24Regular: FluentIcon;
+export declare const Square24Filled: FluentIcon;
+export declare const Square28Regular: FluentIcon;
+export declare const Square28Filled: FluentIcon;
+export declare const Square32Regular: FluentIcon;
+export declare const Square32Filled: FluentIcon;
+export declare const Square48Regular: FluentIcon;
+export declare const Square48Filled: FluentIcon;

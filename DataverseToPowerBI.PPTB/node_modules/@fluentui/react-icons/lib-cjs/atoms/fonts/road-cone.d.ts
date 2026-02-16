@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const RoadConeFilled: FluentFontIcon;
+export declare const RoadConeRegular: FluentFontIcon;
+export declare const RoadCone16Regular: FluentFontIcon;
+export declare const RoadCone16Filled: FluentFontIcon;
+export declare const RoadCone20Regular: FluentFontIcon;
+export declare const RoadCone20Filled: FluentFontIcon;
+export declare const RoadCone24Regular: FluentFontIcon;
+export declare const RoadCone24Filled: FluentFontIcon;
+export declare const RoadCone28Regular: FluentFontIcon;
+export declare const RoadCone28Filled: FluentFontIcon;
+export declare const RoadCone32Regular: FluentFontIcon;
+export declare const RoadCone32Filled: FluentFontIcon;
+export declare const RoadCone48Regular: FluentFontIcon;
+export declare const RoadCone48Filled: FluentFontIcon;

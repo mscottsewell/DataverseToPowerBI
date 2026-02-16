@@ -1,0 +1,11 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const FlowchartFilled: FluentIcon;
+export declare const FlowchartRegular: FluentIcon;
+export declare const Flowchart16Regular: FluentIcon;
+export declare const Flowchart16Filled: FluentIcon;
+export declare const Flowchart20Regular: FluentIcon;
+export declare const Flowchart20Filled: FluentIcon;
+export declare const Flowchart24Regular: FluentIcon;
+export declare const Flowchart24Filled: FluentIcon;
+export declare const Flowchart32Regular: FluentIcon;
+export declare const Flowchart32Filled: FluentIcon;

@@ -1,0 +1,11 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const ProjectionScreenFilled: FluentIcon;
+export declare const ProjectionScreenRegular: FluentIcon;
+export declare const ProjectionScreen16Regular: FluentIcon;
+export declare const ProjectionScreen16Filled: FluentIcon;
+export declare const ProjectionScreen20Regular: FluentIcon;
+export declare const ProjectionScreen20Filled: FluentIcon;
+export declare const ProjectionScreen24Regular: FluentIcon;
+export declare const ProjectionScreen24Filled: FluentIcon;
+export declare const ProjectionScreen28Regular: FluentIcon;
+export declare const ProjectionScreen28Filled: FluentIcon;

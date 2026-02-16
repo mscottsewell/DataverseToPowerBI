@@ -1,0 +1,16 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const MicFilled: FluentFontIcon;
+export declare const MicRegular: FluentFontIcon;
+export declare const Mic16Regular: FluentFontIcon;
+export declare const Mic16Filled: FluentFontIcon;
+export declare const Mic20Regular: FluentFontIcon;
+export declare const Mic20Filled: FluentFontIcon;
+export declare const Mic24Regular: FluentFontIcon;
+export declare const Mic24Filled: FluentFontIcon;
+export declare const Mic28Regular: FluentFontIcon;
+export declare const Mic28Filled: FluentFontIcon;
+export declare const Mic32Regular: FluentFontIcon;
+export declare const Mic32Filled: FluentFontIcon;
+export declare const Mic32Light: FluentFontIcon;
+export declare const Mic48Regular: FluentFontIcon;
+export declare const Mic48Filled: FluentFontIcon;

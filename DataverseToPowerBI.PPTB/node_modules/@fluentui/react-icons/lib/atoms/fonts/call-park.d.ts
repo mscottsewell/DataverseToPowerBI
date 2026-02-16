@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const CallParkFilled: FluentFontIcon;
+export declare const CallParkRegular: FluentFontIcon;
+export declare const CallPark16Regular: FluentFontIcon;
+export declare const CallPark16Filled: FluentFontIcon;
+export declare const CallPark20Regular: FluentFontIcon;
+export declare const CallPark20Filled: FluentFontIcon;
+export declare const CallPark24Regular: FluentFontIcon;
+export declare const CallPark24Filled: FluentFontIcon;
+export declare const CallPark28Regular: FluentFontIcon;
+export declare const CallPark28Filled: FluentFontIcon;
+export declare const CallPark32Regular: FluentFontIcon;
+export declare const CallPark32Filled: FluentFontIcon;
+export declare const CallPark48Regular: FluentFontIcon;
+export declare const CallPark48Filled: FluentFontIcon;

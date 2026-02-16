@@ -1,0 +1,13 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const PasswordFilled: FluentIcon;
+export declare const PasswordRegular: FluentIcon;
+export declare const Password16Regular: FluentIcon;
+export declare const Password16Filled: FluentIcon;
+export declare const Password20Regular: FluentIcon;
+export declare const Password20Filled: FluentIcon;
+export declare const Password24Regular: FluentIcon;
+export declare const Password24Filled: FluentIcon;
+export declare const Password32Regular: FluentIcon;
+export declare const Password32Filled: FluentIcon;
+export declare const Password48Regular: FluentIcon;
+export declare const Password48Filled: FluentIcon;

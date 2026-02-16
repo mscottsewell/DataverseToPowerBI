@@ -1,0 +1,12 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const TableMoveLeftFilled: FluentFontIcon;
+export declare const TableMoveLeftRegular: FluentFontIcon;
+export declare const TableMoveLeft16Regular: FluentFontIcon;
+export declare const TableMoveLeft16Filled: FluentFontIcon;
+export declare const TableMoveLeft20Regular: FluentFontIcon;
+export declare const TableMoveLeft20Filled: FluentFontIcon;
+export declare const TableMoveLeft24Regular: FluentFontIcon;
+export declare const TableMoveLeft24Filled: FluentFontIcon;
+export declare const TableMoveLeft28Regular: FluentFontIcon;
+export declare const TableMoveLeft28Filled: FluentFontIcon;
+export declare const TableMoveLeft32Light: FluentFontIcon;

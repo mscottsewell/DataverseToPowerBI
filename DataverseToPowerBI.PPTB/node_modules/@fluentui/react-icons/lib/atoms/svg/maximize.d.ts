@@ -1,0 +1,13 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const MaximizeFilled: FluentIcon;
+export declare const MaximizeRegular: FluentIcon;
+export declare const Maximize16Regular: FluentIcon;
+export declare const Maximize16Filled: FluentIcon;
+export declare const Maximize20Regular: FluentIcon;
+export declare const Maximize20Filled: FluentIcon;
+export declare const Maximize24Regular: FluentIcon;
+export declare const Maximize24Filled: FluentIcon;
+export declare const Maximize28Regular: FluentIcon;
+export declare const Maximize28Filled: FluentIcon;
+export declare const Maximize48Regular: FluentIcon;
+export declare const Maximize48Filled: FluentIcon;

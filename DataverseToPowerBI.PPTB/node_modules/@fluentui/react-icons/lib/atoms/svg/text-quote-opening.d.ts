@@ -1,0 +1,13 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const TextQuoteOpeningFilled: FluentIcon;
+export declare const TextQuoteOpeningRegular: FluentIcon;
+export declare const TextQuoteOpening16Regular: FluentIcon;
+export declare const TextQuoteOpening16Filled: FluentIcon;
+export declare const TextQuoteOpening20Regular: FluentIcon;
+export declare const TextQuoteOpening20Filled: FluentIcon;
+export declare const TextQuoteOpening24Regular: FluentIcon;
+export declare const TextQuoteOpening24Filled: FluentIcon;
+export declare const TextQuoteOpening28Regular: FluentIcon;
+export declare const TextQuoteOpening28Filled: FluentIcon;
+export declare const TextQuoteOpening32Regular: FluentIcon;
+export declare const TextQuoteOpening32Filled: FluentIcon;

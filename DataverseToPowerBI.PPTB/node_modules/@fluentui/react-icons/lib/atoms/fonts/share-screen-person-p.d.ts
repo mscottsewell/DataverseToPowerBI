@@ -1,0 +1,11 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const ShareScreenPersonPFilled: FluentFontIcon;
+export declare const ShareScreenPersonPRegular: FluentFontIcon;
+export declare const ShareScreenPersonP16Regular: FluentFontIcon;
+export declare const ShareScreenPersonP16Filled: FluentFontIcon;
+export declare const ShareScreenPersonP20Regular: FluentFontIcon;
+export declare const ShareScreenPersonP20Filled: FluentFontIcon;
+export declare const ShareScreenPersonP24Regular: FluentFontIcon;
+export declare const ShareScreenPersonP24Filled: FluentFontIcon;
+export declare const ShareScreenPersonP28Regular: FluentFontIcon;
+export declare const ShareScreenPersonP28Filled: FluentFontIcon;

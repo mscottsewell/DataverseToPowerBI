@@ -1,0 +1,9 @@
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.AlignStartHorizontal20Filled = exports.AlignStartHorizontal20Regular = exports.AlignStartHorizontalRegular = exports.AlignStartHorizontalFilled = void 0;
+const createFluentIcon_1 = require("../../utils/createFluentIcon");
+exports.AlignStartHorizontalFilled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('AlignStartHorizontalFilled', "1em", ["M3 17.5a.5.5 0 0 0 1 0v-15a.5.5 0 0 0-1 0v15Z", "M8 4a2 2 0 0 0-2 2v8c0 1.1.9 2 2 2h2a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2H8Z"]));
+exports.AlignStartHorizontalRegular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('AlignStartHorizontalRegular', "1em", ["M3.5 18a.5.5 0 0 1-.5-.5v-15a.5.5 0 0 1 1 0v15a.5.5 0 0 1-.5.5Z", "M8 4a2 2 0 0 0-2 2v8c0 1.1.9 2 2 2h2a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2H8ZM7 6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V6Z"]));
+exports.AlignStartHorizontal20Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('AlignStartHorizontal20Regular', "20", ["M3.5 18a.5.5 0 0 1-.5-.5v-15a.5.5 0 0 1 1 0v15a.5.5 0 0 1-.5.5Z", "M8 4a2 2 0 0 0-2 2v8c0 1.1.9 2 2 2h2a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2H8ZM7 6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V6Z"]));
+exports.AlignStartHorizontal20Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('AlignStartHorizontal20Filled', "20", ["M3 17.5a.5.5 0 0 0 1 0v-15a.5.5 0 0 0-1 0v15Z", "M8 4a2 2 0 0 0-2 2v8c0 1.1.9 2 2 2h2a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2H8Z"]));

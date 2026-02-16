@@ -1,0 +1,13 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const TriangleRightFilled: FluentFontIcon;
+export declare const TriangleRightRegular: FluentFontIcon;
+export declare const TriangleRight12Regular: FluentFontIcon;
+export declare const TriangleRight12Filled: FluentFontIcon;
+export declare const TriangleRight16Regular: FluentFontIcon;
+export declare const TriangleRight16Filled: FluentFontIcon;
+export declare const TriangleRight20Regular: FluentFontIcon;
+export declare const TriangleRight20Filled: FluentFontIcon;
+export declare const TriangleRight32Regular: FluentFontIcon;
+export declare const TriangleRight32Filled: FluentFontIcon;
+export declare const TriangleRight48Regular: FluentFontIcon;
+export declare const TriangleRight48Filled: FluentFontIcon;

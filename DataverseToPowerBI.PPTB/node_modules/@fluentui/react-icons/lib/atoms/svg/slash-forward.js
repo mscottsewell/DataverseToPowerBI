@@ -1,0 +1,12 @@
+"use client";
+import { createFluentIcon } from '../../utils/createFluentIcon';
+export const SlashForwardFilled = ( /*#__PURE__*/createFluentIcon('SlashForwardFilled', "1em", ["M13.02 2.05c.38.15.58.58.43.97l-5.5 14.5a.75.75 0 1 1-1.4-.54l5.5-14.5a.75.75 0 0 1 .97-.43Z"]));
+export const SlashForwardRegular = ( /*#__PURE__*/createFluentIcon('SlashForwardRegular', "1em", ["M12.66 2.03c.26.08.4.37.31.63l-5 15a.5.5 0 1 1-.94-.32l5-15a.5.5 0 0 1 .63-.31Z"]));
+export const SlashForward12Regular = ( /*#__PURE__*/createFluentIcon('SlashForward12Regular', "12", ["M7.66 1.03c.26.08.4.37.31.63l-3 9a.5.5 0 1 1-.94-.32l3-9a.5.5 0 0 1 .63-.31Z"]));
+export const SlashForward12Filled = ( /*#__PURE__*/createFluentIcon('SlashForward12Filled', "12", ["M7.46 1.03c.4.12.63.53.51.93l-2.5 8.5a.75.75 0 0 1-1.44-.42l2.5-8.5c.12-.4.54-.63.93-.5Z"]));
+export const SlashForward16Regular = ( /*#__PURE__*/createFluentIcon('SlashForward16Regular', "16", ["M10.44 2.04c.26.1.38.4.27.65l-4.5 11a.5.5 0 0 1-.92-.38l4.5-11a.5.5 0 0 1 .65-.27Z"]));
+export const SlashForward16Filled = ( /*#__PURE__*/createFluentIcon('SlashForward16Filled', "16", ["M10.27 2.05c.38.15.58.58.43.97l-4 10.5a.75.75 0 0 1-1.4-.54l4-10.5a.75.75 0 0 1 .97-.43Z"]));
+export const SlashForward20Regular = ( /*#__PURE__*/createFluentIcon('SlashForward20Regular', "20", ["M12.66 2.03c.26.08.4.37.31.63l-5 15a.5.5 0 1 1-.94-.32l5-15a.5.5 0 0 1 .63-.31Z"]));
+export const SlashForward20Filled = ( /*#__PURE__*/createFluentIcon('SlashForward20Filled', "20", ["M13.02 2.05c.38.15.58.58.43.97l-5.5 14.5a.75.75 0 1 1-1.4-.54l5.5-14.5a.75.75 0 0 1 .97-.43Z"]));
+export const SlashForward24Regular = ( /*#__PURE__*/createFluentIcon('SlashForward24Regular', "24", ["M15.5 2.04c.39.14.6.57.46.96l-6.5 18.5a.75.75 0 0 1-1.42-.5l6.5-18.5c.14-.39.57-.6.96-.46Z"]));
+export const SlashForward24Filled = ( /*#__PURE__*/createFluentIcon('SlashForward24Filled', "24", ["M15.32 2.05a1 1 0 0 1 .63 1.27l-6 18a1 1 0 1 1-1.9-.64l6-18a1 1 0 0 1 1.27-.63Z"]));

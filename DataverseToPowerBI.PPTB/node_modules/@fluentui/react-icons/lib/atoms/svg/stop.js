@@ -1,0 +1,10 @@
+"use client";
+import { createFluentIcon } from '../../utils/createFluentIcon';
+export const StopFilled = ( /*#__PURE__*/createFluentIcon('StopFilled', "1em", ["M4.5 3C3.67 3 3 3.67 3 4.5v11c0 .83.67 1.5 1.5 1.5h11c.83 0 1.5-.67 1.5-1.5v-11c0-.83-.67-1.5-1.5-1.5h-11Z"]));
+export const StopRegular = ( /*#__PURE__*/createFluentIcon('StopRegular', "1em", ["M15.5 4c.28 0 .5.22.5.5v11a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11c0-.28.22-.5.5-.5h11Zm-11-1C3.67 3 3 3.67 3 4.5v11c0 .83.67 1.5 1.5 1.5h11c.83 0 1.5-.67 1.5-1.5v-11c0-.83-.67-1.5-1.5-1.5h-11Z"]));
+export const Stop16Regular = ( /*#__PURE__*/createFluentIcon('Stop16Regular', "16", ["M12.5 3c.28 0 .5.22.5.5v9a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5v-9c0-.28.22-.5.5-.5h9Zm-9-1C2.67 2 2 2.67 2 3.5v9c0 .83.67 1.5 1.5 1.5h9c.83 0 1.5-.67 1.5-1.5v-9c0-.83-.67-1.5-1.5-1.5h-9Z"]));
+export const Stop16Filled = ( /*#__PURE__*/createFluentIcon('Stop16Filled', "16", ["M3.5 2C2.67 2 2 2.67 2 3.5v9c0 .83.67 1.5 1.5 1.5h9c.83 0 1.5-.67 1.5-1.5v-9c0-.83-.67-1.5-1.5-1.5h-9Z"]));
+export const Stop20Regular = ( /*#__PURE__*/createFluentIcon('Stop20Regular', "20", ["M15.5 4c.28 0 .5.22.5.5v11a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11c0-.28.22-.5.5-.5h11Zm-11-1C3.67 3 3 3.67 3 4.5v11c0 .83.67 1.5 1.5 1.5h11c.83 0 1.5-.67 1.5-1.5v-11c0-.83-.67-1.5-1.5-1.5h-11Z"]));
+export const Stop20Filled = ( /*#__PURE__*/createFluentIcon('Stop20Filled', "20", ["M4.5 3C3.67 3 3 3.67 3 4.5v11c0 .83.67 1.5 1.5 1.5h11c.83 0 1.5-.67 1.5-1.5v-11c0-.83-.67-1.5-1.5-1.5h-11Z"]));
+export const Stop24Regular = ( /*#__PURE__*/createFluentIcon('Stop24Regular', "24", ["M19.25 4.5c.14 0 .25.11.25.25v14.5c0 .14-.11.25-.25.25H4.75a.25.25 0 0 1-.25-.25V4.75c0-.14.11-.25.25-.25h14.5ZM4.75 3C3.78 3 3 3.78 3 4.75v14.5c0 .97.78 1.75 1.75 1.75h14.5c.97 0 1.75-.78 1.75-1.75V4.75C21 3.78 20.22 3 19.25 3H4.75Z"]));
+export const Stop24Filled = ( /*#__PURE__*/createFluentIcon('Stop24Filled', "24", ["M4.75 3C3.78 3 3 3.78 3 4.75v14.5c0 .97.78 1.75 1.75 1.75h14.5c.97 0 1.75-.78 1.75-1.75V4.75C21 3.78 20.22 3 19.25 3H4.75Z"]));

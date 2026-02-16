@@ -1,0 +1,11 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const ChatMultipleCheckmarkFilled: FluentIcon;
+export declare const ChatMultipleCheckmarkRegular: FluentIcon;
+export declare const ChatMultipleCheckmark16Regular: FluentIcon;
+export declare const ChatMultipleCheckmark16Filled: FluentIcon;
+export declare const ChatMultipleCheckmark20Regular: FluentIcon;
+export declare const ChatMultipleCheckmark20Filled: FluentIcon;
+export declare const ChatMultipleCheckmark24Regular: FluentIcon;
+export declare const ChatMultipleCheckmark24Filled: FluentIcon;
+export declare const ChatMultipleCheckmark28Regular: FluentIcon;
+export declare const ChatMultipleCheckmark28Filled: FluentIcon;

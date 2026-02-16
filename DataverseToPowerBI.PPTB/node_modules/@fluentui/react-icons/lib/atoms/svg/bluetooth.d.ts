@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const BluetoothFilled: FluentIcon;
+export declare const BluetoothRegular: FluentIcon;
+export declare const Bluetooth16Regular: FluentIcon;
+export declare const Bluetooth16Filled: FluentIcon;
+export declare const Bluetooth20Regular: FluentIcon;
+export declare const Bluetooth20Filled: FluentIcon;
+export declare const Bluetooth24Regular: FluentIcon;
+export declare const Bluetooth24Filled: FluentIcon;
+export declare const Bluetooth28Regular: FluentIcon;
+export declare const Bluetooth28Filled: FluentIcon;
+export declare const Bluetooth32Regular: FluentIcon;
+export declare const Bluetooth32Filled: FluentIcon;
+export declare const Bluetooth48Regular: FluentIcon;
+export declare const Bluetooth48Filled: FluentIcon;

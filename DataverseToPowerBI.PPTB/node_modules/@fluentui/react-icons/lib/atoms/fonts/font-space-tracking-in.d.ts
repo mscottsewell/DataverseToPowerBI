@@ -1,0 +1,11 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const FontSpaceTrackingInFilled: FluentFontIcon;
+export declare const FontSpaceTrackingInRegular: FluentFontIcon;
+export declare const FontSpaceTrackingIn16Regular: FluentFontIcon;
+export declare const FontSpaceTrackingIn16Filled: FluentFontIcon;
+export declare const FontSpaceTrackingIn20Regular: FluentFontIcon;
+export declare const FontSpaceTrackingIn20Filled: FluentFontIcon;
+export declare const FontSpaceTrackingIn24Regular: FluentFontIcon;
+export declare const FontSpaceTrackingIn24Filled: FluentFontIcon;
+export declare const FontSpaceTrackingIn28Regular: FluentFontIcon;
+export declare const FontSpaceTrackingIn28Filled: FluentFontIcon;

@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const ContactCardRibbonFilled: FluentFontIcon;
+export declare const ContactCardRibbonRegular: FluentFontIcon;
+export declare const ContactCardRibbon16Regular: FluentFontIcon;
+export declare const ContactCardRibbon16Filled: FluentFontIcon;
+export declare const ContactCardRibbon20Regular: FluentFontIcon;
+export declare const ContactCardRibbon20Filled: FluentFontIcon;
+export declare const ContactCardRibbon24Regular: FluentFontIcon;
+export declare const ContactCardRibbon24Filled: FluentFontIcon;
+export declare const ContactCardRibbon28Regular: FluentFontIcon;
+export declare const ContactCardRibbon28Filled: FluentFontIcon;
+export declare const ContactCardRibbon32Regular: FluentFontIcon;
+export declare const ContactCardRibbon32Filled: FluentFontIcon;
+export declare const ContactCardRibbon48Regular: FluentFontIcon;
+export declare const ContactCardRibbon48Filled: FluentFontIcon;

@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const EditProhibitedFilled: FluentIcon;
+export declare const EditProhibitedRegular: FluentIcon;
+export declare const EditProhibited16Regular: FluentIcon;
+export declare const EditProhibited16Filled: FluentIcon;
+export declare const EditProhibited20Regular: FluentIcon;
+export declare const EditProhibited20Filled: FluentIcon;
+export declare const EditProhibited24Regular: FluentIcon;
+export declare const EditProhibited24Filled: FluentIcon;
+export declare const EditProhibited28Regular: FluentIcon;
+export declare const EditProhibited28Filled: FluentIcon;
+export declare const EditProhibited32Regular: FluentIcon;
+export declare const EditProhibited32Filled: FluentIcon;
+export declare const EditProhibited48Regular: FluentIcon;
+export declare const EditProhibited48Filled: FluentIcon;

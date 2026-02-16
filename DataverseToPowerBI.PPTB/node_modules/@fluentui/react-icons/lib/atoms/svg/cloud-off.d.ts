@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const CloudOffFilled: FluentIcon;
+export declare const CloudOffRegular: FluentIcon;
+export declare const CloudOff16Regular: FluentIcon;
+export declare const CloudOff16Filled: FluentIcon;
+export declare const CloudOff20Regular: FluentIcon;
+export declare const CloudOff20Filled: FluentIcon;
+export declare const CloudOff24Regular: FluentIcon;
+export declare const CloudOff24Filled: FluentIcon;
+export declare const CloudOff28Regular: FluentIcon;
+export declare const CloudOff28Filled: FluentIcon;
+export declare const CloudOff32Regular: FluentIcon;
+export declare const CloudOff32Filled: FluentIcon;
+export declare const CloudOff48Regular: FluentIcon;
+export declare const CloudOff48Filled: FluentIcon;

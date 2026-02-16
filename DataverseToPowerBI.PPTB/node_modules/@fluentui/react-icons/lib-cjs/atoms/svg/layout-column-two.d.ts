@@ -1,0 +1,12 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const LayoutColumnTwoFilled: FluentIcon;
+export declare const LayoutColumnTwoRegular: FluentIcon;
+export declare const LayoutColumnTwo16Regular: FluentIcon;
+export declare const LayoutColumnTwo16Filled: FluentIcon;
+export declare const LayoutColumnTwo20Regular: FluentIcon;
+export declare const LayoutColumnTwo20Filled: FluentIcon;
+export declare const LayoutColumnTwo24Regular: FluentIcon;
+export declare const LayoutColumnTwo24Filled: FluentIcon;
+export declare const LayoutColumnTwo32Regular: FluentIcon;
+export declare const LayoutColumnTwo32Filled: FluentIcon;
+export declare const LayoutColumnTwo32Light: FluentIcon;

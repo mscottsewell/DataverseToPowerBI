@@ -1,0 +1,1 @@
+/* eslint-disable @typescript-eslint/no-deprecated */ export { InfoLabel, infoLabelClassNames, renderInfoLabel_unstable, useInfoLabelStyles_unstable, useInfoLabel_unstable } from './components/InfoLabel/index';

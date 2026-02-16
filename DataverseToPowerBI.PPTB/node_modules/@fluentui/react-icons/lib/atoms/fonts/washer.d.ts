@@ -1,0 +1,11 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const WasherFilled: FluentFontIcon;
+export declare const WasherRegular: FluentFontIcon;
+export declare const Washer20Regular: FluentFontIcon;
+export declare const Washer20Filled: FluentFontIcon;
+export declare const Washer24Regular: FluentFontIcon;
+export declare const Washer24Filled: FluentFontIcon;
+export declare const Washer32Regular: FluentFontIcon;
+export declare const Washer32Filled: FluentFontIcon;
+export declare const Washer48Regular: FluentFontIcon;
+export declare const Washer48Filled: FluentFontIcon;

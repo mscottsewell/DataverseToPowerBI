@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const ChatArrowBackDownFilled: FluentIcon;
+export declare const ChatArrowBackDownRegular: FluentIcon;
+export declare const ChatArrowBackDown16Regular: FluentIcon;
+export declare const ChatArrowBackDown16Filled: FluentIcon;
+export declare const ChatArrowBackDown20Regular: FluentIcon;
+export declare const ChatArrowBackDown20Filled: FluentIcon;
+export declare const ChatArrowBackDown24Regular: FluentIcon;
+export declare const ChatArrowBackDown24Filled: FluentIcon;
+export declare const ChatArrowBackDown28Regular: FluentIcon;
+export declare const ChatArrowBackDown28Filled: FluentIcon;
+export declare const ChatArrowBackDown32Regular: FluentIcon;
+export declare const ChatArrowBackDown32Filled: FluentIcon;
+export declare const ChatArrowBackDown48Regular: FluentIcon;
+export declare const ChatArrowBackDown48Filled: FluentIcon;

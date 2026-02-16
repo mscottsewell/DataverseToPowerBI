@@ -1,0 +1,11 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const ChatMultipleMinusFilled: FluentIcon;
+export declare const ChatMultipleMinusRegular: FluentIcon;
+export declare const ChatMultipleMinus16Regular: FluentIcon;
+export declare const ChatMultipleMinus16Filled: FluentIcon;
+export declare const ChatMultipleMinus20Regular: FluentIcon;
+export declare const ChatMultipleMinus20Filled: FluentIcon;
+export declare const ChatMultipleMinus24Regular: FluentIcon;
+export declare const ChatMultipleMinus24Filled: FluentIcon;
+export declare const ChatMultipleMinus28Regular: FluentIcon;
+export declare const ChatMultipleMinus28Filled: FluentIcon;

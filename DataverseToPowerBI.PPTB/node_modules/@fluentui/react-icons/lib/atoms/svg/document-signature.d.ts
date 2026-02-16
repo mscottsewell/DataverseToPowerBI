@@ -1,0 +1,16 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const DocumentSignatureFilled: FluentIcon;
+export declare const DocumentSignatureRegular: FluentIcon;
+export declare const DocumentSignature16Regular: FluentIcon;
+export declare const DocumentSignature16Filled: FluentIcon;
+export declare const DocumentSignature20Regular: FluentIcon;
+export declare const DocumentSignature20Filled: FluentIcon;
+export declare const DocumentSignature24Regular: FluentIcon;
+export declare const DocumentSignature24Filled: FluentIcon;
+export declare const DocumentSignature28Regular: FluentIcon;
+export declare const DocumentSignature28Filled: FluentIcon;
+export declare const DocumentSignature32Regular: FluentIcon;
+export declare const DocumentSignature32Filled: FluentIcon;
+export declare const DocumentSignature32Light: FluentIcon;
+export declare const DocumentSignature48Regular: FluentIcon;
+export declare const DocumentSignature48Filled: FluentIcon;

@@ -1,0 +1,13 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const WrenchColor: FluentIcon;
+export declare const WrenchFilled: FluentIcon;
+export declare const WrenchRegular: FluentIcon;
+export declare const Wrench16Regular: FluentIcon;
+export declare const Wrench16Filled: FluentIcon;
+export declare const Wrench16Color: FluentIcon;
+export declare const Wrench20Regular: FluentIcon;
+export declare const Wrench20Filled: FluentIcon;
+export declare const Wrench20Color: FluentIcon;
+export declare const Wrench24Regular: FluentIcon;
+export declare const Wrench24Filled: FluentIcon;
+export declare const Wrench24Color: FluentIcon;

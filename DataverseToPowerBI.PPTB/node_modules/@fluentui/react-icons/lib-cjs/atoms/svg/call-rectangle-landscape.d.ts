@@ -1,0 +1,11 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const CallRectangleLandscapeFilled: FluentIcon;
+export declare const CallRectangleLandscapeRegular: FluentIcon;
+export declare const CallRectangleLandscape16Regular: FluentIcon;
+export declare const CallRectangleLandscape16Filled: FluentIcon;
+export declare const CallRectangleLandscape20Regular: FluentIcon;
+export declare const CallRectangleLandscape20Filled: FluentIcon;
+export declare const CallRectangleLandscape24Regular: FluentIcon;
+export declare const CallRectangleLandscape24Filled: FluentIcon;
+export declare const CallRectangleLandscape28Regular: FluentIcon;
+export declare const CallRectangleLandscape28Filled: FluentIcon;

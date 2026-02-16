@@ -1,0 +1,11 @@
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.EraserTool24Filled = exports.EraserTool24Regular = exports.EraserTool20Filled = exports.EraserTool20Regular = exports.EraserToolRegular = exports.EraserToolFilled = void 0;
+const createFluentIcon_1 = require("../../utils/createFluentIcon");
+exports.EraserToolFilled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('EraserToolFilled', "1em", ["M4 2.5a.5.5 0 0 0-1 0v12A3.5 3.5 0 0 0 6.5 18h7a3.5 3.5 0 0 0 3.5-3.5v-12a.5.5 0 0 0-1 0V6H4V2.5ZM4 10V7h12v3H4Z"]));
+exports.EraserToolRegular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('EraserToolRegular', "1em", ["M3.5 2c.28 0 .5.22.5.5V6h12V2.5a.5.5 0 0 1 1 0v12a3.5 3.5 0 0 1-3.5 3.5h-7A3.5 3.5 0 0 1 3 14.5v-12c0-.28.22-.5.5-.5Zm.5 9v3.5A2.5 2.5 0 0 0 6.5 17h7a2.5 2.5 0 0 0 2.5-2.5V11H4Zm12-1V7H4v3h12Z"]));
+exports.EraserTool20Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('EraserTool20Regular', "20", ["M3.5 2c.28 0 .5.22.5.5V6h12V2.5a.5.5 0 0 1 1 0v12a3.5 3.5 0 0 1-3.5 3.5h-7A3.5 3.5 0 0 1 3 14.5v-12c0-.28.22-.5.5-.5Zm.5 9v3.5A2.5 2.5 0 0 0 6.5 17h7a2.5 2.5 0 0 0 2.5-2.5V11H4Zm12-1V7H4v3h12Z"]));
+exports.EraserTool20Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('EraserTool20Filled', "20", ["M4 2.5a.5.5 0 0 0-1 0v12A3.5 3.5 0 0 0 6.5 18h7a3.5 3.5 0 0 0 3.5-3.5v-12a.5.5 0 0 0-1 0V6H4V2.5ZM4 10V7h12v3H4Z"]));
+exports.EraserTool24Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('EraserTool24Regular', "24", ["M3.75 2c.41 0 .75.34.75.75V7h15V2.75a.75.75 0 0 1 1.5 0v14.5A4.75 4.75 0 0 1 16.25 22h-8.5A4.75 4.75 0 0 1 3 17.25V2.75c0-.41.34-.75.75-.75ZM19.5 8.5h-15V12h15V8.5Zm-15 8.75c0 1.8 1.46 3.25 3.25 3.25h8.5c1.8 0 3.25-1.46 3.25-3.25V13.5h-15v3.75Z"]));
+exports.EraserTool24Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('EraserTool24Filled', "24", ["M4.5 2.75a.75.75 0 0 0-1.5 0v14.5A4.75 4.75 0 0 0 7.75 22h8.5A4.75 4.75 0 0 0 21 17.25V2.75a.75.75 0 0 0-1.5 0V7h-15V2.75Zm0 5.75h15V12h-15V8.5Z"]));

@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const SpatulaSpoonFilled: FluentIcon;
+export declare const SpatulaSpoonRegular: FluentIcon;
+export declare const SpatulaSpoon16Regular: FluentIcon;
+export declare const SpatulaSpoon16Filled: FluentIcon;
+export declare const SpatulaSpoon20Regular: FluentIcon;
+export declare const SpatulaSpoon20Filled: FluentIcon;
+export declare const SpatulaSpoon24Regular: FluentIcon;
+export declare const SpatulaSpoon24Filled: FluentIcon;
+export declare const SpatulaSpoon28Regular: FluentIcon;
+export declare const SpatulaSpoon28Filled: FluentIcon;
+export declare const SpatulaSpoon32Regular: FluentIcon;
+export declare const SpatulaSpoon32Filled: FluentIcon;
+export declare const SpatulaSpoon48Regular: FluentIcon;
+export declare const SpatulaSpoon48Filled: FluentIcon;

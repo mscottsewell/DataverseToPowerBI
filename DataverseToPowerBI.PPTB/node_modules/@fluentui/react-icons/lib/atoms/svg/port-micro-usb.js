@@ -1,0 +1,8 @@
+"use client";
+import { createFluentIcon } from '../../utils/createFluentIcon';
+export const PortMicroUsbFilled = ( /*#__PURE__*/createFluentIcon('PortMicroUsbFilled', "1em", ["M6.43 8.3c.26-.2.58-.3.9-.3h5.34c.32 0 .64.1.9.3l1.33 1A1.5 1.5 0 0 1 14 12H6a1.5 1.5 0 0 1-.9-2.7l1.33-1Z"]));
+export const PortMicroUsbRegular = ( /*#__PURE__*/createFluentIcon('PortMicroUsbRegular', "1em", ["M6.43 8.3c.26-.2.58-.3.9-.3h5.34c.32 0 .64.1.9.3l1.33 1A1.5 1.5 0 0 1 14 12H6a1.5 1.5 0 0 1-.9-2.7l1.33-1Zm.9.7a.5.5 0 0 0-.3.1l-1.33 1a.5.5 0 0 0 .3.9h8a.5.5 0 0 0 .3-.9l-1.33-1a.5.5 0 0 0-.3-.1H7.33Z"]));
+export const PortMicroUsb20Regular = ( /*#__PURE__*/createFluentIcon('PortMicroUsb20Regular', "20", ["M6.43 8.3c.26-.2.58-.3.9-.3h5.34c.32 0 .64.1.9.3l1.33 1A1.5 1.5 0 0 1 14 12H6a1.5 1.5 0 0 1-.9-2.7l1.33-1Zm.9.7a.5.5 0 0 0-.3.1l-1.33 1a.5.5 0 0 0 .3.9h8a.5.5 0 0 0 .3-.9l-1.33-1a.5.5 0 0 0-.3-.1H7.33Z"]));
+export const PortMicroUsb20Filled = ( /*#__PURE__*/createFluentIcon('PortMicroUsb20Filled', "20", ["M6.43 8.3c.26-.2.58-.3.9-.3h5.34c.32 0 .64.1.9.3l1.33 1A1.5 1.5 0 0 1 14 12H6a1.5 1.5 0 0 1-.9-2.7l1.33-1Z"]));
+export const PortMicroUsb24Regular = ( /*#__PURE__*/createFluentIcon('PortMicroUsb24Regular', "24", ["M15.17 10.5a.5.5 0 0 1 .36.15l1.82 1.82a.5.5 0 0 1 .15.36V13a.5.5 0 0 1-.5.5H7a.5.5 0 0 1-.5-.5v-.17a.5.5 0 0 1 .15-.36l1.82-1.82a.5.5 0 0 1 .36-.15h6.34Zm0-1.5H8.83a2 2 0 0 0-1.42.59L5.6 11.4A2 2 0 0 0 5 12.83V13a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-.17a2 2 0 0 0-.59-1.42L16.6 9.6A2 2 0 0 0 15.17 9Z"]));
+export const PortMicroUsb24Filled = ( /*#__PURE__*/createFluentIcon('PortMicroUsb24Filled', "24", ["M19 12.83V13a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-.17a2 2 0 0 1 .59-1.42l1.82-1.82A2 2 0 0 1 8.83 9h6.34a2 2 0 0 1 1.42.59l1.82 1.82a2 2 0 0 1 .59 1.42Z"]));

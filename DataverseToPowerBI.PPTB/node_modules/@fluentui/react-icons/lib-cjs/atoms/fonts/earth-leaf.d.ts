@@ -1,0 +1,13 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const EarthLeafFilled: FluentFontIcon;
+export declare const EarthLeafRegular: FluentFontIcon;
+export declare const EarthLeaf16Regular: FluentFontIcon;
+export declare const EarthLeaf16Filled: FluentFontIcon;
+export declare const EarthLeaf20Regular: FluentFontIcon;
+export declare const EarthLeaf20Filled: FluentFontIcon;
+export declare const EarthLeaf24Regular: FluentFontIcon;
+export declare const EarthLeaf24Filled: FluentFontIcon;
+export declare const EarthLeaf32Regular: FluentFontIcon;
+export declare const EarthLeaf32Filled: FluentFontIcon;
+export declare const EarthLeaf48Regular: FluentFontIcon;
+export declare const EarthLeaf48Filled: FluentFontIcon;

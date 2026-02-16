@@ -1,0 +1,14 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const PollFilled: FluentFontIcon;
+export declare const PollRegular: FluentFontIcon;
+export declare const Poll16Regular: FluentFontIcon;
+export declare const Poll16Filled: FluentFontIcon;
+export declare const Poll20Regular: FluentFontIcon;
+export declare const Poll20Filled: FluentFontIcon;
+export declare const Poll24Regular: FluentFontIcon;
+export declare const Poll24Filled: FluentFontIcon;
+export declare const Poll28Regular: FluentFontIcon;
+export declare const Poll28Filled: FluentFontIcon;
+export declare const Poll32Regular: FluentFontIcon;
+export declare const Poll32Filled: FluentFontIcon;
+export declare const Poll32Light: FluentFontIcon;

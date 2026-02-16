@@ -1,0 +1,11 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const AlertBadgeFilled: FluentFontIcon;
+export declare const AlertBadgeRegular: FluentFontIcon;
+export declare const AlertBadge16Regular: FluentFontIcon;
+export declare const AlertBadge16Filled: FluentFontIcon;
+export declare const AlertBadge20Regular: FluentFontIcon;
+export declare const AlertBadge20Filled: FluentFontIcon;
+export declare const AlertBadge24Regular: FluentFontIcon;
+export declare const AlertBadge24Filled: FluentFontIcon;
+export declare const AlertBadge32Regular: FluentFontIcon;
+export declare const AlertBadge32Filled: FluentFontIcon;

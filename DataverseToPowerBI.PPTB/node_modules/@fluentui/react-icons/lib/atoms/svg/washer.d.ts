@@ -1,0 +1,11 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const WasherFilled: FluentIcon;
+export declare const WasherRegular: FluentIcon;
+export declare const Washer20Regular: FluentIcon;
+export declare const Washer20Filled: FluentIcon;
+export declare const Washer24Regular: FluentIcon;
+export declare const Washer24Filled: FluentIcon;
+export declare const Washer32Regular: FluentIcon;
+export declare const Washer32Filled: FluentIcon;
+export declare const Washer48Regular: FluentIcon;
+export declare const Washer48Filled: FluentIcon;

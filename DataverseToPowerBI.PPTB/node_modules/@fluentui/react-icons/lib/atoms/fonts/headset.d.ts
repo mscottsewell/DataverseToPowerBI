@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const HeadsetFilled: FluentFontIcon;
+export declare const HeadsetRegular: FluentFontIcon;
+export declare const Headset16Regular: FluentFontIcon;
+export declare const Headset16Filled: FluentFontIcon;
+export declare const Headset20Regular: FluentFontIcon;
+export declare const Headset20Filled: FluentFontIcon;
+export declare const Headset24Regular: FluentFontIcon;
+export declare const Headset24Filled: FluentFontIcon;
+export declare const Headset28Regular: FluentFontIcon;
+export declare const Headset28Filled: FluentFontIcon;
+export declare const Headset32Regular: FluentFontIcon;
+export declare const Headset32Filled: FluentFontIcon;
+export declare const Headset48Regular: FluentFontIcon;
+export declare const Headset48Filled: FluentFontIcon;

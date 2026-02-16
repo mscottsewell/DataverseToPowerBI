@@ -1,0 +1,12 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const TableCellsSplitFilled: FluentIcon;
+export declare const TableCellsSplitRegular: FluentIcon;
+export declare const TableCellsSplit16Regular: FluentIcon;
+export declare const TableCellsSplit16Filled: FluentIcon;
+export declare const TableCellsSplit20Regular: FluentIcon;
+export declare const TableCellsSplit20Filled: FluentIcon;
+export declare const TableCellsSplit24Regular: FluentIcon;
+export declare const TableCellsSplit24Filled: FluentIcon;
+export declare const TableCellsSplit28Regular: FluentIcon;
+export declare const TableCellsSplit28Filled: FluentIcon;
+export declare const TableCellsSplit32Light: FluentIcon;

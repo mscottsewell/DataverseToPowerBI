@@ -1,0 +1,11 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const SlideTextEditFilled: FluentFontIcon;
+export declare const SlideTextEditRegular: FluentFontIcon;
+export declare const SlideTextEdit16Regular: FluentFontIcon;
+export declare const SlideTextEdit16Filled: FluentFontIcon;
+export declare const SlideTextEdit20Regular: FluentFontIcon;
+export declare const SlideTextEdit20Filled: FluentFontIcon;
+export declare const SlideTextEdit24Regular: FluentFontIcon;
+export declare const SlideTextEdit24Filled: FluentFontIcon;
+export declare const SlideTextEdit28Regular: FluentFontIcon;
+export declare const SlideTextEdit28Filled: FluentFontIcon;

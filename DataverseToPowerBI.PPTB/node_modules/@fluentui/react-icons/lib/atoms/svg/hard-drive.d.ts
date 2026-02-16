@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const HardDriveFilled: FluentIcon;
+export declare const HardDriveRegular: FluentIcon;
+export declare const HardDrive16Regular: FluentIcon;
+export declare const HardDrive16Filled: FluentIcon;
+export declare const HardDrive20Regular: FluentIcon;
+export declare const HardDrive20Filled: FluentIcon;
+export declare const HardDrive24Regular: FluentIcon;
+export declare const HardDrive24Filled: FluentIcon;
+export declare const HardDrive28Regular: FluentIcon;
+export declare const HardDrive28Filled: FluentIcon;
+export declare const HardDrive32Regular: FluentIcon;
+export declare const HardDrive32Filled: FluentIcon;
+export declare const HardDrive48Regular: FluentIcon;
+export declare const HardDrive48Filled: FluentIcon;

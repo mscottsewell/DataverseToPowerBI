@@ -1,0 +1,17 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const DiamondDismissFilled: FluentFontIcon;
+export declare const DiamondDismissRegular: FluentFontIcon;
+export declare const DiamondDismiss12Regular: FluentFontIcon;
+export declare const DiamondDismiss12Filled: FluentFontIcon;
+export declare const DiamondDismiss16Regular: FluentFontIcon;
+export declare const DiamondDismiss16Filled: FluentFontIcon;
+export declare const DiamondDismiss20Regular: FluentFontIcon;
+export declare const DiamondDismiss20Filled: FluentFontIcon;
+export declare const DiamondDismiss24Regular: FluentFontIcon;
+export declare const DiamondDismiss24Filled: FluentFontIcon;
+export declare const DiamondDismiss28Regular: FluentFontIcon;
+export declare const DiamondDismiss28Filled: FluentFontIcon;
+export declare const DiamondDismiss32Regular: FluentFontIcon;
+export declare const DiamondDismiss32Filled: FluentFontIcon;
+export declare const DiamondDismiss48Regular: FluentFontIcon;
+export declare const DiamondDismiss48Filled: FluentFontIcon;

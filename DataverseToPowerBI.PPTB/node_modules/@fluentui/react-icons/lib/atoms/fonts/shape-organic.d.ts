@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const ShapeOrganicFilled: FluentFontIcon;
+export declare const ShapeOrganicRegular: FluentFontIcon;
+export declare const ShapeOrganic16Regular: FluentFontIcon;
+export declare const ShapeOrganic16Filled: FluentFontIcon;
+export declare const ShapeOrganic20Regular: FluentFontIcon;
+export declare const ShapeOrganic20Filled: FluentFontIcon;
+export declare const ShapeOrganic24Regular: FluentFontIcon;
+export declare const ShapeOrganic24Filled: FluentFontIcon;
+export declare const ShapeOrganic28Regular: FluentFontIcon;
+export declare const ShapeOrganic28Filled: FluentFontIcon;
+export declare const ShapeOrganic32Regular: FluentFontIcon;
+export declare const ShapeOrganic32Filled: FluentFontIcon;
+export declare const ShapeOrganic48Regular: FluentFontIcon;
+export declare const ShapeOrganic48Filled: FluentFontIcon;

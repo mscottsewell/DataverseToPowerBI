@@ -1,0 +1,11 @@
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.CircleSmall24Filled = exports.CircleSmall24Regular = exports.CircleSmall20Filled = exports.CircleSmall20Regular = exports.CircleSmallRegular = exports.CircleSmallFilled = void 0;
+const createFluentIcon_1 = require("../../utils/createFluentIcon");
+exports.CircleSmallFilled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('CircleSmallFilled', "1em", ["M13 10a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"]));
+exports.CircleSmallRegular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('CircleSmallRegular', "1em", ["M10 12a2 2 0 1 1 0-4 2 2 0 0 1 0 4Zm0 1a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"]));
+exports.CircleSmall20Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('CircleSmall20Regular', "20", ["M10 12a2 2 0 1 1 0-4 2 2 0 0 1 0 4Zm0 1a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"]));
+exports.CircleSmall20Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('CircleSmall20Filled', "20", ["M13 10a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"]));
+exports.CircleSmall24Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('CircleSmall24Regular', "24", ["M12 9.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5ZM8 12a4 4 0 1 1 8 0 4 4 0 0 1-8 0Z"]));
+exports.CircleSmall24Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('CircleSmall24Filled', "24", ["M8 12a4 4 0 1 1 8 0 4 4 0 0 1-8 0Z"]));

@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const VehicleCarFilled: FluentIcon;
+export declare const VehicleCarRegular: FluentIcon;
+export declare const VehicleCar16Regular: FluentIcon;
+export declare const VehicleCar16Filled: FluentIcon;
+export declare const VehicleCar20Regular: FluentIcon;
+export declare const VehicleCar20Filled: FluentIcon;
+export declare const VehicleCar24Regular: FluentIcon;
+export declare const VehicleCar24Filled: FluentIcon;
+export declare const VehicleCar28Regular: FluentIcon;
+export declare const VehicleCar28Filled: FluentIcon;
+export declare const VehicleCar32Regular: FluentIcon;
+export declare const VehicleCar32Filled: FluentIcon;
+export declare const VehicleCar48Regular: FluentIcon;
+export declare const VehicleCar48Filled: FluentIcon;

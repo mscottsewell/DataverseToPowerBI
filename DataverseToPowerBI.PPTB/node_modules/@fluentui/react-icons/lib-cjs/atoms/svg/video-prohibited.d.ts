@@ -1,0 +1,11 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const VideoProhibitedFilled: FluentIcon;
+export declare const VideoProhibitedRegular: FluentIcon;
+export declare const VideoProhibited16Regular: FluentIcon;
+export declare const VideoProhibited16Filled: FluentIcon;
+export declare const VideoProhibited20Regular: FluentIcon;
+export declare const VideoProhibited20Filled: FluentIcon;
+export declare const VideoProhibited24Regular: FluentIcon;
+export declare const VideoProhibited24Filled: FluentIcon;
+export declare const VideoProhibited28Regular: FluentIcon;
+export declare const VideoProhibited28Filled: FluentIcon;

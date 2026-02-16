@@ -1,0 +1,13 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const TvFilled: FluentIcon;
+export declare const TvRegular: FluentIcon;
+export declare const Tv16Regular: FluentIcon;
+export declare const Tv16Filled: FluentIcon;
+export declare const Tv20Regular: FluentIcon;
+export declare const Tv20Filled: FluentIcon;
+export declare const Tv24Regular: FluentIcon;
+export declare const Tv24Filled: FluentIcon;
+export declare const Tv28Regular: FluentIcon;
+export declare const Tv28Filled: FluentIcon;
+export declare const Tv48Regular: FluentIcon;
+export declare const Tv48Filled: FluentIcon;

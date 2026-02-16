@@ -1,0 +1,16 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const PenSparkleFilled: FluentIcon;
+export declare const PenSparkleRegular: FluentIcon;
+export declare const PenSparkle16Regular: FluentIcon;
+export declare const PenSparkle16Filled: FluentIcon;
+export declare const PenSparkle20Regular: FluentIcon;
+export declare const PenSparkle20Filled: FluentIcon;
+export declare const PenSparkle24Regular: FluentIcon;
+export declare const PenSparkle24Filled: FluentIcon;
+export declare const PenSparkle28Regular: FluentIcon;
+export declare const PenSparkle28Filled: FluentIcon;
+export declare const PenSparkle32Regular: FluentIcon;
+export declare const PenSparkle32Filled: FluentIcon;
+export declare const PenSparkle32Light: FluentIcon;
+export declare const PenSparkle48Regular: FluentIcon;
+export declare const PenSparkle48Filled: FluentIcon;

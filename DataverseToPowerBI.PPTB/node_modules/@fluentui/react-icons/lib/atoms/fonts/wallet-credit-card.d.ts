@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const WalletCreditCardFilled: FluentFontIcon;
+export declare const WalletCreditCardRegular: FluentFontIcon;
+export declare const WalletCreditCard16Regular: FluentFontIcon;
+export declare const WalletCreditCard16Filled: FluentFontIcon;
+export declare const WalletCreditCard20Regular: FluentFontIcon;
+export declare const WalletCreditCard20Filled: FluentFontIcon;
+export declare const WalletCreditCard24Regular: FluentFontIcon;
+export declare const WalletCreditCard24Filled: FluentFontIcon;
+export declare const WalletCreditCard28Regular: FluentFontIcon;
+export declare const WalletCreditCard28Filled: FluentFontIcon;
+export declare const WalletCreditCard32Regular: FluentFontIcon;
+export declare const WalletCreditCard32Filled: FluentFontIcon;
+export declare const WalletCreditCard48Regular: FluentFontIcon;
+export declare const WalletCreditCard48Filled: FluentFontIcon;

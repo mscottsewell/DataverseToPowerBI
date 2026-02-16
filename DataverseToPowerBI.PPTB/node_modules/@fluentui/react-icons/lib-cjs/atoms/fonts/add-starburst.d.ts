@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const AddStarburstFilled: FluentFontIcon;
+export declare const AddStarburstRegular: FluentFontIcon;
+export declare const AddStarburst16Regular: FluentFontIcon;
+export declare const AddStarburst16Filled: FluentFontIcon;
+export declare const AddStarburst20Regular: FluentFontIcon;
+export declare const AddStarburst20Filled: FluentFontIcon;
+export declare const AddStarburst24Regular: FluentFontIcon;
+export declare const AddStarburst24Filled: FluentFontIcon;
+export declare const AddStarburst28Regular: FluentFontIcon;
+export declare const AddStarburst28Filled: FluentFontIcon;
+export declare const AddStarburst32Regular: FluentFontIcon;
+export declare const AddStarburst32Filled: FluentFontIcon;
+export declare const AddStarburst48Regular: FluentFontIcon;
+export declare const AddStarburst48Filled: FluentFontIcon;

@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const EmojiHandFilled: FluentIcon;
+export declare const EmojiHandRegular: FluentIcon;
+export declare const EmojiHand16Regular: FluentIcon;
+export declare const EmojiHand16Filled: FluentIcon;
+export declare const EmojiHand20Regular: FluentIcon;
+export declare const EmojiHand20Filled: FluentIcon;
+export declare const EmojiHand24Regular: FluentIcon;
+export declare const EmojiHand24Filled: FluentIcon;
+export declare const EmojiHand28Regular: FluentIcon;
+export declare const EmojiHand28Filled: FluentIcon;
+export declare const EmojiHand32Regular: FluentIcon;
+export declare const EmojiHand32Filled: FluentIcon;
+export declare const EmojiHand48Regular: FluentIcon;
+export declare const EmojiHand48Filled: FluentIcon;

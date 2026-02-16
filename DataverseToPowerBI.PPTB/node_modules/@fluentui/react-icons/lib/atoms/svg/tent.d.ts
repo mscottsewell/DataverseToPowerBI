@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const TentFilled: FluentIcon;
+export declare const TentRegular: FluentIcon;
+export declare const Tent12Regular: FluentIcon;
+export declare const Tent12Filled: FluentIcon;
+export declare const Tent16Regular: FluentIcon;
+export declare const Tent16Filled: FluentIcon;
+export declare const Tent20Regular: FluentIcon;
+export declare const Tent20Filled: FluentIcon;
+export declare const Tent24Regular: FluentIcon;
+export declare const Tent24Filled: FluentIcon;
+export declare const Tent28Regular: FluentIcon;
+export declare const Tent28Filled: FluentIcon;
+export declare const Tent48Regular: FluentIcon;
+export declare const Tent48Filled: FluentIcon;

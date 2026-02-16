@@ -1,0 +1,11 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const AlertSnoozeFilled: FluentIcon;
+export declare const AlertSnoozeRegular: FluentIcon;
+export declare const AlertSnooze12Regular: FluentIcon;
+export declare const AlertSnooze12Filled: FluentIcon;
+export declare const AlertSnooze16Regular: FluentIcon;
+export declare const AlertSnooze16Filled: FluentIcon;
+export declare const AlertSnooze20Regular: FluentIcon;
+export declare const AlertSnooze20Filled: FluentIcon;
+export declare const AlertSnooze24Regular: FluentIcon;
+export declare const AlertSnooze24Filled: FluentIcon;

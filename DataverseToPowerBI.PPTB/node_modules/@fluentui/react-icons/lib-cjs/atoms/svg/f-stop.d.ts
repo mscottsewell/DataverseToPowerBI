@@ -1,0 +1,11 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const FStopFilled: FluentIcon;
+export declare const FStopRegular: FluentIcon;
+export declare const FStop16Regular: FluentIcon;
+export declare const FStop16Filled: FluentIcon;
+export declare const FStop20Regular: FluentIcon;
+export declare const FStop20Filled: FluentIcon;
+export declare const FStop24Regular: FluentIcon;
+export declare const FStop24Filled: FluentIcon;
+export declare const FStop28Regular: FluentIcon;
+export declare const FStop28Filled: FluentIcon;

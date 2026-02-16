@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const AlignCenterVerticalFilled: FluentFontIcon;
+export declare const AlignCenterVerticalRegular: FluentFontIcon;
+export declare const AlignCenterVertical16Regular: FluentFontIcon;
+export declare const AlignCenterVertical16Filled: FluentFontIcon;
+export declare const AlignCenterVertical20Regular: FluentFontIcon;
+export declare const AlignCenterVertical20Filled: FluentFontIcon;
+export declare const AlignCenterVertical24Regular: FluentFontIcon;
+export declare const AlignCenterVertical24Filled: FluentFontIcon;
+export declare const AlignCenterVertical28Regular: FluentFontIcon;
+export declare const AlignCenterVertical28Filled: FluentFontIcon;
+export declare const AlignCenterVertical32Regular: FluentFontIcon;
+export declare const AlignCenterVertical32Filled: FluentFontIcon;
+export declare const AlignCenterVertical48Regular: FluentFontIcon;
+export declare const AlignCenterVertical48Filled: FluentFontIcon;

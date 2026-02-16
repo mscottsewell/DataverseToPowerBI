@@ -1,0 +1,11 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const HatGraduationSparkleFilled: FluentIcon;
+export declare const HatGraduationSparkleRegular: FluentIcon;
+export declare const HatGraduationSparkle16Regular: FluentIcon;
+export declare const HatGraduationSparkle16Filled: FluentIcon;
+export declare const HatGraduationSparkle20Regular: FluentIcon;
+export declare const HatGraduationSparkle20Filled: FluentIcon;
+export declare const HatGraduationSparkle24Regular: FluentIcon;
+export declare const HatGraduationSparkle24Filled: FluentIcon;
+export declare const HatGraduationSparkle28Regular: FluentIcon;
+export declare const HatGraduationSparkle28Filled: FluentIcon;

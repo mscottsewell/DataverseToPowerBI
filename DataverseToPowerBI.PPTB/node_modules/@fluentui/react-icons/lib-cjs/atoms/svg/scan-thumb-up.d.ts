@@ -1,0 +1,13 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const ScanThumbUpFilled: FluentIcon;
+export declare const ScanThumbUpRegular: FluentIcon;
+export declare const ScanThumbUp16Regular: FluentIcon;
+export declare const ScanThumbUp16Filled: FluentIcon;
+export declare const ScanThumbUp20Regular: FluentIcon;
+export declare const ScanThumbUp20Filled: FluentIcon;
+export declare const ScanThumbUp24Regular: FluentIcon;
+export declare const ScanThumbUp24Filled: FluentIcon;
+export declare const ScanThumbUp28Regular: FluentIcon;
+export declare const ScanThumbUp28Filled: FluentIcon;
+export declare const ScanThumbUp48Regular: FluentIcon;
+export declare const ScanThumbUp48Filled: FluentIcon;

@@ -1,0 +1,11 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const DishwasherFilled: FluentFontIcon;
+export declare const DishwasherRegular: FluentFontIcon;
+export declare const Dishwasher20Regular: FluentFontIcon;
+export declare const Dishwasher20Filled: FluentFontIcon;
+export declare const Dishwasher24Regular: FluentFontIcon;
+export declare const Dishwasher24Filled: FluentFontIcon;
+export declare const Dishwasher32Regular: FluentFontIcon;
+export declare const Dishwasher32Filled: FluentFontIcon;
+export declare const Dishwasher48Regular: FluentFontIcon;
+export declare const Dishwasher48Filled: FluentFontIcon;

@@ -1,0 +1,11 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const PanelRightContractFilled: FluentIcon;
+export declare const PanelRightContractRegular: FluentIcon;
+export declare const PanelRightContract16Regular: FluentIcon;
+export declare const PanelRightContract16Filled: FluentIcon;
+export declare const PanelRightContract20Regular: FluentIcon;
+export declare const PanelRightContract20Filled: FluentIcon;
+export declare const PanelRightContract24Regular: FluentIcon;
+export declare const PanelRightContract24Filled: FluentIcon;
+export declare const PanelRightContract28Regular: FluentIcon;
+export declare const PanelRightContract28Filled: FluentIcon;

@@ -1,0 +1,10 @@
+"use client";
+import { createFluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export const AddSquareMultipleFilled = ( /*#__PURE__*/createFluentFontIcon("AddSquareMultipleFilled", "", 2, undefined));
+export const AddSquareMultipleRegular = ( /*#__PURE__*/createFluentFontIcon("AddSquareMultipleRegular", "", 2, undefined));
+export const AddSquareMultiple16Regular = ( /*#__PURE__*/createFluentFontIcon("AddSquareMultiple16Regular", "", 1, 16));
+export const AddSquareMultiple16Filled = ( /*#__PURE__*/createFluentFontIcon("AddSquareMultiple16Filled", "", 0, 16));
+export const AddSquareMultiple20Regular = ( /*#__PURE__*/createFluentFontIcon("AddSquareMultiple20Regular", "", 1, 20));
+export const AddSquareMultiple20Filled = ( /*#__PURE__*/createFluentFontIcon("AddSquareMultiple20Filled", "", 0, 20));
+export const AddSquareMultiple24Regular = ( /*#__PURE__*/createFluentFontIcon("AddSquareMultiple24Regular", "󰉦", 1, 24));
+export const AddSquareMultiple24Filled = ( /*#__PURE__*/createFluentFontIcon("AddSquareMultiple24Filled", "󰉹", 0, 24));

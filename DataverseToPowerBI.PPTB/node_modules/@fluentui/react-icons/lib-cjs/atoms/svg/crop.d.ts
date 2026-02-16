@@ -1,0 +1,16 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const CropFilled: FluentIcon;
+export declare const CropRegular: FluentIcon;
+export declare const Crop16Regular: FluentIcon;
+export declare const Crop16Filled: FluentIcon;
+export declare const Crop20Regular: FluentIcon;
+export declare const Crop20Filled: FluentIcon;
+export declare const Crop24Regular: FluentIcon;
+export declare const Crop24Filled: FluentIcon;
+export declare const Crop28Regular: FluentIcon;
+export declare const Crop28Filled: FluentIcon;
+export declare const Crop32Regular: FluentIcon;
+export declare const Crop32Filled: FluentIcon;
+export declare const Crop32Light: FluentIcon;
+export declare const Crop48Regular: FluentIcon;
+export declare const Crop48Filled: FluentIcon;

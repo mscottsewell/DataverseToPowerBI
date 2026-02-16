@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const TrophyLockFilled: FluentFontIcon;
+export declare const TrophyLockRegular: FluentFontIcon;
+export declare const TrophyLock16Regular: FluentFontIcon;
+export declare const TrophyLock16Filled: FluentFontIcon;
+export declare const TrophyLock20Regular: FluentFontIcon;
+export declare const TrophyLock20Filled: FluentFontIcon;
+export declare const TrophyLock24Regular: FluentFontIcon;
+export declare const TrophyLock24Filled: FluentFontIcon;
+export declare const TrophyLock28Regular: FluentFontIcon;
+export declare const TrophyLock28Filled: FluentFontIcon;
+export declare const TrophyLock32Regular: FluentFontIcon;
+export declare const TrophyLock32Filled: FluentFontIcon;
+export declare const TrophyLock48Regular: FluentFontIcon;
+export declare const TrophyLock48Filled: FluentFontIcon;

@@ -1,0 +1,16 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const SearchSparkleFilled: FluentFontIcon;
+export declare const SearchSparkleRegular: FluentFontIcon;
+export declare const SearchSparkle16Regular: FluentFontIcon;
+export declare const SearchSparkle16Filled: FluentFontIcon;
+export declare const SearchSparkle20Regular: FluentFontIcon;
+export declare const SearchSparkle20Filled: FluentFontIcon;
+export declare const SearchSparkle24Regular: FluentFontIcon;
+export declare const SearchSparkle24Filled: FluentFontIcon;
+export declare const SearchSparkle28Regular: FluentFontIcon;
+export declare const SearchSparkle28Filled: FluentFontIcon;
+export declare const SearchSparkle32Regular: FluentFontIcon;
+export declare const SearchSparkle32Filled: FluentFontIcon;
+export declare const SearchSparkle32Light: FluentFontIcon;
+export declare const SearchSparkle48Regular: FluentFontIcon;
+export declare const SearchSparkle48Filled: FluentFontIcon;

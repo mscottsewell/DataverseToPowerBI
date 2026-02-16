@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const ReceiptFilled: FluentFontIcon;
+export declare const ReceiptRegular: FluentFontIcon;
+export declare const Receipt16Regular: FluentFontIcon;
+export declare const Receipt16Filled: FluentFontIcon;
+export declare const Receipt20Regular: FluentFontIcon;
+export declare const Receipt20Filled: FluentFontIcon;
+export declare const Receipt24Regular: FluentFontIcon;
+export declare const Receipt24Filled: FluentFontIcon;
+export declare const Receipt28Regular: FluentFontIcon;
+export declare const Receipt28Filled: FluentFontIcon;
+export declare const Receipt32Regular: FluentFontIcon;
+export declare const Receipt32Filled: FluentFontIcon;
+export declare const Receipt48Regular: FluentFontIcon;
+export declare const Receipt48Filled: FluentFontIcon;

@@ -1,0 +1,13 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const PlugDisconnectedFilled: FluentIcon;
+export declare const PlugDisconnectedRegular: FluentIcon;
+export declare const PlugDisconnected16Regular: FluentIcon;
+export declare const PlugDisconnected16Filled: FluentIcon;
+export declare const PlugDisconnected20Regular: FluentIcon;
+export declare const PlugDisconnected20Filled: FluentIcon;
+export declare const PlugDisconnected24Regular: FluentIcon;
+export declare const PlugDisconnected24Filled: FluentIcon;
+export declare const PlugDisconnected28Regular: FluentIcon;
+export declare const PlugDisconnected28Filled: FluentIcon;
+export declare const PlugDisconnected48Regular: FluentIcon;
+export declare const PlugDisconnected48Filled: FluentIcon;

@@ -1,0 +1,13 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const WeatherMoonOffFilled: FluentIcon;
+export declare const WeatherMoonOffRegular: FluentIcon;
+export declare const WeatherMoonOff16Regular: FluentIcon;
+export declare const WeatherMoonOff16Filled: FluentIcon;
+export declare const WeatherMoonOff20Regular: FluentIcon;
+export declare const WeatherMoonOff20Filled: FluentIcon;
+export declare const WeatherMoonOff24Regular: FluentIcon;
+export declare const WeatherMoonOff24Filled: FluentIcon;
+export declare const WeatherMoonOff28Regular: FluentIcon;
+export declare const WeatherMoonOff28Filled: FluentIcon;
+export declare const WeatherMoonOff48Regular: FluentIcon;
+export declare const WeatherMoonOff48Filled: FluentIcon;

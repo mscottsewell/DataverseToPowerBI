@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const WindowFingerprintFilled: FluentIcon;
+export declare const WindowFingerprintRegular: FluentIcon;
+export declare const WindowFingerprint16Regular: FluentIcon;
+export declare const WindowFingerprint16Filled: FluentIcon;
+export declare const WindowFingerprint20Regular: FluentIcon;
+export declare const WindowFingerprint20Filled: FluentIcon;
+export declare const WindowFingerprint24Regular: FluentIcon;
+export declare const WindowFingerprint24Filled: FluentIcon;
+export declare const WindowFingerprint28Regular: FluentIcon;
+export declare const WindowFingerprint28Filled: FluentIcon;
+export declare const WindowFingerprint32Regular: FluentIcon;
+export declare const WindowFingerprint32Filled: FluentIcon;
+export declare const WindowFingerprint48Regular: FluentIcon;
+export declare const WindowFingerprint48Filled: FluentIcon;

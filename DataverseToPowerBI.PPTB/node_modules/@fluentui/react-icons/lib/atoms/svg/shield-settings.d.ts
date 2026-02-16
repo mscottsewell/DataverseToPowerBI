@@ -1,0 +1,11 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const ShieldSettingsFilled: FluentIcon;
+export declare const ShieldSettingsRegular: FluentIcon;
+export declare const ShieldSettings16Regular: FluentIcon;
+export declare const ShieldSettings16Filled: FluentIcon;
+export declare const ShieldSettings20Regular: FluentIcon;
+export declare const ShieldSettings20Filled: FluentIcon;
+export declare const ShieldSettings24Regular: FluentIcon;
+export declare const ShieldSettings24Filled: FluentIcon;
+export declare const ShieldSettings28Regular: FluentIcon;
+export declare const ShieldSettings28Filled: FluentIcon;

@@ -1,0 +1,11 @@
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.TextAlignJustify24Filled = exports.TextAlignJustify24Regular = exports.TextAlignJustify20Filled = exports.TextAlignJustify20Regular = exports.TextAlignJustifyRegular = exports.TextAlignJustifyFilled = void 0;
+const createFluentIcon_1 = require("../../utils/createFluentIcon");
+exports.TextAlignJustifyFilled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('TextAlignJustifyFilled', "1em", ["M2 4.25c0-.41.34-.75.75-.75h14.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1 2 4.25Zm0 5c0-.41.34-.75.75-.75h14.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1 2 9.25Zm.75 4.25a.75.75 0 0 0 0 1.5h14.5a.75.75 0 0 0 0-1.5H2.75Z"]));
+exports.TextAlignJustifyRegular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('TextAlignJustifyRegular', "1em", ["M2 4.5c0-.28.22-.5.5-.5h15a.5.5 0 0 1 0 1h-15a.5.5 0 0 1-.5-.5Zm0 5c0-.28.22-.5.5-.5h15a.5.5 0 0 1 0 1h-15a.5.5 0 0 1-.5-.5Zm.5 4.5a.5.5 0 0 0 0 1h15a.5.5 0 0 0 0-1h-15Z"]));
+exports.TextAlignJustify20Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('TextAlignJustify20Regular', "20", ["M2 4.5c0-.28.22-.5.5-.5h15a.5.5 0 0 1 0 1h-15a.5.5 0 0 1-.5-.5Zm0 5c0-.28.22-.5.5-.5h15a.5.5 0 0 1 0 1h-15a.5.5 0 0 1-.5-.5Zm.5 4.5a.5.5 0 0 0 0 1h15a.5.5 0 0 0 0-1h-15Z"]));
+exports.TextAlignJustify20Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('TextAlignJustify20Filled', "20", ["M2 4.25c0-.41.34-.75.75-.75h14.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1 2 4.25Zm0 5c0-.41.34-.75.75-.75h14.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1 2 9.25Zm.75 4.25a.75.75 0 0 0 0 1.5h14.5a.75.75 0 0 0 0-1.5H2.75Z"]));
+exports.TextAlignJustify24Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('TextAlignJustify24Regular', "24", ["M2 5.75c0-.41.34-.75.75-.75h18.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1 2 5.75Zm0 13c0-.41.34-.75.75-.75h18.5a.75.75 0 0 1 0 1.5H2.75a.75.75 0 0 1-.75-.75Zm.75-7.25a.75.75 0 0 0 0 1.5h18.5a.75.75 0 0 0 0-1.5H2.75Z"]));
+exports.TextAlignJustify24Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('TextAlignJustify24Filled', "24", ["M2 6a1 1 0 0 1 1-1h18a1 1 0 1 1 0 2H3a1 1 0 0 1-1-1Zm0 12a1 1 0 0 1 1-1h18a1 1 0 1 1 0 2H3a1 1 0 0 1-1-1Zm1-7a1 1 0 1 0 0 2h18a1 1 0 1 0 0-2H3Z"]));

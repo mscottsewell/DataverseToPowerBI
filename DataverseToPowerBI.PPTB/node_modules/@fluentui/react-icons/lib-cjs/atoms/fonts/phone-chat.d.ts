@@ -1,0 +1,11 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const PhoneChatFilled: FluentFontIcon;
+export declare const PhoneChatRegular: FluentFontIcon;
+export declare const PhoneChat16Regular: FluentFontIcon;
+export declare const PhoneChat16Filled: FluentFontIcon;
+export declare const PhoneChat20Regular: FluentFontIcon;
+export declare const PhoneChat20Filled: FluentFontIcon;
+export declare const PhoneChat24Regular: FluentFontIcon;
+export declare const PhoneChat24Filled: FluentFontIcon;
+export declare const PhoneChat28Regular: FluentFontIcon;
+export declare const PhoneChat28Filled: FluentFontIcon;

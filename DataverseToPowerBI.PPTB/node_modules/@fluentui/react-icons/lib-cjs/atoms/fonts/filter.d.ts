@@ -1,0 +1,16 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const FilterFilled: FluentFontIcon;
+export declare const FilterRegular: FluentFontIcon;
+export declare const Filter12Regular: FluentFontIcon;
+export declare const Filter12Filled: FluentFontIcon;
+export declare const Filter16Regular: FluentFontIcon;
+export declare const Filter16Filled: FluentFontIcon;
+export declare const Filter20Regular: FluentFontIcon;
+export declare const Filter20Filled: FluentFontIcon;
+export declare const Filter24Regular: FluentFontIcon;
+export declare const Filter24Filled: FluentFontIcon;
+export declare const Filter28Regular: FluentFontIcon;
+export declare const Filter28Filled: FluentFontIcon;
+export declare const Filter32Regular: FluentFontIcon;
+export declare const Filter32Filled: FluentFontIcon;
+export declare const Filter32Light: FluentFontIcon;

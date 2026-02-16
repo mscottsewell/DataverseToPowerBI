@@ -1,0 +1,16 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const PersonMailFilled: FluentIcon;
+export declare const PersonMailRegular: FluentIcon;
+export declare const PersonMail16Regular: FluentIcon;
+export declare const PersonMail16Filled: FluentIcon;
+export declare const PersonMail20Regular: FluentIcon;
+export declare const PersonMail20Filled: FluentIcon;
+export declare const PersonMail24Regular: FluentIcon;
+export declare const PersonMail24Filled: FluentIcon;
+export declare const PersonMail28Regular: FluentIcon;
+export declare const PersonMail28Filled: FluentIcon;
+export declare const PersonMail32Regular: FluentIcon;
+export declare const PersonMail32Filled: FluentIcon;
+export declare const PersonMail32Light: FluentIcon;
+export declare const PersonMail48Regular: FluentIcon;
+export declare const PersonMail48Filled: FluentIcon;

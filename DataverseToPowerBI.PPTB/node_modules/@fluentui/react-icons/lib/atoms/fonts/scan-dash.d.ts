@@ -1,0 +1,17 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const ScanDashFilled: FluentFontIcon;
+export declare const ScanDashRegular: FluentFontIcon;
+export declare const ScanDash12Regular: FluentFontIcon;
+export declare const ScanDash12Filled: FluentFontIcon;
+export declare const ScanDash16Regular: FluentFontIcon;
+export declare const ScanDash16Filled: FluentFontIcon;
+export declare const ScanDash20Regular: FluentFontIcon;
+export declare const ScanDash20Filled: FluentFontIcon;
+export declare const ScanDash24Regular: FluentFontIcon;
+export declare const ScanDash24Filled: FluentFontIcon;
+export declare const ScanDash28Regular: FluentFontIcon;
+export declare const ScanDash28Filled: FluentFontIcon;
+export declare const ScanDash32Regular: FluentFontIcon;
+export declare const ScanDash32Filled: FluentFontIcon;
+export declare const ScanDash48Regular: FluentFontIcon;
+export declare const ScanDash48Filled: FluentFontIcon;

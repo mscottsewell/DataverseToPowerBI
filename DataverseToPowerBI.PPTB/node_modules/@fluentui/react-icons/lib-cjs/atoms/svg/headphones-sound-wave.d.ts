@@ -1,0 +1,17 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const HeadphonesSoundWaveFilled: FluentIcon;
+export declare const HeadphonesSoundWaveRegular: FluentIcon;
+export declare const HeadphonesSoundWave12Regular: FluentIcon;
+export declare const HeadphonesSoundWave12Filled: FluentIcon;
+export declare const HeadphonesSoundWave16Regular: FluentIcon;
+export declare const HeadphonesSoundWave16Filled: FluentIcon;
+export declare const HeadphonesSoundWave20Regular: FluentIcon;
+export declare const HeadphonesSoundWave20Filled: FluentIcon;
+export declare const HeadphonesSoundWave24Regular: FluentIcon;
+export declare const HeadphonesSoundWave24Filled: FluentIcon;
+export declare const HeadphonesSoundWave28Regular: FluentIcon;
+export declare const HeadphonesSoundWave28Filled: FluentIcon;
+export declare const HeadphonesSoundWave32Regular: FluentIcon;
+export declare const HeadphonesSoundWave32Filled: FluentIcon;
+export declare const HeadphonesSoundWave48Regular: FluentIcon;
+export declare const HeadphonesSoundWave48Filled: FluentIcon;

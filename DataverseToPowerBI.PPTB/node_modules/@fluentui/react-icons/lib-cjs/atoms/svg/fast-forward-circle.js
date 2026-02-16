@@ -1,0 +1,6 @@
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.FastForwardCircle24Color = void 0;
+const createFluentIcon_1 = require("../../utils/createFluentIcon");
+exports.FastForwardCircle24Color = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('FastForwardCircle24Color', "24", `<path d="M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20Z" fill="url(#ic_fluent_fast_forward_circle_24_color__a)"/><path d="M12.53 8.88c0-.71.85-1.13 1.46-.72l4.62 3.12a.86.86 0 0 1 0 1.44l-4.62 3.12c-.61.4-1.46 0-1.46-.72v-2.03l-4.08 2.75c-.6.4-1.45 0-1.45-.72V8.88c0-.71.84-1.13 1.45-.72l4.08 2.75V8.88Z" fill="#212121"/><path d="M12.53 8.88c0-.71.85-1.13 1.46-.72l4.62 3.12a.86.86 0 0 1 0 1.44l-4.62 3.12c-.61.4-1.46 0-1.46-.72v-2.03l-4.08 2.75c-.6.4-1.45 0-1.45-.72V8.88c0-.71.84-1.13 1.45-.72l4.08 2.75V8.88Z" fill="url(#ic_fluent_fast_forward_circle_24_color__b)"/><defs><linearGradient id="ic_fluent_fast_forward_circle_24_color__a" x1="2.71" y1="5.75" x2="16.52" y2="20.09" gradientUnits="userSpaceOnUse"><stop stop-color="#52D17C"/><stop offset="1" stop-color="#22918B"/></linearGradient><linearGradient id="ic_fluent_fast_forward_circle_24_color__b" x1="9.25" y1="8.82" x2="10.96" y2="17.85" gradientUnits="userSpaceOnUse"><stop stop-color="#fff"/><stop offset="1" stop-color="#E3FFD9"/></linearGradient></defs>`, { color: true }));

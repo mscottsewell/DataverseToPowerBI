@@ -1,0 +1,11 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const TableDeleteColumnFilled: FluentFontIcon;
+export declare const TableDeleteColumnRegular: FluentFontIcon;
+export declare const TableDeleteColumn16Regular: FluentFontIcon;
+export declare const TableDeleteColumn16Filled: FluentFontIcon;
+export declare const TableDeleteColumn20Regular: FluentFontIcon;
+export declare const TableDeleteColumn20Filled: FluentFontIcon;
+export declare const TableDeleteColumn24Regular: FluentFontIcon;
+export declare const TableDeleteColumn24Filled: FluentFontIcon;
+export declare const TableDeleteColumn28Regular: FluentFontIcon;
+export declare const TableDeleteColumn28Filled: FluentFontIcon;

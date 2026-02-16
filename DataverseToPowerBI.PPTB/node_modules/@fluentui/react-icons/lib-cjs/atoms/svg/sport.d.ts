@@ -1,0 +1,13 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const SportColor: FluentIcon;
+export declare const SportFilled: FluentIcon;
+export declare const SportRegular: FluentIcon;
+export declare const Sport16Regular: FluentIcon;
+export declare const Sport16Filled: FluentIcon;
+export declare const Sport16Color: FluentIcon;
+export declare const Sport20Regular: FluentIcon;
+export declare const Sport20Filled: FluentIcon;
+export declare const Sport20Color: FluentIcon;
+export declare const Sport24Regular: FluentIcon;
+export declare const Sport24Filled: FluentIcon;
+export declare const Sport24Color: FluentIcon;

@@ -1,0 +1,13 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const EyeLinesFilled: FluentIcon;
+export declare const EyeLinesRegular: FluentIcon;
+export declare const EyeLines20Regular: FluentIcon;
+export declare const EyeLines20Filled: FluentIcon;
+export declare const EyeLines24Regular: FluentIcon;
+export declare const EyeLines24Filled: FluentIcon;
+export declare const EyeLines28Regular: FluentIcon;
+export declare const EyeLines28Filled: FluentIcon;
+export declare const EyeLines32Regular: FluentIcon;
+export declare const EyeLines32Filled: FluentIcon;
+export declare const EyeLines48Regular: FluentIcon;
+export declare const EyeLines48Filled: FluentIcon;

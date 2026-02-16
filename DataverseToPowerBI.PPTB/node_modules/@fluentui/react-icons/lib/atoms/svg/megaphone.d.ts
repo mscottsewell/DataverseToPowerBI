@@ -1,0 +1,13 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const MegaphoneFilled: FluentIcon;
+export declare const MegaphoneRegular: FluentIcon;
+export declare const Megaphone12Regular: FluentIcon;
+export declare const Megaphone12Filled: FluentIcon;
+export declare const Megaphone16Regular: FluentIcon;
+export declare const Megaphone16Filled: FluentIcon;
+export declare const Megaphone20Regular: FluentIcon;
+export declare const Megaphone20Filled: FluentIcon;
+export declare const Megaphone24Regular: FluentIcon;
+export declare const Megaphone24Filled: FluentIcon;
+export declare const Megaphone28Regular: FluentIcon;
+export declare const Megaphone28Filled: FluentIcon;

@@ -1,0 +1,8 @@
+"use client";
+import { createFluentIcon } from '../../utils/createFluentIcon';
+export const BorderOutsideFilled = ( /*#__PURE__*/createFluentIcon('BorderOutsideFilled', "1em", ["M3 6a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V6Zm3-1.5c-.83 0-1.5.67-1.5 1.5v8c0 .83.67 1.5 1.5 1.5h8c.83 0 1.5-.67 1.5-1.5V6c0-.83-.67-1.5-1.5-1.5H6Z"]));
+export const BorderOutsideRegular = ( /*#__PURE__*/createFluentIcon('BorderOutsideRegular', "1em", ["M3 6a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V6Zm3-2a2 2 0 0 0-2 2v8c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2H6Z"]));
+export const BorderOutside20Regular = ( /*#__PURE__*/createFluentIcon('BorderOutside20Regular', "20", ["M3 6a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V6Zm3-2a2 2 0 0 0-2 2v8c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2H6Z"]));
+export const BorderOutside20Filled = ( /*#__PURE__*/createFluentIcon('BorderOutside20Filled', "20", ["M3 6a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V6Zm3-1.5c-.83 0-1.5.67-1.5 1.5v8c0 .83.67 1.5 1.5 1.5h8c.83 0 1.5-.67 1.5-1.5V6c0-.83-.67-1.5-1.5-1.5H6Z"]));
+export const BorderOutside24Regular = ( /*#__PURE__*/createFluentIcon('BorderOutside24Regular', "24", ["M3 5.75A2.75 2.75 0 0 1 5.75 3h12.5A2.75 2.75 0 0 1 21 5.75v12.5A2.75 2.75 0 0 1 18.25 21H5.75A2.75 2.75 0 0 1 3 18.25V5.75ZM5.75 4.5c-.69 0-1.25.56-1.25 1.25v12.5c0 .69.56 1.25 1.25 1.25h12.5c.69 0 1.25-.56 1.25-1.25V5.75c0-.69-.56-1.25-1.25-1.25H5.75Z"]));
+export const BorderOutside24Filled = ( /*#__PURE__*/createFluentIcon('BorderOutside24Filled', "24", ["M3 6a3 3 0 0 1 3-3h12a3 3 0 0 1 3 3v12a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V6Zm3-1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1H6Z"]));

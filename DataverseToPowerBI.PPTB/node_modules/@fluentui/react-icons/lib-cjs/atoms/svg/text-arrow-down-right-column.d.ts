@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const TextArrowDownRightColumnFilled: FluentIcon;
+export declare const TextArrowDownRightColumnRegular: FluentIcon;
+export declare const TextArrowDownRightColumn16Regular: FluentIcon;
+export declare const TextArrowDownRightColumn16Filled: FluentIcon;
+export declare const TextArrowDownRightColumn20Regular: FluentIcon;
+export declare const TextArrowDownRightColumn20Filled: FluentIcon;
+export declare const TextArrowDownRightColumn24Regular: FluentIcon;
+export declare const TextArrowDownRightColumn24Filled: FluentIcon;
+export declare const TextArrowDownRightColumn28Regular: FluentIcon;
+export declare const TextArrowDownRightColumn28Filled: FluentIcon;
+export declare const TextArrowDownRightColumn32Regular: FluentIcon;
+export declare const TextArrowDownRightColumn32Filled: FluentIcon;
+export declare const TextArrowDownRightColumn48Regular: FluentIcon;
+export declare const TextArrowDownRightColumn48Filled: FluentIcon;

@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const AnimalPawPrintFilled: FluentFontIcon;
+export declare const AnimalPawPrintRegular: FluentFontIcon;
+export declare const AnimalPawPrint16Regular: FluentFontIcon;
+export declare const AnimalPawPrint16Filled: FluentFontIcon;
+export declare const AnimalPawPrint20Regular: FluentFontIcon;
+export declare const AnimalPawPrint20Filled: FluentFontIcon;
+export declare const AnimalPawPrint24Regular: FluentFontIcon;
+export declare const AnimalPawPrint24Filled: FluentFontIcon;
+export declare const AnimalPawPrint28Regular: FluentFontIcon;
+export declare const AnimalPawPrint28Filled: FluentFontIcon;
+export declare const AnimalPawPrint32Regular: FluentFontIcon;
+export declare const AnimalPawPrint32Filled: FluentFontIcon;
+export declare const AnimalPawPrint48Regular: FluentFontIcon;
+export declare const AnimalPawPrint48Filled: FluentFontIcon;

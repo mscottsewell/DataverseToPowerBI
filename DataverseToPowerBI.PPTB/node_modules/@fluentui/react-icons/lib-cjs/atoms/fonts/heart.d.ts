@@ -1,0 +1,17 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const HeartFilled: FluentFontIcon;
+export declare const HeartRegular: FluentFontIcon;
+export declare const Heart12Regular: FluentFontIcon;
+export declare const Heart12Filled: FluentFontIcon;
+export declare const Heart16Regular: FluentFontIcon;
+export declare const Heart16Filled: FluentFontIcon;
+export declare const Heart20Regular: FluentFontIcon;
+export declare const Heart20Filled: FluentFontIcon;
+export declare const Heart24Regular: FluentFontIcon;
+export declare const Heart24Filled: FluentFontIcon;
+export declare const Heart28Regular: FluentFontIcon;
+export declare const Heart28Filled: FluentFontIcon;
+export declare const Heart32Regular: FluentFontIcon;
+export declare const Heart32Filled: FluentFontIcon;
+export declare const Heart48Regular: FluentFontIcon;
+export declare const Heart48Filled: FluentFontIcon;

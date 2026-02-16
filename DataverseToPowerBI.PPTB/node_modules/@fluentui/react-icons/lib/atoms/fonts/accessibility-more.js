@@ -1,0 +1,10 @@
+"use client";
+import { createFluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export const AccessibilityMoreFilled = ( /*#__PURE__*/createFluentFontIcon("AccessibilityMoreFilled", "", 2, undefined));
+export const AccessibilityMoreRegular = ( /*#__PURE__*/createFluentFontIcon("AccessibilityMoreRegular", "", 2, undefined));
+export const AccessibilityMore16Regular = ( /*#__PURE__*/createFluentFontIcon("AccessibilityMore16Regular", "󰙈", 1, 16));
+export const AccessibilityMore16Filled = ( /*#__PURE__*/createFluentFontIcon("AccessibilityMore16Filled", "󰛄", 0, 16));
+export const AccessibilityMore20Regular = ( /*#__PURE__*/createFluentFontIcon("AccessibilityMore20Regular", "󰙉", 1, 20));
+export const AccessibilityMore20Filled = ( /*#__PURE__*/createFluentFontIcon("AccessibilityMore20Filled", "󰛅", 0, 20));
+export const AccessibilityMore24Regular = ( /*#__PURE__*/createFluentFontIcon("AccessibilityMore24Regular", "󰙊", 1, 24));
+export const AccessibilityMore24Filled = ( /*#__PURE__*/createFluentFontIcon("AccessibilityMore24Filled", "󰛆", 0, 24));

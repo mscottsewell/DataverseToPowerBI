@@ -1,0 +1,13 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const VaultColor: FluentIcon;
+export declare const VaultFilled: FluentIcon;
+export declare const VaultRegular: FluentIcon;
+export declare const Vault16Regular: FluentIcon;
+export declare const Vault16Filled: FluentIcon;
+export declare const Vault16Color: FluentIcon;
+export declare const Vault20Regular: FluentIcon;
+export declare const Vault20Filled: FluentIcon;
+export declare const Vault20Color: FluentIcon;
+export declare const Vault24Regular: FluentIcon;
+export declare const Vault24Filled: FluentIcon;
+export declare const Vault24Color: FluentIcon;

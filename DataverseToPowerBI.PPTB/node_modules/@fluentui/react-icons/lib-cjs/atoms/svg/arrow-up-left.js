@@ -1,0 +1,15 @@
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ArrowUpLeft48Filled = exports.ArrowUpLeft48Regular = exports.ArrowUpLeft24Filled = exports.ArrowUpLeft24Regular = exports.ArrowUpLeft20Filled = exports.ArrowUpLeft20Regular = exports.ArrowUpLeft16Filled = exports.ArrowUpLeft16Regular = exports.ArrowUpLeftRegular = exports.ArrowUpLeftFilled = void 0;
+const createFluentIcon_1 = require("../../utils/createFluentIcon");
+exports.ArrowUpLeftFilled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('ArrowUpLeftFilled', "1em", ["M12 3.75a.75.75 0 0 0-.75-.75h-7.5a.75.75 0 0 0-.75.75v7.5a.75.75 0 0 0 1.5 0V5.56l11.22 11.22a.75.75 0 0 0 1.06-1.06L5.56 4.5h5.69c.41 0 .75-.34.75-.75Z"]));
+exports.ArrowUpLeftRegular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('ArrowUpLeftRegular', "1em", ["M11.5 4a.5.5 0 0 0 0-1h-8a.5.5 0 0 0-.5.5v8a.5.5 0 0 0 1 0V4.7l12.15 12.15a.5.5 0 0 0 .7-.7L4.71 4h6.79Z"]));
+exports.ArrowUpLeft16Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('ArrowUpLeft16Regular', "16", ["M8.5 3a.5.5 0 0 0 0-1h-6a.5.5 0 0 0-.5.5v6a.5.5 0 0 0 1 0V3.7l10.15 10.15a.5.5 0 0 0 .7-.7L3.71 3H8.5Z"]));
+exports.ArrowUpLeft16Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('ArrowUpLeft16Filled', "16", ["M9 2.75A.75.75 0 0 0 8.25 2h-5.5a.75.75 0 0 0-.75.75v5.5a.75.75 0 0 0 1.5 0V4.56l9.22 9.22a.75.75 0 0 0 1.06-1.06L4.56 3.5h3.69c.41 0 .75-.34.75-.75Z"]));
+exports.ArrowUpLeft20Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('ArrowUpLeft20Regular', "20", ["M11.5 4a.5.5 0 0 0 0-1h-8a.5.5 0 0 0-.5.5v8a.5.5 0 0 0 1 0V4.7l12.15 12.15a.5.5 0 0 0 .7-.7L4.71 4h6.79Z"]));
+exports.ArrowUpLeft20Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('ArrowUpLeft20Filled', "20", ["M12 3.75a.75.75 0 0 0-.75-.75h-7.5a.75.75 0 0 0-.75.75v7.5a.75.75 0 0 0 1.5 0V5.56l11.22 11.22a.75.75 0 0 0 1.06-1.06L5.56 4.5h5.69c.41 0 .75-.34.75-.75Z"]));
+exports.ArrowUpLeft24Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('ArrowUpLeft24Regular', "24", ["M13.25 3a.75.75 0 0 1 0 1.5H5.58l15.2 15.2a.76.76 0 0 1-1.08 1.08L4.5 5.58v7.67a.75.75 0 0 1-1.5 0v-9.5c0-.41.33-.75.75-.75h9.5Z"]));
+exports.ArrowUpLeft24Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('ArrowUpLeft24Filled', "24", ["M13 3a1 1 0 1 1 0 2H6.41l14.3 14.3a1 1 0 0 1-1.42 1.4L5 6.42V13a1 1 0 1 1-2 0V4a1 1 0 0 1 1-1h9Z"]));
+exports.ArrowUpLeft48Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('ArrowUpLeft48Regular', "48", ["M25.75 6a1.25 1.25 0 1 1 0 2.5H10.27l31.36 31.37a1.25 1.25 0 0 1-1.76 1.76L8.5 10.27v15.48a1.25 1.25 0 1 1-2.5 0V7.25C6 6.56 6.56 6 7.25 6h18.5Z"]));
+exports.ArrowUpLeft48Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('ArrowUpLeft48Filled', "48", ["M25.5 6a1.5 1.5 0 0 1 0 3H11.12l30.44 30.44a1.5 1.5 0 0 1-2.12 2.12L9 11.12V25.5a1.5 1.5 0 0 1-3 0v-18C6 6.67 6.67 6 7.5 6h18Z"]));

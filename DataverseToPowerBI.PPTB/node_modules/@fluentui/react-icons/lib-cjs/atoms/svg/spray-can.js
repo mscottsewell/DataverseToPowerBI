@@ -1,0 +1,7 @@
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.SprayCan16Filled = exports.SprayCan16Regular = void 0;
+const createFluentIcon_1 = require("../../utils/createFluentIcon");
+exports.SprayCan16Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('SprayCan16Regular', "16", ["M9.5 4a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1ZM11 2.5a.5.5 0 1 1 1 0 .5.5 0 0 1-1 0Zm0 2a.5.5 0 1 1 1 0 .5.5 0 0 1-1 0Zm2-3a.5.5 0 1 1 1 0 .5.5 0 0 1-1 0Zm0 2a.5.5 0 1 1 1 0 .5.5 0 0 1-1 0Zm0 2a.5.5 0 1 1 1 0 .5.5 0 0 1-1 0Zm-3.03.87.02.07v.02l.01.04v6.75c0 .97-.78 1.75-1.75 1.75h-3.5C3.78 15 3 14.22 3 13.25V6.46l.01-.02.02-.07a.5.5 0 0 1 .12-.22L5 4.29V2.5c0-.28.22-.5.5-.5h2c.28 0 .5.22.5.5v1.8l1.85 1.85c.06.06.1.14.13.22ZM7 3H6v1h1V3Zm.3 2H5.7l-1 1h3.6l-1-1Zm.95 9c.41 0 .75-.34.75-.75V7H4v6.25c0 .41.34.75.75.75h3.5Z"]));
+exports.SprayCan16Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('SprayCan16Filled', "16", ["M14 1.5a.5.5 0 1 1 1 0 .5.5 0 0 1-1 0Zm-2 1a.5.5 0 1 1 1 0 .5.5 0 0 1-1 0ZM10.5 4a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1Zm2 0a.5.5 0 1 0 0 1 .5.5 0 0 0 0-1Zm2-1a.5.5 0 1 0 0 1 .5.5 0 0 0 0-1ZM14 5.5a.5.5 0 1 1 1 0 .5.5 0 0 1-1 0Zm-3.01.94c0-.03 0-.05-.02-.07a.5.5 0 0 0-.12-.22L9 4.29V2.5a.5.5 0 0 0-.5-.5h-2a.5.5 0 0 0-.5.5v1.8L4.15 6.14a.5.5 0 0 0-.14.29v.02L4 6.5v6.75c0 .97.78 1.75 1.75 1.75h3.5c.97 0 1.75-.78 1.75-1.75V6.47l-.01-.03ZM7 3h1v1H7V3Zm-.3 2h1.6l1 1H5.7l1-1Z"]));

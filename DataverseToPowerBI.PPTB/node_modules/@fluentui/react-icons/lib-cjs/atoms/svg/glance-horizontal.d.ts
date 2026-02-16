@@ -1,0 +1,17 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const GlanceHorizontalFilled: FluentIcon;
+export declare const GlanceHorizontalRegular: FluentIcon;
+export declare const GlanceHorizontal12Regular: FluentIcon;
+export declare const GlanceHorizontal12Filled: FluentIcon;
+export declare const GlanceHorizontal16Regular: FluentIcon;
+export declare const GlanceHorizontal16Filled: FluentIcon;
+export declare const GlanceHorizontal20Regular: FluentIcon;
+export declare const GlanceHorizontal20Filled: FluentIcon;
+export declare const GlanceHorizontal24Regular: FluentIcon;
+export declare const GlanceHorizontal24Filled: FluentIcon;
+export declare const GlanceHorizontal28Regular: FluentIcon;
+export declare const GlanceHorizontal28Filled: FluentIcon;
+export declare const GlanceHorizontal32Regular: FluentIcon;
+export declare const GlanceHorizontal32Filled: FluentIcon;
+export declare const GlanceHorizontal48Regular: FluentIcon;
+export declare const GlanceHorizontal48Filled: FluentIcon;

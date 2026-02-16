@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const SpatulaSpoonFilled: FluentFontIcon;
+export declare const SpatulaSpoonRegular: FluentFontIcon;
+export declare const SpatulaSpoon16Regular: FluentFontIcon;
+export declare const SpatulaSpoon16Filled: FluentFontIcon;
+export declare const SpatulaSpoon20Regular: FluentFontIcon;
+export declare const SpatulaSpoon20Filled: FluentFontIcon;
+export declare const SpatulaSpoon24Regular: FluentFontIcon;
+export declare const SpatulaSpoon24Filled: FluentFontIcon;
+export declare const SpatulaSpoon28Regular: FluentFontIcon;
+export declare const SpatulaSpoon28Filled: FluentFontIcon;
+export declare const SpatulaSpoon32Regular: FluentFontIcon;
+export declare const SpatulaSpoon32Filled: FluentFontIcon;
+export declare const SpatulaSpoon48Regular: FluentFontIcon;
+export declare const SpatulaSpoon48Filled: FluentFontIcon;

@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const TrophyOffFilled: FluentIcon;
+export declare const TrophyOffRegular: FluentIcon;
+export declare const TrophyOff16Regular: FluentIcon;
+export declare const TrophyOff16Filled: FluentIcon;
+export declare const TrophyOff20Regular: FluentIcon;
+export declare const TrophyOff20Filled: FluentIcon;
+export declare const TrophyOff24Regular: FluentIcon;
+export declare const TrophyOff24Filled: FluentIcon;
+export declare const TrophyOff28Regular: FluentIcon;
+export declare const TrophyOff28Filled: FluentIcon;
+export declare const TrophyOff32Regular: FluentIcon;
+export declare const TrophyOff32Filled: FluentIcon;
+export declare const TrophyOff48Regular: FluentIcon;
+export declare const TrophyOff48Filled: FluentIcon;

@@ -1,0 +1,13 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const PaintBrushSubtractFilled: FluentFontIcon;
+export declare const PaintBrushSubtractRegular: FluentFontIcon;
+export declare const PaintBrushSubtract16Regular: FluentFontIcon;
+export declare const PaintBrushSubtract16Filled: FluentFontIcon;
+export declare const PaintBrushSubtract20Regular: FluentFontIcon;
+export declare const PaintBrushSubtract20Filled: FluentFontIcon;
+export declare const PaintBrushSubtract24Regular: FluentFontIcon;
+export declare const PaintBrushSubtract24Filled: FluentFontIcon;
+export declare const PaintBrushSubtract28Regular: FluentFontIcon;
+export declare const PaintBrushSubtract28Filled: FluentFontIcon;
+export declare const PaintBrushSubtract32Regular: FluentFontIcon;
+export declare const PaintBrushSubtract32Filled: FluentFontIcon;

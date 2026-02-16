@@ -1,0 +1,17 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const ArrowCircleDownFilled: FluentIcon;
+export declare const ArrowCircleDownRegular: FluentIcon;
+export declare const ArrowCircleDown12Regular: FluentIcon;
+export declare const ArrowCircleDown12Filled: FluentIcon;
+export declare const ArrowCircleDown16Regular: FluentIcon;
+export declare const ArrowCircleDown16Filled: FluentIcon;
+export declare const ArrowCircleDown20Regular: FluentIcon;
+export declare const ArrowCircleDown20Filled: FluentIcon;
+export declare const ArrowCircleDown24Regular: FluentIcon;
+export declare const ArrowCircleDown24Filled: FluentIcon;
+export declare const ArrowCircleDown28Regular: FluentIcon;
+export declare const ArrowCircleDown28Filled: FluentIcon;
+export declare const ArrowCircleDown32Regular: FluentIcon;
+export declare const ArrowCircleDown32Filled: FluentIcon;
+export declare const ArrowCircleDown48Regular: FluentIcon;
+export declare const ArrowCircleDown48Filled: FluentIcon;

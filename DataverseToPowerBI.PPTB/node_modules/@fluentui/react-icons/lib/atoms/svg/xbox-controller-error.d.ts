@@ -1,0 +1,11 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const XboxControllerErrorFilled: FluentIcon;
+export declare const XboxControllerErrorRegular: FluentIcon;
+export declare const XboxControllerError20Regular: FluentIcon;
+export declare const XboxControllerError20Filled: FluentIcon;
+export declare const XboxControllerError24Regular: FluentIcon;
+export declare const XboxControllerError24Filled: FluentIcon;
+export declare const XboxControllerError32Regular: FluentIcon;
+export declare const XboxControllerError32Filled: FluentIcon;
+export declare const XboxControllerError48Regular: FluentIcon;
+export declare const XboxControllerError48Filled: FluentIcon;

@@ -1,0 +1,11 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const FilmstripPlayFilled: FluentFontIcon;
+export declare const FilmstripPlayRegular: FluentFontIcon;
+export declare const FilmstripPlay16Regular: FluentFontIcon;
+export declare const FilmstripPlay16Filled: FluentFontIcon;
+export declare const FilmstripPlay20Regular: FluentFontIcon;
+export declare const FilmstripPlay20Filled: FluentFontIcon;
+export declare const FilmstripPlay24Regular: FluentFontIcon;
+export declare const FilmstripPlay24Filled: FluentFontIcon;
+export declare const FilmstripPlay32Regular: FluentFontIcon;
+export declare const FilmstripPlay32Filled: FluentFontIcon;

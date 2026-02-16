@@ -1,0 +1,18 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const SearchFilled: FluentIcon;
+export declare const SearchRegular: FluentIcon;
+export declare const Search12Regular: FluentIcon;
+export declare const Search12Filled: FluentIcon;
+export declare const Search16Regular: FluentIcon;
+export declare const Search16Filled: FluentIcon;
+export declare const Search20Regular: FluentIcon;
+export declare const Search20Filled: FluentIcon;
+export declare const Search24Regular: FluentIcon;
+export declare const Search24Filled: FluentIcon;
+export declare const Search28Regular: FluentIcon;
+export declare const Search28Filled: FluentIcon;
+export declare const Search32Regular: FluentIcon;
+export declare const Search32Filled: FluentIcon;
+export declare const Search32Light: FluentIcon;
+export declare const Search48Regular: FluentIcon;
+export declare const Search48Filled: FluentIcon;

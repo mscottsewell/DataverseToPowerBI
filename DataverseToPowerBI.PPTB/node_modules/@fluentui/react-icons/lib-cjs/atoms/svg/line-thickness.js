@@ -1,0 +1,11 @@
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.LineThickness24Filled = exports.LineThickness24Regular = exports.LineThickness20Filled = exports.LineThickness20Regular = exports.LineThicknessRegular = exports.LineThicknessFilled = void 0;
+const createFluentIcon_1 = require("../../utils/createFluentIcon");
+exports.LineThicknessFilled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('LineThicknessFilled', "1em", ["M2.75 4a.75.75 0 0 0 0 1.5h14.5a.75.75 0 0 0 0-1.5H2.75ZM2 9.25C2 8.56 2.56 8 3.25 8h13.5a1.25 1.25 0 1 1 0 2.5H3.25C2.56 10.5 2 9.94 2 9.25Zm0 5.5c0-.97.78-1.75 1.75-1.75h12.5a1.75 1.75 0 1 1 0 3.5H3.75c-.97 0-1.75-.78-1.75-1.75Z"]));
+exports.LineThicknessRegular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('LineThicknessRegular', "1em", ["M2 4.5c0-.28.22-.5.5-.5h15a.5.5 0 0 1 0 1h-15a.5.5 0 0 1-.5-.5Zm0 10c0-.83.67-1.5 1.5-1.5h13a1.5 1.5 0 0 1 0 3h-13A1.5 1.5 0 0 1 2 14.5ZM3 8a1 1 0 0 0 0 2h14a1 1 0 1 0 0-2H3Z"]));
+exports.LineThickness20Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('LineThickness20Regular', "20", ["M2 4.5c0-.28.22-.5.5-.5h15a.5.5 0 0 1 0 1h-15a.5.5 0 0 1-.5-.5Zm0 10c0-.83.67-1.5 1.5-1.5h13a1.5 1.5 0 0 1 0 3h-13A1.5 1.5 0 0 1 2 14.5ZM3 8a1 1 0 0 0 0 2h14a1 1 0 1 0 0-2H3Z"]));
+exports.LineThickness20Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('LineThickness20Filled', "20", ["M2.75 4a.75.75 0 0 0 0 1.5h14.5a.75.75 0 0 0 0-1.5H2.75ZM2 9.25C2 8.56 2.56 8 3.25 8h13.5a1.25 1.25 0 1 1 0 2.5H3.25C2.56 10.5 2 9.94 2 9.25Zm0 5.5c0-.97.78-1.75 1.75-1.75h12.5a1.75 1.75 0 1 1 0 3.5H3.75c-.97 0-1.75-.78-1.75-1.75Z"]));
+exports.LineThickness24Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('LineThickness24Regular', "24", ["M2.75 3.5a.75.75 0 0 0 0 1.5h18.5a.75.75 0 0 0 0-1.5H2.75ZM2 10.75c0-.69.56-1.25 1.25-1.25h17.5a1.25 1.25 0 1 1 0 2.5H3.25C2.56 12 2 11.44 2 10.75Zm0 7.5c0-.97.78-1.75 1.75-1.75h16.5a1.75 1.75 0 1 1 0 3.5H3.75C2.78 20 2 19.22 2 18.25Z"]));
+exports.LineThickness24Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('LineThickness24Filled', "24", ["M3 3a1 1 0 0 0 0 2h18a1 1 0 1 0 0-2H3Zm-1 7.5C2 9.67 2.67 9 3.5 9h17a1.5 1.5 0 0 1 0 3h-17A1.5 1.5 0 0 1 2 10.5ZM2 18c0-1.1.9-2 2-2h16a2 2 0 1 1 0 4H4a2 2 0 0 1-2-2Z"]));

@@ -1,0 +1,19 @@
+'use client';
+import * as React from 'react';
+export function useMessageBarContextValue_unstable(state) {
+    const { layout, actionsRef, bodyRef, titleId } = state;
+    const messageBarContext = React.useMemo(()=>({
+            layout,
+            actionsRef,
+            bodyRef,
+            titleId
+        }), [
+        layout,
+        actionsRef,
+        bodyRef,
+        titleId
+    ]);
+    return {
+        messageBar: messageBarContext
+    };
+}

@@ -1,0 +1,13 @@
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Step24Filled = exports.Step24Regular = exports.Step20Filled = exports.Step20Regular = exports.Step16Filled = exports.Step16Regular = exports.StepRegular = exports.StepFilled = void 0;
+const createFluentIcon_1 = require("../../utils/createFluentIcon");
+exports.StepFilled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('StepFilled', "1em", ["M13 2a1 1 0 0 0-1 1v4H8a1 1 0 0 0-1 1v4H3a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h12a3 3 0 0 0 3-3V3a1 1 0 0 0-1-1h-4Z"]));
+exports.StepRegular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('StepRegular', "1em", ["M12 3a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v12a3 3 0 0 1-3 3H3a1 1 0 0 1-1-1v-4a1 1 0 0 1 1-1h4V8a1 1 0 0 1 1-1h4V3Zm5 0h-4v4a1 1 0 0 1-1 1H8v4a1 1 0 0 1-1 1H3v4h12a2 2 0 0 0 2-2V3Z"]));
+exports.Step16Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('Step16Regular', "16", ["M9 3a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v8.5a2.5 2.5 0 0 1-2.5 2.5H2a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h3V7a1 1 0 0 1 1-1h3V3Zm4 0h-3v3a1 1 0 0 1-1 1H6v2a1 1 0 0 1-1 1H2v3h9.5c.83 0 1.5-.67 1.5-1.5V3Z"]));
+exports.Step16Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('Step16Filled', "16", ["M9 3a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v8.5a2.5 2.5 0 0 1-2.5 2.5H2a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h3V7a1 1 0 0 1 1-1h3V3Z"]));
+exports.Step20Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('Step20Regular', "20", ["M12 3a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v12a3 3 0 0 1-3 3H3a1 1 0 0 1-1-1v-4a1 1 0 0 1 1-1h4V8a1 1 0 0 1 1-1h4V3Zm5 0h-4v4a1 1 0 0 1-1 1H8v4a1 1 0 0 1-1 1H3v4h12a2 2 0 0 0 2-2V3Z"]));
+exports.Step20Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('Step20Filled', "20", ["M13 2a1 1 0 0 0-1 1v4H8a1 1 0 0 0-1 1v4H3a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h12a3 3 0 0 0 3-3V3a1 1 0 0 0-1-1h-4Z"]));
+exports.Step24Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('Step24Regular', "24", ["M14.5 3.25c0-.69.56-1.25 1.25-1.25h5c.69 0 1.25.56 1.25 1.25v15.5c0 1.8-1.46 3.25-3.25 3.25H3.25C2.56 22 2 21.44 2 20.75v-5c0-.69.56-1.25 1.25-1.25H8V9.25C8 8.56 8.56 8 9.25 8h5.25V3.25Zm1.5.25v4.75c0 .69-.56 1.25-1.25 1.25H9.5v5.25c0 .69-.56 1.25-1.25 1.25H3.5v4.5h15.25c.97 0 1.75-.78 1.75-1.75V3.5H16Z"]));
+exports.Step24Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('Step24Filled', "24", ["M15.75 2c-.69 0-1.25.56-1.25 1.25V8H9.25C8.56 8 8 8.56 8 9.25v5.25H3.25c-.69 0-1.25.56-1.25 1.25v5c0 .69.56 1.25 1.25 1.25h15.5c1.8 0 3.25-1.46 3.25-3.25V3.25C22 2.56 21.44 2 20.75 2h-5Z"]));

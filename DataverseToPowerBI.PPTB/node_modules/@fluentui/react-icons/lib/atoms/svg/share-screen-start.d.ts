@@ -1,0 +1,13 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const ShareScreenStartFilled: FluentIcon;
+export declare const ShareScreenStartRegular: FluentIcon;
+export declare const ShareScreenStart16Regular: FluentIcon;
+export declare const ShareScreenStart16Filled: FluentIcon;
+export declare const ShareScreenStart20Regular: FluentIcon;
+export declare const ShareScreenStart20Filled: FluentIcon;
+export declare const ShareScreenStart24Regular: FluentIcon;
+export declare const ShareScreenStart24Filled: FluentIcon;
+export declare const ShareScreenStart28Regular: FluentIcon;
+export declare const ShareScreenStart28Filled: FluentIcon;
+export declare const ShareScreenStart48Regular: FluentIcon;
+export declare const ShareScreenStart48Filled: FluentIcon;

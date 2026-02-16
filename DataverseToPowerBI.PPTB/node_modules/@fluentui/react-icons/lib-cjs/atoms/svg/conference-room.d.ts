@@ -1,0 +1,13 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const ConferenceRoomFilled: FluentIcon;
+export declare const ConferenceRoomRegular: FluentIcon;
+export declare const ConferenceRoom16Regular: FluentIcon;
+export declare const ConferenceRoom16Filled: FluentIcon;
+export declare const ConferenceRoom20Regular: FluentIcon;
+export declare const ConferenceRoom20Filled: FluentIcon;
+export declare const ConferenceRoom24Regular: FluentIcon;
+export declare const ConferenceRoom24Filled: FluentIcon;
+export declare const ConferenceRoom28Regular: FluentIcon;
+export declare const ConferenceRoom28Filled: FluentIcon;
+export declare const ConferenceRoom48Regular: FluentIcon;
+export declare const ConferenceRoom48Filled: FluentIcon;

@@ -1,0 +1,11 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const ClothesHangerFilled: FluentFontIcon;
+export declare const ClothesHangerRegular: FluentFontIcon;
+export declare const ClothesHanger12Regular: FluentFontIcon;
+export declare const ClothesHanger12Filled: FluentFontIcon;
+export declare const ClothesHanger16Regular: FluentFontIcon;
+export declare const ClothesHanger16Filled: FluentFontIcon;
+export declare const ClothesHanger20Regular: FluentFontIcon;
+export declare const ClothesHanger20Filled: FluentFontIcon;
+export declare const ClothesHanger24Regular: FluentFontIcon;
+export declare const ClothesHanger24Filled: FluentFontIcon;

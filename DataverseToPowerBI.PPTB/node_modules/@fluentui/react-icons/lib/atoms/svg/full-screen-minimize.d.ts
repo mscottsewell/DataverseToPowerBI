@@ -1,0 +1,13 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const FullScreenMinimizeFilled: FluentIcon;
+export declare const FullScreenMinimizeRegular: FluentIcon;
+export declare const FullScreenMinimize16Regular: FluentIcon;
+export declare const FullScreenMinimize16Filled: FluentIcon;
+export declare const FullScreenMinimize20Regular: FluentIcon;
+export declare const FullScreenMinimize20Filled: FluentIcon;
+export declare const FullScreenMinimize24Regular: FluentIcon;
+export declare const FullScreenMinimize24Filled: FluentIcon;
+export declare const FullScreenMinimize28Regular: FluentIcon;
+export declare const FullScreenMinimize28Filled: FluentIcon;
+export declare const FullScreenMinimize32Regular: FluentIcon;
+export declare const FullScreenMinimize32Filled: FluentIcon;

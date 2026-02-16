@@ -1,0 +1,11 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const RectangleLandscapeSyncFilled: FluentIcon;
+export declare const RectangleLandscapeSyncRegular: FluentIcon;
+export declare const RectangleLandscapeSync16Regular: FluentIcon;
+export declare const RectangleLandscapeSync16Filled: FluentIcon;
+export declare const RectangleLandscapeSync20Regular: FluentIcon;
+export declare const RectangleLandscapeSync20Filled: FluentIcon;
+export declare const RectangleLandscapeSync24Regular: FluentIcon;
+export declare const RectangleLandscapeSync24Filled: FluentIcon;
+export declare const RectangleLandscapeSync28Regular: FluentIcon;
+export declare const RectangleLandscapeSync28Filled: FluentIcon;

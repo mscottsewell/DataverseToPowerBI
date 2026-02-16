@@ -1,0 +1,11 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const VideoClipOptimizeFilled: FluentIcon;
+export declare const VideoClipOptimizeRegular: FluentIcon;
+export declare const VideoClipOptimize16Regular: FluentIcon;
+export declare const VideoClipOptimize16Filled: FluentIcon;
+export declare const VideoClipOptimize20Regular: FluentIcon;
+export declare const VideoClipOptimize20Filled: FluentIcon;
+export declare const VideoClipOptimize24Regular: FluentIcon;
+export declare const VideoClipOptimize24Filled: FluentIcon;
+export declare const VideoClipOptimize28Regular: FluentIcon;
+export declare const VideoClipOptimize28Filled: FluentIcon;

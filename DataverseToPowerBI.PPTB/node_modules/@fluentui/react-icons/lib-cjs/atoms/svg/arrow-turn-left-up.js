@@ -1,0 +1,11 @@
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ArrowTurnLeftUp48Filled = exports.ArrowTurnLeftUp48Regular = exports.ArrowTurnLeftUp20Filled = exports.ArrowTurnLeftUp20Regular = exports.ArrowTurnLeftUpRegular = exports.ArrowTurnLeftUpFilled = void 0;
+const createFluentIcon_1 = require("../../utils/createFluentIcon");
+exports.ArrowTurnLeftUpFilled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('ArrowTurnLeftUpFilled', "1em", ["M3.22 9.28a.75.75 0 0 1 0-1.06l4-4c.3-.3.77-.3 1.06 0l4 4a.75.75 0 0 1-1.06 1.06L8.5 6.56V13c0 .83.67 1.5 1.5 1.5h6.25a.75.75 0 0 1 0 1.5H10a3 3 0 0 1-3-3V6.56L4.28 9.28c-.3.3-.77.3-1.06 0Z"]));
+exports.ArrowTurnLeftUpRegular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('ArrowTurnLeftUpRegular', "1em", ["M3.15 8.85a.5.5 0 0 1 0-.7l4-4c.2-.2.5-.2.7 0l4 4a.5.5 0 0 1-.7.7L8 5.71V12c0 1.1.9 2 2 2h6.5a.5.5 0 0 1 0 1H10a3 3 0 0 1-3-3V5.7L3.85 8.86a.5.5 0 0 1-.7 0Z"]));
+exports.ArrowTurnLeftUp20Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('ArrowTurnLeftUp20Regular', "20", ["M3.15 8.85a.5.5 0 0 1 0-.7l4-4c.2-.2.5-.2.7 0l4 4a.5.5 0 0 1-.7.7L8 5.71V12c0 1.1.9 2 2 2h6.5a.5.5 0 0 1 0 1H10a3 3 0 0 1-3-3V5.7L3.85 8.86a.5.5 0 0 1-.7 0Z"]));
+exports.ArrowTurnLeftUp20Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('ArrowTurnLeftUp20Filled', "20", ["M3.22 9.28a.75.75 0 0 1 0-1.06l4-4c.3-.3.77-.3 1.06 0l4 4a.75.75 0 0 1-1.06 1.06L8.5 6.56V13c0 .83.67 1.5 1.5 1.5h6.25a.75.75 0 0 1 0 1.5H10a3 3 0 0 1-3-3V6.56L4.28 9.28c-.3.3-.77.3-1.06 0Z"]));
+exports.ArrowTurnLeftUp48Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('ArrowTurnLeftUp48Regular', "48", ["M40.75 35.5a1.25 1.25 0 1 1 0 2.5h-18.5c-4 0-7.25-3.25-7.25-7.25V12.58l-6.85 7.04a1.25 1.25 0 0 1-1.8-1.74l9.25-9.5a1.25 1.25 0 0 1 1.8 0l9.25 9.5a1.25 1.25 0 0 1-1.8 1.74l-7.35-7.55v18.68a4.75 4.75 0 0 0 4.75 4.75h18.5Z"]));
+exports.ArrowTurnLeftUp48Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('ArrowTurnLeftUp48Filled', "48", ["M40.5 35a1.5 1.5 0 0 1 0 3h-18a7.5 7.5 0 0 1-7.5-7.5V13.12l-6.44 6.44a1.5 1.5 0 0 1-2.12-2.12l9-9a1.5 1.5 0 0 1 2.12 0l9 9a1.5 1.5 0 0 1-2.12 2.12L18 13.12V30.5a4.5 4.5 0 0 0 4.5 4.5h18Z"]));

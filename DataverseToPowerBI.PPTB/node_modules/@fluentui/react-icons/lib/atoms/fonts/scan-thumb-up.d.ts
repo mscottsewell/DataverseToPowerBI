@@ -1,0 +1,13 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const ScanThumbUpFilled: FluentFontIcon;
+export declare const ScanThumbUpRegular: FluentFontIcon;
+export declare const ScanThumbUp16Regular: FluentFontIcon;
+export declare const ScanThumbUp16Filled: FluentFontIcon;
+export declare const ScanThumbUp20Regular: FluentFontIcon;
+export declare const ScanThumbUp20Filled: FluentFontIcon;
+export declare const ScanThumbUp24Regular: FluentFontIcon;
+export declare const ScanThumbUp24Filled: FluentFontIcon;
+export declare const ScanThumbUp28Regular: FluentFontIcon;
+export declare const ScanThumbUp28Filled: FluentFontIcon;
+export declare const ScanThumbUp48Regular: FluentFontIcon;
+export declare const ScanThumbUp48Filled: FluentFontIcon;

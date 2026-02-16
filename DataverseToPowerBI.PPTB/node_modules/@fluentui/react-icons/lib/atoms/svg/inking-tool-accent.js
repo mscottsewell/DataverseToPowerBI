@@ -1,0 +1,7 @@
+"use client";
+import { createFluentIcon } from '../../utils/createFluentIcon';
+export const InkingToolAccentFilled = ( /*#__PURE__*/createFluentIcon('InkingToolAccentFilled', "1em", ["M17 6V3H3v3c0 .28.22.5.5.5h13A.5.5 0 0 0 17 6Zm-4.55 1-2.4 4.78a.5.5 0 1 0 .9.44L13.56 7 13 6.5l-.55.5ZM10 17.5c.55 0 1-.67 1-1.5s-.45-1.5-1-1.5-1 .67-1 1.5.45 1.5 1 1.5Z"]));
+export const InkingToolAccent16Filled = ( /*#__PURE__*/createFluentIcon('InkingToolAccent16Filled', "16", ["M14.5 2v2a.5.5 0 0 1-.5.5H2a.5.5 0 0 1-.5-.5V2h13Zm-4 2.5.52.48-2.4 4.75a.5.5 0 1 1-.9-.46l2.18-4.3.6-.47ZM9 13c0 .83-.45 1.5-1 1.5s-1-.67-1-1.5.45-1.5 1-1.5 1 .67 1 1.5Z"]));
+export const InkingToolAccent20Filled = ( /*#__PURE__*/createFluentIcon('InkingToolAccent20Filled', "20", ["M17 6V3H3v3c0 .28.22.5.5.5h13A.5.5 0 0 0 17 6Zm-4.55 1-2.4 4.78a.5.5 0 1 0 .9.44L13.56 7 13 6.5l-.55.5ZM10 17.5c.55 0 1-.67 1-1.5s-.45-1.5-1-1.5-1 .67-1 1.5.45 1.5 1 1.5Z"]));
+export const InkingToolAccent24Filled = ( /*#__PURE__*/createFluentIcon('InkingToolAccent24Filled', "24", ["M4 7h16.25c.12 0 .22-.08.24-.2l.01-.05V3H3.75v3.75c0 .12.08.22.2.24L4 7Zm7.98 6.95L14.62 8l.88-.5.76.5-2.91 6.55a.75.75 0 1 1-1.37-.6ZM13 19c0 1.1-.45 2-1 2s-1-.9-1-2 .45-2 1-2 1 .9 1 2Z"]));
+export const InkingToolAccent32Filled = ( /*#__PURE__*/createFluentIcon('InkingToolAccent32Filled', "32", ["M3 4h26v4a1 1 0 0 1-1 1h-5a1 1 0 0 1-.1.45l-5 10a1 1 0 1 1-1.8-.9L20.89 9H4a1 1 0 0 1-1-1V4Zm14.86 21.88c0 1.86-.87 3.37-1.93 3.37-1.07 0-1.93-1.51-1.93-3.38 0-1.86.86-3.37 1.93-3.37 1.06 0 1.93 1.51 1.93 3.38Z"]));

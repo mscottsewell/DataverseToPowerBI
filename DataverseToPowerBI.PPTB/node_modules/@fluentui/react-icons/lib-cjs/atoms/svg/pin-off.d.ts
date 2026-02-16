@@ -1,0 +1,16 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const PinOffFilled: FluentIcon;
+export declare const PinOffRegular: FluentIcon;
+export declare const PinOff16Regular: FluentIcon;
+export declare const PinOff16Filled: FluentIcon;
+export declare const PinOff20Regular: FluentIcon;
+export declare const PinOff20Filled: FluentIcon;
+export declare const PinOff24Regular: FluentIcon;
+export declare const PinOff24Filled: FluentIcon;
+export declare const PinOff28Regular: FluentIcon;
+export declare const PinOff28Filled: FluentIcon;
+export declare const PinOff32Regular: FluentIcon;
+export declare const PinOff32Filled: FluentIcon;
+export declare const PinOff32Light: FluentIcon;
+export declare const PinOff48Regular: FluentIcon;
+export declare const PinOff48Filled: FluentIcon;

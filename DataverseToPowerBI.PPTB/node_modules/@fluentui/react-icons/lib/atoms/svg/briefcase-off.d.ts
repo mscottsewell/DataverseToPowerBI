@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const BriefcaseOffFilled: FluentIcon;
+export declare const BriefcaseOffRegular: FluentIcon;
+export declare const BriefcaseOff16Regular: FluentIcon;
+export declare const BriefcaseOff16Filled: FluentIcon;
+export declare const BriefcaseOff20Regular: FluentIcon;
+export declare const BriefcaseOff20Filled: FluentIcon;
+export declare const BriefcaseOff24Regular: FluentIcon;
+export declare const BriefcaseOff24Filled: FluentIcon;
+export declare const BriefcaseOff28Regular: FluentIcon;
+export declare const BriefcaseOff28Filled: FluentIcon;
+export declare const BriefcaseOff32Regular: FluentIcon;
+export declare const BriefcaseOff32Filled: FluentIcon;
+export declare const BriefcaseOff48Regular: FluentIcon;
+export declare const BriefcaseOff48Filled: FluentIcon;

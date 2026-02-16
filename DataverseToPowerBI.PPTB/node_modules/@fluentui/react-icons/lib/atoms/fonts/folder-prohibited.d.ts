@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const FolderProhibitedFilled: FluentFontIcon;
+export declare const FolderProhibitedRegular: FluentFontIcon;
+export declare const FolderProhibited16Regular: FluentFontIcon;
+export declare const FolderProhibited16Filled: FluentFontIcon;
+export declare const FolderProhibited20Regular: FluentFontIcon;
+export declare const FolderProhibited20Filled: FluentFontIcon;
+export declare const FolderProhibited24Regular: FluentFontIcon;
+export declare const FolderProhibited24Filled: FluentFontIcon;
+export declare const FolderProhibited28Regular: FluentFontIcon;
+export declare const FolderProhibited28Filled: FluentFontIcon;
+export declare const FolderProhibited32Regular: FluentFontIcon;
+export declare const FolderProhibited32Filled: FluentFontIcon;
+export declare const FolderProhibited48Regular: FluentFontIcon;
+export declare const FolderProhibited48Filled: FluentFontIcon;

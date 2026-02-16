@@ -1,0 +1,11 @@
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Album24Filled = exports.Album24Regular = exports.Album20Filled = exports.Album20Regular = exports.AlbumRegular = exports.AlbumFilled = void 0;
+const createFluentFontIcon_1 = require("../../utils/fonts/createFluentFontIcon");
+exports.AlbumFilled = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AlbumFilled", "", 2, undefined, { flipInRtl: true }));
+exports.AlbumRegular = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AlbumRegular", "", 2, undefined, { flipInRtl: true }));
+exports.Album20Regular = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("Album20Regular", "", 1, 20, { flipInRtl: true }));
+exports.Album20Filled = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("Album20Filled", "", 0, 20, { flipInRtl: true }));
+exports.Album24Regular = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("Album24Regular", "", 1, 24, { flipInRtl: true }));
+exports.Album24Filled = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("Album24Filled", "", 0, 24, { flipInRtl: true }));

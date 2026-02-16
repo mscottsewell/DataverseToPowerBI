@@ -1,0 +1,13 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const TextGrammarLightningFilled: FluentFontIcon;
+export declare const TextGrammarLightningRegular: FluentFontIcon;
+export declare const TextGrammarLightning16Regular: FluentFontIcon;
+export declare const TextGrammarLightning16Filled: FluentFontIcon;
+export declare const TextGrammarLightning20Regular: FluentFontIcon;
+export declare const TextGrammarLightning20Filled: FluentFontIcon;
+export declare const TextGrammarLightning24Regular: FluentFontIcon;
+export declare const TextGrammarLightning24Filled: FluentFontIcon;
+export declare const TextGrammarLightning28Regular: FluentFontIcon;
+export declare const TextGrammarLightning28Filled: FluentFontIcon;
+export declare const TextGrammarLightning32Regular: FluentFontIcon;
+export declare const TextGrammarLightning32Filled: FluentFontIcon;

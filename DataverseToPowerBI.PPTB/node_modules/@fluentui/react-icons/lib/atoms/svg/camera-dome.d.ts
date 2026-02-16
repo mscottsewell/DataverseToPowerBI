@@ -1,0 +1,13 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const CameraDomeFilled: FluentIcon;
+export declare const CameraDomeRegular: FluentIcon;
+export declare const CameraDome16Regular: FluentIcon;
+export declare const CameraDome16Filled: FluentIcon;
+export declare const CameraDome20Regular: FluentIcon;
+export declare const CameraDome20Filled: FluentIcon;
+export declare const CameraDome24Regular: FluentIcon;
+export declare const CameraDome24Filled: FluentIcon;
+export declare const CameraDome28Regular: FluentIcon;
+export declare const CameraDome28Filled: FluentIcon;
+export declare const CameraDome48Regular: FluentIcon;
+export declare const CameraDome48Filled: FluentIcon;

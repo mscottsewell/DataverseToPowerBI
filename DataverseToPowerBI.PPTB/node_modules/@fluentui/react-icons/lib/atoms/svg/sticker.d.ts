@@ -1,0 +1,16 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const StickerFilled: FluentIcon;
+export declare const StickerRegular: FluentIcon;
+export declare const Sticker12Regular: FluentIcon;
+export declare const Sticker12Filled: FluentIcon;
+export declare const Sticker16Regular: FluentIcon;
+export declare const Sticker16Filled: FluentIcon;
+export declare const Sticker20Regular: FluentIcon;
+export declare const Sticker20Filled: FluentIcon;
+export declare const Sticker24Regular: FluentIcon;
+export declare const Sticker24Filled: FluentIcon;
+export declare const Sticker28Regular: FluentIcon;
+export declare const Sticker28Filled: FluentIcon;
+export declare const Sticker32Regular: FluentIcon;
+export declare const Sticker32Filled: FluentIcon;
+export declare const Sticker32Light: FluentIcon;

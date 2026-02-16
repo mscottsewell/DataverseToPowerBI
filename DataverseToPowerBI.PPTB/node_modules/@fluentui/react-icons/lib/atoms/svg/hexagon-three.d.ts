@@ -1,0 +1,11 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const HexagonThreeFilled: FluentIcon;
+export declare const HexagonThreeRegular: FluentIcon;
+export declare const HexagonThree12Regular: FluentIcon;
+export declare const HexagonThree12Filled: FluentIcon;
+export declare const HexagonThree16Regular: FluentIcon;
+export declare const HexagonThree16Filled: FluentIcon;
+export declare const HexagonThree20Regular: FluentIcon;
+export declare const HexagonThree20Filled: FluentIcon;
+export declare const HexagonThree24Regular: FluentIcon;
+export declare const HexagonThree24Filled: FluentIcon;

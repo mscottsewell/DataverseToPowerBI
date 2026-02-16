@@ -1,0 +1,13 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const CommentMultipleLinkFilled: FluentIcon;
+export declare const CommentMultipleLinkRegular: FluentIcon;
+export declare const CommentMultipleLink16Regular: FluentIcon;
+export declare const CommentMultipleLink16Filled: FluentIcon;
+export declare const CommentMultipleLink20Regular: FluentIcon;
+export declare const CommentMultipleLink20Filled: FluentIcon;
+export declare const CommentMultipleLink24Regular: FluentIcon;
+export declare const CommentMultipleLink24Filled: FluentIcon;
+export declare const CommentMultipleLink28Regular: FluentIcon;
+export declare const CommentMultipleLink28Filled: FluentIcon;
+export declare const CommentMultipleLink32Regular: FluentIcon;
+export declare const CommentMultipleLink32Filled: FluentIcon;

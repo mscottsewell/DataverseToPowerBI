@@ -1,0 +1,17 @@
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.PresenceDnd24Filled = exports.PresenceDnd24Regular = exports.PresenceDnd20Filled = exports.PresenceDnd20Regular = exports.PresenceDnd16Filled = exports.PresenceDnd16Regular = exports.PresenceDnd12Filled = exports.PresenceDnd12Regular = exports.PresenceDnd10Filled = exports.PresenceDnd10Regular = exports.PresenceDndRegular = exports.PresenceDndFilled = void 0;
+const createFluentIcon_1 = require("../../utils/createFluentIcon");
+exports.PresenceDndFilled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('PresenceDndFilled', "1em", ["M10 20a10 10 0 1 0 0-20 10 10 0 0 0 0 20ZM7 9h6a1 1 0 1 1 0 2H7a1 1 0 1 1 0-2Z"]));
+exports.PresenceDndRegular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('PresenceDndRegular', "1em", ["M10 0a10 10 0 1 0 0 20 10 10 0 0 0 0-20ZM2 10a8 8 0 1 1 16 0 8 8 0 0 1-16 0Zm4 0a1 1 0 0 1 1-1h6a1 1 0 1 1 0 2H7a1 1 0 0 1-1-1Z"]));
+exports.PresenceDnd10Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('PresenceDnd10Regular', "10", ["M5 0a5 5 0 1 0 0 10A5 5 0 0 0 5 0ZM1 5a4 4 0 1 1 8 0 4 4 0 0 1-8 0Zm2 0c0-.28.22-.5.5-.5h3a.5.5 0 0 1 0 1h-3A.5.5 0 0 1 3 5Z"]));
+exports.PresenceDnd10Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('PresenceDnd10Filled', "10", ["M5 10A5 5 0 1 0 5 0a5 5 0 0 0 0 10ZM3.5 4.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1 0-1Z"]));
+exports.PresenceDnd12Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('PresenceDnd12Regular', "12", ["M6 0a6 6 0 1 0 0 12A6 6 0 0 0 6 0ZM1.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3 6c0-.41.34-.75.75-.75h4.5a.75.75 0 0 1 0 1.5h-4.5A.75.75 0 0 1 3 6Z"]));
+exports.PresenceDnd12Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('PresenceDnd12Filled', "12", ["M6 12A6 6 0 1 0 6 0a6 6 0 0 0 0 12ZM3.75 5.25h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1 0-1.5Z"]));
+exports.PresenceDnd16Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('PresenceDnd16Regular', "16", ["M5.25 7a1 1 0 0 0 0 2h5.5a1 1 0 1 0 0-2h-5.5ZM0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6a6 6 0 1 0 0 12A6 6 0 0 0 8 2Z"]));
+exports.PresenceDnd16Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('PresenceDnd16Filled', "16", ["M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16ZM5.25 7h5.5a1 1 0 1 1 0 2h-5.5a1 1 0 1 1 0-2Z"]));
+exports.PresenceDnd20Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('PresenceDnd20Regular', "20", ["M10 0a10 10 0 1 0 0 20 10 10 0 0 0 0-20ZM2 10a8 8 0 1 1 16 0 8 8 0 0 1-16 0Zm4 0a1 1 0 0 1 1-1h6a1 1 0 1 1 0 2H7a1 1 0 0 1-1-1Z"]));
+exports.PresenceDnd20Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('PresenceDnd20Filled', "20", ["M10 20a10 10 0 1 0 0-20 10 10 0 0 0 0 20ZM7 9h6a1 1 0 1 1 0 2H7a1 1 0 1 1 0-2Z"]));
+exports.PresenceDnd24Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('PresenceDnd24Regular', "24", ["M12 0a12 12 0 1 0 0 24 12 12 0 0 0 0-24ZM3 12a9 9 0 1 1 18 0 9 9 0 0 1-18 0Zm3 0c0-.83.67-1.5 1.5-1.5h9a1.5 1.5 0 0 1 0 3h-9A1.5 1.5 0 0 1 6 12Z"]));
+exports.PresenceDnd24Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('PresenceDnd24Filled', "24", ["M12 24a12 12 0 1 0 0-24 12 12 0 0 0 0 24ZM7.5 10.5h9a1.5 1.5 0 0 1 0 3h-9a1.5 1.5 0 0 1 0-3Z"]));

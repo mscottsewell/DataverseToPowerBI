@@ -1,0 +1,18 @@
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.AccessibilityCheckmark48Filled = exports.AccessibilityCheckmark48Regular = exports.AccessibilityCheckmark32Light = exports.AccessibilityCheckmark32Filled = exports.AccessibilityCheckmark32Regular = exports.AccessibilityCheckmark28Filled = exports.AccessibilityCheckmark28Regular = exports.AccessibilityCheckmark24Filled = exports.AccessibilityCheckmark24Regular = exports.AccessibilityCheckmark20Filled = exports.AccessibilityCheckmark20Regular = exports.AccessibilityCheckmarkRegular = exports.AccessibilityCheckmarkFilled = void 0;
+const createFluentFontIcon_1 = require("../../utils/fonts/createFluentFontIcon");
+exports.AccessibilityCheckmarkFilled = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AccessibilityCheckmarkFilled", "", 2, undefined));
+exports.AccessibilityCheckmarkRegular = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AccessibilityCheckmarkRegular", "", 2, undefined));
+exports.AccessibilityCheckmark20Regular = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AccessibilityCheckmark20Regular", "", 1, 20));
+exports.AccessibilityCheckmark20Filled = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AccessibilityCheckmark20Filled", "", 0, 20));
+exports.AccessibilityCheckmark24Regular = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AccessibilityCheckmark24Regular", "", 1, 24));
+exports.AccessibilityCheckmark24Filled = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AccessibilityCheckmark24Filled", "", 0, 24));
+exports.AccessibilityCheckmark28Regular = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AccessibilityCheckmark28Regular", "", 1, 28));
+exports.AccessibilityCheckmark28Filled = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AccessibilityCheckmark28Filled", "", 0, 28));
+exports.AccessibilityCheckmark32Regular = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AccessibilityCheckmark32Regular", "", 1, 32));
+exports.AccessibilityCheckmark32Filled = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AccessibilityCheckmark32Filled", "", 0, 32));
+exports.AccessibilityCheckmark32Light = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AccessibilityCheckmark32Light", "", 3, 32));
+exports.AccessibilityCheckmark48Regular = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AccessibilityCheckmark48Regular", "", 1, 48));
+exports.AccessibilityCheckmark48Filled = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AccessibilityCheckmark48Filled", "", 0, 48));

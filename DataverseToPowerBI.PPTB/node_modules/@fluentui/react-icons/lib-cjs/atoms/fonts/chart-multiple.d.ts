@@ -1,0 +1,11 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const ChartMultipleFilled: FluentFontIcon;
+export declare const ChartMultipleRegular: FluentFontIcon;
+export declare const ChartMultiple16Regular: FluentFontIcon;
+export declare const ChartMultiple16Filled: FluentFontIcon;
+export declare const ChartMultiple20Regular: FluentFontIcon;
+export declare const ChartMultiple20Filled: FluentFontIcon;
+export declare const ChartMultiple24Regular: FluentFontIcon;
+export declare const ChartMultiple24Filled: FluentFontIcon;
+export declare const ChartMultiple32Regular: FluentFontIcon;
+export declare const ChartMultiple32Filled: FluentFontIcon;

@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const BookmarkMultipleFilled: FluentFontIcon;
+export declare const BookmarkMultipleRegular: FluentFontIcon;
+export declare const BookmarkMultiple16Regular: FluentFontIcon;
+export declare const BookmarkMultiple16Filled: FluentFontIcon;
+export declare const BookmarkMultiple20Regular: FluentFontIcon;
+export declare const BookmarkMultiple20Filled: FluentFontIcon;
+export declare const BookmarkMultiple24Regular: FluentFontIcon;
+export declare const BookmarkMultiple24Filled: FluentFontIcon;
+export declare const BookmarkMultiple28Regular: FluentFontIcon;
+export declare const BookmarkMultiple28Filled: FluentFontIcon;
+export declare const BookmarkMultiple32Regular: FluentFontIcon;
+export declare const BookmarkMultiple32Filled: FluentFontIcon;
+export declare const BookmarkMultiple48Regular: FluentFontIcon;
+export declare const BookmarkMultiple48Filled: FluentFontIcon;

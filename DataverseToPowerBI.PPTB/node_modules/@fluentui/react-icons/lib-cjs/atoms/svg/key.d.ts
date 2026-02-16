@@ -1,0 +1,11 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const KeyFilled: FluentIcon;
+export declare const KeyRegular: FluentIcon;
+export declare const Key16Regular: FluentIcon;
+export declare const Key16Filled: FluentIcon;
+export declare const Key20Regular: FluentIcon;
+export declare const Key20Filled: FluentIcon;
+export declare const Key24Regular: FluentIcon;
+export declare const Key24Filled: FluentIcon;
+export declare const Key32Regular: FluentIcon;
+export declare const Key32Filled: FluentIcon;

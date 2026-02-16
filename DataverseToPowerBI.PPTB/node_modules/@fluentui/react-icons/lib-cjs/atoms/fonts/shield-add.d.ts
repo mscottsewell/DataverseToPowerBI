@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const ShieldAddFilled: FluentFontIcon;
+export declare const ShieldAddRegular: FluentFontIcon;
+export declare const ShieldAdd16Regular: FluentFontIcon;
+export declare const ShieldAdd16Filled: FluentFontIcon;
+export declare const ShieldAdd20Regular: FluentFontIcon;
+export declare const ShieldAdd20Filled: FluentFontIcon;
+export declare const ShieldAdd24Regular: FluentFontIcon;
+export declare const ShieldAdd24Filled: FluentFontIcon;
+export declare const ShieldAdd28Regular: FluentFontIcon;
+export declare const ShieldAdd28Filled: FluentFontIcon;
+export declare const ShieldAdd32Regular: FluentFontIcon;
+export declare const ShieldAdd32Filled: FluentFontIcon;
+export declare const ShieldAdd48Regular: FluentFontIcon;
+export declare const ShieldAdd48Filled: FluentFontIcon;

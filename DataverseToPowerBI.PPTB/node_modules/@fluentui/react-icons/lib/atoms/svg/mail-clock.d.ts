@@ -1,0 +1,16 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const MailClockColor: FluentIcon;
+export declare const MailClockFilled: FluentIcon;
+export declare const MailClockRegular: FluentIcon;
+export declare const MailClock16Regular: FluentIcon;
+export declare const MailClock16Filled: FluentIcon;
+export declare const MailClock16Color: FluentIcon;
+export declare const MailClock20Regular: FluentIcon;
+export declare const MailClock20Filled: FluentIcon;
+export declare const MailClock20Color: FluentIcon;
+export declare const MailClock24Regular: FluentIcon;
+export declare const MailClock24Filled: FluentIcon;
+export declare const MailClock24Color: FluentIcon;
+export declare const MailClock32Regular: FluentIcon;
+export declare const MailClock32Filled: FluentIcon;
+export declare const MailClock32Color: FluentIcon;

@@ -1,0 +1,11 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const HandMultipleFilled: FluentIcon;
+export declare const HandMultipleRegular: FluentIcon;
+export declare const HandMultiple16Regular: FluentIcon;
+export declare const HandMultiple16Filled: FluentIcon;
+export declare const HandMultiple20Regular: FluentIcon;
+export declare const HandMultiple20Filled: FluentIcon;
+export declare const HandMultiple24Regular: FluentIcon;
+export declare const HandMultiple24Filled: FluentIcon;
+export declare const HandMultiple28Regular: FluentIcon;
+export declare const HandMultiple28Filled: FluentIcon;

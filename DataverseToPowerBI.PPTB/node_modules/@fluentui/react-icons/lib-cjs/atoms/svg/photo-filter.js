@@ -1,0 +1,11 @@
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.PhotoFilter24Filled = exports.PhotoFilter24Regular = exports.PhotoFilter20Filled = exports.PhotoFilter20Regular = exports.PhotoFilterRegular = exports.PhotoFilterFilled = void 0;
+const createFluentIcon_1 = require("../../utils/createFluentIcon");
+exports.PhotoFilterFilled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('PhotoFilterFilled', "1em", ["M6.26 13.74a6 6 0 1 1 7.48-7.48 6 6 0 1 1-7.48 7.48ZM3.5 8A4.5 4.5 0 0 0 6 12.03V12a6 6 0 0 1 6.03-6A4.5 4.5 0 0 0 3.5 8Zm4.47 6A4.5 4.5 0 1 0 14 7.97V8a6 6 0 0 1-6 6h-.03Z"]));
+exports.PhotoFilterRegular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('PhotoFilterRegular', "1em", ["M2 8a6 6 0 0 0 4.26 5.74 6 6 0 1 0 7.48-7.48A6 6 0 0 0 2 8Zm6-5a5 5 0 0 1 4.6 3.03L12 6a6 6 0 0 0-5.97 6.6A5 5 0 0 1 8 3Zm9 9a5 5 0 0 1-9.6 1.97L8 14a6 6 0 0 0 5.97-6.6A5 5 0 0 1 17 12Z"]));
+exports.PhotoFilter20Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('PhotoFilter20Regular', "20", ["M2 8a6 6 0 0 0 4.26 5.74 6 6 0 1 0 7.48-7.48A6 6 0 0 0 2 8Zm6-5a5 5 0 0 1 4.6 3.03L12 6a6 6 0 0 0-5.97 6.6A5 5 0 0 1 8 3Zm9 9a5 5 0 0 1-9.6 1.97L8 14a6 6 0 0 0 5.97-6.6A5 5 0 0 1 17 12Z"]));
+exports.PhotoFilter20Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('PhotoFilter20Filled', "20", ["M6.26 13.74a6 6 0 1 1 7.48-7.48 6 6 0 1 1-7.48 7.48ZM3.5 8A4.5 4.5 0 0 0 6 12.03V12a6 6 0 0 1 6.03-6A4.5 4.5 0 0 0 3.5 8Zm4.47 6A4.5 4.5 0 1 0 14 7.97V8a6 6 0 0 1-6 6h-.03Z"]));
+exports.PhotoFilter24Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('PhotoFilter24Regular', "24", ["M9.5 2a7.5 7.5 0 0 1 7.18 5.32 7.5 7.5 0 1 1-9.36 9.36A7.5 7.5 0 0 1 9.5 2Zm7.49 7.04v.22l.01.24a7.5 7.5 0 0 1-7.96 7.49 6 6 0 1 0 7.95-7.95ZM9.5 3.5a6 6 0 0 0-2.49 11.46v-.22L7 14.5a7.5 7.5 0 0 1 7.96-7.49A6 6 0 0 0 9.5 3.5Z"]));
+exports.PhotoFilter24Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('PhotoFilter24Filled', "24", ["M9.5 2a7.5 7.5 0 0 1 7.18 5.32 7.5 7.5 0 1 1-9.36 9.36A7.5 7.5 0 0 1 9.5 2ZM17 9.6v-.1A7.5 7.5 0 0 1 9.6 17 5.5 5.5 0 1 0 17 9.6ZM9.5 4A5.5 5.5 0 0 0 7 14.4v.1A7.5 7.5 0 0 1 14.4 7a5.5 5.5 0 0 0-4.9-3Z"]));

@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const PromptFilled: FluentIcon;
+export declare const PromptRegular: FluentIcon;
+export declare const Prompt16Regular: FluentIcon;
+export declare const Prompt16Filled: FluentIcon;
+export declare const Prompt20Regular: FluentIcon;
+export declare const Prompt20Filled: FluentIcon;
+export declare const Prompt24Regular: FluentIcon;
+export declare const Prompt24Filled: FluentIcon;
+export declare const Prompt28Regular: FluentIcon;
+export declare const Prompt28Filled: FluentIcon;
+export declare const Prompt32Regular: FluentIcon;
+export declare const Prompt32Filled: FluentIcon;
+export declare const Prompt48Regular: FluentIcon;
+export declare const Prompt48Filled: FluentIcon;

@@ -1,0 +1,10 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const ScanTypeColor: FluentIcon;
+export declare const ScanTypeFilled: FluentIcon;
+export declare const ScanTypeRegular: FluentIcon;
+export declare const ScanType20Regular: FluentIcon;
+export declare const ScanType20Filled: FluentIcon;
+export declare const ScanType20Color: FluentIcon;
+export declare const ScanType24Regular: FluentIcon;
+export declare const ScanType24Filled: FluentIcon;
+export declare const ScanType24Color: FluentIcon;

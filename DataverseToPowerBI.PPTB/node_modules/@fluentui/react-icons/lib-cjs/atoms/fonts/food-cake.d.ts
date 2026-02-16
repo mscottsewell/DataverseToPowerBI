@@ -1,0 +1,11 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const FoodCakeFilled: FluentFontIcon;
+export declare const FoodCakeRegular: FluentFontIcon;
+export declare const FoodCake12Regular: FluentFontIcon;
+export declare const FoodCake12Filled: FluentFontIcon;
+export declare const FoodCake16Regular: FluentFontIcon;
+export declare const FoodCake16Filled: FluentFontIcon;
+export declare const FoodCake20Regular: FluentFontIcon;
+export declare const FoodCake20Filled: FluentFontIcon;
+export declare const FoodCake24Regular: FluentFontIcon;
+export declare const FoodCake24Filled: FluentFontIcon;

@@ -1,0 +1,13 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const DataSunburstFilled: FluentIcon;
+export declare const DataSunburstRegular: FluentIcon;
+export declare const DataSunburst20Regular: FluentIcon;
+export declare const DataSunburst20Filled: FluentIcon;
+export declare const DataSunburst24Regular: FluentIcon;
+export declare const DataSunburst24Filled: FluentIcon;
+export declare const DataSunburst28Regular: FluentIcon;
+export declare const DataSunburst28Filled: FluentIcon;
+export declare const DataSunburst32Regular: FluentIcon;
+export declare const DataSunburst32Filled: FluentIcon;
+export declare const DataSunburst48Regular: FluentIcon;
+export declare const DataSunburst48Filled: FluentIcon;

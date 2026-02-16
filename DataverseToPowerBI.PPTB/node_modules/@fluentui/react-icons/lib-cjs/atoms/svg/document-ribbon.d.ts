@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const DocumentRibbonFilled: FluentIcon;
+export declare const DocumentRibbonRegular: FluentIcon;
+export declare const DocumentRibbon16Regular: FluentIcon;
+export declare const DocumentRibbon16Filled: FluentIcon;
+export declare const DocumentRibbon20Regular: FluentIcon;
+export declare const DocumentRibbon20Filled: FluentIcon;
+export declare const DocumentRibbon24Regular: FluentIcon;
+export declare const DocumentRibbon24Filled: FluentIcon;
+export declare const DocumentRibbon28Regular: FluentIcon;
+export declare const DocumentRibbon28Filled: FluentIcon;
+export declare const DocumentRibbon32Regular: FluentIcon;
+export declare const DocumentRibbon32Filled: FluentIcon;
+export declare const DocumentRibbon48Regular: FluentIcon;
+export declare const DocumentRibbon48Filled: FluentIcon;

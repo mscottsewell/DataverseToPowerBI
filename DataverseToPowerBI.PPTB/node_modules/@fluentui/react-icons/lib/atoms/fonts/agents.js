@@ -1,0 +1,18 @@
+"use client";
+import { createFluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export const AgentsFilled = ( /*#__PURE__*/createFluentFontIcon("AgentsFilled", "", 2, undefined));
+export const AgentsRegular = ( /*#__PURE__*/createFluentFontIcon("AgentsRegular", "", 2, undefined));
+export const Agents12Regular = ( /*#__PURE__*/createFluentFontIcon("Agents12Regular", "󰪪", 1, 12));
+export const Agents12Filled = ( /*#__PURE__*/createFluentFontIcon("Agents12Filled", "󰬨", 0, 12));
+export const Agents16Regular = ( /*#__PURE__*/createFluentFontIcon("Agents16Regular", "󰟮", 1, 16));
+export const Agents16Filled = ( /*#__PURE__*/createFluentFontIcon("Agents16Filled", "󰡫", 0, 16));
+export const Agents20Regular = ( /*#__PURE__*/createFluentFontIcon("Agents20Regular", "󰟯", 1, 20));
+export const Agents20Filled = ( /*#__PURE__*/createFluentFontIcon("Agents20Filled", "󰡬", 0, 20));
+export const Agents24Regular = ( /*#__PURE__*/createFluentFontIcon("Agents24Regular", "󰟰", 1, 24));
+export const Agents24Filled = ( /*#__PURE__*/createFluentFontIcon("Agents24Filled", "󰡭", 0, 24));
+export const Agents28Regular = ( /*#__PURE__*/createFluentFontIcon("Agents28Regular", "󰟱", 1, 28));
+export const Agents28Filled = ( /*#__PURE__*/createFluentFontIcon("Agents28Filled", "󰡮", 0, 28));
+export const Agents32Regular = ( /*#__PURE__*/createFluentFontIcon("Agents32Regular", "󰟲", 1, 32));
+export const Agents32Filled = ( /*#__PURE__*/createFluentFontIcon("Agents32Filled", "󰡯", 0, 32));
+export const Agents48Regular = ( /*#__PURE__*/createFluentFontIcon("Agents48Regular", "󰟳", 1, 48));
+export const Agents48Filled = ( /*#__PURE__*/createFluentFontIcon("Agents48Filled", "󰡰", 0, 48));

@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const TagEditFilled: FluentIcon;
+export declare const TagEditRegular: FluentIcon;
+export declare const TagEdit16Regular: FluentIcon;
+export declare const TagEdit16Filled: FluentIcon;
+export declare const TagEdit20Regular: FluentIcon;
+export declare const TagEdit20Filled: FluentIcon;
+export declare const TagEdit24Regular: FluentIcon;
+export declare const TagEdit24Filled: FluentIcon;
+export declare const TagEdit28Regular: FluentIcon;
+export declare const TagEdit28Filled: FluentIcon;
+export declare const TagEdit32Regular: FluentIcon;
+export declare const TagEdit32Filled: FluentIcon;
+export declare const TagEdit48Regular: FluentIcon;
+export declare const TagEdit48Filled: FluentIcon;

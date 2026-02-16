@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const TableSimpleCheckmarkFilled: FluentIcon;
+export declare const TableSimpleCheckmarkRegular: FluentIcon;
+export declare const TableSimpleCheckmark16Regular: FluentIcon;
+export declare const TableSimpleCheckmark16Filled: FluentIcon;
+export declare const TableSimpleCheckmark20Regular: FluentIcon;
+export declare const TableSimpleCheckmark20Filled: FluentIcon;
+export declare const TableSimpleCheckmark24Regular: FluentIcon;
+export declare const TableSimpleCheckmark24Filled: FluentIcon;
+export declare const TableSimpleCheckmark28Regular: FluentIcon;
+export declare const TableSimpleCheckmark28Filled: FluentIcon;
+export declare const TableSimpleCheckmark32Regular: FluentIcon;
+export declare const TableSimpleCheckmark32Filled: FluentIcon;
+export declare const TableSimpleCheckmark48Regular: FluentIcon;
+export declare const TableSimpleCheckmark48Filled: FluentIcon;

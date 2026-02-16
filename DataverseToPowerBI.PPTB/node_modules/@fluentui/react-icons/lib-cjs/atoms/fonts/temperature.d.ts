@@ -1,0 +1,13 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const TemperatureFilled: FluentFontIcon;
+export declare const TemperatureRegular: FluentFontIcon;
+export declare const Temperature16Regular: FluentFontIcon;
+export declare const Temperature16Filled: FluentFontIcon;
+export declare const Temperature20Regular: FluentFontIcon;
+export declare const Temperature20Filled: FluentFontIcon;
+export declare const Temperature24Regular: FluentFontIcon;
+export declare const Temperature24Filled: FluentFontIcon;
+export declare const Temperature32Regular: FluentFontIcon;
+export declare const Temperature32Filled: FluentFontIcon;
+export declare const Temperature48Regular: FluentFontIcon;
+export declare const Temperature48Filled: FluentFontIcon;

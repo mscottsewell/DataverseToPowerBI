@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const MathSymbolsFilled: FluentFontIcon;
+export declare const MathSymbolsRegular: FluentFontIcon;
+export declare const MathSymbols16Regular: FluentFontIcon;
+export declare const MathSymbols16Filled: FluentFontIcon;
+export declare const MathSymbols20Regular: FluentFontIcon;
+export declare const MathSymbols20Filled: FluentFontIcon;
+export declare const MathSymbols24Regular: FluentFontIcon;
+export declare const MathSymbols24Filled: FluentFontIcon;
+export declare const MathSymbols28Regular: FluentFontIcon;
+export declare const MathSymbols28Filled: FluentFontIcon;
+export declare const MathSymbols32Regular: FluentFontIcon;
+export declare const MathSymbols32Filled: FluentFontIcon;
+export declare const MathSymbols48Regular: FluentFontIcon;
+export declare const MathSymbols48Filled: FluentFontIcon;

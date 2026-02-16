@@ -1,0 +1,33 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+Object.defineProperty(exports, "createCSSRuleFromTheme", {
+    enumerable: true,
+    get: function() {
+        return createCSSRuleFromTheme;
+    }
+});
+const CSS_ESCAPE_MAP = {
+    '<': '\\3C ',
+    '>': '\\3E '
+};
+/**
+ * Escapes characters that could break out of a <style> tag during SSR.
+ *
+ * IMPORTANT: Do not strip quotes. Theme values legitimately include quoted font families and other CSS.
+ * We only need to ensure the generated text cannot terminate the style tag and inject HTML.
+ */ function escapeForStyleTag(value) {
+    // Escape as CSS code points so the resulting CSS still represents the same characters.
+    // Using CSS escapes prevents the HTML parser from seeing a literal '<' / '>' and closing <style>.
+    return value.replace(/[<>]/g, (match)=>CSS_ESCAPE_MAP[match]);
+}
+function createCSSRuleFromTheme(selector, theme) {
+    if (theme) {
+        const cssVarsAsString = Object.keys(theme).reduce((cssVarRule, cssVar)=>{
+            return `${cssVarRule}--${cssVar}: ${theme[cssVar]}; `;
+        }, '');
+        return `${selector} { ${escapeForStyleTag(cssVarsAsString)} }`;
+    }
+    return `${selector} {}`;
+}

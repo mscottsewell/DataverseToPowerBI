@@ -1,0 +1,11 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const LayoutAddBelowFilled: FluentIcon;
+export declare const LayoutAddBelowRegular: FluentIcon;
+export declare const LayoutAddBelow16Regular: FluentIcon;
+export declare const LayoutAddBelow16Filled: FluentIcon;
+export declare const LayoutAddBelow20Regular: FluentIcon;
+export declare const LayoutAddBelow20Filled: FluentIcon;
+export declare const LayoutAddBelow24Regular: FluentIcon;
+export declare const LayoutAddBelow24Filled: FluentIcon;
+export declare const LayoutAddBelow32Regular: FluentIcon;
+export declare const LayoutAddBelow32Filled: FluentIcon;

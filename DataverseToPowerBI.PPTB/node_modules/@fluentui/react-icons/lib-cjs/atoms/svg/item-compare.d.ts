@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const ItemCompareFilled: FluentIcon;
+export declare const ItemCompareRegular: FluentIcon;
+export declare const ItemCompare16Regular: FluentIcon;
+export declare const ItemCompare16Filled: FluentIcon;
+export declare const ItemCompare20Regular: FluentIcon;
+export declare const ItemCompare20Filled: FluentIcon;
+export declare const ItemCompare24Regular: FluentIcon;
+export declare const ItemCompare24Filled: FluentIcon;
+export declare const ItemCompare28Regular: FluentIcon;
+export declare const ItemCompare28Filled: FluentIcon;
+export declare const ItemCompare32Regular: FluentIcon;
+export declare const ItemCompare32Filled: FluentIcon;
+export declare const ItemCompare48Regular: FluentIcon;
+export declare const ItemCompare48Filled: FluentIcon;

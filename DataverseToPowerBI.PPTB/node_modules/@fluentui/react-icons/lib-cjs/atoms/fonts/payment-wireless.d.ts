@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const PaymentWirelessFilled: FluentFontIcon;
+export declare const PaymentWirelessRegular: FluentFontIcon;
+export declare const PaymentWireless16Regular: FluentFontIcon;
+export declare const PaymentWireless16Filled: FluentFontIcon;
+export declare const PaymentWireless20Regular: FluentFontIcon;
+export declare const PaymentWireless20Filled: FluentFontIcon;
+export declare const PaymentWireless24Regular: FluentFontIcon;
+export declare const PaymentWireless24Filled: FluentFontIcon;
+export declare const PaymentWireless28Regular: FluentFontIcon;
+export declare const PaymentWireless28Filled: FluentFontIcon;
+export declare const PaymentWireless32Regular: FluentFontIcon;
+export declare const PaymentWireless32Filled: FluentFontIcon;
+export declare const PaymentWireless48Regular: FluentFontIcon;
+export declare const PaymentWireless48Filled: FluentFontIcon;

@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const ChannelShareFilled: FluentIcon;
+export declare const ChannelShareRegular: FluentIcon;
+export declare const ChannelShare12Regular: FluentIcon;
+export declare const ChannelShare12Filled: FluentIcon;
+export declare const ChannelShare16Regular: FluentIcon;
+export declare const ChannelShare16Filled: FluentIcon;
+export declare const ChannelShare20Regular: FluentIcon;
+export declare const ChannelShare20Filled: FluentIcon;
+export declare const ChannelShare24Regular: FluentIcon;
+export declare const ChannelShare24Filled: FluentIcon;
+export declare const ChannelShare28Regular: FluentIcon;
+export declare const ChannelShare28Filled: FluentIcon;
+export declare const ChannelShare48Regular: FluentIcon;
+export declare const ChannelShare48Filled: FluentIcon;

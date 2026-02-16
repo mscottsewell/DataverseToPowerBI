@@ -1,0 +1,10 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const BookStarColor: FluentIcon;
+export declare const BookStarFilled: FluentIcon;
+export declare const BookStarRegular: FluentIcon;
+export declare const BookStar20Regular: FluentIcon;
+export declare const BookStar20Filled: FluentIcon;
+export declare const BookStar20Color: FluentIcon;
+export declare const BookStar24Regular: FluentIcon;
+export declare const BookStar24Filled: FluentIcon;
+export declare const BookStar24Color: FluentIcon;

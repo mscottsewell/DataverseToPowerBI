@@ -1,0 +1,13 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const ShieldLockFilled: FluentIcon;
+export declare const ShieldLockRegular: FluentIcon;
+export declare const ShieldLock16Regular: FluentIcon;
+export declare const ShieldLock16Filled: FluentIcon;
+export declare const ShieldLock20Regular: FluentIcon;
+export declare const ShieldLock20Filled: FluentIcon;
+export declare const ShieldLock24Regular: FluentIcon;
+export declare const ShieldLock24Filled: FluentIcon;
+export declare const ShieldLock28Regular: FluentIcon;
+export declare const ShieldLock28Filled: FluentIcon;
+export declare const ShieldLock48Regular: FluentIcon;
+export declare const ShieldLock48Filled: FluentIcon;

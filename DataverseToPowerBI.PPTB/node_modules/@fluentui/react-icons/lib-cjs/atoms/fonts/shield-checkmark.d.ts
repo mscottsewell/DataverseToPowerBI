@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const ShieldCheckmarkFilled: FluentFontIcon;
+export declare const ShieldCheckmarkRegular: FluentFontIcon;
+export declare const ShieldCheckmark16Regular: FluentFontIcon;
+export declare const ShieldCheckmark16Filled: FluentFontIcon;
+export declare const ShieldCheckmark20Regular: FluentFontIcon;
+export declare const ShieldCheckmark20Filled: FluentFontIcon;
+export declare const ShieldCheckmark24Regular: FluentFontIcon;
+export declare const ShieldCheckmark24Filled: FluentFontIcon;
+export declare const ShieldCheckmark28Regular: FluentFontIcon;
+export declare const ShieldCheckmark28Filled: FluentFontIcon;
+export declare const ShieldCheckmark32Regular: FluentFontIcon;
+export declare const ShieldCheckmark32Filled: FluentFontIcon;
+export declare const ShieldCheckmark48Regular: FluentFontIcon;
+export declare const ShieldCheckmark48Filled: FluentFontIcon;

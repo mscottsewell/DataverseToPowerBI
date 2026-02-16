@@ -1,0 +1,11 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const GuardianFilled: FluentIcon;
+export declare const GuardianRegular: FluentIcon;
+export declare const Guardian20Regular: FluentIcon;
+export declare const Guardian20Filled: FluentIcon;
+export declare const Guardian24Regular: FluentIcon;
+export declare const Guardian24Filled: FluentIcon;
+export declare const Guardian28Regular: FluentIcon;
+export declare const Guardian28Filled: FluentIcon;
+export declare const Guardian48Regular: FluentIcon;
+export declare const Guardian48Filled: FluentIcon;

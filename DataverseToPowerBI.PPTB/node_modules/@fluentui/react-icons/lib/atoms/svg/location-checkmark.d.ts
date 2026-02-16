@@ -1,0 +1,13 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const LocationCheckmarkFilled: FluentIcon;
+export declare const LocationCheckmarkRegular: FluentIcon;
+export declare const LocationCheckmark12Regular: FluentIcon;
+export declare const LocationCheckmark12Filled: FluentIcon;
+export declare const LocationCheckmark16Regular: FluentIcon;
+export declare const LocationCheckmark16Filled: FluentIcon;
+export declare const LocationCheckmark20Regular: FluentIcon;
+export declare const LocationCheckmark20Filled: FluentIcon;
+export declare const LocationCheckmark24Regular: FluentIcon;
+export declare const LocationCheckmark24Filled: FluentIcon;
+export declare const LocationCheckmark48Regular: FluentIcon;
+export declare const LocationCheckmark48Filled: FluentIcon;

@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const VoicemailFilled: FluentFontIcon;
+export declare const VoicemailRegular: FluentFontIcon;
+export declare const Voicemail16Regular: FluentFontIcon;
+export declare const Voicemail16Filled: FluentFontIcon;
+export declare const Voicemail20Regular: FluentFontIcon;
+export declare const Voicemail20Filled: FluentFontIcon;
+export declare const Voicemail24Regular: FluentFontIcon;
+export declare const Voicemail24Filled: FluentFontIcon;
+export declare const Voicemail28Regular: FluentFontIcon;
+export declare const Voicemail28Filled: FluentFontIcon;
+export declare const Voicemail32Regular: FluentFontIcon;
+export declare const Voicemail32Filled: FluentFontIcon;
+export declare const Voicemail48Regular: FluentFontIcon;
+export declare const Voicemail48Filled: FluentFontIcon;

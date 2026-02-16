@@ -1,0 +1,14 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const FlashFilled: FluentIcon;
+export declare const FlashRegular: FluentIcon;
+export declare const Flash16Regular: FluentIcon;
+export declare const Flash16Filled: FluentIcon;
+export declare const Flash20Regular: FluentIcon;
+export declare const Flash20Filled: FluentIcon;
+export declare const Flash24Regular: FluentIcon;
+export declare const Flash24Filled: FluentIcon;
+export declare const Flash28Regular: FluentIcon;
+export declare const Flash28Filled: FluentIcon;
+export declare const Flash32Regular: FluentIcon;
+export declare const Flash32Filled: FluentIcon;
+export declare const Flash32Light: FluentIcon;

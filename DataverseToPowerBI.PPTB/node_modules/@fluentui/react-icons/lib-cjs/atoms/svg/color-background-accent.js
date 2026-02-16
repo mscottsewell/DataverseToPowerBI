@@ -1,0 +1,8 @@
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ColorBackgroundAccent24Regular = exports.ColorBackgroundAccent20Regular = exports.ColorBackgroundAccentRegular = void 0;
+const createFluentIcon_1 = require("../../utils/createFluentIcon");
+exports.ColorBackgroundAccentRegular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('ColorBackgroundAccentRegular', "1em", ["m2.75 11.41.33.33a3 3 0 0 0 4.24 0l.68-.68c.03 1.34.96 2.94 2.75 2.94 1.82 0 2.75-1.65 2.75-3 0-1.01-.53-1.96-.86-2.47-.2-.3-.38-.55-.52-.72V7.8l-.24-.29h-.01a1.5 1.5 0 0 0-.85-.49 3 3 0 0 0-.8-2.27h5.28c.97 0 1.75.78 1.75 1.75v7c0 .97-.78 1.75-1.75 1.75h-11c-.97 0-1.75-.78-1.75-1.75v-2.09Z"]));
+exports.ColorBackgroundAccent20Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('ColorBackgroundAccent20Regular', "20", ["m2.75 11.41.33.33a3 3 0 0 0 4.24 0l.68-.68c.03 1.34.96 2.94 2.75 2.94 1.82 0 2.75-1.65 2.75-3 0-1.01-.53-1.96-.86-2.47-.2-.3-.38-.55-.52-.72V7.8l-.24-.29h-.01a1.5 1.5 0 0 0-.85-.49 3 3 0 0 0-.8-2.27h5.28c.97 0 1.75.78 1.75 1.75v7c0 .97-.78 1.75-1.75 1.75h-11c-.97 0-1.75-.78-1.75-1.75v-2.09Z"]));
+exports.ColorBackgroundAccent24Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('ColorBackgroundAccent24Regular', "24", ["M3 17.5v-4.09l1.49 1.49a3 3 0 0 0 4.24 0l1.37-1.37c-.06.27-.1.55-.1.85 0 1.85 1.4 3.62 3.5 3.62s3.5-1.77 3.5-3.63c0-.69-.21-1.32-.43-1.8-.23-.49-.51-.93-.77-1.3-.27-.36-.52-.67-.72-.88v-.01l-.33-.35-.01-.02c-.3-.3-.67-.46-1.05-.5a3 3 0 0 0-.72-3.1L11.56 5h7.94c.83 0 1.5.67 1.5 1.5v11c0 .83-.67 1.5-1.5 1.5h-15A1.5 1.5 0 0 1 3 17.5Z"]));

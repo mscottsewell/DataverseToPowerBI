@@ -1,0 +1,11 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const RemixAddFilled: FluentIcon;
+export declare const RemixAddRegular: FluentIcon;
+export declare const RemixAdd16Regular: FluentIcon;
+export declare const RemixAdd16Filled: FluentIcon;
+export declare const RemixAdd20Regular: FluentIcon;
+export declare const RemixAdd20Filled: FluentIcon;
+export declare const RemixAdd24Regular: FluentIcon;
+export declare const RemixAdd24Filled: FluentIcon;
+export declare const RemixAdd32Regular: FluentIcon;
+export declare const RemixAdd32Filled: FluentIcon;

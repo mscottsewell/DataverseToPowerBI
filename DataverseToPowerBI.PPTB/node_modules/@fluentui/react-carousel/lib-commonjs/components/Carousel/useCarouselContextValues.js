@@ -1,0 +1,44 @@
+'use client';
+"use strict";
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+Object.defineProperty(exports, "useCarouselContextValues_unstable", {
+    enumerable: true,
+    get: function() {
+        return useCarouselContextValues_unstable;
+    }
+});
+const _interop_require_wildcard = require("@swc/helpers/_/_interop_require_wildcard");
+const _react = /*#__PURE__*/ _interop_require_wildcard._(require("react"));
+function useCarouselContextValues_unstable(state) {
+    const { activeIndex, appearance, selectPageByElement, selectPageByDirection, selectPageByIndex, subscribeForValues, enableAutoplay, resetAutoplay, circular, containerRef, viewportRef } = state;
+    const carousel = _react.useMemo(()=>({
+            activeIndex,
+            appearance,
+            selectPageByElement,
+            selectPageByDirection,
+            selectPageByIndex,
+            subscribeForValues,
+            enableAutoplay,
+            resetAutoplay,
+            circular,
+            containerRef,
+            viewportRef
+        }), [
+        activeIndex,
+        appearance,
+        selectPageByElement,
+        selectPageByDirection,
+        selectPageByIndex,
+        subscribeForValues,
+        enableAutoplay,
+        resetAutoplay,
+        circular,
+        containerRef,
+        viewportRef
+    ]);
+    return {
+        carousel
+    };
+}

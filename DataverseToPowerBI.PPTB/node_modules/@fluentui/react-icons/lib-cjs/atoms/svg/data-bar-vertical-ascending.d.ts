@@ -1,0 +1,13 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const DataBarVerticalAscendingColor: FluentIcon;
+export declare const DataBarVerticalAscendingFilled: FluentIcon;
+export declare const DataBarVerticalAscendingRegular: FluentIcon;
+export declare const DataBarVerticalAscending16Regular: FluentIcon;
+export declare const DataBarVerticalAscending16Filled: FluentIcon;
+export declare const DataBarVerticalAscending16Color: FluentIcon;
+export declare const DataBarVerticalAscending20Regular: FluentIcon;
+export declare const DataBarVerticalAscending20Filled: FluentIcon;
+export declare const DataBarVerticalAscending20Color: FluentIcon;
+export declare const DataBarVerticalAscending24Regular: FluentIcon;
+export declare const DataBarVerticalAscending24Filled: FluentIcon;
+export declare const DataBarVerticalAscending24Color: FluentIcon;

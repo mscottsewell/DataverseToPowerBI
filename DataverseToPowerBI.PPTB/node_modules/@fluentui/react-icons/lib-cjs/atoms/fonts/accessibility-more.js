@@ -1,0 +1,13 @@
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.AccessibilityMore24Filled = exports.AccessibilityMore24Regular = exports.AccessibilityMore20Filled = exports.AccessibilityMore20Regular = exports.AccessibilityMore16Filled = exports.AccessibilityMore16Regular = exports.AccessibilityMoreRegular = exports.AccessibilityMoreFilled = void 0;
+const createFluentFontIcon_1 = require("../../utils/fonts/createFluentFontIcon");
+exports.AccessibilityMoreFilled = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AccessibilityMoreFilled", "", 2, undefined));
+exports.AccessibilityMoreRegular = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AccessibilityMoreRegular", "", 2, undefined));
+exports.AccessibilityMore16Regular = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AccessibilityMore16Regular", "󰙈", 1, 16));
+exports.AccessibilityMore16Filled = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AccessibilityMore16Filled", "󰛄", 0, 16));
+exports.AccessibilityMore20Regular = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AccessibilityMore20Regular", "󰙉", 1, 20));
+exports.AccessibilityMore20Filled = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AccessibilityMore20Filled", "󰛅", 0, 20));
+exports.AccessibilityMore24Regular = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AccessibilityMore24Regular", "󰙊", 1, 24));
+exports.AccessibilityMore24Filled = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AccessibilityMore24Filled", "󰛆", 0, 24));

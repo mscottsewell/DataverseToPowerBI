@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const TextNumberListLtrFilled: FluentIcon;
+export declare const TextNumberListLtrRegular: FluentIcon;
+export declare const TextNumberListLtr90Regular: FluentIcon;
+export declare const TextNumberListLtr90Filled: FluentIcon;
+export declare const TextNumberListLtr16Regular: FluentIcon;
+export declare const TextNumberListLtr16Filled: FluentIcon;
+export declare const TextNumberListLtr20Regular: FluentIcon;
+export declare const TextNumberListLtr20Filled: FluentIcon;
+export declare const TextNumberListLtr24Regular: FluentIcon;
+export declare const TextNumberListLtr24Filled: FluentIcon;
+export declare const TextNumberListLtr9020Regular: FluentIcon;
+export declare const TextNumberListLtr9020Filled: FluentIcon;
+export declare const TextNumberListLtr9024Regular: FluentIcon;
+export declare const TextNumberListLtr9024Filled: FluentIcon;

@@ -1,0 +1,11 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const LineFlowDiagonalUpRightFilled: FluentIcon;
+export declare const LineFlowDiagonalUpRightRegular: FluentIcon;
+export declare const LineFlowDiagonalUpRight16Regular: FluentIcon;
+export declare const LineFlowDiagonalUpRight16Filled: FluentIcon;
+export declare const LineFlowDiagonalUpRight20Regular: FluentIcon;
+export declare const LineFlowDiagonalUpRight20Filled: FluentIcon;
+export declare const LineFlowDiagonalUpRight24Regular: FluentIcon;
+export declare const LineFlowDiagonalUpRight24Filled: FluentIcon;
+export declare const LineFlowDiagonalUpRight32Regular: FluentIcon;
+export declare const LineFlowDiagonalUpRight32Filled: FluentIcon;

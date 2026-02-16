@@ -1,0 +1,10 @@
+'use client';
+import * as React from 'react';
+export function useBreadcrumbContextValues_unstable(state) {
+    const { size } = state;
+    return React.useMemo(()=>({
+            size
+        }), [
+        size
+    ]);
+}

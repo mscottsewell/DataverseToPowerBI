@@ -1,0 +1,16 @@
+"use client";
+import { createFluentIcon } from '../../utils/createFluentIcon';
+export const OvalFilled = ( /*#__PURE__*/createFluentIcon('OvalFilled', "1em", ["M2 10a6 6 0 0 1 6-6h4a6 6 0 0 1 0 12H8a6 6 0 0 1-6-6Z"]));
+export const OvalRegular = ( /*#__PURE__*/createFluentIcon('OvalRegular', "1em", ["M2 10a6 6 0 0 1 6-6h4a6 6 0 0 1 0 12H8a6 6 0 0 1-6-6Zm6-5a5 5 0 0 0 0 10h4a5 5 0 0 0 0-10H8Z"]));
+export const Oval16Regular = ( /*#__PURE__*/createFluentIcon('Oval16Regular', "16", ["M1 8a5 5 0 0 1 5-5h4a5 5 0 0 1 0 10H6a5 5 0 0 1-5-5Zm5-4a4 4 0 1 0 0 8h4a4 4 0 0 0 0-8H6Z"]));
+export const Oval16Filled = ( /*#__PURE__*/createFluentIcon('Oval16Filled', "16", ["M1 8a5 5 0 0 1 5-5h4a5 5 0 0 1 0 10H6a5 5 0 0 1-5-5Z"]));
+export const Oval20Regular = ( /*#__PURE__*/createFluentIcon('Oval20Regular', "20", ["M2 10a6 6 0 0 1 6-6h4a6 6 0 0 1 0 12H8a6 6 0 0 1-6-6Zm6-5a5 5 0 0 0 0 10h4a5 5 0 0 0 0-10H8Z"]));
+export const Oval20Filled = ( /*#__PURE__*/createFluentIcon('Oval20Filled', "20", ["M2 10a6 6 0 0 1 6-6h4a6 6 0 0 1 0 12H8a6 6 0 0 1-6-6Z"]));
+export const Oval24Regular = ( /*#__PURE__*/createFluentIcon('Oval24Regular', "24", ["M2 12a8 8 0 0 1 8-8h4a8 8 0 1 1 0 16h-4a8 8 0 0 1-8-8Zm8-6.5a6.5 6.5 0 0 0 0 13h4a6.5 6.5 0 1 0 0-13h-4Z"]));
+export const Oval24Filled = ( /*#__PURE__*/createFluentIcon('Oval24Filled', "24", ["M2 12a8 8 0 0 1 8-8h4a8 8 0 1 1 0 16h-4a8 8 0 0 1-8-8Z"]));
+export const Oval28Regular = ( /*#__PURE__*/createFluentIcon('Oval28Regular', "28", ["M2 14a9 9 0 0 1 9-9h6a9 9 0 1 1 0 18h-6a9 9 0 0 1-9-9Zm9-7.5a7.5 7.5 0 1 0 0 15h6a7.5 7.5 0 0 0 0-15h-6Z"]));
+export const Oval28Filled = ( /*#__PURE__*/createFluentIcon('Oval28Filled', "28", ["M2 14a9 9 0 0 1 9-9h6a9 9 0 1 1 0 18h-6a9 9 0 0 1-9-9Z"]));
+export const Oval32Regular = ( /*#__PURE__*/createFluentIcon('Oval32Regular', "32", ["M12 8a8 8 0 1 0 0 16h8a8 8 0 1 0 0-16h-8ZM2 16A10 10 0 0 1 12 6h8a10 10 0 0 1 0 20h-8A10 10 0 0 1 2 16Z"]));
+export const Oval32Filled = ( /*#__PURE__*/createFluentIcon('Oval32Filled', "32", ["M12 6a10 10 0 0 0 0 20h8a10 10 0 0 0 0-20h-8Z"]));
+export const Oval48Regular = ( /*#__PURE__*/createFluentIcon('Oval48Regular', "48", ["M4 24A15 15 0 0 1 19 9h10a15 15 0 1 1 0 30H19A15 15 0 0 1 4 24Zm15-12.5a12.5 12.5 0 1 0 0 25h10a12.5 12.5 0 1 0 0-25H19Z"]));
+export const Oval48Filled = ( /*#__PURE__*/createFluentIcon('Oval48Filled', "48", ["M4 24A15 15 0 0 1 19 9h10a15 15 0 1 1 0 30H19A15 15 0 0 1 4 24Z"]));

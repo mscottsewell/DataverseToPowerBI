@@ -1,0 +1,11 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const PlanetFilled: FluentFontIcon;
+export declare const PlanetRegular: FluentFontIcon;
+export declare const Planet16Regular: FluentFontIcon;
+export declare const Planet16Filled: FluentFontIcon;
+export declare const Planet20Regular: FluentFontIcon;
+export declare const Planet20Filled: FluentFontIcon;
+export declare const Planet24Regular: FluentFontIcon;
+export declare const Planet24Filled: FluentFontIcon;
+export declare const Planet32Regular: FluentFontIcon;
+export declare const Planet32Filled: FluentFontIcon;

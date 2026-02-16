@@ -1,0 +1,14 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const CalendarDayFilled: FluentIcon;
+export declare const CalendarDayRegular: FluentIcon;
+export declare const CalendarDay16Regular: FluentIcon;
+export declare const CalendarDay16Filled: FluentIcon;
+export declare const CalendarDay20Regular: FluentIcon;
+export declare const CalendarDay20Filled: FluentIcon;
+export declare const CalendarDay24Regular: FluentIcon;
+export declare const CalendarDay24Filled: FluentIcon;
+export declare const CalendarDay28Regular: FluentIcon;
+export declare const CalendarDay28Filled: FluentIcon;
+export declare const CalendarDay32Regular: FluentIcon;
+export declare const CalendarDay32Filled: FluentIcon;
+export declare const CalendarDay32Light: FluentIcon;

@@ -1,0 +1,16 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const ImmersiveReaderFilled: FluentFontIcon;
+export declare const ImmersiveReaderRegular: FluentFontIcon;
+export declare const ImmersiveReader16Regular: FluentFontIcon;
+export declare const ImmersiveReader16Filled: FluentFontIcon;
+export declare const ImmersiveReader20Regular: FluentFontIcon;
+export declare const ImmersiveReader20Filled: FluentFontIcon;
+export declare const ImmersiveReader24Regular: FluentFontIcon;
+export declare const ImmersiveReader24Filled: FluentFontIcon;
+export declare const ImmersiveReader28Regular: FluentFontIcon;
+export declare const ImmersiveReader28Filled: FluentFontIcon;
+export declare const ImmersiveReader32Regular: FluentFontIcon;
+export declare const ImmersiveReader32Filled: FluentFontIcon;
+export declare const ImmersiveReader32Light: FluentFontIcon;
+export declare const ImmersiveReader48Regular: FluentFontIcon;
+export declare const ImmersiveReader48Filled: FluentFontIcon;

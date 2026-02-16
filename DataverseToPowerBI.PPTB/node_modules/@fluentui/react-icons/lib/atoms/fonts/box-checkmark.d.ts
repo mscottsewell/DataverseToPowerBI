@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const BoxCheckmarkFilled: FluentFontIcon;
+export declare const BoxCheckmarkRegular: FluentFontIcon;
+export declare const BoxCheckmark16Regular: FluentFontIcon;
+export declare const BoxCheckmark16Filled: FluentFontIcon;
+export declare const BoxCheckmark20Regular: FluentFontIcon;
+export declare const BoxCheckmark20Filled: FluentFontIcon;
+export declare const BoxCheckmark24Regular: FluentFontIcon;
+export declare const BoxCheckmark24Filled: FluentFontIcon;
+export declare const BoxCheckmark28Regular: FluentFontIcon;
+export declare const BoxCheckmark28Filled: FluentFontIcon;
+export declare const BoxCheckmark32Regular: FluentFontIcon;
+export declare const BoxCheckmark32Filled: FluentFontIcon;
+export declare const BoxCheckmark48Regular: FluentFontIcon;
+export declare const BoxCheckmark48Filled: FluentFontIcon;

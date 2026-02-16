@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const ContactCardFilled: FluentFontIcon;
+export declare const ContactCardRegular: FluentFontIcon;
+export declare const ContactCard16Regular: FluentFontIcon;
+export declare const ContactCard16Filled: FluentFontIcon;
+export declare const ContactCard20Regular: FluentFontIcon;
+export declare const ContactCard20Filled: FluentFontIcon;
+export declare const ContactCard24Regular: FluentFontIcon;
+export declare const ContactCard24Filled: FluentFontIcon;
+export declare const ContactCard28Regular: FluentFontIcon;
+export declare const ContactCard28Filled: FluentFontIcon;
+export declare const ContactCard32Regular: FluentFontIcon;
+export declare const ContactCard32Filled: FluentFontIcon;
+export declare const ContactCard48Regular: FluentFontIcon;
+export declare const ContactCard48Filled: FluentFontIcon;

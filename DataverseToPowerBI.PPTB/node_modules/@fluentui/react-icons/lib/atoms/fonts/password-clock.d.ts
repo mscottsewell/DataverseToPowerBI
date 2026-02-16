@@ -1,0 +1,11 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const PasswordClockFilled: FluentFontIcon;
+export declare const PasswordClockRegular: FluentFontIcon;
+export declare const PasswordClock16Regular: FluentFontIcon;
+export declare const PasswordClock16Filled: FluentFontIcon;
+export declare const PasswordClock20Regular: FluentFontIcon;
+export declare const PasswordClock20Filled: FluentFontIcon;
+export declare const PasswordClock24Regular: FluentFontIcon;
+export declare const PasswordClock24Filled: FluentFontIcon;
+export declare const PasswordClock48Regular: FluentFontIcon;
+export declare const PasswordClock48Filled: FluentFontIcon;

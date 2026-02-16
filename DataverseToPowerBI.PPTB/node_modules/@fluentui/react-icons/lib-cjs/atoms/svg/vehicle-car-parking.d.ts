@@ -1,0 +1,13 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const VehicleCarParkingFilled: FluentIcon;
+export declare const VehicleCarParkingRegular: FluentIcon;
+export declare const VehicleCarParking16Regular: FluentIcon;
+export declare const VehicleCarParking16Filled: FluentIcon;
+export declare const VehicleCarParking20Regular: FluentIcon;
+export declare const VehicleCarParking20Filled: FluentIcon;
+export declare const VehicleCarParking24Regular: FluentIcon;
+export declare const VehicleCarParking24Filled: FluentIcon;
+export declare const VehicleCarParking32Regular: FluentIcon;
+export declare const VehicleCarParking32Filled: FluentIcon;
+export declare const VehicleCarParking48Regular: FluentIcon;
+export declare const VehicleCarParking48Filled: FluentIcon;

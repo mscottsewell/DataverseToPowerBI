@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const RhombusFilled: FluentFontIcon;
+export declare const RhombusRegular: FluentFontIcon;
+export declare const Rhombus16Regular: FluentFontIcon;
+export declare const Rhombus16Filled: FluentFontIcon;
+export declare const Rhombus20Regular: FluentFontIcon;
+export declare const Rhombus20Filled: FluentFontIcon;
+export declare const Rhombus24Regular: FluentFontIcon;
+export declare const Rhombus24Filled: FluentFontIcon;
+export declare const Rhombus28Regular: FluentFontIcon;
+export declare const Rhombus28Filled: FluentFontIcon;
+export declare const Rhombus32Regular: FluentFontIcon;
+export declare const Rhombus32Filled: FluentFontIcon;
+export declare const Rhombus48Regular: FluentFontIcon;
+export declare const Rhombus48Filled: FluentFontIcon;

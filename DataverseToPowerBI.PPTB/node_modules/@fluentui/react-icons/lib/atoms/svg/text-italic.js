@@ -1,0 +1,10 @@
+"use client";
+import { createFluentIcon } from '../../utils/createFluentIcon';
+export const TextItalicFilled = ( /*#__PURE__*/createFluentIcon('TextItalicFilled', "1em", ["M8 3.25c0-.41.34-.75.75-.75h7.5a.75.75 0 0 1 0 1.5h-3.23L8.59 15.5h2.66a.75.75 0 0 1 0 1.5h-7.5a.75.75 0 0 1 0-1.5h3.23L11.41 4H8.75A.75.75 0 0 1 8 3.25Z"]));
+export const TextItalicRegular = ( /*#__PURE__*/createFluentIcon('TextItalicRegular', "1em", ["M16 3a.5.5 0 0 1 0 1h-3.16L8.23 16h3.27a.5.5 0 0 1 0 1H4a.5.5 0 0 1 0-1h3.16l4.61-12H8.5a.5.5 0 0 1 0-1H16Z"]));
+export const TextItalic16Regular = ( /*#__PURE__*/createFluentIcon('TextItalic16Regular', "16", ["M13 2H7a.5.5 0 0 0 0 1h2.47L5.66 13H3a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H6.73l3.81-10H13a.5.5 0 0 0 0-1Z"]));
+export const TextItalic16Filled = ( /*#__PURE__*/createFluentIcon('TextItalic16Filled', "16", ["M12.8 2H7a.75.75 0 0 0 0 1.5H9l-3.43 9H3.2a.75.75 0 0 0 0 1.5H9a.75.75 0 0 0 0-1.5H7.19l3.43-9h2.18a.75.75 0 0 0 0-1.5Z"]));
+export const TextItalic20Regular = ( /*#__PURE__*/createFluentIcon('TextItalic20Regular', "20", ["M16 3a.5.5 0 0 1 0 1h-3.16L8.23 16h3.27a.5.5 0 0 1 0 1H4a.5.5 0 0 1 0-1h3.16l4.61-12H8.5a.5.5 0 0 1 0-1H16Z"]));
+export const TextItalic20Filled = ( /*#__PURE__*/createFluentIcon('TextItalic20Filled', "20", ["M8 3.25c0-.41.34-.75.75-.75h7.5a.75.75 0 0 1 0 1.5h-3.23L8.59 15.5h2.66a.75.75 0 0 1 0 1.5h-7.5a.75.75 0 0 1 0-1.5h3.23L11.41 4H8.75A.75.75 0 0 1 8 3.25Z"]));
+export const TextItalic24Regular = ( /*#__PURE__*/createFluentIcon('TextItalic24Regular', "24", ["M9.75 4h8.5a.75.75 0 0 1 .1 1.5H15.06l-5.01 13h4.21c.38 0 .7.28.74.65v.1c0 .38-.27.7-.64.74l-.1.01h-9.5a.75.75 0 0 1-.75-.75c0-.38.28-.7.65-.74l.1-.01h3.68l.03-.07L13.45 5.5h-3.7a.75.75 0 0 1-.74-.65v-.1c0-.38.27-.7.64-.74l.1-.01h8.5-8.5Z"]));
+export const TextItalic24Filled = ( /*#__PURE__*/createFluentIcon('TextItalic24Filled', "24", ["M10.65 18.5h3.85a1 1 0 0 1 0 2H5a1 1 0 0 1-1-1 1 1 0 0 1 1-1h3.5L13.34 6H10a1 1 0 0 1 0-2h8.5a1 1 0 0 1 0 2h-3.02l-4.83 12.5Z"]));

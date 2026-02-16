@@ -1,0 +1,11 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const CompassNorthwestFilled: FluentIcon;
+export declare const CompassNorthwestRegular: FluentIcon;
+export declare const CompassNorthwest16Regular: FluentIcon;
+export declare const CompassNorthwest16Filled: FluentIcon;
+export declare const CompassNorthwest20Regular: FluentIcon;
+export declare const CompassNorthwest20Filled: FluentIcon;
+export declare const CompassNorthwest24Regular: FluentIcon;
+export declare const CompassNorthwest24Filled: FluentIcon;
+export declare const CompassNorthwest28Regular: FluentIcon;
+export declare const CompassNorthwest28Filled: FluentIcon;

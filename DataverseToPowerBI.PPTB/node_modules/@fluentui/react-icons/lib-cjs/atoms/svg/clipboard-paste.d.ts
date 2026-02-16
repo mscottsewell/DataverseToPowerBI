@@ -1,0 +1,14 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const ClipboardPasteFilled: FluentIcon;
+export declare const ClipboardPasteRegular: FluentIcon;
+export declare const ClipboardPaste16Regular: FluentIcon;
+export declare const ClipboardPaste16Filled: FluentIcon;
+export declare const ClipboardPaste20Regular: FluentIcon;
+export declare const ClipboardPaste20Filled: FluentIcon;
+export declare const ClipboardPaste24Regular: FluentIcon;
+export declare const ClipboardPaste24Filled: FluentIcon;
+export declare const ClipboardPaste28Regular: FluentIcon;
+export declare const ClipboardPaste28Filled: FluentIcon;
+export declare const ClipboardPaste32Regular: FluentIcon;
+export declare const ClipboardPaste32Filled: FluentIcon;
+export declare const ClipboardPaste32Light: FluentIcon;

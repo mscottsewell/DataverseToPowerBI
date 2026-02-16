@@ -1,0 +1,17 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const TooltipQuoteFilled: FluentIcon;
+export declare const TooltipQuoteRegular: FluentIcon;
+export declare const TooltipQuote12Regular: FluentIcon;
+export declare const TooltipQuote12Filled: FluentIcon;
+export declare const TooltipQuote16Regular: FluentIcon;
+export declare const TooltipQuote16Filled: FluentIcon;
+export declare const TooltipQuote20Regular: FluentIcon;
+export declare const TooltipQuote20Filled: FluentIcon;
+export declare const TooltipQuote24Regular: FluentIcon;
+export declare const TooltipQuote24Filled: FluentIcon;
+export declare const TooltipQuote28Regular: FluentIcon;
+export declare const TooltipQuote28Filled: FluentIcon;
+export declare const TooltipQuote32Regular: FluentIcon;
+export declare const TooltipQuote32Filled: FluentIcon;
+export declare const TooltipQuote48Regular: FluentIcon;
+export declare const TooltipQuote48Filled: FluentIcon;

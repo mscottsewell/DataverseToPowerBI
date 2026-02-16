@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const MegaphoneLoudFilled: FluentFontIcon;
+export declare const MegaphoneLoudRegular: FluentFontIcon;
+export declare const MegaphoneLoud16Regular: FluentFontIcon;
+export declare const MegaphoneLoud16Filled: FluentFontIcon;
+export declare const MegaphoneLoud20Regular: FluentFontIcon;
+export declare const MegaphoneLoud20Filled: FluentFontIcon;
+export declare const MegaphoneLoud24Regular: FluentFontIcon;
+export declare const MegaphoneLoud24Filled: FluentFontIcon;
+export declare const MegaphoneLoud28Regular: FluentFontIcon;
+export declare const MegaphoneLoud28Filled: FluentFontIcon;
+export declare const MegaphoneLoud32Regular: FluentFontIcon;
+export declare const MegaphoneLoud32Filled: FluentFontIcon;
+export declare const MegaphoneLoud48Regular: FluentFontIcon;
+export declare const MegaphoneLoud48Filled: FluentFontIcon;

@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const TentFilled: FluentFontIcon;
+export declare const TentRegular: FluentFontIcon;
+export declare const Tent12Regular: FluentFontIcon;
+export declare const Tent12Filled: FluentFontIcon;
+export declare const Tent16Regular: FluentFontIcon;
+export declare const Tent16Filled: FluentFontIcon;
+export declare const Tent20Regular: FluentFontIcon;
+export declare const Tent20Filled: FluentFontIcon;
+export declare const Tent24Regular: FluentFontIcon;
+export declare const Tent24Filled: FluentFontIcon;
+export declare const Tent28Regular: FluentFontIcon;
+export declare const Tent28Filled: FluentFontIcon;
+export declare const Tent48Regular: FluentFontIcon;
+export declare const Tent48Filled: FluentFontIcon;

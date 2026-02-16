@@ -1,0 +1,13 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const LightbulbCheckmarkColor: FluentIcon;
+export declare const LightbulbCheckmarkFilled: FluentIcon;
+export declare const LightbulbCheckmarkRegular: FluentIcon;
+export declare const LightbulbCheckmark20Regular: FluentIcon;
+export declare const LightbulbCheckmark20Filled: FluentIcon;
+export declare const LightbulbCheckmark20Color: FluentIcon;
+export declare const LightbulbCheckmark24Regular: FluentIcon;
+export declare const LightbulbCheckmark24Filled: FluentIcon;
+export declare const LightbulbCheckmark24Color: FluentIcon;
+export declare const LightbulbCheckmark32Regular: FluentIcon;
+export declare const LightbulbCheckmark32Filled: FluentIcon;
+export declare const LightbulbCheckmark32Color: FluentIcon;

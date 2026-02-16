@@ -1,0 +1,11 @@
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ArrowTurnDownRight48Filled = exports.ArrowTurnDownRight48Regular = exports.ArrowTurnDownRight20Filled = exports.ArrowTurnDownRight20Regular = exports.ArrowTurnDownRightRegular = exports.ArrowTurnDownRightFilled = void 0;
+const createFluentIcon_1 = require("../../utils/createFluentIcon");
+exports.ArrowTurnDownRightFilled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('ArrowTurnDownRightFilled', "1em", ["M10.72 16.78c.3.3.77.3 1.06 0l4-4c.3-.3.3-.77 0-1.06l-4-4a.75.75 0 1 0-1.06 1.06l2.72 2.72H7A1.5 1.5 0 0 1 5.5 10V3.75a.75.75 0 0 0-1.5 0V10a3 3 0 0 0 3 3h6.44l-2.72 2.72c-.3.3-.3.77 0 1.06Z"]));
+exports.ArrowTurnDownRightRegular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('ArrowTurnDownRightRegular', "1em", ["M11.15 16.85c.2.2.5.2.7 0l4-4a.5.5 0 0 0 0-.7l-4-4a.5.5 0 0 0-.7.7L14.29 12H8a2 2 0 0 1-2-2V3.5a.5.5 0 0 0-1 0V10a3 3 0 0 0 3 3h6.3l-3.15 3.15a.5.5 0 0 0 0 .7Z"]));
+exports.ArrowTurnDownRight20Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('ArrowTurnDownRight20Regular', "20", ["M11.15 16.85c.2.2.5.2.7 0l4-4a.5.5 0 0 0 0-.7l-4-4a.5.5 0 0 0-.7.7L14.29 12H8a2 2 0 0 1-2-2V3.5a.5.5 0 0 0-1 0V10a3 3 0 0 0 3 3h6.3l-3.15 3.15a.5.5 0 0 0 0 .7Z"]));
+exports.ArrowTurnDownRight20Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('ArrowTurnDownRight20Filled', "20", ["M10.72 16.78c.3.3.77.3 1.06 0l4-4c.3-.3.3-.77 0-1.06l-4-4a.75.75 0 1 0-1.06 1.06l2.72 2.72H7A1.5 1.5 0 0 1 5.5 10V3.75a.75.75 0 0 0-1.5 0V10a3 3 0 0 0 3 3h6.44l-2.72 2.72c-.3.3-.3.77 0 1.06Z"]));
+exports.ArrowTurnDownRight48Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('ArrowTurnDownRight48Regular', "48", ["M12.5 7.25a1.25 1.25 0 1 0-2.5 0v18.5c0 4 3.25 7.25 7.25 7.25h18.17l-7.04 6.85a1.25 1.25 0 0 0 1.74 1.8l9.5-9.25a1.25 1.25 0 0 0 0-1.8l-9.5-9.25a1.25 1.25 0 0 0-1.74 1.8l7.55 7.35H17.25a4.75 4.75 0 0 1-4.75-4.75V7.25Z"]));
+exports.ArrowTurnDownRight48Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('ArrowTurnDownRight48Filled', "48", ["M13 7.5a1.5 1.5 0 0 0-3 0v18a7.5 7.5 0 0 0 7.5 7.5h17.38l-6.44 6.44a1.5 1.5 0 0 0 2.12 2.12l9-9a1.5 1.5 0 0 0 0-2.12l-9-9a1.5 1.5 0 0 0-2.12 2.12L34.88 30H17.5a4.5 4.5 0 0 1-4.5-4.5v-18Z"]));

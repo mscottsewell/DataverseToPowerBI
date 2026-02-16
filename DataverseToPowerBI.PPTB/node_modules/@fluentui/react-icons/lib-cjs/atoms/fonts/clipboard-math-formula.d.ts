@@ -1,0 +1,13 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const ClipboardMathFormulaFilled: FluentFontIcon;
+export declare const ClipboardMathFormulaRegular: FluentFontIcon;
+export declare const ClipboardMathFormula16Regular: FluentFontIcon;
+export declare const ClipboardMathFormula16Filled: FluentFontIcon;
+export declare const ClipboardMathFormula20Regular: FluentFontIcon;
+export declare const ClipboardMathFormula20Filled: FluentFontIcon;
+export declare const ClipboardMathFormula24Regular: FluentFontIcon;
+export declare const ClipboardMathFormula24Filled: FluentFontIcon;
+export declare const ClipboardMathFormula28Regular: FluentFontIcon;
+export declare const ClipboardMathFormula28Filled: FluentFontIcon;
+export declare const ClipboardMathFormula32Regular: FluentFontIcon;
+export declare const ClipboardMathFormula32Filled: FluentFontIcon;

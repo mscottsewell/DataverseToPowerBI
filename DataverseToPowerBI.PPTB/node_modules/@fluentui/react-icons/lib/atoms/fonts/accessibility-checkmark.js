@@ -1,0 +1,15 @@
+"use client";
+import { createFluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export const AccessibilityCheckmarkFilled = ( /*#__PURE__*/createFluentFontIcon("AccessibilityCheckmarkFilled", "", 2, undefined));
+export const AccessibilityCheckmarkRegular = ( /*#__PURE__*/createFluentFontIcon("AccessibilityCheckmarkRegular", "", 2, undefined));
+export const AccessibilityCheckmark20Regular = ( /*#__PURE__*/createFluentFontIcon("AccessibilityCheckmark20Regular", "", 1, 20));
+export const AccessibilityCheckmark20Filled = ( /*#__PURE__*/createFluentFontIcon("AccessibilityCheckmark20Filled", "", 0, 20));
+export const AccessibilityCheckmark24Regular = ( /*#__PURE__*/createFluentFontIcon("AccessibilityCheckmark24Regular", "", 1, 24));
+export const AccessibilityCheckmark24Filled = ( /*#__PURE__*/createFluentFontIcon("AccessibilityCheckmark24Filled", "", 0, 24));
+export const AccessibilityCheckmark28Regular = ( /*#__PURE__*/createFluentFontIcon("AccessibilityCheckmark28Regular", "", 1, 28));
+export const AccessibilityCheckmark28Filled = ( /*#__PURE__*/createFluentFontIcon("AccessibilityCheckmark28Filled", "", 0, 28));
+export const AccessibilityCheckmark32Regular = ( /*#__PURE__*/createFluentFontIcon("AccessibilityCheckmark32Regular", "", 1, 32));
+export const AccessibilityCheckmark32Filled = ( /*#__PURE__*/createFluentFontIcon("AccessibilityCheckmark32Filled", "", 0, 32));
+export const AccessibilityCheckmark32Light = ( /*#__PURE__*/createFluentFontIcon("AccessibilityCheckmark32Light", "", 3, 32));
+export const AccessibilityCheckmark48Regular = ( /*#__PURE__*/createFluentFontIcon("AccessibilityCheckmark48Regular", "", 1, 48));
+export const AccessibilityCheckmark48Filled = ( /*#__PURE__*/createFluentFontIcon("AccessibilityCheckmark48Filled", "", 0, 48));

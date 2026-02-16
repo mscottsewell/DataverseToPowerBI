@@ -1,0 +1,4 @@
+"use client";
+import { createFluentIcon } from '../../utils/createFluentIcon';
+export const TableDefault32Regular = ( /*#__PURE__*/createFluentIcon('TableDefault32Regular', "32", ["M3 7.5A4.5 4.5 0 0 1 7.5 3h17A4.5 4.5 0 0 1 29 7.5v17a4.5 4.5 0 0 1-4.5 4.5h-17A4.5 4.5 0 0 1 3 24.5v-17ZM7.5 5A2.5 2.5 0 0 0 5 7.5V11h6V5H7.5ZM5 13v6h6v-6H5Zm8 0v6h6v-6h-6Zm8 0v6h6v-6h-6Zm-2 8h-6v6h6v-6Zm2 6h3.5a2.5 2.5 0 0 0 2.5-2.5V21h-6v6Zm0-16h6V7.5A2.5 2.5 0 0 0 24.5 5H21v6Zm-2-6h-6v6h6V5ZM5 21v3.5A2.5 2.5 0 0 0 7.5 27H11v-6H5Z"]));
+export const TableDefault32Filled = ( /*#__PURE__*/createFluentIcon('TableDefault32Filled', "32", ["M22 29h2.5a4.5 4.5 0 0 0 4.5-4.5V22h-7v7Zm0-9h7v-8h-7v8Zm-2-8v8h-8v-8h8Zm2-2h7V7.5A4.5 4.5 0 0 0 24.5 3H22v7Zm-2-7v7h-8V3h8Zm0 19v7h-8v-7h8Zm-10-2v-8H3v8h7Zm0-10V3H7.5A4.5 4.5 0 0 0 3 7.5V10h7Zm0 19v-7H3v2.5A4.5 4.5 0 0 0 7.5 29H10Z"]));

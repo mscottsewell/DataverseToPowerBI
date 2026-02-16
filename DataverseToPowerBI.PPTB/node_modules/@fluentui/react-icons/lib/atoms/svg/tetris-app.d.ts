@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const TetrisAppFilled: FluentIcon;
+export declare const TetrisAppRegular: FluentIcon;
+export declare const TetrisApp16Regular: FluentIcon;
+export declare const TetrisApp16Filled: FluentIcon;
+export declare const TetrisApp20Regular: FluentIcon;
+export declare const TetrisApp20Filled: FluentIcon;
+export declare const TetrisApp24Regular: FluentIcon;
+export declare const TetrisApp24Filled: FluentIcon;
+export declare const TetrisApp28Regular: FluentIcon;
+export declare const TetrisApp28Filled: FluentIcon;
+export declare const TetrisApp32Regular: FluentIcon;
+export declare const TetrisApp32Filled: FluentIcon;
+export declare const TetrisApp48Regular: FluentIcon;
+export declare const TetrisApp48Filled: FluentIcon;

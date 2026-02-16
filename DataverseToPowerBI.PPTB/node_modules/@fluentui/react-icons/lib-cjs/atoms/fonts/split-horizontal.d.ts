@@ -1,0 +1,17 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const SplitHorizontalFilled: FluentFontIcon;
+export declare const SplitHorizontalRegular: FluentFontIcon;
+export declare const SplitHorizontal12Regular: FluentFontIcon;
+export declare const SplitHorizontal12Filled: FluentFontIcon;
+export declare const SplitHorizontal16Regular: FluentFontIcon;
+export declare const SplitHorizontal16Filled: FluentFontIcon;
+export declare const SplitHorizontal20Regular: FluentFontIcon;
+export declare const SplitHorizontal20Filled: FluentFontIcon;
+export declare const SplitHorizontal24Regular: FluentFontIcon;
+export declare const SplitHorizontal24Filled: FluentFontIcon;
+export declare const SplitHorizontal28Regular: FluentFontIcon;
+export declare const SplitHorizontal28Filled: FluentFontIcon;
+export declare const SplitHorizontal32Regular: FluentFontIcon;
+export declare const SplitHorizontal32Filled: FluentFontIcon;
+export declare const SplitHorizontal48Regular: FluentFontIcon;
+export declare const SplitHorizontal48Filled: FluentFontIcon;

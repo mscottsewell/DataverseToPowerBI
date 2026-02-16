@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const ArchiveClockFilled: FluentIcon;
+export declare const ArchiveClockRegular: FluentIcon;
+export declare const ArchiveClock16Regular: FluentIcon;
+export declare const ArchiveClock16Filled: FluentIcon;
+export declare const ArchiveClock20Regular: FluentIcon;
+export declare const ArchiveClock20Filled: FluentIcon;
+export declare const ArchiveClock24Regular: FluentIcon;
+export declare const ArchiveClock24Filled: FluentIcon;
+export declare const ArchiveClock28Regular: FluentIcon;
+export declare const ArchiveClock28Filled: FluentIcon;
+export declare const ArchiveClock32Regular: FluentIcon;
+export declare const ArchiveClock32Filled: FluentIcon;
+export declare const ArchiveClock48Regular: FluentIcon;
+export declare const ArchiveClock48Filled: FluentIcon;

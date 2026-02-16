@@ -1,0 +1,18 @@
+"use client";
+import { createFluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export const AddCircleFilled = ( /*#__PURE__*/createFluentFontIcon("AddCircleFilled", "", 2, undefined));
+export const AddCircleRegular = ( /*#__PURE__*/createFluentFontIcon("AddCircleRegular", "", 2, undefined));
+export const AddCircle12Regular = ( /*#__PURE__*/createFluentFontIcon("AddCircle12Regular", "", 1, 12));
+export const AddCircle12Filled = ( /*#__PURE__*/createFluentFontIcon("AddCircle12Filled", "", 0, 12));
+export const AddCircle16Regular = ( /*#__PURE__*/createFluentFontIcon("AddCircle16Regular", "", 1, 16));
+export const AddCircle16Filled = ( /*#__PURE__*/createFluentFontIcon("AddCircle16Filled", "", 0, 16));
+export const AddCircle20Regular = ( /*#__PURE__*/createFluentFontIcon("AddCircle20Regular", "", 1, 20));
+export const AddCircle20Filled = ( /*#__PURE__*/createFluentFontIcon("AddCircle20Filled", "", 0, 20));
+export const AddCircle24Regular = ( /*#__PURE__*/createFluentFontIcon("AddCircle24Regular", "", 1, 24));
+export const AddCircle24Filled = ( /*#__PURE__*/createFluentFontIcon("AddCircle24Filled", "", 0, 24));
+export const AddCircle28Regular = ( /*#__PURE__*/createFluentFontIcon("AddCircle28Regular", "", 1, 28));
+export const AddCircle28Filled = ( /*#__PURE__*/createFluentFontIcon("AddCircle28Filled", "", 0, 28));
+export const AddCircle32Regular = ( /*#__PURE__*/createFluentFontIcon("AddCircle32Regular", "", 1, 32));
+export const AddCircle32Filled = ( /*#__PURE__*/createFluentFontIcon("AddCircle32Filled", "", 0, 32));
+export const AddCircle48Regular = ( /*#__PURE__*/createFluentFontIcon("AddCircle48Regular", "󰛊", 1, 48));
+export const AddCircle48Filled = ( /*#__PURE__*/createFluentFontIcon("AddCircle48Filled", "󰝇", 0, 48));

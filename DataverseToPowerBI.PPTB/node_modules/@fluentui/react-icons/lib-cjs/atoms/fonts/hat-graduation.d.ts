@@ -1,0 +1,17 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const HatGraduationFilled: FluentFontIcon;
+export declare const HatGraduationRegular: FluentFontIcon;
+export declare const HatGraduation12Regular: FluentFontIcon;
+export declare const HatGraduation12Filled: FluentFontIcon;
+export declare const HatGraduation16Regular: FluentFontIcon;
+export declare const HatGraduation16Filled: FluentFontIcon;
+export declare const HatGraduation20Regular: FluentFontIcon;
+export declare const HatGraduation20Filled: FluentFontIcon;
+export declare const HatGraduation24Regular: FluentFontIcon;
+export declare const HatGraduation24Filled: FluentFontIcon;
+export declare const HatGraduation28Regular: FluentFontIcon;
+export declare const HatGraduation28Filled: FluentFontIcon;
+export declare const HatGraduation32Regular: FluentFontIcon;
+export declare const HatGraduation32Filled: FluentFontIcon;
+export declare const HatGraduation48Regular: FluentFontIcon;
+export declare const HatGraduation48Filled: FluentFontIcon;

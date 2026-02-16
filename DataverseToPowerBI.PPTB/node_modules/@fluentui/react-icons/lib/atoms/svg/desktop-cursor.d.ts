@@ -1,0 +1,11 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const DesktopCursorFilled: FluentIcon;
+export declare const DesktopCursorRegular: FluentIcon;
+export declare const DesktopCursor16Regular: FluentIcon;
+export declare const DesktopCursor16Filled: FluentIcon;
+export declare const DesktopCursor20Regular: FluentIcon;
+export declare const DesktopCursor20Filled: FluentIcon;
+export declare const DesktopCursor24Regular: FluentIcon;
+export declare const DesktopCursor24Filled: FluentIcon;
+export declare const DesktopCursor28Regular: FluentIcon;
+export declare const DesktopCursor28Filled: FluentIcon;

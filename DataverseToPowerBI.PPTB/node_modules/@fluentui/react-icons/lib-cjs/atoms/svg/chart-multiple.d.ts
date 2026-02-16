@@ -1,0 +1,16 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const ChartMultipleColor: FluentIcon;
+export declare const ChartMultipleFilled: FluentIcon;
+export declare const ChartMultipleRegular: FluentIcon;
+export declare const ChartMultiple16Regular: FluentIcon;
+export declare const ChartMultiple16Filled: FluentIcon;
+export declare const ChartMultiple16Color: FluentIcon;
+export declare const ChartMultiple20Regular: FluentIcon;
+export declare const ChartMultiple20Filled: FluentIcon;
+export declare const ChartMultiple20Color: FluentIcon;
+export declare const ChartMultiple24Regular: FluentIcon;
+export declare const ChartMultiple24Filled: FluentIcon;
+export declare const ChartMultiple24Color: FluentIcon;
+export declare const ChartMultiple32Regular: FluentIcon;
+export declare const ChartMultiple32Filled: FluentIcon;
+export declare const ChartMultiple32Color: FluentIcon;

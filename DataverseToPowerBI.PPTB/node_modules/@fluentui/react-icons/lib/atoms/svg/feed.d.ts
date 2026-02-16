@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const FeedFilled: FluentIcon;
+export declare const FeedRegular: FluentIcon;
+export declare const Feed16Regular: FluentIcon;
+export declare const Feed16Filled: FluentIcon;
+export declare const Feed20Regular: FluentIcon;
+export declare const Feed20Filled: FluentIcon;
+export declare const Feed24Regular: FluentIcon;
+export declare const Feed24Filled: FluentIcon;
+export declare const Feed28Regular: FluentIcon;
+export declare const Feed28Filled: FluentIcon;
+export declare const Feed32Regular: FluentIcon;
+export declare const Feed32Filled: FluentIcon;
+export declare const Feed48Regular: FluentIcon;
+export declare const Feed48Filled: FluentIcon;

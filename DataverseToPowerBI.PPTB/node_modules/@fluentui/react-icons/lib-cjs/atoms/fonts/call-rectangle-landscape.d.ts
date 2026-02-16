@@ -1,0 +1,11 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const CallRectangleLandscapeFilled: FluentFontIcon;
+export declare const CallRectangleLandscapeRegular: FluentFontIcon;
+export declare const CallRectangleLandscape16Regular: FluentFontIcon;
+export declare const CallRectangleLandscape16Filled: FluentFontIcon;
+export declare const CallRectangleLandscape20Regular: FluentFontIcon;
+export declare const CallRectangleLandscape20Filled: FluentFontIcon;
+export declare const CallRectangleLandscape24Regular: FluentFontIcon;
+export declare const CallRectangleLandscape24Filled: FluentFontIcon;
+export declare const CallRectangleLandscape28Regular: FluentFontIcon;
+export declare const CallRectangleLandscape28Filled: FluentFontIcon;

@@ -1,0 +1,11 @@
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Badge24Filled = exports.Badge24Regular = exports.Badge20Filled = exports.Badge20Regular = exports.BadgeRegular = exports.BadgeFilled = void 0;
+const createFluentIcon_1 = require("../../utils/createFluentIcon");
+exports.BadgeFilled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('BadgeFilled', "1em", ["M16 6a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm0 1a3 3 0 0 0 1-.17V15a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5c0-1.1.9-2 2-2h8.17A3 3 0 0 0 16 7Z"]));
+exports.BadgeRegular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('BadgeRegular', "1em", ["M16 6a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm1 9V6.83A3 3 0 0 1 16 7v8a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h8a3 3 0 0 1 .17-1H5a2 2 0 0 0-2 2v10c0 1.1.9 2 2 2h10a2 2 0 0 0 2-2Z"]));
+exports.Badge20Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('Badge20Regular', "20", ["M16 6a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm1 9V6.83A3 3 0 0 1 16 7v8a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h8a3 3 0 0 1 .17-1H5a2 2 0 0 0-2 2v10c0 1.1.9 2 2 2h10a2 2 0 0 0 2-2Z"]));
+exports.Badge20Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('Badge20Filled', "20", ["M16 6a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm0 1a3 3 0 0 0 1-.17V15a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5c0-1.1.9-2 2-2h8.17A3 3 0 0 0 16 7Z"]));
+exports.Badge24Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('Badge24Regular', "24", ["M16.34 3c-.22.45-.34.96-.34 1.5H5.75c-.69 0-1.25.56-1.25 1.25v12.5c0 .7.56 1.25 1.25 1.25h12.5c.69 0 1.25-.56 1.25-1.25V8c.54 0 1.05-.12 1.5-.34v10.59A2.75 2.75 0 0 1 18.25 21H5.75A2.75 2.75 0 0 1 3 18.25V5.75A2.75 2.75 0 0 1 5.75 3h10.59Zm3.16-1a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5Z"]));
+exports.Badge24Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('Badge24Filled', "24", ["M16 4.5a3.5 3.5 0 0 0 5 3.16v10.59A2.75 2.75 0 0 1 18.25 21H5.75A2.75 2.75 0 0 1 3 18.25V5.75A2.75 2.75 0 0 1 5.75 3h10.59c-.22.46-.34.96-.34 1.5ZM19.5 2a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5Z"]));

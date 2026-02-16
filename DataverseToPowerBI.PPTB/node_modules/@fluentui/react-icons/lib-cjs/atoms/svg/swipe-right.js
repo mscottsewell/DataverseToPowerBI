@@ -1,0 +1,11 @@
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.SwipeRight24Filled = exports.SwipeRight24Regular = exports.SwipeRight20Filled = exports.SwipeRight20Regular = exports.SwipeRightRegular = exports.SwipeRightFilled = void 0;
+const createFluentIcon_1 = require("../../utils/createFluentIcon");
+exports.SwipeRightFilled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('SwipeRightFilled', "1em", ["M6 6a4 4 0 0 1 3.6 2.25H8.44a3 3 0 1 0 0 3.5H9.6A4 4 0 1 1 6 6Zm9.28 7.03 2.5-2.5c.3-.3.3-.77 0-1.06l-2.5-2.5a.75.75 0 0 0-1.06 1.06l1.22 1.22H5.75a.75.75 0 1 0 0 1.5h9.69l-1.22 1.22a.75.75 0 1 0 1.06 1.06Z"]));
+exports.SwipeRightRegular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('SwipeRightRegular', "1em", ["M6 6a4 4 0 0 1 3.7 2.5H8.6a3 3 0 1 0 0 3h1.1A4 4 0 1 1 6 6Zm8.85 7.35 3-3a.5.5 0 0 0 0-.7l-3-3a.5.5 0 1 0-.7.7l2.14 2.15H5.5a.5.5 0 0 0 0 1h10.8l-2.15 2.15a.5.5 0 0 0 .7.7Z"]));
+exports.SwipeRight20Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('SwipeRight20Regular', "20", ["M6 6a4 4 0 0 1 3.7 2.5H8.6a3 3 0 1 0 0 3h1.1A4 4 0 1 1 6 6Zm8.85 7.35 3-3a.5.5 0 0 0 0-.7l-3-3a.5.5 0 1 0-.7.7l2.14 2.15H5.5a.5.5 0 0 0 0 1h10.8l-2.15 2.15a.5.5 0 0 0 .7.7Z"]));
+exports.SwipeRight20Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('SwipeRight20Filled', "20", ["M6 6a4 4 0 0 1 3.6 2.25H8.44a3 3 0 1 0 0 3.5H9.6A4 4 0 1 1 6 6Zm9.28 7.03 2.5-2.5c.3-.3.3-.77 0-1.06l-2.5-2.5a.75.75 0 0 0-1.06 1.06l1.22 1.22H5.75a.75.75 0 1 0 0 1.5h9.69l-1.22 1.22a.75.75 0 1 0 1.06 1.06Z"]));
+exports.SwipeRight24Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('SwipeRight24Regular', "24", ["M6 12c0 .38.28.7.64.74l.1.01h12.7l-2.22 2.22a.75.75 0 0 0-.07.98l.07.08c.27.27.69.3.98.07l.08-.07 3.5-3.5a.75.75 0 0 0 .07-.98l-.07-.08-3.5-3.5a.75.75 0 0 0-1.13.98l.07.08 2.22 2.22H6.74A.75.75 0 0 0 6 12Zm-4 0a5 5 0 0 0 9.68 1.75h-1.66a3.5 3.5 0 1 1 0-3.5h1.66A5 5 0 0 0 2 12Z"]));
+exports.SwipeRight24Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('SwipeRight24Filled', "24", ["M6 12a1 1 0 0 0 1 1h11.59l-1.3 1.3a1 1 0 0 0-.08 1.31l.08.1a1 1 0 0 0 1.32.08l.1-.08 3-3a1 1 0 0 0 .08-1.32l-.08-.1-3-3a1 1 0 0 0-1.5 1.32l.08.1L18.6 11H7a1 1 0 0 0-1 1Zm-4 0a5 5 0 0 0 9.58 2h-1.7a3.5 3.5 0 1 1 0-4h1.7A5 5 0 0 0 2 12Z"]));

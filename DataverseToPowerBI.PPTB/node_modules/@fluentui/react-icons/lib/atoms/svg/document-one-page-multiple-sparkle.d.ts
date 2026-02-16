@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const DocumentOnePageMultipleSparkleFilled: FluentIcon;
+export declare const DocumentOnePageMultipleSparkleRegular: FluentIcon;
+export declare const DocumentOnePageMultipleSparkle16Regular: FluentIcon;
+export declare const DocumentOnePageMultipleSparkle16Filled: FluentIcon;
+export declare const DocumentOnePageMultipleSparkle20Regular: FluentIcon;
+export declare const DocumentOnePageMultipleSparkle20Filled: FluentIcon;
+export declare const DocumentOnePageMultipleSparkle24Regular: FluentIcon;
+export declare const DocumentOnePageMultipleSparkle24Filled: FluentIcon;
+export declare const DocumentOnePageMultipleSparkle28Regular: FluentIcon;
+export declare const DocumentOnePageMultipleSparkle28Filled: FluentIcon;
+export declare const DocumentOnePageMultipleSparkle32Regular: FluentIcon;
+export declare const DocumentOnePageMultipleSparkle32Filled: FluentIcon;
+export declare const DocumentOnePageMultipleSparkle48Regular: FluentIcon;
+export declare const DocumentOnePageMultipleSparkle48Filled: FluentIcon;

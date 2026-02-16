@@ -1,0 +1,13 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const GlobeVideoFilled: FluentIcon;
+export declare const GlobeVideoRegular: FluentIcon;
+export declare const GlobeVideo20Regular: FluentIcon;
+export declare const GlobeVideo20Filled: FluentIcon;
+export declare const GlobeVideo24Regular: FluentIcon;
+export declare const GlobeVideo24Filled: FluentIcon;
+export declare const GlobeVideo28Regular: FluentIcon;
+export declare const GlobeVideo28Filled: FluentIcon;
+export declare const GlobeVideo32Regular: FluentIcon;
+export declare const GlobeVideo32Filled: FluentIcon;
+export declare const GlobeVideo48Regular: FluentIcon;
+export declare const GlobeVideo48Filled: FluentIcon;

@@ -1,0 +1,7 @@
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.DatabaseStack16Filled = exports.DatabaseStack16Regular = void 0;
+const createFluentIcon_1 = require("../../utils/createFluentIcon");
+exports.DatabaseStack16Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('DatabaseStack16Regular', "16", ["M8 1C5.15 1 3 2.08 3 3.5v9C3 13.93 5.15 15 8 15s5-1.07 5-2.5v-9C13 2.08 10.85 1 8 1Zm0 1c2.44 0 4 .89 4 1.5S10.44 5 8 5s-4-.89-4-1.5S5.56 2 8 2Zm0 12c-2.44 0-4-.89-4-1.5V9.54c.9.59 2.33.96 4 .96a7.5 7.5 0 0 0 4-.96v2.96c0 .61-1.56 1.5-4 1.5Zm0-4.5c-2.44 0-4-.89-4-1.5V5.02A7.4 7.4 0 0 0 8 6a7.4 7.4 0 0 0 4-.98V8c0 .61-1.56 1.5-4 1.5Z"]));
+exports.DatabaseStack16Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('DatabaseStack16Filled', "16", ["M3 5.49V8c0 1.36 2.29 2.5 5 2.5s5-1.14 5-2.5V5.49C11.94 6.4 10.14 7 8 7s-3.94-.59-5-1.51ZM8 6c2.76 0 5-1.12 5-2.5S10.76 1 8 1 3 2.12 3 3.5 5.24 6 8 6ZM3 9.96v2.54C3 13.93 5.15 15 8 15s5-1.07 5-2.5V9.96c-1.07.93-2.89 1.54-5 1.54s-3.93-.6-5-1.54Z"]));

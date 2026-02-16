@@ -1,0 +1,11 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const FoodChickenLegFilled: FluentIcon;
+export declare const FoodChickenLegRegular: FluentIcon;
+export declare const FoodChickenLeg16Regular: FluentIcon;
+export declare const FoodChickenLeg16Filled: FluentIcon;
+export declare const FoodChickenLeg20Regular: FluentIcon;
+export declare const FoodChickenLeg20Filled: FluentIcon;
+export declare const FoodChickenLeg24Regular: FluentIcon;
+export declare const FoodChickenLeg24Filled: FluentIcon;
+export declare const FoodChickenLeg32Regular: FluentIcon;
+export declare const FoodChickenLeg32Filled: FluentIcon;

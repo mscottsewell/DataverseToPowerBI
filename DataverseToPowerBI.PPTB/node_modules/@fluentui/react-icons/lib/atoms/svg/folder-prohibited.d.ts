@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const FolderProhibitedFilled: FluentIcon;
+export declare const FolderProhibitedRegular: FluentIcon;
+export declare const FolderProhibited16Regular: FluentIcon;
+export declare const FolderProhibited16Filled: FluentIcon;
+export declare const FolderProhibited20Regular: FluentIcon;
+export declare const FolderProhibited20Filled: FluentIcon;
+export declare const FolderProhibited24Regular: FluentIcon;
+export declare const FolderProhibited24Filled: FluentIcon;
+export declare const FolderProhibited28Regular: FluentIcon;
+export declare const FolderProhibited28Filled: FluentIcon;
+export declare const FolderProhibited32Regular: FluentIcon;
+export declare const FolderProhibited32Filled: FluentIcon;
+export declare const FolderProhibited48Regular: FluentIcon;
+export declare const FolderProhibited48Filled: FluentIcon;

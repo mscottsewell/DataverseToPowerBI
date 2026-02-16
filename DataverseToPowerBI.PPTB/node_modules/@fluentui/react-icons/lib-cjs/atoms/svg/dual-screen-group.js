@@ -1,0 +1,11 @@
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.DualScreenGroup24Filled = exports.DualScreenGroup24Regular = exports.DualScreenGroup20Filled = exports.DualScreenGroup20Regular = exports.DualScreenGroupRegular = exports.DualScreenGroupFilled = void 0;
+const createFluentIcon_1 = require("../../utils/createFluentIcon");
+exports.DualScreenGroupFilled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('DualScreenGroupFilled', "1em", ["M10.5 16H16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-5.5v12Zm-1-12H4a2 2 0 0 0-2 2v8c0 1.1.9 2 2 2h5.5V4Z"]));
+exports.DualScreenGroupRegular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('DualScreenGroupRegular', "1em", ["M4 4a2 2 0 0 0-2 2v8c0 1.1.9 2 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2H4ZM3 6a1 1 0 0 1 1-1h5.5v10H4a1 1 0 0 1-1-1V6Zm7.5 9V5H16a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1h-5.5Z"]));
+exports.DualScreenGroup20Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('DualScreenGroup20Regular', "20", ["M4 4a2 2 0 0 0-2 2v8c0 1.1.9 2 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2H4ZM3 6a1 1 0 0 1 1-1h5.5v10H4a1 1 0 0 1-1-1V6Zm7.5 9V5H16a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1h-5.5Z"]));
+exports.DualScreenGroup20Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('DualScreenGroup20Filled', "20", ["M10.5 16H16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-5.5v12Zm-1-12H4a2 2 0 0 0-2 2v8c0 1.1.9 2 2 2h5.5V4Z"]));
+exports.DualScreenGroup24Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('DualScreenGroup24Regular', "24", ["M12.76 4h7.5C21.21 4 22 4.8 22 5.75v12.5c0 .97-.78 1.75-1.75 1.75H3.75c-.96 0-1.74-.79-1.74-1.75V5.75C2 4.8 2.79 4 3.76 4h9Zm7.5 1.5h-7.5v13h7.5c.13 0 .24-.11.24-.25V5.75a.25.25 0 0 0-.25-.25Zm-9 0h-7.5a.25.25 0 0 0-.25.25v12.5c0 .14.11.25.25.25h7.5v-13Z"]));
+exports.DualScreenGroup24Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('DualScreenGroup24Filled', "24", ["M20.25 4C21.22 4 22 4.8 22 5.75v12.5c0 .97-.78 1.75-1.75 1.75h-7.24c-.1 0-.18 0-.26-.02V4.02l.26-.02h7.24Zm-9.24 0c.08 0 .16 0 .24.02v15.96l-.24.02H3.76C2.79 20 2 19.2 2 18.25V5.75C2 4.8 2.79 4 3.76 4H11Z"]));

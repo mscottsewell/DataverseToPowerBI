@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const VideoPersonClockFilled: FluentFontIcon;
+export declare const VideoPersonClockRegular: FluentFontIcon;
+export declare const VideoPersonClock16Regular: FluentFontIcon;
+export declare const VideoPersonClock16Filled: FluentFontIcon;
+export declare const VideoPersonClock20Regular: FluentFontIcon;
+export declare const VideoPersonClock20Filled: FluentFontIcon;
+export declare const VideoPersonClock24Regular: FluentFontIcon;
+export declare const VideoPersonClock24Filled: FluentFontIcon;
+export declare const VideoPersonClock28Regular: FluentFontIcon;
+export declare const VideoPersonClock28Filled: FluentFontIcon;
+export declare const VideoPersonClock32Regular: FluentFontIcon;
+export declare const VideoPersonClock32Filled: FluentFontIcon;
+export declare const VideoPersonClock48Regular: FluentFontIcon;
+export declare const VideoPersonClock48Filled: FluentFontIcon;

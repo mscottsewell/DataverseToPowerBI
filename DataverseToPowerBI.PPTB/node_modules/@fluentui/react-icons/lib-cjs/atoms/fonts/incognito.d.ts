@@ -1,0 +1,11 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const IncognitoFilled: FluentFontIcon;
+export declare const IncognitoRegular: FluentFontIcon;
+export declare const Incognito20Regular: FluentFontIcon;
+export declare const Incognito20Filled: FluentFontIcon;
+export declare const Incognito24Regular: FluentFontIcon;
+export declare const Incognito24Filled: FluentFontIcon;
+export declare const Incognito32Regular: FluentFontIcon;
+export declare const Incognito32Filled: FluentFontIcon;
+export declare const Incognito48Regular: FluentFontIcon;
+export declare const Incognito48Filled: FluentFontIcon;

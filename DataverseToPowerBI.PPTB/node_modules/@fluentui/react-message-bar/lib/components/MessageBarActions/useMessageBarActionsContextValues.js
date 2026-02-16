@@ -1,0 +1,10 @@
+'use client';
+import * as React from 'react';
+export function useMessageBarActionsContextValue_unstable() {
+    const buttonContext = React.useMemo(()=>({
+            size: 'small'
+        }), []);
+    return {
+        button: buttonContext
+    };
+}

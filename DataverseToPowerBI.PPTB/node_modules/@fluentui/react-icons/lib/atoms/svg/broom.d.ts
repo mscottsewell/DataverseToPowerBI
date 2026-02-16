@@ -1,0 +1,14 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const BroomFilled: FluentIcon;
+export declare const BroomRegular: FluentIcon;
+export declare const Broom16Regular: FluentIcon;
+export declare const Broom16Filled: FluentIcon;
+export declare const Broom20Regular: FluentIcon;
+export declare const Broom20Filled: FluentIcon;
+export declare const Broom24Regular: FluentIcon;
+export declare const Broom24Filled: FluentIcon;
+export declare const Broom28Regular: FluentIcon;
+export declare const Broom28Filled: FluentIcon;
+export declare const Broom32Regular: FluentIcon;
+export declare const Broom32Filled: FluentIcon;
+export declare const Broom32Light: FluentIcon;

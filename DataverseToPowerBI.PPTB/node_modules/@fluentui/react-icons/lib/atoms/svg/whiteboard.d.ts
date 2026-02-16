@@ -1,0 +1,11 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const WhiteboardFilled: FluentIcon;
+export declare const WhiteboardRegular: FluentIcon;
+export declare const Whiteboard16Regular: FluentIcon;
+export declare const Whiteboard16Filled: FluentIcon;
+export declare const Whiteboard20Regular: FluentIcon;
+export declare const Whiteboard20Filled: FluentIcon;
+export declare const Whiteboard24Regular: FluentIcon;
+export declare const Whiteboard24Filled: FluentIcon;
+export declare const Whiteboard48Regular: FluentIcon;
+export declare const Whiteboard48Filled: FluentIcon;

@@ -1,0 +1,11 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const FireplaceFilled: FluentIcon;
+export declare const FireplaceRegular: FluentIcon;
+export declare const Fireplace20Regular: FluentIcon;
+export declare const Fireplace20Filled: FluentIcon;
+export declare const Fireplace24Regular: FluentIcon;
+export declare const Fireplace24Filled: FluentIcon;
+export declare const Fireplace32Regular: FluentIcon;
+export declare const Fireplace32Filled: FluentIcon;
+export declare const Fireplace48Regular: FluentIcon;
+export declare const Fireplace48Filled: FluentIcon;

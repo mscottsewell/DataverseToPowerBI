@@ -1,0 +1,16 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const ArrowForwardFilled: FluentIcon;
+export declare const ArrowForwardRegular: FluentIcon;
+export declare const ArrowForward16Regular: FluentIcon;
+export declare const ArrowForward16Filled: FluentIcon;
+export declare const ArrowForward20Regular: FluentIcon;
+export declare const ArrowForward20Filled: FluentIcon;
+export declare const ArrowForward24Regular: FluentIcon;
+export declare const ArrowForward24Filled: FluentIcon;
+export declare const ArrowForward28Regular: FluentIcon;
+export declare const ArrowForward28Filled: FluentIcon;
+export declare const ArrowForward32Regular: FluentIcon;
+export declare const ArrowForward32Filled: FluentIcon;
+export declare const ArrowForward32Light: FluentIcon;
+export declare const ArrowForward48Regular: FluentIcon;
+export declare const ArrowForward48Filled: FluentIcon;

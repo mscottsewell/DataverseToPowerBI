@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const WalletFilled: FluentIcon;
+export declare const WalletRegular: FluentIcon;
+export declare const Wallet16Regular: FluentIcon;
+export declare const Wallet16Filled: FluentIcon;
+export declare const Wallet20Regular: FluentIcon;
+export declare const Wallet20Filled: FluentIcon;
+export declare const Wallet24Regular: FluentIcon;
+export declare const Wallet24Filled: FluentIcon;
+export declare const Wallet28Regular: FluentIcon;
+export declare const Wallet28Filled: FluentIcon;
+export declare const Wallet32Regular: FluentIcon;
+export declare const Wallet32Filled: FluentIcon;
+export declare const Wallet48Regular: FluentIcon;
+export declare const Wallet48Filled: FluentIcon;

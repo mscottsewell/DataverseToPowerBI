@@ -1,0 +1,11 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const LineDashesFilled: FluentFontIcon;
+export declare const LineDashesRegular: FluentFontIcon;
+export declare const LineDashes20Regular: FluentFontIcon;
+export declare const LineDashes20Filled: FluentFontIcon;
+export declare const LineDashes24Regular: FluentFontIcon;
+export declare const LineDashes24Filled: FluentFontIcon;
+export declare const LineDashes32Regular: FluentFontIcon;
+export declare const LineDashes32Filled: FluentFontIcon;
+export declare const LineDashes48Regular: FluentFontIcon;
+export declare const LineDashes48Filled: FluentFontIcon;

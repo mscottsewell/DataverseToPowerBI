@@ -1,0 +1,13 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const PresenceDndFilled: FluentFontIcon;
+export declare const PresenceDndRegular: FluentFontIcon;
+export declare const PresenceDnd10Regular: FluentFontIcon;
+export declare const PresenceDnd10Filled: FluentFontIcon;
+export declare const PresenceDnd12Regular: FluentFontIcon;
+export declare const PresenceDnd12Filled: FluentFontIcon;
+export declare const PresenceDnd16Regular: FluentFontIcon;
+export declare const PresenceDnd16Filled: FluentFontIcon;
+export declare const PresenceDnd20Regular: FluentFontIcon;
+export declare const PresenceDnd20Filled: FluentFontIcon;
+export declare const PresenceDnd24Regular: FluentFontIcon;
+export declare const PresenceDnd24Filled: FluentFontIcon;

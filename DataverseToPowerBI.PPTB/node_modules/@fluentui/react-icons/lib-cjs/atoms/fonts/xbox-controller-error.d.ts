@@ -1,0 +1,11 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const XboxControllerErrorFilled: FluentFontIcon;
+export declare const XboxControllerErrorRegular: FluentFontIcon;
+export declare const XboxControllerError20Regular: FluentFontIcon;
+export declare const XboxControllerError20Filled: FluentFontIcon;
+export declare const XboxControllerError24Regular: FluentFontIcon;
+export declare const XboxControllerError24Filled: FluentFontIcon;
+export declare const XboxControllerError32Regular: FluentFontIcon;
+export declare const XboxControllerError32Filled: FluentFontIcon;
+export declare const XboxControllerError48Regular: FluentFontIcon;
+export declare const XboxControllerError48Filled: FluentFontIcon;

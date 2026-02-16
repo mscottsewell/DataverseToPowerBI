@@ -1,0 +1,68 @@
+'use client';
+import * as React from 'react';
+import { presenceMotionSlot } from '@fluentui/react-motion';
+import { getIntrinsicElementProps, slot } from '@fluentui/react-utilities';
+import { useFluent_unstable as useFluent } from '@fluentui/react-shared-contexts';
+import { InlineDrawerMotion } from '../../shared/drawerMotions';
+import { useDrawerDefaultProps } from '../../shared/useDrawerDefaultProps';
+const STATIC_MOTION = {
+    active: true,
+    canRender: true,
+    ref: React.createRef(),
+    type: 'idle'
+};
+/**
+ * Create the state required to render InlineDrawer.
+ *
+ * The returned state can be modified with hooks such as useInlineDrawerStyles_unstable,
+ * before being passed to renderInlineDrawer_unstable.
+ *
+ * @param props - props from this instance of InlineDrawer
+ * @param ref - reference to root HTMLElement of InlineDrawer
+ */ export const useInlineDrawer_unstable = (props, ref)=>{
+    const { size, position, open, unmountOnClose } = useDrawerDefaultProps(props);
+    const { separator = false, surfaceMotion } = props;
+    const { dir } = useFluent();
+    const [animationDirection, setAnimationDirection] = React.useState(open ? 'enter' : 'exit');
+    return {
+        components: {
+            root: 'div',
+            // casting from internal type that has required properties
+            // to external type that only has optional properties
+            // converting to unknown first as both Function component signatures are not compatible
+            surfaceMotion: InlineDrawerMotion
+        },
+        root: slot.always(getIntrinsicElementProps('div', {
+            ...props,
+            ref,
+            'aria-hidden': !unmountOnClose && !open ? true : undefined
+        }), {
+            elementType: 'div'
+        }),
+        open,
+        position,
+        size,
+        separator,
+        unmountOnClose,
+        animationDirection,
+        surfaceMotion: presenceMotionSlot(surfaceMotion, {
+            elementType: InlineDrawerMotion,
+            defaultProps: {
+                position,
+                size,
+                dir,
+                visible: open,
+                appear: unmountOnClose,
+                unmountOnExit: unmountOnClose,
+                onMotionFinish: (_, { direction })=>setAnimationDirection(direction),
+                onMotionStart: (_, { direction })=>{
+                    if (direction === 'enter') {
+                        setAnimationDirection('enter');
+                    }
+                }
+            }
+        }),
+        // Deprecated props
+        motion: STATIC_MOTION
+    };
+};

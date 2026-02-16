@@ -1,0 +1,13 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const PeopleTeamDeleteFilled: FluentFontIcon;
+export declare const PeopleTeamDeleteRegular: FluentFontIcon;
+export declare const PeopleTeamDelete16Regular: FluentFontIcon;
+export declare const PeopleTeamDelete16Filled: FluentFontIcon;
+export declare const PeopleTeamDelete20Regular: FluentFontIcon;
+export declare const PeopleTeamDelete20Filled: FluentFontIcon;
+export declare const PeopleTeamDelete24Regular: FluentFontIcon;
+export declare const PeopleTeamDelete24Filled: FluentFontIcon;
+export declare const PeopleTeamDelete28Regular: FluentFontIcon;
+export declare const PeopleTeamDelete28Filled: FluentFontIcon;
+export declare const PeopleTeamDelete32Regular: FluentFontIcon;
+export declare const PeopleTeamDelete32Filled: FluentFontIcon;

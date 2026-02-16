@@ -1,0 +1,18 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const PhoneFilled: FluentFontIcon;
+export declare const PhoneRegular: FluentFontIcon;
+export declare const Phone12Regular: FluentFontIcon;
+export declare const Phone12Filled: FluentFontIcon;
+export declare const Phone16Regular: FluentFontIcon;
+export declare const Phone16Filled: FluentFontIcon;
+export declare const Phone20Regular: FluentFontIcon;
+export declare const Phone20Filled: FluentFontIcon;
+export declare const Phone24Regular: FluentFontIcon;
+export declare const Phone24Filled: FluentFontIcon;
+export declare const Phone28Regular: FluentFontIcon;
+export declare const Phone28Filled: FluentFontIcon;
+export declare const Phone32Regular: FluentFontIcon;
+export declare const Phone32Filled: FluentFontIcon;
+export declare const Phone32Light: FluentFontIcon;
+export declare const Phone48Regular: FluentFontIcon;
+export declare const Phone48Filled: FluentFontIcon;

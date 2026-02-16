@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const RoadConeFilled: FluentIcon;
+export declare const RoadConeRegular: FluentIcon;
+export declare const RoadCone16Regular: FluentIcon;
+export declare const RoadCone16Filled: FluentIcon;
+export declare const RoadCone20Regular: FluentIcon;
+export declare const RoadCone20Filled: FluentIcon;
+export declare const RoadCone24Regular: FluentIcon;
+export declare const RoadCone24Filled: FluentIcon;
+export declare const RoadCone28Regular: FluentIcon;
+export declare const RoadCone28Filled: FluentIcon;
+export declare const RoadCone32Regular: FluentIcon;
+export declare const RoadCone32Filled: FluentIcon;
+export declare const RoadCone48Regular: FluentIcon;
+export declare const RoadCone48Filled: FluentIcon;

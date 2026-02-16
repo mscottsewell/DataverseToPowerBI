@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const Space3DFilled: FluentIcon;
+export declare const Space3DRegular: FluentIcon;
+export declare const Space3D16Regular: FluentIcon;
+export declare const Space3D16Filled: FluentIcon;
+export declare const Space3D20Regular: FluentIcon;
+export declare const Space3D20Filled: FluentIcon;
+export declare const Space3D24Regular: FluentIcon;
+export declare const Space3D24Filled: FluentIcon;
+export declare const Space3D28Regular: FluentIcon;
+export declare const Space3D28Filled: FluentIcon;
+export declare const Space3D32Regular: FluentIcon;
+export declare const Space3D32Filled: FluentIcon;
+export declare const Space3D48Regular: FluentIcon;
+export declare const Space3D48Filled: FluentIcon;

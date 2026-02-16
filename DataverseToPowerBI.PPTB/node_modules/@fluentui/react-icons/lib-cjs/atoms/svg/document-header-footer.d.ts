@@ -1,0 +1,14 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const DocumentHeaderFooterFilled: FluentIcon;
+export declare const DocumentHeaderFooterRegular: FluentIcon;
+export declare const DocumentHeaderFooter16Regular: FluentIcon;
+export declare const DocumentHeaderFooter16Filled: FluentIcon;
+export declare const DocumentHeaderFooter20Regular: FluentIcon;
+export declare const DocumentHeaderFooter20Filled: FluentIcon;
+export declare const DocumentHeaderFooter24Regular: FluentIcon;
+export declare const DocumentHeaderFooter24Filled: FluentIcon;
+export declare const DocumentHeaderFooter28Regular: FluentIcon;
+export declare const DocumentHeaderFooter28Filled: FluentIcon;
+export declare const DocumentHeaderFooter32Regular: FluentIcon;
+export declare const DocumentHeaderFooter32Filled: FluentIcon;
+export declare const DocumentHeaderFooter32Light: FluentIcon;

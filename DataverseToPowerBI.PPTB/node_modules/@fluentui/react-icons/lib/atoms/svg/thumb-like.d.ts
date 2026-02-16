@@ -1,0 +1,13 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const ThumbLikeFilled: FluentIcon;
+export declare const ThumbLikeRegular: FluentIcon;
+export declare const ThumbLike16Regular: FluentIcon;
+export declare const ThumbLike16Filled: FluentIcon;
+export declare const ThumbLike20Regular: FluentIcon;
+export declare const ThumbLike20Filled: FluentIcon;
+export declare const ThumbLike24Regular: FluentIcon;
+export declare const ThumbLike24Filled: FluentIcon;
+export declare const ThumbLike28Regular: FluentIcon;
+export declare const ThumbLike28Filled: FluentIcon;
+export declare const ThumbLike48Regular: FluentIcon;
+export declare const ThumbLike48Filled: FluentIcon;

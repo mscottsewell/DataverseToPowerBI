@@ -1,0 +1,1 @@
+{"version":3,"sources":["../src/choreography/Stagger/index.ts"],"sourcesContent":["export { Stagger } from './Stagger';\nexport type { StaggerProps } from './stagger-types';\n"],"names":["Stagger"],"mappings":";;;;+BAASA;;;eAAAA,gBAAO;;;yBAAQ"}

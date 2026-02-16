@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const MicLinkFilled: FluentIcon;
+export declare const MicLinkRegular: FluentIcon;
+export declare const MicLink16Regular: FluentIcon;
+export declare const MicLink16Filled: FluentIcon;
+export declare const MicLink20Regular: FluentIcon;
+export declare const MicLink20Filled: FluentIcon;
+export declare const MicLink24Regular: FluentIcon;
+export declare const MicLink24Filled: FluentIcon;
+export declare const MicLink28Regular: FluentIcon;
+export declare const MicLink28Filled: FluentIcon;
+export declare const MicLink32Regular: FluentIcon;
+export declare const MicLink32Filled: FluentIcon;
+export declare const MicLink48Regular: FluentIcon;
+export declare const MicLink48Filled: FluentIcon;

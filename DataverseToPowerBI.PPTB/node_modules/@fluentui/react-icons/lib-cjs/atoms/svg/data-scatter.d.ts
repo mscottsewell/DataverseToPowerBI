@@ -1,0 +1,13 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const DataScatterColor: FluentIcon;
+export declare const DataScatterFilled: FluentIcon;
+export declare const DataScatterRegular: FluentIcon;
+export declare const DataScatter20Regular: FluentIcon;
+export declare const DataScatter20Filled: FluentIcon;
+export declare const DataScatter20Color: FluentIcon;
+export declare const DataScatter24Regular: FluentIcon;
+export declare const DataScatter24Filled: FluentIcon;
+export declare const DataScatter24Color: FluentIcon;
+export declare const DataScatter32Regular: FluentIcon;
+export declare const DataScatter32Filled: FluentIcon;
+export declare const DataScatter32Color: FluentIcon;

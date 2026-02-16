@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const BracesFilled: FluentFontIcon;
+export declare const BracesRegular: FluentFontIcon;
+export declare const Braces16Regular: FluentFontIcon;
+export declare const Braces16Filled: FluentFontIcon;
+export declare const Braces20Regular: FluentFontIcon;
+export declare const Braces20Filled: FluentFontIcon;
+export declare const Braces24Regular: FluentFontIcon;
+export declare const Braces24Filled: FluentFontIcon;
+export declare const Braces28Regular: FluentFontIcon;
+export declare const Braces28Filled: FluentFontIcon;
+export declare const Braces32Regular: FluentFontIcon;
+export declare const Braces32Filled: FluentFontIcon;
+export declare const Braces48Regular: FluentFontIcon;
+export declare const Braces48Filled: FluentFontIcon;

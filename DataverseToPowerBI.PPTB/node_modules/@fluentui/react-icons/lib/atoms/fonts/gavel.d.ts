@@ -1,0 +1,11 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const GavelFilled: FluentFontIcon;
+export declare const GavelRegular: FluentFontIcon;
+export declare const Gavel16Regular: FluentFontIcon;
+export declare const Gavel16Filled: FluentFontIcon;
+export declare const Gavel20Regular: FluentFontIcon;
+export declare const Gavel20Filled: FluentFontIcon;
+export declare const Gavel24Regular: FluentFontIcon;
+export declare const Gavel24Filled: FluentFontIcon;
+export declare const Gavel32Regular: FluentFontIcon;
+export declare const Gavel32Filled: FluentFontIcon;

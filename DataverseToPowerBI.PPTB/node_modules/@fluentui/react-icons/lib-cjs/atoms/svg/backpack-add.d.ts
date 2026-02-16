@@ -1,0 +1,11 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const BackpackAddFilled: FluentIcon;
+export declare const BackpackAddRegular: FluentIcon;
+export declare const BackpackAdd20Regular: FluentIcon;
+export declare const BackpackAdd20Filled: FluentIcon;
+export declare const BackpackAdd24Regular: FluentIcon;
+export declare const BackpackAdd24Filled: FluentIcon;
+export declare const BackpackAdd28Regular: FluentIcon;
+export declare const BackpackAdd28Filled: FluentIcon;
+export declare const BackpackAdd48Regular: FluentIcon;
+export declare const BackpackAdd48Filled: FluentIcon;

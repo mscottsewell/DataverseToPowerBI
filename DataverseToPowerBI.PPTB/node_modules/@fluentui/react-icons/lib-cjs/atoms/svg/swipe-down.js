@@ -1,0 +1,11 @@
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.SwipeDown24Filled = exports.SwipeDown24Regular = exports.SwipeDown20Filled = exports.SwipeDown20Regular = exports.SwipeDownRegular = exports.SwipeDownFilled = void 0;
+const createFluentIcon_1 = require("../../utils/createFluentIcon");
+exports.SwipeDownFilled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('SwipeDownFilled', "1em", ["M14 6a4 4 0 0 1-2.25 3.6V8.44a3 3 0 1 0-3.5 0V9.6A4 4 0 1 1 14 6ZM9.47 17.78c.3.3.77.3 1.06 0l2.5-2.5a.75.75 0 1 0-1.06-1.06l-1.22 1.22V5.75a.75.75 0 0 0-1.5 0v9.69l-1.22-1.22a.75.75 0 0 0-1.06 1.06l2.5 2.5Z"]));
+exports.SwipeDownRegular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('SwipeDownRegular', "1em", ["M14 6a4 4 0 0 1-2.5 3.7V8.6a3 3 0 1 0-3 0v1.1A4 4 0 1 1 14 6ZM9.65 17.85c.2.2.5.2.7 0l3-3a.5.5 0 0 0-.7-.7l-2.15 2.14V5.5a.5.5 0 0 0-1 0v10.8l-2.15-2.15a.5.5 0 1 0-.7.7l3 3Z"]));
+exports.SwipeDown20Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('SwipeDown20Regular', "20", ["M14 6a4 4 0 0 1-2.5 3.7V8.6a3 3 0 1 0-3 0v1.1A4 4 0 1 1 14 6ZM9.65 17.85c.2.2.5.2.7 0l3-3a.5.5 0 0 0-.7-.7l-2.15 2.14V5.5a.5.5 0 0 0-1 0v10.8l-2.15-2.15a.5.5 0 1 0-.7.7l3 3Z"]));
+exports.SwipeDown20Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('SwipeDown20Filled', "20", ["M14 6a4 4 0 0 1-2.25 3.6V8.44a3 3 0 1 0-3.5 0V9.6A4 4 0 1 1 14 6ZM9.47 17.78c.3.3.77.3 1.06 0l2.5-2.5a.75.75 0 1 0-1.06-1.06l-1.22 1.22V5.75a.75.75 0 0 0-1.5 0v9.69l-1.22-1.22a.75.75 0 0 0-1.06 1.06l2.5 2.5Z"]));
+exports.SwipeDown24Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('SwipeDown24Regular', "24", ["M12 6c.38 0 .7.28.74.64l.01.1v12.7l2.22-2.22a.75.75 0 0 1 .98-.07l.08.07c.27.27.3.69.07.98l-.07.08-3.5 3.5a.75.75 0 0 1-.98.07l-.08-.07-3.5-3.5a.75.75 0 0 1 .98-1.13l.08.07 2.22 2.22V6.74c0-.4.34-.74.75-.74Zm0-4a5 5 0 0 1 1.75 9.68v-1.66a3.5 3.5 0 1 0-3.5 0v1.66A5 5 0 0 1 12 2Z"]));
+exports.SwipeDown24Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('SwipeDown24Filled', "24", ["M12 6a1 1 0 0 1 1 1v11.59l1.3-1.3a1 1 0 0 1 1.31-.08l.1.08a1 1 0 0 1 .08 1.32l-.08.1-3 3a1 1 0 0 1-1.32.08l-.1-.08-3-3a1 1 0 0 1 1.32-1.5l.1.08L11 18.6V7a1 1 0 0 1 1-1Zm0-4a5 5 0 0 1 2 9.58v-1.7a3.5 3.5 0 1 0-4 0v1.7A5 5 0 0 1 12 2Z"]));

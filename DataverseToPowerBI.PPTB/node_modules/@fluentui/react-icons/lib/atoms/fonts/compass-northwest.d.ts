@@ -1,0 +1,11 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const CompassNorthwestFilled: FluentFontIcon;
+export declare const CompassNorthwestRegular: FluentFontIcon;
+export declare const CompassNorthwest16Regular: FluentFontIcon;
+export declare const CompassNorthwest16Filled: FluentFontIcon;
+export declare const CompassNorthwest20Regular: FluentFontIcon;
+export declare const CompassNorthwest20Filled: FluentFontIcon;
+export declare const CompassNorthwest24Regular: FluentFontIcon;
+export declare const CompassNorthwest24Filled: FluentFontIcon;
+export declare const CompassNorthwest28Regular: FluentFontIcon;
+export declare const CompassNorthwest28Filled: FluentFontIcon;

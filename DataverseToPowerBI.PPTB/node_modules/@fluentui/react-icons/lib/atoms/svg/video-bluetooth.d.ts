@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const VideoBluetoothFilled: FluentIcon;
+export declare const VideoBluetoothRegular: FluentIcon;
+export declare const VideoBluetooth16Regular: FluentIcon;
+export declare const VideoBluetooth16Filled: FluentIcon;
+export declare const VideoBluetooth20Regular: FluentIcon;
+export declare const VideoBluetooth20Filled: FluentIcon;
+export declare const VideoBluetooth24Regular: FluentIcon;
+export declare const VideoBluetooth24Filled: FluentIcon;
+export declare const VideoBluetooth28Regular: FluentIcon;
+export declare const VideoBluetooth28Filled: FluentIcon;
+export declare const VideoBluetooth32Regular: FluentIcon;
+export declare const VideoBluetooth32Filled: FluentIcon;
+export declare const VideoBluetooth48Regular: FluentIcon;
+export declare const VideoBluetooth48Filled: FluentIcon;

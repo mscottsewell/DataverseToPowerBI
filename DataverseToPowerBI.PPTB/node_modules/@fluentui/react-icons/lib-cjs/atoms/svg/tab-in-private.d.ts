@@ -1,0 +1,11 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const TabInPrivateFilled: FluentIcon;
+export declare const TabInPrivateRegular: FluentIcon;
+export declare const TabInPrivate16Regular: FluentIcon;
+export declare const TabInPrivate16Filled: FluentIcon;
+export declare const TabInPrivate20Regular: FluentIcon;
+export declare const TabInPrivate20Filled: FluentIcon;
+export declare const TabInPrivate24Regular: FluentIcon;
+export declare const TabInPrivate24Filled: FluentIcon;
+export declare const TabInPrivate28Regular: FluentIcon;
+export declare const TabInPrivate28Filled: FluentIcon;

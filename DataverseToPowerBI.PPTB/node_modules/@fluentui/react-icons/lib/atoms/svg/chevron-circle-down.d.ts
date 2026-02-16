@@ -1,0 +1,17 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const ChevronCircleDownFilled: FluentIcon;
+export declare const ChevronCircleDownRegular: FluentIcon;
+export declare const ChevronCircleDown12Regular: FluentIcon;
+export declare const ChevronCircleDown12Filled: FluentIcon;
+export declare const ChevronCircleDown16Regular: FluentIcon;
+export declare const ChevronCircleDown16Filled: FluentIcon;
+export declare const ChevronCircleDown20Regular: FluentIcon;
+export declare const ChevronCircleDown20Filled: FluentIcon;
+export declare const ChevronCircleDown24Regular: FluentIcon;
+export declare const ChevronCircleDown24Filled: FluentIcon;
+export declare const ChevronCircleDown28Regular: FluentIcon;
+export declare const ChevronCircleDown28Filled: FluentIcon;
+export declare const ChevronCircleDown32Regular: FluentIcon;
+export declare const ChevronCircleDown32Filled: FluentIcon;
+export declare const ChevronCircleDown48Regular: FluentIcon;
+export declare const ChevronCircleDown48Filled: FluentIcon;

@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const CircleMultipleHintCheckmarkFilled: FluentFontIcon;
+export declare const CircleMultipleHintCheckmarkRegular: FluentFontIcon;
+export declare const CircleMultipleHintCheckmark16Regular: FluentFontIcon;
+export declare const CircleMultipleHintCheckmark16Filled: FluentFontIcon;
+export declare const CircleMultipleHintCheckmark20Regular: FluentFontIcon;
+export declare const CircleMultipleHintCheckmark20Filled: FluentFontIcon;
+export declare const CircleMultipleHintCheckmark24Regular: FluentFontIcon;
+export declare const CircleMultipleHintCheckmark24Filled: FluentFontIcon;
+export declare const CircleMultipleHintCheckmark28Regular: FluentFontIcon;
+export declare const CircleMultipleHintCheckmark28Filled: FluentFontIcon;
+export declare const CircleMultipleHintCheckmark32Regular: FluentFontIcon;
+export declare const CircleMultipleHintCheckmark32Filled: FluentFontIcon;
+export declare const CircleMultipleHintCheckmark48Regular: FluentFontIcon;
+export declare const CircleMultipleHintCheckmark48Filled: FluentFontIcon;

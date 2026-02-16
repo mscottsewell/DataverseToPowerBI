@@ -1,0 +1,13 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const BrainFilled: FluentFontIcon;
+export declare const BrainRegular: FluentFontIcon;
+export declare const Brain20Regular: FluentFontIcon;
+export declare const Brain20Filled: FluentFontIcon;
+export declare const Brain24Regular: FluentFontIcon;
+export declare const Brain24Filled: FluentFontIcon;
+export declare const Brain28Regular: FluentFontIcon;
+export declare const Brain28Filled: FluentFontIcon;
+export declare const Brain32Regular: FluentFontIcon;
+export declare const Brain32Filled: FluentFontIcon;
+export declare const Brain48Regular: FluentFontIcon;
+export declare const Brain48Filled: FluentFontIcon;

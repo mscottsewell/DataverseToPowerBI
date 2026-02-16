@@ -1,0 +1,13 @@
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.AirplaneLanding24Filled = exports.AirplaneLanding24Regular = exports.AirplaneLanding20Filled = exports.AirplaneLanding20Regular = exports.AirplaneLanding16Filled = exports.AirplaneLanding16Regular = exports.AirplaneLandingRegular = exports.AirplaneLandingFilled = void 0;
+const createFluentFontIcon_1 = require("../../utils/fonts/createFluentFontIcon");
+exports.AirplaneLandingFilled = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AirplaneLandingFilled", "", 2, undefined));
+exports.AirplaneLandingRegular = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AirplaneLandingRegular", "", 2, undefined));
+exports.AirplaneLanding16Regular = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AirplaneLanding16Regular", "", 1, 16));
+exports.AirplaneLanding16Filled = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AirplaneLanding16Filled", "", 0, 16));
+exports.AirplaneLanding20Regular = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AirplaneLanding20Regular", "", 1, 20));
+exports.AirplaneLanding20Filled = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AirplaneLanding20Filled", "", 0, 20));
+exports.AirplaneLanding24Regular = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AirplaneLanding24Regular", "", 1, 24));
+exports.AirplaneLanding24Filled = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AirplaneLanding24Filled", "", 0, 24));

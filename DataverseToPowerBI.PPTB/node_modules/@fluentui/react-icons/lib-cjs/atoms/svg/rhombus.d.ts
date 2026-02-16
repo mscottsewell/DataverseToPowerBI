@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const RhombusFilled: FluentIcon;
+export declare const RhombusRegular: FluentIcon;
+export declare const Rhombus16Regular: FluentIcon;
+export declare const Rhombus16Filled: FluentIcon;
+export declare const Rhombus20Regular: FluentIcon;
+export declare const Rhombus20Filled: FluentIcon;
+export declare const Rhombus24Regular: FluentIcon;
+export declare const Rhombus24Filled: FluentIcon;
+export declare const Rhombus28Regular: FluentIcon;
+export declare const Rhombus28Filled: FluentIcon;
+export declare const Rhombus32Regular: FluentIcon;
+export declare const Rhombus32Filled: FluentIcon;
+export declare const Rhombus48Regular: FluentIcon;
+export declare const Rhombus48Filled: FluentIcon;

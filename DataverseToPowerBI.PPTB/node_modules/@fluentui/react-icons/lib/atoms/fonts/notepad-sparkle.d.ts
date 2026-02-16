@@ -1,0 +1,13 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const NotepadSparkleFilled: FluentFontIcon;
+export declare const NotepadSparkleRegular: FluentFontIcon;
+export declare const NotepadSparkle16Regular: FluentFontIcon;
+export declare const NotepadSparkle16Filled: FluentFontIcon;
+export declare const NotepadSparkle20Regular: FluentFontIcon;
+export declare const NotepadSparkle20Filled: FluentFontIcon;
+export declare const NotepadSparkle24Regular: FluentFontIcon;
+export declare const NotepadSparkle24Filled: FluentFontIcon;
+export declare const NotepadSparkle28Regular: FluentFontIcon;
+export declare const NotepadSparkle28Filled: FluentFontIcon;
+export declare const NotepadSparkle32Regular: FluentFontIcon;
+export declare const NotepadSparkle32Filled: FluentFontIcon;

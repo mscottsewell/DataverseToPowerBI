@@ -1,0 +1,11 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const PollOffFilled: FluentIcon;
+export declare const PollOffRegular: FluentIcon;
+export declare const PollOff16Regular: FluentIcon;
+export declare const PollOff16Filled: FluentIcon;
+export declare const PollOff20Regular: FluentIcon;
+export declare const PollOff20Filled: FluentIcon;
+export declare const PollOff24Regular: FluentIcon;
+export declare const PollOff24Filled: FluentIcon;
+export declare const PollOff32Regular: FluentIcon;
+export declare const PollOff32Filled: FluentIcon;

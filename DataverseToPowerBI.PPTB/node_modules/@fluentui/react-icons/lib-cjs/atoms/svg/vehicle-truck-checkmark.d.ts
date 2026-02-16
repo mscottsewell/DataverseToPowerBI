@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const VehicleTruckCheckmarkFilled: FluentIcon;
+export declare const VehicleTruckCheckmarkRegular: FluentIcon;
+export declare const VehicleTruckCheckmark16Regular: FluentIcon;
+export declare const VehicleTruckCheckmark16Filled: FluentIcon;
+export declare const VehicleTruckCheckmark20Regular: FluentIcon;
+export declare const VehicleTruckCheckmark20Filled: FluentIcon;
+export declare const VehicleTruckCheckmark24Regular: FluentIcon;
+export declare const VehicleTruckCheckmark24Filled: FluentIcon;
+export declare const VehicleTruckCheckmark28Regular: FluentIcon;
+export declare const VehicleTruckCheckmark28Filled: FluentIcon;
+export declare const VehicleTruckCheckmark32Regular: FluentIcon;
+export declare const VehicleTruckCheckmark32Filled: FluentIcon;
+export declare const VehicleTruckCheckmark48Regular: FluentIcon;
+export declare const VehicleTruckCheckmark48Filled: FluentIcon;

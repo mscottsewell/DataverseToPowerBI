@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const DiamondFilled: FluentIcon;
+export declare const DiamondRegular: FluentIcon;
+export declare const Diamond16Regular: FluentIcon;
+export declare const Diamond16Filled: FluentIcon;
+export declare const Diamond20Regular: FluentIcon;
+export declare const Diamond20Filled: FluentIcon;
+export declare const Diamond24Regular: FluentIcon;
+export declare const Diamond24Filled: FluentIcon;
+export declare const Diamond28Regular: FluentIcon;
+export declare const Diamond28Filled: FluentIcon;
+export declare const Diamond32Regular: FluentIcon;
+export declare const Diamond32Filled: FluentIcon;
+export declare const Diamond48Regular: FluentIcon;
+export declare const Diamond48Filled: FluentIcon;

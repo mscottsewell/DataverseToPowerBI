@@ -1,0 +1,11 @@
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.PresenceBlocked24Regular = exports.PresenceBlocked20Regular = exports.PresenceBlocked16Regular = exports.PresenceBlocked12Regular = exports.PresenceBlocked10Regular = exports.PresenceBlockedRegular = void 0;
+const createFluentIcon_1 = require("../../utils/createFluentIcon");
+exports.PresenceBlockedRegular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('PresenceBlockedRegular', "1em", ["M20 10a10 10 0 1 0-20 0 10 10 0 0 0 20 0Zm-2 0a8 8 0 0 1-12.9 6.32L16.31 5.09A7.97 7.97 0 0 1 18 10Zm-3.1-6.32L3.69 14.91A8 8 0 0 1 14.91 3.68Z"]));
+exports.PresenceBlocked10Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('PresenceBlocked10Regular', "10", ["M10 5A5 5 0 1 0 0 5a5 5 0 0 0 10 0ZM9 5a4 4 0 0 1-6.45 3.16l5.61-5.61C8.69 3.22 9 4.08 9 5ZM7.45 1.84 1.84 7.45a4 4 0 0 1 5.61-5.61Z"]));
+exports.PresenceBlocked12Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('PresenceBlocked12Regular', "12", ["M12 6A6 6 0 1 1 0 6a6 6 0 0 1 12 0Zm-1.5 0c0-.97-.3-1.87-.83-2.6L3.39 9.66A4.5 4.5 0 0 0 10.5 6ZM8.6 2.33a4.5 4.5 0 0 0-6.28 6.28l6.29-6.28Z"]));
+exports.PresenceBlocked16Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('PresenceBlocked16Regular', "16", ["M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0Zm-2 0c0-1.3-.41-2.5-1.1-3.48L4.51 12.9A6 6 0 0 0 14 8Zm-2.52-4.9a6 6 0 0 0-8.37 8.37l8.37-8.36Z"]));
+exports.PresenceBlocked20Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('PresenceBlocked20Regular', "20", ["M20 10a10 10 0 1 0-20 0 10 10 0 0 0 20 0Zm-2 0a8 8 0 0 1-12.9 6.32L16.31 5.09A7.97 7.97 0 0 1 18 10Zm-3.1-6.32L3.69 14.91A8 8 0 0 1 14.91 3.68Z"]));
+exports.PresenceBlocked24Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('PresenceBlocked24Regular', "24", ["M24 12a12 12 0 1 1-24 0 12 12 0 0 1 24 0Zm-3 0c0-1.94-.62-3.74-1.66-5.21L6.79 19.34A9 9 0 0 0 21 12Zm-3.79-7.34A9 9 0 0 0 4.66 17.21L17.21 4.66Z"]));

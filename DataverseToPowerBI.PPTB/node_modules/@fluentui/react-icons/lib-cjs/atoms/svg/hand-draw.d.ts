@@ -1,0 +1,14 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const HandDrawFilled: FluentIcon;
+export declare const HandDrawRegular: FluentIcon;
+export declare const HandDraw16Regular: FluentIcon;
+export declare const HandDraw16Filled: FluentIcon;
+export declare const HandDraw20Regular: FluentIcon;
+export declare const HandDraw20Filled: FluentIcon;
+export declare const HandDraw24Regular: FluentIcon;
+export declare const HandDraw24Filled: FluentIcon;
+export declare const HandDraw28Regular: FluentIcon;
+export declare const HandDraw28Filled: FluentIcon;
+export declare const HandDraw32Regular: FluentIcon;
+export declare const HandDraw32Filled: FluentIcon;
+export declare const HandDraw32Light: FluentIcon;

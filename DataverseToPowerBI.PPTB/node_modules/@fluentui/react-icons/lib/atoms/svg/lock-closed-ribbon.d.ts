@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const LockClosedRibbonFilled: FluentIcon;
+export declare const LockClosedRibbonRegular: FluentIcon;
+export declare const LockClosedRibbon16Regular: FluentIcon;
+export declare const LockClosedRibbon16Filled: FluentIcon;
+export declare const LockClosedRibbon20Regular: FluentIcon;
+export declare const LockClosedRibbon20Filled: FluentIcon;
+export declare const LockClosedRibbon24Regular: FluentIcon;
+export declare const LockClosedRibbon24Filled: FluentIcon;
+export declare const LockClosedRibbon28Regular: FluentIcon;
+export declare const LockClosedRibbon28Filled: FluentIcon;
+export declare const LockClosedRibbon32Regular: FluentIcon;
+export declare const LockClosedRibbon32Filled: FluentIcon;
+export declare const LockClosedRibbon48Regular: FluentIcon;
+export declare const LockClosedRibbon48Filled: FluentIcon;

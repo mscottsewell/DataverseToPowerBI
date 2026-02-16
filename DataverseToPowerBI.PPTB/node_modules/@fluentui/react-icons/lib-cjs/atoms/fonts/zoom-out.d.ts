@@ -1,0 +1,14 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const ZoomOutFilled: FluentFontIcon;
+export declare const ZoomOutRegular: FluentFontIcon;
+export declare const ZoomOut16Regular: FluentFontIcon;
+export declare const ZoomOut16Filled: FluentFontIcon;
+export declare const ZoomOut20Regular: FluentFontIcon;
+export declare const ZoomOut20Filled: FluentFontIcon;
+export declare const ZoomOut24Regular: FluentFontIcon;
+export declare const ZoomOut24Filled: FluentFontIcon;
+export declare const ZoomOut28Regular: FluentFontIcon;
+export declare const ZoomOut28Filled: FluentFontIcon;
+export declare const ZoomOut32Regular: FluentFontIcon;
+export declare const ZoomOut32Filled: FluentFontIcon;
+export declare const ZoomOut32Light: FluentFontIcon;

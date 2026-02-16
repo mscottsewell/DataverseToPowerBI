@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const NotepadPersonFilled: FluentIcon;
+export declare const NotepadPersonRegular: FluentIcon;
+export declare const NotepadPerson16Regular: FluentIcon;
+export declare const NotepadPerson16Filled: FluentIcon;
+export declare const NotepadPerson20Regular: FluentIcon;
+export declare const NotepadPerson20Filled: FluentIcon;
+export declare const NotepadPerson24Regular: FluentIcon;
+export declare const NotepadPerson24Filled: FluentIcon;
+export declare const NotepadPerson28Regular: FluentIcon;
+export declare const NotepadPerson28Filled: FluentIcon;
+export declare const NotepadPerson32Regular: FluentIcon;
+export declare const NotepadPerson32Filled: FluentIcon;
+export declare const NotepadPerson48Regular: FluentIcon;
+export declare const NotepadPerson48Filled: FluentIcon;

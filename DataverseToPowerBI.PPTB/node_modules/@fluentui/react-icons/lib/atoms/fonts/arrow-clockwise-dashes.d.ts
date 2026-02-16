@@ -1,0 +1,17 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const ArrowClockwiseDashesFilled: FluentFontIcon;
+export declare const ArrowClockwiseDashesRegular: FluentFontIcon;
+export declare const ArrowClockwiseDashes12Regular: FluentFontIcon;
+export declare const ArrowClockwiseDashes12Filled: FluentFontIcon;
+export declare const ArrowClockwiseDashes16Regular: FluentFontIcon;
+export declare const ArrowClockwiseDashes16Filled: FluentFontIcon;
+export declare const ArrowClockwiseDashes20Regular: FluentFontIcon;
+export declare const ArrowClockwiseDashes20Filled: FluentFontIcon;
+export declare const ArrowClockwiseDashes24Regular: FluentFontIcon;
+export declare const ArrowClockwiseDashes24Filled: FluentFontIcon;
+export declare const ArrowClockwiseDashes28Regular: FluentFontIcon;
+export declare const ArrowClockwiseDashes28Filled: FluentFontIcon;
+export declare const ArrowClockwiseDashes32Regular: FluentFontIcon;
+export declare const ArrowClockwiseDashes32Filled: FluentFontIcon;
+export declare const ArrowClockwiseDashes48Regular: FluentFontIcon;
+export declare const ArrowClockwiseDashes48Filled: FluentFontIcon;

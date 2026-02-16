@@ -1,0 +1,52 @@
+'use client';
+"use strict";
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+function _export(target, all) {
+    for(var name in all)Object.defineProperty(target, name, {
+        enumerable: true,
+        get: all[name]
+    });
+}
+_export(exports, {
+    carouselCardClassNames: function() {
+        return carouselCardClassNames;
+    },
+    useCarouselCardStyles_unstable: function() {
+        return useCarouselCardStyles_unstable;
+    }
+});
+const _react = require("@griffel/react");
+const _reacttheme = require("@fluentui/react-theme");
+const _CarouselContext = require("../CarouselContext");
+const carouselCardClassNames = {
+    root: 'fui-CarouselCard'
+};
+/**
+ * Styles for the root slot
+ */ const useStyles = (0, _react.makeStyles)({
+    root: {
+        flex: '0 0 100%',
+        maxWidth: '100%'
+    },
+    autoSize: {
+        flex: '0 0 auto' /* Adapt slide size to its content */ ,
+        minWidth: 0,
+        width: 'auto',
+        maxWidth: '100%'
+    },
+    elevated: {
+        borderRadius: _reacttheme.tokens.borderRadiusXLarge,
+        boxShadow: _reacttheme.tokens.shadow16,
+        overflow: 'hidden'
+    }
+});
+const useCarouselCardStyles_unstable = (state)=>{
+    'use no memo';
+    const { autoSize } = state;
+    const appearance = (0, _CarouselContext.useCarouselContext_unstable)((context)=>context.appearance);
+    const styles = useStyles();
+    state.root.className = (0, _react.mergeClasses)(carouselCardClassNames.root, styles.root, appearance === 'elevated' && styles.elevated, autoSize && styles.autoSize, state.root.className);
+    return state;
+};

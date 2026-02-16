@@ -1,0 +1,11 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const TapSingleFilled: FluentFontIcon;
+export declare const TapSingleRegular: FluentFontIcon;
+export declare const TapSingle20Regular: FluentFontIcon;
+export declare const TapSingle20Filled: FluentFontIcon;
+export declare const TapSingle24Regular: FluentFontIcon;
+export declare const TapSingle24Filled: FluentFontIcon;
+export declare const TapSingle32Regular: FluentFontIcon;
+export declare const TapSingle32Filled: FluentFontIcon;
+export declare const TapSingle48Regular: FluentFontIcon;
+export declare const TapSingle48Filled: FluentFontIcon;

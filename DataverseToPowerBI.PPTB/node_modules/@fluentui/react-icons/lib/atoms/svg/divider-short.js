@@ -1,0 +1,10 @@
+"use client";
+import { createFluentIcon } from '../../utils/createFluentIcon';
+export const DividerShortFilled = ( /*#__PURE__*/createFluentIcon('DividerShortFilled', "1em", ["M9.75 3c.41 0 .75.34.75.75v12.5a.75.75 0 0 1-1.5 0V3.75c0-.41.34-.75.75-.75Z"]));
+export const DividerShortRegular = ( /*#__PURE__*/createFluentIcon('DividerShortRegular', "1em", ["M9.5 3c.28 0 .5.22.5.5v13a.5.5 0 0 1-1 0v-13c0-.28.22-.5.5-.5Z"]));
+export const DividerShort16Regular = ( /*#__PURE__*/createFluentIcon('DividerShort16Regular', "16", ["M7.5 3c.28 0 .5.22.5.5v9a.5.5 0 0 1-1 0v-9c0-.28.22-.5.5-.5Z"]));
+export const DividerShort16Filled = ( /*#__PURE__*/createFluentIcon('DividerShort16Filled', "16", ["M7.75 3c.41 0 .75.34.75.75v8.5a.75.75 0 0 1-1.5 0v-8.5c0-.41.34-.75.75-.75Z"]));
+export const DividerShort20Regular = ( /*#__PURE__*/createFluentIcon('DividerShort20Regular', "20", ["M9.5 3c.28 0 .5.22.5.5v13a.5.5 0 0 1-1 0v-13c0-.28.22-.5.5-.5Z"]));
+export const DividerShort20Filled = ( /*#__PURE__*/createFluentIcon('DividerShort20Filled', "20", ["M9.75 3c.41 0 .75.34.75.75v12.5a.75.75 0 0 1-1.5 0V3.75c0-.41.34-.75.75-.75Z"]));
+export const DividerShort24Regular = ( /*#__PURE__*/createFluentIcon('DividerShort24Regular', "24", ["M11.25 4.75v14.5a.75.75 0 0 0 1.5 0V4.75a.75.75 0 0 0-1.5 0Z"]));
+export const DividerShort24Filled = ( /*#__PURE__*/createFluentIcon('DividerShort24Filled', "24", ["M11 5v14a1 1 0 1 0 2 0V5a1 1 0 1 0-2 0Z"]));

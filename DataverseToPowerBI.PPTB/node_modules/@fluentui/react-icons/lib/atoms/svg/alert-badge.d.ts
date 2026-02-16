@@ -1,0 +1,16 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const AlertBadgeColor: FluentIcon;
+export declare const AlertBadgeFilled: FluentIcon;
+export declare const AlertBadgeRegular: FluentIcon;
+export declare const AlertBadge16Regular: FluentIcon;
+export declare const AlertBadge16Filled: FluentIcon;
+export declare const AlertBadge16Color: FluentIcon;
+export declare const AlertBadge20Regular: FluentIcon;
+export declare const AlertBadge20Filled: FluentIcon;
+export declare const AlertBadge20Color: FluentIcon;
+export declare const AlertBadge24Regular: FluentIcon;
+export declare const AlertBadge24Filled: FluentIcon;
+export declare const AlertBadge24Color: FluentIcon;
+export declare const AlertBadge32Regular: FluentIcon;
+export declare const AlertBadge32Filled: FluentIcon;
+export declare const AlertBadge32Color: FluentIcon;

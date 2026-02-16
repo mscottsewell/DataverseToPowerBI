@@ -1,0 +1,11 @@
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Button20Filled = exports.Button20Regular = exports.Button16Filled = exports.Button16Regular = exports.ButtonRegular = exports.ButtonFilled = void 0;
+const createFluentIcon_1 = require("../../utils/createFluentIcon");
+exports.ButtonFilled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('ButtonFilled', "1em", ["M2 8a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v3a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3V8Zm7 1.5c0 .28.22.5.5.5H14a.5.5 0 0 0 0-1H9.5a.5.5 0 0 0-.5.5Zm-1 0a1.5 1.5 0 1 0-3 0 1.5 1.5 0 0 0 3 0Z"]));
+exports.ButtonRegular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('ButtonRegular', "1em", ["M2 8a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v3a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3V8Zm3-2a2 2 0 0 0-2 2v3c0 1.1.9 2 2 2h10a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2H5Zm4 3.5c0-.28.22-.5.5-.5H14a.5.5 0 0 1 0 1H9.5a.5.5 0 0 1-.5-.5Zm-1 0a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"]));
+exports.Button16Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('Button16Regular', "16", ["M1 5.5A2.5 2.5 0 0 1 3.5 3h9A2.5 2.5 0 0 1 15 5.5v4a2.5 2.5 0 0 1-2.5 2.5h-9A2.5 2.5 0 0 1 1 9.5v-4ZM3.5 4C2.67 4 2 4.67 2 5.5v4c0 .83.67 1.5 1.5 1.5h9c.83 0 1.5-.67 1.5-1.5v-4c0-.83-.67-1.5-1.5-1.5h-9ZM7 7.5c0-.28.22-.5.5-.5H12a.5.5 0 0 1 0 1H7.5a.5.5 0 0 1-.5-.5Zm-1 0a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"]));
+exports.Button16Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('Button16Filled', "16", ["M1 5.5A2.5 2.5 0 0 1 3.5 3h9A2.5 2.5 0 0 1 15 5.5v4a2.5 2.5 0 0 1-2.5 2.5h-9A2.5 2.5 0 0 1 1 9.5v-4Zm6 2c0 .28.22.5.5.5H12a.5.5 0 0 0 0-1H7.5a.5.5 0 0 0-.5.5Zm-1 0a1.5 1.5 0 1 0-3 0 1.5 1.5 0 0 0 3 0Z"]));
+exports.Button20Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('Button20Regular', "20", ["M2 8a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v3a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3V8Zm3-2a2 2 0 0 0-2 2v3c0 1.1.9 2 2 2h10a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2H5Zm4 3.5c0-.28.22-.5.5-.5H14a.5.5 0 0 1 0 1H9.5a.5.5 0 0 1-.5-.5Zm-1 0a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"]));
+exports.Button20Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('Button20Filled', "20", ["M2 8a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v3a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3V8Zm7 1.5c0 .28.22.5.5.5H14a.5.5 0 0 0 0-1H9.5a.5.5 0 0 0-.5.5Zm-1 0a1.5 1.5 0 1 0-3 0 1.5 1.5 0 0 0 3 0Z"]));

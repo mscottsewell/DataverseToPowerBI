@@ -1,0 +1,1 @@
+{"version":3,"sources":["../src/useTypingAnnounce/index.ts"],"sourcesContent":["export { useTypingAnnounce } from './useTypingAnnounce';\n"],"names":["useTypingAnnounce"],"mappings":";;;;+BAASA;;;eAAAA,oCAAiB;;;mCAAQ"}

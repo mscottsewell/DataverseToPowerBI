@@ -1,0 +1,11 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const AnimalCatFilled: FluentIcon;
+export declare const AnimalCatRegular: FluentIcon;
+export declare const AnimalCat16Regular: FluentIcon;
+export declare const AnimalCat16Filled: FluentIcon;
+export declare const AnimalCat20Regular: FluentIcon;
+export declare const AnimalCat20Filled: FluentIcon;
+export declare const AnimalCat24Regular: FluentIcon;
+export declare const AnimalCat24Filled: FluentIcon;
+export declare const AnimalCat28Regular: FluentIcon;
+export declare const AnimalCat28Filled: FluentIcon;

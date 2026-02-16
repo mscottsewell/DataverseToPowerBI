@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const SubtractParenthesesFilled: FluentFontIcon;
+export declare const SubtractParenthesesRegular: FluentFontIcon;
+export declare const SubtractParentheses16Regular: FluentFontIcon;
+export declare const SubtractParentheses16Filled: FluentFontIcon;
+export declare const SubtractParentheses20Regular: FluentFontIcon;
+export declare const SubtractParentheses20Filled: FluentFontIcon;
+export declare const SubtractParentheses24Regular: FluentFontIcon;
+export declare const SubtractParentheses24Filled: FluentFontIcon;
+export declare const SubtractParentheses28Regular: FluentFontIcon;
+export declare const SubtractParentheses28Filled: FluentFontIcon;
+export declare const SubtractParentheses32Regular: FluentFontIcon;
+export declare const SubtractParentheses32Filled: FluentFontIcon;
+export declare const SubtractParentheses48Regular: FluentFontIcon;
+export declare const SubtractParentheses48Filled: FluentFontIcon;

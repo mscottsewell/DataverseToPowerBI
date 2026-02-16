@@ -1,0 +1,7 @@
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.DocumentNumber116Filled = exports.DocumentNumber116Regular = void 0;
+const createFluentIcon_1 = require("../../utils/createFluentIcon");
+exports.DocumentNumber116Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('DocumentNumber116Regular', "16", ["M3 3c0-1.1.9-2 2-2h3.59c.4 0 .78.16 1.06.44l2.91 2.91c.28.28.44.67.44 1.06V13a2 2 0 0 1-2 2H7.91c.06-.16.09-.32.09-.5V14h3a1 1 0 0 0 1-1V6H9.5A1.5 1.5 0 0 1 8 4.5V2H5a1 1 0 0 0-1 1v6.5c-.3-.22-.63-.38-1-.45V3Zm6.5 2h2.3L9 2.2v2.3c0 .28.22.5.5.5Zm-2.7 5.2c.1.1.2.25.2.45v3.85a.5.5 0 0 1-1 0v-3.04c-.22.18-.48.35-.8.5a.5.5 0 1 1-.4-.92c.46-.2.77-.52.97-.78.22-.3.57-.27.72-.22.1.02.21.07.31.16ZM2.5 10c-.83 0-1.5.67-1.5 1.5v2a1.5 1.5 0 0 0 3 0v-2c0-.83-.67-1.5-1.5-1.5ZM2 11.5a.5.5 0 0 1 1 0v2a.5.5 0 0 1-1 0v-2Z"]));
+exports.DocumentNumber116Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('DocumentNumber116Filled', "16", ["M8 4.5V1H4.5C3.67 1 3 1.67 3 2.5v6.55c.63.13 1.18.5 1.54 1 .2-.12.33-.26.43-.4a1.68 1.68 0 0 1 1.79-.58c.22.06.49.18.72.4.26.24.52.64.52 1.18v3.85c0 .18-.03.34-.09.5h3.59c.83 0 1.5-.67 1.5-1.5V6H9.5A1.5 1.5 0 0 1 8 4.5Zm1 0V1.25L12.75 5H9.5a.5.5 0 0 1-.5-.5Zm-8 7a1.5 1.5 0 0 1 3 0v2a1.5 1.5 0 0 1-3 0v-2Zm1.5-.5a.5.5 0 0 0-.5.5v2a.5.5 0 0 0 1 0v-2a.5.5 0 0 0-.5-.5Zm4.5-.35c0-.2-.1-.35-.2-.45a.73.73 0 0 0-.3-.16c-.16-.05-.5-.07-.73.22-.2.26-.51.57-.98.78a.5.5 0 0 0 .42.92c.3-.15.57-.32.79-.5v3.04a.5.5 0 0 0 1 0v-3.85Z"]));

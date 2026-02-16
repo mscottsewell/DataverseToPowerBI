@@ -1,0 +1,17 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const SquareDovetailJointFilled: FluentIcon;
+export declare const SquareDovetailJointRegular: FluentIcon;
+export declare const SquareDovetailJoint12Regular: FluentIcon;
+export declare const SquareDovetailJoint12Filled: FluentIcon;
+export declare const SquareDovetailJoint16Regular: FluentIcon;
+export declare const SquareDovetailJoint16Filled: FluentIcon;
+export declare const SquareDovetailJoint20Regular: FluentIcon;
+export declare const SquareDovetailJoint20Filled: FluentIcon;
+export declare const SquareDovetailJoint24Regular: FluentIcon;
+export declare const SquareDovetailJoint24Filled: FluentIcon;
+export declare const SquareDovetailJoint28Regular: FluentIcon;
+export declare const SquareDovetailJoint28Filled: FluentIcon;
+export declare const SquareDovetailJoint32Regular: FluentIcon;
+export declare const SquareDovetailJoint32Filled: FluentIcon;
+export declare const SquareDovetailJoint48Regular: FluentIcon;
+export declare const SquareDovetailJoint48Filled: FluentIcon;

@@ -1,0 +1,13 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const RibbonOffFilled: FluentFontIcon;
+export declare const RibbonOffRegular: FluentFontIcon;
+export declare const RibbonOff12Regular: FluentFontIcon;
+export declare const RibbonOff12Filled: FluentFontIcon;
+export declare const RibbonOff16Regular: FluentFontIcon;
+export declare const RibbonOff16Filled: FluentFontIcon;
+export declare const RibbonOff20Regular: FluentFontIcon;
+export declare const RibbonOff20Filled: FluentFontIcon;
+export declare const RibbonOff24Regular: FluentFontIcon;
+export declare const RibbonOff24Filled: FluentFontIcon;
+export declare const RibbonOff32Regular: FluentFontIcon;
+export declare const RibbonOff32Filled: FluentFontIcon;

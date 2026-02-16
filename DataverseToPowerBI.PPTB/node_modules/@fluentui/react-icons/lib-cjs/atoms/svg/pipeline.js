@@ -1,0 +1,13 @@
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Pipeline32Filled = exports.Pipeline32Regular = exports.Pipeline24Filled = exports.Pipeline24Regular = exports.Pipeline20Filled = exports.Pipeline20Regular = exports.PipelineRegular = exports.PipelineFilled = void 0;
+const createFluentIcon_1 = require("../../utils/createFluentIcon");
+exports.PipelineFilled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('PipelineFilled', "1em", ["M2 5.5a1.5 1.5 0 0 1 3 0v9a1.5 1.5 0 0 1-3 0v-9Zm13 0v9a1.5 1.5 0 0 0 3 0v-9a1.5 1.5 0 0 0-3 0ZM14 14V6H6v8h8Z"]));
+exports.PipelineRegular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('PipelineRegular', "1em", ["M2 5.5a1.5 1.5 0 1 1 3 0V6h10v-.5a1.5 1.5 0 0 1 3 0v9a1.5 1.5 0 0 1-3 0V14H5v.5a1.5 1.5 0 0 1-3 0v-9Zm2 0a.5.5 0 0 0-1 0v9a.5.5 0 0 0 1 0v-9ZM15 7H5v6h10V7Zm2-1.5a.5.5 0 0 0-1 0v9a.5.5 0 0 0 1 0v-9Z"]));
+exports.Pipeline20Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('Pipeline20Regular', "20", ["M2 5.5a1.5 1.5 0 1 1 3 0V6h10v-.5a1.5 1.5 0 0 1 3 0v9a1.5 1.5 0 0 1-3 0V14H5v.5a1.5 1.5 0 0 1-3 0v-9Zm2 0a.5.5 0 0 0-1 0v9a.5.5 0 0 0 1 0v-9ZM15 7H5v6h10V7Zm2-1.5a.5.5 0 0 0-1 0v9a.5.5 0 0 0 1 0v-9Z"]));
+exports.Pipeline20Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('Pipeline20Filled', "20", ["M2 5.5a1.5 1.5 0 0 1 3 0v9a1.5 1.5 0 0 1-3 0v-9Zm13 0v9a1.5 1.5 0 0 0 3 0v-9a1.5 1.5 0 0 0-3 0ZM14 14V6H6v8h8Z"]));
+exports.Pipeline24Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('Pipeline24Regular', "24", ["M2 6.25A2.25 2.25 0 0 1 6.49 6H17.5a2.25 2.25 0 0 1 4.49.25v10.5a2.25 2.25 0 0 1-4.49.25H6.5A2.25 2.25 0 0 1 2 16.75V6.25Zm3 0a.75.75 0 0 0-1.5 0v10.5a.75.75 0 0 0 1.5 0V6.25Zm1.5 9.25h11v-8h-11v8Zm14-9.25a.75.75 0 0 0-1.5 0v10.5a.75.75 0 0 0 1.5 0V6.25Z"]));
+exports.Pipeline24Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('Pipeline24Filled', "24", ["M2 6a2 2 0 1 1 4 0v11a2 2 0 1 1-4 0V6Zm16 0a2 2 0 1 1 4 0v11a2 2 0 1 1-4 0V6Zm-1.5 0h-9v11h9V6Z"]));
+exports.Pipeline32Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('Pipeline32Regular', "32", ["M2 9a3 3 0 0 1 6 0h16a3 3 0 1 1 6 0v14a3 3 0 1 1-6 0H8a3 3 0 1 1-6 0V9Zm4 0a1 1 0 0 0-2 0v14a1 1 0 1 0 2 0V9Zm2 12h16V11H8v10ZM28 9a1 1 0 1 0-2 0v14a1 1 0 1 0 2 0V9Z"]));
+exports.Pipeline32Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('Pipeline32Filled', "32", ["M2 8a2 2 0 1 1 4 0v16a2 2 0 1 1-4 0V8Zm24 0a2 2 0 1 1 4 0v16a2 2 0 1 1-4 0V8Zm-2 1H8v14h16V9Z"]));

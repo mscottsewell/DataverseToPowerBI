@@ -1,0 +1,17 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const NotepadFilled: FluentFontIcon;
+export declare const NotepadRegular: FluentFontIcon;
+export declare const Notepad12Regular: FluentFontIcon;
+export declare const Notepad12Filled: FluentFontIcon;
+export declare const Notepad16Regular: FluentFontIcon;
+export declare const Notepad16Filled: FluentFontIcon;
+export declare const Notepad20Regular: FluentFontIcon;
+export declare const Notepad20Filled: FluentFontIcon;
+export declare const Notepad24Regular: FluentFontIcon;
+export declare const Notepad24Filled: FluentFontIcon;
+export declare const Notepad28Regular: FluentFontIcon;
+export declare const Notepad28Filled: FluentFontIcon;
+export declare const Notepad32Regular: FluentFontIcon;
+export declare const Notepad32Filled: FluentFontIcon;
+export declare const Notepad48Regular: FluentFontIcon;
+export declare const Notepad48Filled: FluentFontIcon;

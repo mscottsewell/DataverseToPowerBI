@@ -1,0 +1,11 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const PanelRightContractFilled: FluentFontIcon;
+export declare const PanelRightContractRegular: FluentFontIcon;
+export declare const PanelRightContract16Regular: FluentFontIcon;
+export declare const PanelRightContract16Filled: FluentFontIcon;
+export declare const PanelRightContract20Regular: FluentFontIcon;
+export declare const PanelRightContract20Filled: FluentFontIcon;
+export declare const PanelRightContract24Regular: FluentFontIcon;
+export declare const PanelRightContract24Filled: FluentFontIcon;
+export declare const PanelRightContract28Regular: FluentFontIcon;
+export declare const PanelRightContract28Filled: FluentFontIcon;

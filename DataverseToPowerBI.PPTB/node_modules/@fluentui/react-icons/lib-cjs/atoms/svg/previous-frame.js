@@ -1,0 +1,11 @@
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.PreviousFrame24Filled = exports.PreviousFrame24Regular = exports.PreviousFrame20Filled = exports.PreviousFrame20Regular = exports.PreviousFrameRegular = exports.PreviousFrameFilled = void 0;
+const createFluentIcon_1 = require("../../utils/createFluentIcon");
+exports.PreviousFrameFilled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('PreviousFrameFilled', "1em", ["M15.5 3a.5.5 0 0 0-.5.5v13a.5.5 0 0 0 1 0v-13a.5.5 0 0 0-.5-.5Zm-5.45.21c.83-.55 1.95.04 1.95 1.04v11.5c0 1-1.12 1.6-1.95 1.04l-8.5-5.8a1.25 1.25 0 0 1 0-2.07l8.5-5.7Z"]));
+exports.PreviousFrameRegular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('PreviousFrameRegular', "1em", ["M15.5 3a.5.5 0 0 0-.5.5v13a.5.5 0 0 0 1 0v-13a.5.5 0 0 0-.5-.5Zm-5.45.21c.83-.55 1.95.04 1.95 1.04v11.5c0 1-1.12 1.6-1.95 1.04l-8.5-5.8a1.25 1.25 0 0 1 0-2.07l8.5-5.7ZM11 4.25c0-.2-.22-.32-.39-.2l-8.5 5.7a.25.25 0 0 0 0 .42l8.5 5.79c.17.11.39 0 .39-.2V4.25Z"]));
+exports.PreviousFrame20Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('PreviousFrame20Regular', "20", ["M15.5 3a.5.5 0 0 0-.5.5v13a.5.5 0 0 0 1 0v-13a.5.5 0 0 0-.5-.5Zm-5.45.21c.83-.55 1.95.04 1.95 1.04v11.5c0 1-1.12 1.6-1.95 1.04l-8.5-5.8a1.25 1.25 0 0 1 0-2.07l8.5-5.7ZM11 4.25c0-.2-.22-.32-.39-.2l-8.5 5.7a.25.25 0 0 0 0 .42l8.5 5.79c.17.11.39 0 .39-.2V4.25Z"]));
+exports.PreviousFrame20Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('PreviousFrame20Filled', "20", ["M15.5 3a.5.5 0 0 0-.5.5v13a.5.5 0 0 0 1 0v-13a.5.5 0 0 0-.5-.5Zm-5.45.21c.83-.55 1.95.04 1.95 1.04v11.5c0 1-1.12 1.6-1.95 1.04l-8.5-5.8a1.25 1.25 0 0 1 0-2.07l8.5-5.7Z"]));
+exports.PreviousFrame24Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('PreviousFrame24Regular', "24", ["M18.5 3.75a.75.75 0 0 1 1.5 0v16.5a.75.75 0 0 1-1.5 0V3.75Zm-6.24-.44c1.16-.8 2.74.04 2.74 1.44v14.5a1.75 1.75 0 0 1-2.75 1.43l-10.5-7.3c-1-.7-1-2.19.01-2.88l10.5-7.2Zm1.24 1.44c0-.2-.22-.32-.4-.2L2.62 11.74a.25.25 0 0 0 0 .41l10.5 7.3c.16.12.39 0 .39-.2V4.75Z"]));
+exports.PreviousFrame24Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('PreviousFrame24Filled', "24", ["M18.5 3.75a.75.75 0 0 1 1.5 0v16.5a.75.75 0 0 1-1.5 0V3.75Zm-6.24-.44c1.16-.8 2.74.04 2.74 1.44v14.5a1.75 1.75 0 0 1-2.75 1.43l-10.5-7.3c-1-.7-1-2.19.01-2.88l10.5-7.2Z"]));

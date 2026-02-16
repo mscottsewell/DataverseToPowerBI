@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const TextIndentIncreaseLtrFilled: FluentIcon;
+export declare const TextIndentIncreaseLtrRegular: FluentIcon;
+export declare const TextIndentIncreaseLtr90Regular: FluentIcon;
+export declare const TextIndentIncreaseLtr90Filled: FluentIcon;
+export declare const TextIndentIncreaseLtr16Regular: FluentIcon;
+export declare const TextIndentIncreaseLtr16Filled: FluentIcon;
+export declare const TextIndentIncreaseLtr20Regular: FluentIcon;
+export declare const TextIndentIncreaseLtr20Filled: FluentIcon;
+export declare const TextIndentIncreaseLtr24Regular: FluentIcon;
+export declare const TextIndentIncreaseLtr24Filled: FluentIcon;
+export declare const TextIndentIncreaseLtr9020Regular: FluentIcon;
+export declare const TextIndentIncreaseLtr9020Filled: FluentIcon;
+export declare const TextIndentIncreaseLtr9024Regular: FluentIcon;
+export declare const TextIndentIncreaseLtr9024Filled: FluentIcon;

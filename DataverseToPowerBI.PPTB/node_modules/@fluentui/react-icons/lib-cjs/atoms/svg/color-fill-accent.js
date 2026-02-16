@@ -1,0 +1,11 @@
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ColorFillAccent32Light = exports.ColorFillAccent28Regular = exports.ColorFillAccent24Regular = exports.ColorFillAccent20Regular = exports.ColorFillAccent16Regular = exports.ColorFillAccentRegular = void 0;
+const createFluentIcon_1 = require("../../utils/createFluentIcon");
+exports.ColorFillAccentRegular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('ColorFillAccentRegular', "1em", ["M4.84 12.5H4c-.83 0-1.5.67-1.5 1.5v2c0 .83.67 1.5 1.5 1.5h12c.83 0 1.5-.67 1.5-1.5v-2c0-.3-.09-.57-.23-.8a2.67 2.67 0 0 1-2.52 1.8c-1.6 0-2.51-1.27-2.7-2.5h-1.07l-.95.95a3 3 0 0 1-4.24 0l-.95-.95Z"]));
+exports.ColorFillAccent16Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('ColorFillAccent16Regular', "16", ["M8.77 11.35a2.5 2.5 0 0 1-3.54 0L3.47 9.6A1.5 1.5 0 0 0 2.5 11v1c0 .83.67 1.5 1.5 1.5h8c.6 0 1.12-.35 1.36-.87a2.5 2.5 0 0 1-3.35-2.52l-1.24 1.24Z"]));
+exports.ColorFillAccent20Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('ColorFillAccent20Regular', "20", ["M4.84 12.5H4c-.83 0-1.5.67-1.5 1.5v2c0 .83.67 1.5 1.5 1.5h12c.83 0 1.5-.67 1.5-1.5v-2c0-.3-.09-.57-.23-.8a2.67 2.67 0 0 1-2.52 1.8c-1.6 0-2.51-1.27-2.7-2.5h-1.07l-.95.95a3 3 0 0 1-4.24 0l-.95-.95Z"]));
+exports.ColorFillAccent24Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('ColorFillAccent24Regular', "24", ["M13.05 15a3.5 3.5 0 0 0 3.45 3 3.5 3.5 0 0 0 3.44-2.94A1.5 1.5 0 0 1 21 16.5v3c0 .83-.67 1.5-1.5 1.5h-15A1.5 1.5 0 0 1 3 19.5v-3c0-.83.67-1.5 1.5-1.5h3.09a3 3 0 0 0 4.05 0h1.41Z"]));
+exports.ColorFillAccent28Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('ColorFillAccent28Regular', "28", ["m16.51 17.75-.01.25a3.5 3.5 0 0 0 6.97.44c.48.45.78 1.1.78 1.81v1.5a2.5 2.5 0 0 1-2.5 2.5H6.25a2.5 2.5 0 0 1-2.5-2.5v-1.5a2.5 2.5 0 0 1 2.5-2.5h1.01l1.1 1.1a3.75 3.75 0 0 0 5.3 0l1.1-1.1h1.75Z"]));
+exports.ColorFillAccent32Light = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('ColorFillAccent32Light', "32", ["M18.8 19.5c-.15.41-.3.95-.3 1.5a4.5 4.5 0 1 0 9 0c0-.4-.08-.78-.17-1.12A2.5 2.5 0 0 1 28.5 22v4a2.5 2.5 0 0 1-2.5 2.5H6A2.5 2.5 0 0 1 3.5 26v-4A2.5 2.5 0 0 1 6 19.5h.44l2.6 2.6a4.75 4.75 0 0 0 6.72 0l2.6-2.6h.44Z"]));

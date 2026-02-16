@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const PuzzleCubePieceFilled: FluentFontIcon;
+export declare const PuzzleCubePieceRegular: FluentFontIcon;
+export declare const PuzzleCubePiece16Regular: FluentFontIcon;
+export declare const PuzzleCubePiece16Filled: FluentFontIcon;
+export declare const PuzzleCubePiece20Regular: FluentFontIcon;
+export declare const PuzzleCubePiece20Filled: FluentFontIcon;
+export declare const PuzzleCubePiece24Regular: FluentFontIcon;
+export declare const PuzzleCubePiece24Filled: FluentFontIcon;
+export declare const PuzzleCubePiece28Regular: FluentFontIcon;
+export declare const PuzzleCubePiece28Filled: FluentFontIcon;
+export declare const PuzzleCubePiece32Regular: FluentFontIcon;
+export declare const PuzzleCubePiece32Filled: FluentFontIcon;
+export declare const PuzzleCubePiece48Regular: FluentFontIcon;
+export declare const PuzzleCubePiece48Filled: FluentFontIcon;

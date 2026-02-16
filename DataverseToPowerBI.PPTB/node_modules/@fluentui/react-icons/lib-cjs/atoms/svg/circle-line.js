@@ -1,0 +1,15 @@
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.CircleLine24Filled = exports.CircleLine24Regular = exports.CircleLine20Filled = exports.CircleLine20Regular = exports.CircleLine16Filled = exports.CircleLine16Regular = exports.CircleLine12Filled = exports.CircleLine12Regular = exports.CircleLineRegular = exports.CircleLineFilled = void 0;
+const createFluentIcon_1 = require("../../utils/createFluentIcon");
+exports.CircleLineFilled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('CircleLineFilled', "1em", ["M17.98 10.5H2.02a8 8 0 0 0 15.96 0Zm0-1H2.02a8 8 0 0 1 15.96 0Z"]));
+exports.CircleLineRegular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('CircleLineRegular', "1em", ["M3.02 9.5h13.96a7 7 0 0 0-13.96 0ZM2 10a8 8 0 1 1 16 0 8 8 0 0 1-16 0Zm14.98.5H3.02a7 7 0 0 0 13.96 0Z"]));
+exports.CircleLine12Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('CircleLine12Regular', "12", ["M6 1a5 5 0 1 0 0 10A5 5 0 0 0 6 1ZM2 6a4 4 0 1 1 8 0H2Zm.13 1h7.74a4 4 0 0 1-7.74 0Z"]));
+exports.CircleLine12Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('CircleLine12Filled', "12", ["M1 6a5 5 0 0 1 10 0H1Zm.1 1a5 5 0 0 0 9.8 0H1.1Z"]));
+exports.CircleLine16Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('CircleLine16Regular', "16", ["M14 8A6 6 0 1 1 2 8a6 6 0 0 1 12 0Zm-1.02.5H3.02a5 5 0 0 0 9.96 0Zm0-1a5 5 0 0 0-9.96 0h9.96Z"]));
+exports.CircleLine16Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('CircleLine16Filled', "16", ["M13.98 8.5a6 6 0 0 1-11.96 0h11.96Zm0-1H2.02a6 6 0 0 1 11.96 0Z"]));
+exports.CircleLine20Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('CircleLine20Regular', "20", ["M3.02 9.5h13.96a7 7 0 0 0-13.96 0ZM2 10a8 8 0 1 1 16 0 8 8 0 0 1-16 0Zm14.98.5H3.02a7 7 0 0 0 13.96 0Z"]));
+exports.CircleLine20Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('CircleLine20Filled', "20", ["M17.98 10.5H2.02a8 8 0 0 0 15.96 0Zm0-1H2.02a8 8 0 0 1 15.96 0Z"]));
+exports.CircleLine24Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('CircleLine24Regular', "24", ["M3.53 11.25h16.94a8.5 8.5 0 0 0-16.94 0Zm16.94 1.5H3.53a8.5 8.5 0 0 0 16.94 0ZM2 12a10 10 0 1 1 20 0 10 10 0 0 1-20 0Z"]));
+exports.CircleLine24Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('CircleLine24Filled', "24", ["M21.97 12.75H2.03a10 10 0 0 0 19.94 0Zm0-1.5H2.03a10 10 0 0 1 19.94 0Z"]));

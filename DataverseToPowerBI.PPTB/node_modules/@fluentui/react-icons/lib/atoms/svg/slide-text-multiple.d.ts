@@ -1,0 +1,11 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const SlideTextMultipleFilled: FluentIcon;
+export declare const SlideTextMultipleRegular: FluentIcon;
+export declare const SlideTextMultiple16Regular: FluentIcon;
+export declare const SlideTextMultiple16Filled: FluentIcon;
+export declare const SlideTextMultiple20Regular: FluentIcon;
+export declare const SlideTextMultiple20Filled: FluentIcon;
+export declare const SlideTextMultiple24Regular: FluentIcon;
+export declare const SlideTextMultiple24Filled: FluentIcon;
+export declare const SlideTextMultiple32Regular: FluentIcon;
+export declare const SlideTextMultiple32Filled: FluentIcon;

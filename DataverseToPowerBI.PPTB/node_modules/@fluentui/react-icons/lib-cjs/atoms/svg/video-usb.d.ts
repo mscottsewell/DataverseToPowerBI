@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const VideoUsbFilled: FluentIcon;
+export declare const VideoUsbRegular: FluentIcon;
+export declare const VideoUsb16Regular: FluentIcon;
+export declare const VideoUsb16Filled: FluentIcon;
+export declare const VideoUsb20Regular: FluentIcon;
+export declare const VideoUsb20Filled: FluentIcon;
+export declare const VideoUsb24Regular: FluentIcon;
+export declare const VideoUsb24Filled: FluentIcon;
+export declare const VideoUsb28Regular: FluentIcon;
+export declare const VideoUsb28Filled: FluentIcon;
+export declare const VideoUsb32Regular: FluentIcon;
+export declare const VideoUsb32Filled: FluentIcon;
+export declare const VideoUsb48Regular: FluentIcon;
+export declare const VideoUsb48Filled: FluentIcon;

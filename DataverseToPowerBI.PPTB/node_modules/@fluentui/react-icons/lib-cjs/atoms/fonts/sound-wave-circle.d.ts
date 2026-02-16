@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const SoundWaveCircleFilled: FluentFontIcon;
+export declare const SoundWaveCircleRegular: FluentFontIcon;
+export declare const SoundWaveCircle16Regular: FluentFontIcon;
+export declare const SoundWaveCircle16Filled: FluentFontIcon;
+export declare const SoundWaveCircle20Regular: FluentFontIcon;
+export declare const SoundWaveCircle20Filled: FluentFontIcon;
+export declare const SoundWaveCircle24Regular: FluentFontIcon;
+export declare const SoundWaveCircle24Filled: FluentFontIcon;
+export declare const SoundWaveCircle28Regular: FluentFontIcon;
+export declare const SoundWaveCircle28Filled: FluentFontIcon;
+export declare const SoundWaveCircle32Regular: FluentFontIcon;
+export declare const SoundWaveCircle32Filled: FluentFontIcon;
+export declare const SoundWaveCircle48Regular: FluentFontIcon;
+export declare const SoundWaveCircle48Filled: FluentFontIcon;

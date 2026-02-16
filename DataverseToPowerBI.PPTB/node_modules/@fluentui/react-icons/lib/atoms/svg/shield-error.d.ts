@@ -1,0 +1,16 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const ShieldErrorFilled: FluentIcon;
+export declare const ShieldErrorRegular: FluentIcon;
+export declare const ShieldError16Regular: FluentIcon;
+export declare const ShieldError16Filled: FluentIcon;
+export declare const ShieldError20Regular: FluentIcon;
+export declare const ShieldError20Filled: FluentIcon;
+export declare const ShieldError24Regular: FluentIcon;
+export declare const ShieldError24Filled: FluentIcon;
+export declare const ShieldError28Regular: FluentIcon;
+export declare const ShieldError28Filled: FluentIcon;
+export declare const ShieldError32Regular: FluentIcon;
+export declare const ShieldError32Filled: FluentIcon;
+export declare const ShieldError32Light: FluentIcon;
+export declare const ShieldError48Regular: FluentIcon;
+export declare const ShieldError48Filled: FluentIcon;

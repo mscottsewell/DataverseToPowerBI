@@ -1,0 +1,10 @@
+"use client";
+import { createFluentIcon } from '../../utils/createFluentIcon';
+export const PowerFilled = ( /*#__PURE__*/createFluentIcon('PowerFilled', "1em", ["M10.75 2.5a.75.75 0 0 0-1.5 0v6a.75.75 0 0 0 1.5 0v-6Zm3 1.5a.75.75 0 1 0-.76 1.3A6 6 0 1 1 7 5.3.75.75 0 1 0 6.25 4a7.5 7.5 0 1 0 7.5 0Z"]));
+export const PowerRegular = ( /*#__PURE__*/createFluentIcon('PowerRegular', "1em", ["M10.5 2.5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0v-6ZM13.74 4a.5.5 0 1 0-.5.87 6.5 6.5 0 1 1-6.49 0 .5.5 0 1 0-.5-.87 7.5 7.5 0 1 0 7.5 0Z"]));
+export const Power20Regular = ( /*#__PURE__*/createFluentIcon('Power20Regular', "20", ["M10.5 2.5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0v-6ZM13.74 4a.5.5 0 1 0-.5.87 6.5 6.5 0 1 1-6.49 0 .5.5 0 1 0-.5-.87 7.5 7.5 0 1 0 7.5 0Z"]));
+export const Power20Filled = ( /*#__PURE__*/createFluentIcon('Power20Filled', "20", ["M10.75 2.5a.75.75 0 0 0-1.5 0v6a.75.75 0 0 0 1.5 0v-6Zm3 1.5a.75.75 0 1 0-.76 1.3A6 6 0 1 1 7 5.3.75.75 0 1 0 6.25 4a7.5 7.5 0 1 0 7.5 0Z"]));
+export const Power24Regular = ( /*#__PURE__*/createFluentIcon('Power24Regular', "24", ["M8.2 4.82a.75.75 0 0 1 .64 1.36 7.51 7.51 0 1 0 6.34 0 .75.75 0 1 1 .63-1.35 9 9 0 1 1-7.6-.01ZM12 2.5c.38 0 .7.28.74.64v7.6a.75.75 0 0 1-1.48.1l-.01-.1v-7.5c0-.4.33-.74.75-.74Z"]));
+export const Power24Filled = ( /*#__PURE__*/createFluentIcon('Power24Filled', "24", ["M8.2 4.84a1 1 0 0 1 .85 1.82 7 7 0 1 0 5.92 0 1 1 0 0 1 .84-1.8 9 9 0 1 1-7.6-.02ZM12 2a1 1 0 0 1 1 .88V10a1 1 0 0 1-2 .12V3a1 1 0 0 1 1-1Z"]));
+export const Power28Regular = ( /*#__PURE__*/createFluentIcon('Power28Regular', "28", ["M10.69 5.27a.75.75 0 0 1-.4.98 9.5 9.5 0 1 0 7.42 0 .75.75 0 0 1 .58-1.38 11 11 0 1 1-8.58 0c.38-.16.82.02.98.4ZM14 2c.41 0 .75.34.75.75v9.5a.75.75 0 0 1-1.5 0v-9.5c0-.41.34-.75.75-.75Z"]));
+export const Power28Filled = ( /*#__PURE__*/createFluentIcon('Power28Filled', "28", ["M15 3a1 1 0 1 0-2 0v9a1 1 0 1 0 2 0V3Zm-4.6 3.75a1 1 0 1 0-.8-1.83 11 11 0 1 0 8.8 0 1 1 0 0 0-.8 1.83 9 9 0 1 1-7.2 0Z"]));

@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const Space3DFilled: FluentFontIcon;
+export declare const Space3DRegular: FluentFontIcon;
+export declare const Space3D16Regular: FluentFontIcon;
+export declare const Space3D16Filled: FluentFontIcon;
+export declare const Space3D20Regular: FluentFontIcon;
+export declare const Space3D20Filled: FluentFontIcon;
+export declare const Space3D24Regular: FluentFontIcon;
+export declare const Space3D24Filled: FluentFontIcon;
+export declare const Space3D28Regular: FluentFontIcon;
+export declare const Space3D28Filled: FluentFontIcon;
+export declare const Space3D32Regular: FluentFontIcon;
+export declare const Space3D32Filled: FluentFontIcon;
+export declare const Space3D48Regular: FluentFontIcon;
+export declare const Space3D48Filled: FluentFontIcon;

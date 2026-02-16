@@ -1,0 +1,7 @@
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.CodeFsRectangle16Filled = exports.CodeFsRectangle16Regular = void 0;
+const createFluentIcon_1 = require("../../utils/createFluentIcon");
+exports.CodeFsRectangle16Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('CodeFsRectangle16Regular', "16", ["M6 6.4a.5.5 0 0 0-.5-.4h-2a.5.5 0 0 0-.5.5v4a.5.5 0 0 0 1 0V9h1a.5.5 0 1 0 0-1H4V7h1.5a.5.5 0 0 0 .5-.6Zm5.85 3.45A.5.5 0 0 0 11.5 9H11V8h.5a.5.5 0 0 0 0-1H11v-.5a.5.5 0 0 0-1 0V7H9v-.5a.5.5 0 0 0-1 0V7h-.5a.5.5 0 1 0 0 1H8v1h-.5a.5.5 0 1 0 0 1H8v.5a.5.5 0 0 0 1 0V10h1v.5a.5.5 0 0 0 1 0V10h.5a.5.5 0 0 0 .35-.15ZM9 8h1v1H9V8ZM2.75 3C1.78 3 1 3.78 1 4.75v7.5c0 .97.78 1.75 1.75 1.75h9.5c.97 0 1.75-.78 1.75-1.75v-7.5C14 3.78 13.22 3 12.25 3h-9.5ZM2 4.75c0-.41.34-.75.75-.75h9.5c.41 0 .75.34.75.75v7.5c0 .41-.34.75-.75.75h-9.5a.75.75 0 0 1-.75-.75v-7.5Z"]));
+exports.CodeFsRectangle16Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('CodeFsRectangle16Filled', "16", ["M9 9h1V8H9v1Zm3.25-6h-9.5C1.78 3 1 3.79 1 4.75v7.5c0 .96.78 1.75 1.75 1.75h9.5c.96 0 1.75-.79 1.75-1.75v-7.5C14 3.79 13.21 3 12.25 3ZM5.96 6.7a.5.5 0 0 1-.46.3H4v1h1a.5.5 0 1 1 0 1H4v1.5a.5.5 0 1 1-1 0v-4a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .35.15.5.5 0 0 1 .11.54ZM11.5 9a.5.5 0 1 1 0 1H11v.5a.5.5 0 1 1-1 0V10H9v.5a.5.5 0 1 1-1 0V10h-.5a.5.5 0 0 1-.5-.5.5.5 0 0 1 .5-.5H8V8h-.5a.5.5 0 0 1-.5-.5.5.5 0 0 1 .5-.5H8v-.5a.5.5 0 1 1 1 0V7h1v-.5a.5.5 0 1 1 1 0V7h.5a.5.5 0 1 1 0 1H11v1h.5Z"]));

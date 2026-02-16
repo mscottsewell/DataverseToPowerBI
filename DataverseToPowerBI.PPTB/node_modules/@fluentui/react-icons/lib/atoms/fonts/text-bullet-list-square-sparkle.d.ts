@@ -1,0 +1,11 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const TextBulletListSquareSparkleFilled: FluentFontIcon;
+export declare const TextBulletListSquareSparkleRegular: FluentFontIcon;
+export declare const TextBulletListSquareSparkle16Regular: FluentFontIcon;
+export declare const TextBulletListSquareSparkle16Filled: FluentFontIcon;
+export declare const TextBulletListSquareSparkle20Regular: FluentFontIcon;
+export declare const TextBulletListSquareSparkle20Filled: FluentFontIcon;
+export declare const TextBulletListSquareSparkle24Regular: FluentFontIcon;
+export declare const TextBulletListSquareSparkle24Filled: FluentFontIcon;
+export declare const TextBulletListSquareSparkle32Regular: FluentFontIcon;
+export declare const TextBulletListSquareSparkle32Filled: FluentFontIcon;

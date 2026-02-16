@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const DeskFilled: FluentIcon;
+export declare const DeskRegular: FluentIcon;
+export declare const Desk16Regular: FluentIcon;
+export declare const Desk16Filled: FluentIcon;
+export declare const Desk20Regular: FluentIcon;
+export declare const Desk20Filled: FluentIcon;
+export declare const Desk24Regular: FluentIcon;
+export declare const Desk24Filled: FluentIcon;
+export declare const Desk28Regular: FluentIcon;
+export declare const Desk28Filled: FluentIcon;
+export declare const Desk32Regular: FluentIcon;
+export declare const Desk32Filled: FluentIcon;
+export declare const Desk48Regular: FluentIcon;
+export declare const Desk48Filled: FluentIcon;

@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const CalendarCheckmarkSparkleFilled: FluentIcon;
+export declare const CalendarCheckmarkSparkleRegular: FluentIcon;
+export declare const CalendarCheckmarkSparkle16Regular: FluentIcon;
+export declare const CalendarCheckmarkSparkle16Filled: FluentIcon;
+export declare const CalendarCheckmarkSparkle20Regular: FluentIcon;
+export declare const CalendarCheckmarkSparkle20Filled: FluentIcon;
+export declare const CalendarCheckmarkSparkle24Regular: FluentIcon;
+export declare const CalendarCheckmarkSparkle24Filled: FluentIcon;
+export declare const CalendarCheckmarkSparkle28Regular: FluentIcon;
+export declare const CalendarCheckmarkSparkle28Filled: FluentIcon;
+export declare const CalendarCheckmarkSparkle32Regular: FluentIcon;
+export declare const CalendarCheckmarkSparkle32Filled: FluentIcon;
+export declare const CalendarCheckmarkSparkle48Regular: FluentIcon;
+export declare const CalendarCheckmarkSparkle48Filled: FluentIcon;

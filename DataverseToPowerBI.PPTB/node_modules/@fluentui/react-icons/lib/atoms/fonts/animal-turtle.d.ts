@@ -1,0 +1,11 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const AnimalTurtleFilled: FluentFontIcon;
+export declare const AnimalTurtleRegular: FluentFontIcon;
+export declare const AnimalTurtle16Regular: FluentFontIcon;
+export declare const AnimalTurtle16Filled: FluentFontIcon;
+export declare const AnimalTurtle20Regular: FluentFontIcon;
+export declare const AnimalTurtle20Filled: FluentFontIcon;
+export declare const AnimalTurtle24Regular: FluentFontIcon;
+export declare const AnimalTurtle24Filled: FluentFontIcon;
+export declare const AnimalTurtle28Regular: FluentFontIcon;
+export declare const AnimalTurtle28Filled: FluentFontIcon;

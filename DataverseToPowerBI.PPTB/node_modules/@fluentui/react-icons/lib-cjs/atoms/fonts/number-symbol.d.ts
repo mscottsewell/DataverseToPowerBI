@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const NumberSymbolFilled: FluentFontIcon;
+export declare const NumberSymbolRegular: FluentFontIcon;
+export declare const NumberSymbol16Regular: FluentFontIcon;
+export declare const NumberSymbol16Filled: FluentFontIcon;
+export declare const NumberSymbol20Regular: FluentFontIcon;
+export declare const NumberSymbol20Filled: FluentFontIcon;
+export declare const NumberSymbol24Regular: FluentFontIcon;
+export declare const NumberSymbol24Filled: FluentFontIcon;
+export declare const NumberSymbol28Regular: FluentFontIcon;
+export declare const NumberSymbol28Filled: FluentFontIcon;
+export declare const NumberSymbol32Regular: FluentFontIcon;
+export declare const NumberSymbol32Filled: FluentFontIcon;
+export declare const NumberSymbol48Regular: FluentFontIcon;
+export declare const NumberSymbol48Filled: FluentFontIcon;

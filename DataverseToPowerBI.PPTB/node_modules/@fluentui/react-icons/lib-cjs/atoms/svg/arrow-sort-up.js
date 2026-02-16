@@ -1,0 +1,13 @@
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ArrowSortUp24Filled = exports.ArrowSortUp24Regular = exports.ArrowSortUp20Filled = exports.ArrowSortUp20Regular = exports.ArrowSortUp16Filled = exports.ArrowSortUp16Regular = exports.ArrowSortUpRegular = exports.ArrowSortUpFilled = void 0;
+const createFluentIcon_1 = require("../../utils/createFluentIcon");
+exports.ArrowSortUpFilled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('ArrowSortUpFilled', "1em", ["M9.75 3c.23 0 .45.1.59.28l2.94 2.94a.75.75 0 0 1-1.06 1.06L10.5 5.57v10.68a.75.75 0 0 1-1.5 0V5.55L7.28 7.3a.75.75 0 1 1-1.06-1.06l3-3.01A.73.73 0 0 1 9.75 3Z"]));
+exports.ArrowSortUpRegular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('ArrowSortUpRegular', "1em", ["M9 4.71 6.35 7.35a.5.5 0 1 1-.7-.7L9.1 3.18a.5.5 0 0 1 .74-.03h.01l3.5 3.5a.5.5 0 1 1-.71.7L10 4.71V16.5a.5.5 0 0 1-1 0V4.71Z"]));
+exports.ArrowSortUp16Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('ArrowSortUp16Regular', "16", ["M7.15 2.15c.2-.2.5-.2.7 0l3 3a.5.5 0 0 1-.7.7L8 3.71v9.79a.5.5 0 0 1-1 0V3.7L4.85 5.86a.5.5 0 1 1-.7-.7l3-3Z"]));
+exports.ArrowSortUp16Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('ArrowSortUp16Filled', "16", ["M7.22 2.22c.3-.3.77-.3 1.06 0l2.75 2.75a.75.75 0 1 1-1.06 1.06L8.5 4.56v8.69a.75.75 0 0 1-1.5 0V4.56L5.53 6.03a.75.75 0 0 1-1.06-1.06l2.75-2.75Z"]));
+exports.ArrowSortUp20Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('ArrowSortUp20Regular', "20", ["M9 4.71 6.35 7.35a.5.5 0 1 1-.7-.7L9.1 3.18a.5.5 0 0 1 .74-.03h.01l3.5 3.5a.5.5 0 1 1-.71.7L10 4.71V16.5a.5.5 0 0 1-1 0V4.71Z"]));
+exports.ArrowSortUp20Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('ArrowSortUp20Filled', "20", ["M9.75 3c.23 0 .45.1.59.28l2.94 2.94a.75.75 0 0 1-1.06 1.06L10.5 5.57v10.68a.75.75 0 0 1-1.5 0V5.55L7.28 7.3a.75.75 0 1 1-1.06-1.06l3-3.01A.73.73 0 0 1 9.75 3Z"]));
+exports.ArrowSortUp24Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('ArrowSortUp24Regular', "24", ["m6.72 8.71 4.5-4.49a.75.75 0 0 1 .97-.07l.08.07 4.5 4.5a.75.75 0 0 1-.97 1.13l-.08-.07-3.22-3.22v12.7c0 .37-.28.69-.65.74h-.1a.75.75 0 0 1-.75-.64V6.56L7.78 9.78a.75.75 0 0 1-.98.07l-.08-.07a.75.75 0 0 1-.07-.98l.07-.09 4.5-4.49-4.5 4.5Z"]));
+exports.ArrowSortUp24Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('ArrowSortUp24Filled', "24", ["m7.3 8.3 3.99-4a1 1 0 0 1 1.32-.1l.1.1 4 4a1 1 0 0 1-1.32 1.5l-.1-.1L13 7.43V19a1 1 0 0 1-.88 1H12a1 1 0 0 1-1-.88V7.4l-2.3 2.3a1 1 0 0 1-1.31.08l-.1-.08a1 1 0 0 1-.08-1.32l.08-.1 4-4-4 4Z"]));

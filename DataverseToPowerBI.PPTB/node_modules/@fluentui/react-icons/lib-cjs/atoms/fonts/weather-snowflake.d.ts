@@ -1,0 +1,11 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const WeatherSnowflakeFilled: FluentFontIcon;
+export declare const WeatherSnowflakeRegular: FluentFontIcon;
+export declare const WeatherSnowflake20Regular: FluentFontIcon;
+export declare const WeatherSnowflake20Filled: FluentFontIcon;
+export declare const WeatherSnowflake24Regular: FluentFontIcon;
+export declare const WeatherSnowflake24Filled: FluentFontIcon;
+export declare const WeatherSnowflake32Regular: FluentFontIcon;
+export declare const WeatherSnowflake32Filled: FluentFontIcon;
+export declare const WeatherSnowflake48Regular: FluentFontIcon;
+export declare const WeatherSnowflake48Filled: FluentFontIcon;

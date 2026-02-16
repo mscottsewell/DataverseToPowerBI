@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const VideoChatFilled: FluentIcon;
+export declare const VideoChatRegular: FluentIcon;
+export declare const VideoChat16Regular: FluentIcon;
+export declare const VideoChat16Filled: FluentIcon;
+export declare const VideoChat20Regular: FluentIcon;
+export declare const VideoChat20Filled: FluentIcon;
+export declare const VideoChat24Regular: FluentIcon;
+export declare const VideoChat24Filled: FluentIcon;
+export declare const VideoChat28Regular: FluentIcon;
+export declare const VideoChat28Filled: FluentIcon;
+export declare const VideoChat32Regular: FluentIcon;
+export declare const VideoChat32Filled: FluentIcon;
+export declare const VideoChat48Regular: FluentIcon;
+export declare const VideoChat48Filled: FluentIcon;

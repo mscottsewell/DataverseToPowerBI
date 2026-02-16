@@ -1,0 +1,10 @@
+"use client";
+import { createFluentIcon } from '../../utils/createFluentIcon';
+export const ReOrderVerticalFilled = ( /*#__PURE__*/createFluentIcon('ReOrderVerticalFilled', "1em", ["M7.75 17.25a.75.75 0 0 0 1.5 0V2.75a.75.75 0 0 0-1.5 0v14.5Zm3 0a.75.75 0 0 0 1.5 0V2.75a.75.75 0 0 0-1.5 0v14.5Z"]));
+export const ReOrderVerticalRegular = ( /*#__PURE__*/createFluentIcon('ReOrderVerticalRegular', "1em", ["M8 17.5a.5.5 0 0 0 1 0v-15a.5.5 0 0 0-1 0v15Zm3 0a.5.5 0 0 0 1 0v-15a.5.5 0 0 0-1 0v15Z"]));
+export const ReOrderVertical16Regular = ( /*#__PURE__*/createFluentIcon('ReOrderVertical16Regular', "16", ["M9 13.5v-11a.5.5 0 0 1 1-.09V13.5a.5.5 0 0 1-1 .09v-.09Zm-3 0v-11a.5.5 0 0 1 1-.09V13.5a.5.5 0 0 1-1 .09v-.09Z"]));
+export const ReOrderVertical16Filled = ( /*#__PURE__*/createFluentIcon('ReOrderVertical16Filled', "16", ["M9.25 13.25V2.75a.75.75 0 0 1 1.5-.1v10.6a.75.75 0 0 1-1.5.1v-.1Zm-4 0V2.75a.75.75 0 0 1 1.5-.1v10.6a.75.75 0 0 1-1.5.1v-.1Z"]));
+export const ReOrderVertical20Regular = ( /*#__PURE__*/createFluentIcon('ReOrderVertical20Regular', "20", ["M8 17.5a.5.5 0 0 0 1 0v-15a.5.5 0 0 0-1 0v15Zm3 0a.5.5 0 0 0 1 0v-15a.5.5 0 0 0-1 0v15Z"]));
+export const ReOrderVertical20Filled = ( /*#__PURE__*/createFluentIcon('ReOrderVertical20Filled', "20", ["M7.75 17.25a.75.75 0 0 0 1.5 0V2.75a.75.75 0 0 0-1.5 0v14.5Zm3 0a.75.75 0 0 0 1.5 0V2.75a.75.75 0 0 0-1.5 0v14.5Z"]));
+export const ReOrderVertical24Regular = ( /*#__PURE__*/createFluentIcon('ReOrderVertical24Regular', "24", ["M13.25 21.25V2.75a.75.75 0 0 1 1.5-.1v18.6a.75.75 0 0 1-1.5.1v-.1Zm-4 0V2.75a.75.75 0 0 1 1.5-.1v18.6a.75.75 0 0 1-1.5.1v-.1Z"]));
+export const ReOrderVertical24Filled = ( /*#__PURE__*/createFluentIcon('ReOrderVertical24Filled', "24", ["M13 21V3a1 1 0 0 1 2-.12V21a1 1 0 0 1-2 .12V21Zm-4 0V3a1 1 0 0 1 2-.12V21a1 1 0 0 1-2 .12V21Z"]));

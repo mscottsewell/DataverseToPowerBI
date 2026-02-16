@@ -1,0 +1,14 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const TextDensityFilled: FluentIcon;
+export declare const TextDensityRegular: FluentIcon;
+export declare const TextDensity16Regular: FluentIcon;
+export declare const TextDensity16Filled: FluentIcon;
+export declare const TextDensity20Regular: FluentIcon;
+export declare const TextDensity20Filled: FluentIcon;
+export declare const TextDensity24Regular: FluentIcon;
+export declare const TextDensity24Filled: FluentIcon;
+export declare const TextDensity28Regular: FluentIcon;
+export declare const TextDensity28Filled: FluentIcon;
+export declare const TextDensity32Regular: FluentIcon;
+export declare const TextDensity32Filled: FluentIcon;
+export declare const TextDensity32Light: FluentIcon;

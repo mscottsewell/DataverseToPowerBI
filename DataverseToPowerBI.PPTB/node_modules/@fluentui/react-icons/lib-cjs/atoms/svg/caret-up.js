@@ -1,0 +1,15 @@
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.CaretUp24Filled = exports.CaretUp24Regular = exports.CaretUp20Filled = exports.CaretUp20Regular = exports.CaretUp16Filled = exports.CaretUp16Regular = exports.CaretUp12Filled = exports.CaretUp12Regular = exports.CaretUpRegular = exports.CaretUpFilled = void 0;
+const createFluentIcon_1 = require("../../utils/createFluentIcon");
+exports.CaretUpFilled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('CaretUpFilled', "1em", ["M5.8 13.9a1 1 0 0 1-.78-1.62l3.81-4.72a1.5 1.5 0 0 1 2.34 0l3.81 4.72a1 1 0 0 1-.78 1.63H5.8Z"]));
+exports.CaretUpRegular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('CaretUpRegular', "1em", ["M5.02 12.28a1 1 0 0 0 .78 1.63h8.4a1 1 0 0 0 .78-1.63l-3.81-4.72a1.5 1.5 0 0 0-2.34 0l-3.81 4.72Zm9.18.63H5.8L9.6 8.19a.5.5 0 0 1 .78 0l3.81 4.72Z"]));
+exports.CaretUp12Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('CaretUp12Regular', "12", ["M3.08 7.38A1 1 0 0 0 4 8h4a1 1 0 0 0 .7-1.7l-2-2a1 1 0 0 0-1.4 0l-2 2a1 1 0 0 0-.22 1.08ZM4 7l1.82-1.82c.1-.1.26-.1.36 0L8 7H4Z"]));
+exports.CaretUp12Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('CaretUp12Filled', "12", ["M3.08 7.38A1 1 0 0 0 4 8h4a1 1 0 0 0 .7-1.7l-2-2a1 1 0 0 0-1.4 0l-2 2a1 1 0 0 0-.22 1.08Z"]));
+exports.CaretUp16Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('CaretUp16Regular', "16", ["M4.14 9.43A1 1 0 0 0 4.96 11h6.08a1 1 0 0 0 .82-1.57L9.23 5.64a1.5 1.5 0 0 0-2.46 0L4.14 9.43Zm.82.57L7.59 6.2a.5.5 0 0 1 .82 0L11.04 10H4.96Z"]));
+exports.CaretUp16Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('CaretUp16Filled', "16", ["M4.96 11a1 1 0 0 1-.82-1.57l2.63-3.79a1.5 1.5 0 0 1 2.46 0l2.63 3.79a1 1 0 0 1-.82 1.57H4.96Z"]));
+exports.CaretUp20Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('CaretUp20Regular', "20", ["M5.02 12.28a1 1 0 0 0 .78 1.63h8.4a1 1 0 0 0 .78-1.63l-3.81-4.72a1.5 1.5 0 0 0-2.34 0l-3.81 4.72Zm9.18.63H5.8L9.6 8.19a.5.5 0 0 1 .78 0l3.81 4.72Z"]));
+exports.CaretUp20Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('CaretUp20Filled', "20", ["M5.8 13.9a1 1 0 0 1-.78-1.62l3.81-4.72a1.5 1.5 0 0 1 2.34 0l3.81 4.72a1 1 0 0 1-.78 1.63H5.8Z"]));
+exports.CaretUp24Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('CaretUp24Regular', "24", ["M5.16 14.9c-.7.82-.13 2.08.94 2.08h11.8c1.07 0 1.65-1.26.94-2.07L13.32 8.6c-.7-.8-1.94-.8-2.64 0l-5.52 6.3Zm1.5.58 5.15-5.9c.1-.1.28-.1.38 0l5.16 5.9H6.65Z"]));
+exports.CaretUp24Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('CaretUp24Filled', "24", ["M6.1 16.98a1.25 1.25 0 0 1-.94-2.07l5.52-6.31c.7-.8 1.94-.8 2.64 0l5.52 6.3c.7.82.13 2.08-.94 2.08H6.1Z"]));

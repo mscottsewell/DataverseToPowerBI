@@ -1,0 +1,17 @@
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.AddSubtractCircle48Filled = exports.AddSubtractCircle48Regular = exports.AddSubtractCircle28Filled = exports.AddSubtractCircle28Regular = exports.AddSubtractCircle24Filled = exports.AddSubtractCircle24Regular = exports.AddSubtractCircle20Filled = exports.AddSubtractCircle20Regular = exports.AddSubtractCircle16Filled = exports.AddSubtractCircle16Regular = exports.AddSubtractCircleRegular = exports.AddSubtractCircleFilled = void 0;
+const createFluentFontIcon_1 = require("../../utils/fonts/createFluentFontIcon");
+exports.AddSubtractCircleFilled = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AddSubtractCircleFilled", "", 2, undefined));
+exports.AddSubtractCircleRegular = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AddSubtractCircleRegular", "", 2, undefined));
+exports.AddSubtractCircle16Regular = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AddSubtractCircle16Regular", "", 1, 16));
+exports.AddSubtractCircle16Filled = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AddSubtractCircle16Filled", "", 0, 16));
+exports.AddSubtractCircle20Regular = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AddSubtractCircle20Regular", "", 1, 20));
+exports.AddSubtractCircle20Filled = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AddSubtractCircle20Filled", "", 0, 20));
+exports.AddSubtractCircle24Regular = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AddSubtractCircle24Regular", "", 1, 24));
+exports.AddSubtractCircle24Filled = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AddSubtractCircle24Filled", "", 0, 24));
+exports.AddSubtractCircle28Regular = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AddSubtractCircle28Regular", "", 1, 28));
+exports.AddSubtractCircle28Filled = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AddSubtractCircle28Filled", "", 0, 28));
+exports.AddSubtractCircle48Regular = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AddSubtractCircle48Regular", "", 1, 48));
+exports.AddSubtractCircle48Filled = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AddSubtractCircle48Filled", "", 0, 48));

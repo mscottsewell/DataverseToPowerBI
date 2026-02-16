@@ -1,0 +1,10 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const TextClearFormattingFilled: FluentIcon;
+export declare const TextClearFormattingRegular: FluentIcon;
+export declare const TextClearFormatting16Regular: FluentIcon;
+export declare const TextClearFormatting16Filled: FluentIcon;
+export declare const TextClearFormatting20Regular: FluentIcon;
+export declare const TextClearFormatting20Filled: FluentIcon;
+export declare const TextClearFormatting24Regular: FluentIcon;
+export declare const TextClearFormatting24Filled: FluentIcon;
+export declare const TextClearFormatting32Light: FluentIcon;

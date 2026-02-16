@@ -1,0 +1,11 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const FastForwardFilled: FluentIcon;
+export declare const FastForwardRegular: FluentIcon;
+export declare const FastForward16Regular: FluentIcon;
+export declare const FastForward16Filled: FluentIcon;
+export declare const FastForward20Regular: FluentIcon;
+export declare const FastForward20Filled: FluentIcon;
+export declare const FastForward24Regular: FluentIcon;
+export declare const FastForward24Filled: FluentIcon;
+export declare const FastForward28Regular: FluentIcon;
+export declare const FastForward28Filled: FluentIcon;

@@ -1,0 +1,11 @@
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ColumnSingleCompare20Filled = exports.ColumnSingleCompare20Regular = exports.ColumnSingleCompare16Filled = exports.ColumnSingleCompare16Regular = exports.ColumnSingleCompareRegular = exports.ColumnSingleCompareFilled = void 0;
+const createFluentIcon_1 = require("../../utils/createFluentIcon");
+exports.ColumnSingleCompareFilled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('ColumnSingleCompareFilled', "1em", ["M6 2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H6ZM5 6h10v1H5V6Zm0 5h10v3H5v-3Z"]));
+exports.ColumnSingleCompareRegular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('ColumnSingleCompareRegular', "1em", ["M4 4c0-1.1.9-2 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4Zm2-1a1 1 0 0 0-1 1v2h10V4a1 1 0 0 0-1-1H6Zm-1 8h10V7H5v4Zm0 3v2a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-2H5Z"]));
+exports.ColumnSingleCompare16Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('ColumnSingleCompare16Regular', "16", ["M3 2.75C3 1.78 3.78 1 4.75 1h6.5c.97 0 1.75.78 1.75 1.75v10.5c0 .97-.78 1.75-1.75 1.75h-6.5C3.78 15 3 14.22 3 13.25V2.75ZM4.75 2a.75.75 0 0 0-.75.75V5h8V2.75a.75.75 0 0 0-.75-.75h-6.5ZM4 9h8V6H4v3Zm0 2v2.25c0 .41.34.75.75.75h6.5c.41 0 .75-.34.75-.75V11H4Z"]));
+exports.ColumnSingleCompare16Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('ColumnSingleCompare16Filled', "16", ["M4.75 1C3.78 1 3 1.78 3 2.75v10.5A1.75 1.75 0 0 0 4.75 15h6.5c.97 0 1.75-.78 1.75-1.75V2.75C13 1.78 12.22 1 11.25 1h-6.5ZM4 5h8v1H4V5Zm0 4h8v2H4V9Z"]));
+exports.ColumnSingleCompare20Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('ColumnSingleCompare20Regular', "20", ["M4 4c0-1.1.9-2 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4Zm2-1a1 1 0 0 0-1 1v2h10V4a1 1 0 0 0-1-1H6Zm-1 8h10V7H5v4Zm0 3v2a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-2H5Z"]));
+exports.ColumnSingleCompare20Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('ColumnSingleCompare20Filled', "20", ["M6 2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H6ZM5 6h10v1H5V6Zm0 5h10v3H5v-3Z"]));

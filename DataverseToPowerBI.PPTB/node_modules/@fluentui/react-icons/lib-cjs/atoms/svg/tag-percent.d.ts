@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const TagPercentFilled: FluentIcon;
+export declare const TagPercentRegular: FluentIcon;
+export declare const TagPercent16Regular: FluentIcon;
+export declare const TagPercent16Filled: FluentIcon;
+export declare const TagPercent20Regular: FluentIcon;
+export declare const TagPercent20Filled: FluentIcon;
+export declare const TagPercent24Regular: FluentIcon;
+export declare const TagPercent24Filled: FluentIcon;
+export declare const TagPercent28Regular: FluentIcon;
+export declare const TagPercent28Filled: FluentIcon;
+export declare const TagPercent32Regular: FluentIcon;
+export declare const TagPercent32Filled: FluentIcon;
+export declare const TagPercent48Regular: FluentIcon;
+export declare const TagPercent48Filled: FluentIcon;

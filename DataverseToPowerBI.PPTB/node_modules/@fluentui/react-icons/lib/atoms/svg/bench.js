@@ -1,0 +1,8 @@
+"use client";
+import { createFluentIcon } from '../../utils/createFluentIcon';
+export const BenchFilled = ( /*#__PURE__*/createFluentIcon('BenchFilled', "1em", ["M5 4a2 2 0 0 0-2 2v4h14V6a2 2 0 0 0-2-2H5Zm-2.5 7a1.5 1.5 0 0 0 0 3H3v1.5a.5.5 0 0 0 1 0V14h12v1.5a.5.5 0 0 0 1 0V14h.5a1.5 1.5 0 0 0 0-3h-15Z"]));
+export const BenchRegular = ( /*#__PURE__*/createFluentIcon('BenchRegular', "1em", ["M3 6c0-1.1.9-2 2-2h10a2 2 0 0 1 2 2v4a2 2 0 1 1 0 4v1.5a.5.5 0 0 1-1 0V14H4v1.5a.5.5 0 0 1-1 0V14a2 2 0 1 1 0-4V6Zm14 7a1 1 0 1 0 0-2H3a1 1 0 1 0 0 2h14Zm-1-7a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v4h12V6Z"]));
+export const Bench20Regular = ( /*#__PURE__*/createFluentIcon('Bench20Regular', "20", ["M3 6c0-1.1.9-2 2-2h10a2 2 0 0 1 2 2v4a2 2 0 1 1 0 4v1.5a.5.5 0 0 1-1 0V14H4v1.5a.5.5 0 0 1-1 0V14a2 2 0 1 1 0-4V6Zm14 7a1 1 0 1 0 0-2H3a1 1 0 1 0 0 2h14Zm-1-7a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v4h12V6Z"]));
+export const Bench20Filled = ( /*#__PURE__*/createFluentIcon('Bench20Filled', "20", ["M5 4a2 2 0 0 0-2 2v4h14V6a2 2 0 0 0-2-2H5Zm-2.5 7a1.5 1.5 0 0 0 0 3H3v1.5a.5.5 0 0 0 1 0V14h12v1.5a.5.5 0 0 0 1 0V14h.5a1.5 1.5 0 0 0 0-3h-15Z"]));
+export const Bench24Regular = ( /*#__PURE__*/createFluentIcon('Bench24Regular', "24", ["M5.75 4A2.75 2.75 0 0 0 3 6.75v5.3a2.5 2.5 0 0 0 0 4.9v2.3a.75.75 0 0 0 1.5 0V17h15v2.25a.75.75 0 0 0 1.5 0v-2.3a2.5 2.5 0 0 0 0-4.9v-5.3A2.75 2.75 0 0 0 18.25 4H5.75Zm13.75 8h-15V6.75c0-.69.56-1.25 1.25-1.25h12.5c.69 0 1.25.56 1.25 1.25V12Zm1 3.5h-17a1 1 0 1 1 0-2h17a1 1 0 1 1 0 2Z"]));
+export const Bench24Filled = ( /*#__PURE__*/createFluentIcon('Bench24Filled', "24", ["M5.75 4A2.75 2.75 0 0 0 3 6.75V12h18V6.75A2.75 2.75 0 0 0 18.25 4H5.75ZM3 13a2 2 0 1 0 0 4v2.25a.75.75 0 0 0 1.5 0V17h15v2.25a.75.75 0 0 0 1.5 0V17a2 2 0 1 0 0-4H3Z"]));

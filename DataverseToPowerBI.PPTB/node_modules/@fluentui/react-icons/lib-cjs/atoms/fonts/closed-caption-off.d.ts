@@ -1,0 +1,13 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const ClosedCaptionOffFilled: FluentFontIcon;
+export declare const ClosedCaptionOffRegular: FluentFontIcon;
+export declare const ClosedCaptionOff16Regular: FluentFontIcon;
+export declare const ClosedCaptionOff16Filled: FluentFontIcon;
+export declare const ClosedCaptionOff20Regular: FluentFontIcon;
+export declare const ClosedCaptionOff20Filled: FluentFontIcon;
+export declare const ClosedCaptionOff24Regular: FluentFontIcon;
+export declare const ClosedCaptionOff24Filled: FluentFontIcon;
+export declare const ClosedCaptionOff28Regular: FluentFontIcon;
+export declare const ClosedCaptionOff28Filled: FluentFontIcon;
+export declare const ClosedCaptionOff48Regular: FluentFontIcon;
+export declare const ClosedCaptionOff48Filled: FluentFontIcon;

@@ -1,0 +1,11 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const FireplaceFilled: FluentFontIcon;
+export declare const FireplaceRegular: FluentFontIcon;
+export declare const Fireplace20Regular: FluentFontIcon;
+export declare const Fireplace20Filled: FluentFontIcon;
+export declare const Fireplace24Regular: FluentFontIcon;
+export declare const Fireplace24Filled: FluentFontIcon;
+export declare const Fireplace32Regular: FluentFontIcon;
+export declare const Fireplace32Filled: FluentFontIcon;
+export declare const Fireplace48Regular: FluentFontIcon;
+export declare const Fireplace48Filled: FluentFontIcon;

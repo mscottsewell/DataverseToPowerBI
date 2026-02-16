@@ -1,0 +1,14 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const CalendarDayFilled: FluentFontIcon;
+export declare const CalendarDayRegular: FluentFontIcon;
+export declare const CalendarDay16Regular: FluentFontIcon;
+export declare const CalendarDay16Filled: FluentFontIcon;
+export declare const CalendarDay20Regular: FluentFontIcon;
+export declare const CalendarDay20Filled: FluentFontIcon;
+export declare const CalendarDay24Regular: FluentFontIcon;
+export declare const CalendarDay24Filled: FluentFontIcon;
+export declare const CalendarDay28Regular: FluentFontIcon;
+export declare const CalendarDay28Filled: FluentFontIcon;
+export declare const CalendarDay32Regular: FluentFontIcon;
+export declare const CalendarDay32Filled: FluentFontIcon;
+export declare const CalendarDay32Light: FluentFontIcon;

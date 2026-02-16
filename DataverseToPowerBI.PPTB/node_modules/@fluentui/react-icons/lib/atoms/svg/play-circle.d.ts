@@ -1,0 +1,13 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const PlayCircleFilled: FluentIcon;
+export declare const PlayCircleRegular: FluentIcon;
+export declare const PlayCircle16Regular: FluentIcon;
+export declare const PlayCircle16Filled: FluentIcon;
+export declare const PlayCircle20Regular: FluentIcon;
+export declare const PlayCircle20Filled: FluentIcon;
+export declare const PlayCircle24Regular: FluentIcon;
+export declare const PlayCircle24Filled: FluentIcon;
+export declare const PlayCircle28Regular: FluentIcon;
+export declare const PlayCircle28Filled: FluentIcon;
+export declare const PlayCircle48Regular: FluentIcon;
+export declare const PlayCircle48Filled: FluentIcon;

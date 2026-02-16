@@ -1,0 +1,11 @@
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.PresenceOof24Regular = exports.PresenceOof20Regular = exports.PresenceOof16Regular = exports.PresenceOof12Regular = exports.PresenceOof10Regular = exports.PresenceOofRegular = void 0;
+const createFluentIcon_1 = require("../../utils/createFluentIcon");
+exports.PresenceOofRegular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('PresenceOofRegular', "1em", ["M10.7 7.7A1 1 0 1 0 9.28 6.3l-3 3a1 1 0 0 0 0 1.41l3 3a1 1 0 1 0 1.42-1.41l-1.3-1.3H13a1 1 0 1 0 0-2H9.4l1.3-1.29ZM10 0a10 10 0 1 0 0 20 10 10 0 0 0 0-20ZM2 10a8 8 0 1 1 16 0 8 8 0 0 1-16 0Z"]));
+exports.PresenceOof10Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('PresenceOof10Regular', "10", ["M5.35 3.85a.5.5 0 1 0-.7-.7l-1.5 1.5a.5.5 0 0 0 0 .7l1.5 1.5a.5.5 0 1 0 .7-.7L4.7 5.5h1.8a.5.5 0 1 0 0-1H4.7l.65-.65ZM5 0a5 5 0 1 0 0 10A5 5 0 0 0 5 0ZM1 5a4 4 0 1 1 8 0 4 4 0 0 1-8 0Z"]));
+exports.PresenceOof12Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('PresenceOof12Regular', "12", ["M6.28 4.53a.75.75 0 0 0-1.06-1.06l-2 2c-.3.3-.3.77 0 1.06l2 2a.75.75 0 0 0 1.06-1.06l-.72-.72h2.69a.75.75 0 1 0 0-1.5h-2.7l.73-.72ZM6 0a6 6 0 1 0 0 12A6 6 0 0 0 6 0ZM1.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0Z"]));
+exports.PresenceOof16Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('PresenceOof16Regular', "16", ["M8.2 6.2a1 1 0 1 0-1.4-1.4L4.3 7.3a1 1 0 0 0 0 1.4l2.5 2.5a1 1 0 0 0 1.4-1.4L7.42 9H11a1 1 0 1 0 0-2H7.41l.8-.8ZM8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0ZM2 8a6 6 0 1 1 12 0A6 6 0 0 1 2 8Z"]));
+exports.PresenceOof20Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('PresenceOof20Regular', "20", ["M10.7 7.7A1 1 0 1 0 9.28 6.3l-3 3a1 1 0 0 0 0 1.41l3 3a1 1 0 1 0 1.42-1.41l-1.3-1.3H13a1 1 0 1 0 0-2H9.4l1.3-1.29ZM10 0a10 10 0 1 0 0 20 10 10 0 0 0 0-20ZM2 10a8 8 0 1 1 16 0 8 8 0 0 1-16 0Z"]));
+exports.PresenceOof24Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('PresenceOof24Regular', "24", ["M12.56 9.06a1.5 1.5 0 0 0-2.12-2.12l-4 4a1.5 1.5 0 0 0 0 2.12l4 4a1.5 1.5 0 0 0 2.12-2.12l-1.44-1.44h5.38a1.5 1.5 0 1 0 0-3h-5.38l1.44-1.44ZM12 0a12 12 0 1 0 0 24 12 12 0 0 0 0-24ZM3 12a9 9 0 1 1 18 0 9 9 0 0 1-18 0Z"]));

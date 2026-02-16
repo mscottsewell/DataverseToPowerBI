@@ -1,0 +1,16 @@
+"use client";
+import { createFluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export const AddStarburstFilled = ( /*#__PURE__*/createFluentFontIcon("AddStarburstFilled", "", 2, undefined));
+export const AddStarburstRegular = ( /*#__PURE__*/createFluentFontIcon("AddStarburstRegular", "", 2, undefined));
+export const AddStarburst16Regular = ( /*#__PURE__*/createFluentFontIcon("AddStarburst16Regular", "󰣞", 1, 16));
+export const AddStarburst16Filled = ( /*#__PURE__*/createFluentFontIcon("AddStarburst16Filled", "󰥛", 0, 16));
+export const AddStarburst20Regular = ( /*#__PURE__*/createFluentFontIcon("AddStarburst20Regular", "󰣟", 1, 20));
+export const AddStarburst20Filled = ( /*#__PURE__*/createFluentFontIcon("AddStarburst20Filled", "󰥜", 0, 20));
+export const AddStarburst24Regular = ( /*#__PURE__*/createFluentFontIcon("AddStarburst24Regular", "󰣠", 1, 24));
+export const AddStarburst24Filled = ( /*#__PURE__*/createFluentFontIcon("AddStarburst24Filled", "󰥝", 0, 24));
+export const AddStarburst28Regular = ( /*#__PURE__*/createFluentFontIcon("AddStarburst28Regular", "󰣡", 1, 28));
+export const AddStarburst28Filled = ( /*#__PURE__*/createFluentFontIcon("AddStarburst28Filled", "󰥞", 0, 28));
+export const AddStarburst32Regular = ( /*#__PURE__*/createFluentFontIcon("AddStarburst32Regular", "󰣢", 1, 32));
+export const AddStarburst32Filled = ( /*#__PURE__*/createFluentFontIcon("AddStarburst32Filled", "󰥟", 0, 32));
+export const AddStarburst48Regular = ( /*#__PURE__*/createFluentFontIcon("AddStarburst48Regular", "󰣣", 1, 48));
+export const AddStarburst48Filled = ( /*#__PURE__*/createFluentFontIcon("AddStarburst48Filled", "󰥠", 0, 48));

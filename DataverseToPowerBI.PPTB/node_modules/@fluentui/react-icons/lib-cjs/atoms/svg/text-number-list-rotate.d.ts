@@ -1,0 +1,13 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const TextNumberListRotate90Regular: FluentIcon;
+export declare const TextNumberListRotate90Filled: FluentIcon;
+export declare const TextNumberListRotate270Regular: FluentIcon;
+export declare const TextNumberListRotate270Filled: FluentIcon;
+export declare const TextNumberListRotate9020Regular: FluentIcon;
+export declare const TextNumberListRotate9020Filled: FluentIcon;
+export declare const TextNumberListRotate9024Regular: FluentIcon;
+export declare const TextNumberListRotate9024Filled: FluentIcon;
+export declare const TextNumberListRotate27020Regular: FluentIcon;
+export declare const TextNumberListRotate27020Filled: FluentIcon;
+export declare const TextNumberListRotate27024Regular: FluentIcon;
+export declare const TextNumberListRotate27024Filled: FluentIcon;

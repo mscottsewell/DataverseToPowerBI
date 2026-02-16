@@ -1,0 +1,7 @@
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.DocumentPy16Filled = exports.DocumentPy16Regular = void 0;
+const createFluentIcon_1 = require("../../utils/createFluentIcon");
+exports.DocumentPy16Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('DocumentPy16Regular', "16", ["m9.65 1.44 2.91 2.91c.28.28.44.67.44 1.06V13a2 2 0 0 1-2 2H7.91c.06-.16.09-.33.09-.5V14h3a1 1 0 0 0 1-1V6H9.5A1.5 1.5 0 0 1 8 4.5V2H5a1 1 0 0 0-1 1v6.39l-.07.06c-.28-.19-.6-.33-.93-.39V3c0-1.1.9-2 2-2h3.59c.39 0 .78.16 1.06.44ZM9 4.5c0 .28.22.5.5.5h2.29L9 2.21V4.5ZM1.5 10h1a1.5 1.5 0 1 1 0 3H2v1.5a.5.5 0 1 1-1 0v-4a.5.5 0 0 1 .5-.5Zm.5 2h.5a.5.5 0 1 0 0-1H2v1Zm5 .67 1.4-1.87a.5.5 0 0 0-.1-.7.5.5 0 0 0-.7.1l-1.1 1.47-1.1-1.47a.5.5 0 1 0-.8.6L6 12.67v1.83a.5.5 0 1 0 1 0v-1.83Z"]));
+exports.DocumentPy16Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('DocumentPy16Filled', "16", ["M10 4.5V1.25L13.75 5H10.5a.5.5 0 0 1-.5-.5Zm-1 0c0 .83.67 1.5 1.5 1.5H14v7.5c0 .83-.67 1.5-1.5 1.5H7.91c.06-.16.09-.32.09-.5V13l1.2-1.6c.24-.31.34-.72.28-1.11-.05-.4-.26-.75-.58-.99-.25-.19-.58-.3-.9-.3h-.15l-.07.02c-.39.05-.74.26-.98.58l-.3.4-.3-.4a1.52 1.52 0 0 0-.99-.59L5.07 9H5a1.5 1.5 0 0 0-1 .39V2.5C4 1.67 4.67 1 5.5 1H9v3.5ZM1.5 10h1a1.5 1.5 0 1 1 0 3H2v1.5a.5.5 0 1 1-1 0v-4a.5.5 0 0 1 .5-.5Zm.5 2h.5a.5.5 0 1 0 0-1H2v1Zm5 .67 1.4-1.87a.5.5 0 0 0-.1-.7.5.5 0 0 0-.7.1l-1.1 1.47-1.1-1.47a.5.5 0 1 0-.8.6L6 12.67v1.83a.5.5 0 1 0 1 0v-1.83Z"]));

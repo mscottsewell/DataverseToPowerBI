@@ -1,0 +1,11 @@
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.System24Filled = exports.System24Regular = exports.System20Filled = exports.System20Regular = exports.SystemRegular = exports.SystemFilled = void 0;
+const createFluentIcon_1 = require("../../utils/createFluentIcon");
+exports.SystemFilled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('SystemFilled', "1em", ["M2 6.5A2.5 2.5 0 0 1 4.5 4h11A2.5 2.5 0 0 1 18 6.5v7a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 2 13.5v-7Zm2.5-1a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-7a1 1 0 0 0-1-1h-11Z"]));
+exports.SystemRegular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('SystemRegular', "1em", ["M2 6.5A2.5 2.5 0 0 1 4.5 4h11A2.5 2.5 0 0 1 18 6.5v7a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 2 13.5v-7ZM4.5 5C3.67 5 3 5.67 3 6.5v7c0 .83.67 1.5 1.5 1.5h11c.83 0 1.5-.67 1.5-1.5v-7c0-.83-.67-1.5-1.5-1.5h-11Z"]));
+exports.System20Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('System20Regular', "20", ["M2 6.5A2.5 2.5 0 0 1 4.5 4h11A2.5 2.5 0 0 1 18 6.5v7a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 2 13.5v-7ZM4.5 5C3.67 5 3 5.67 3 6.5v7c0 .83.67 1.5 1.5 1.5h11c.83 0 1.5-.67 1.5-1.5v-7c0-.83-.67-1.5-1.5-1.5h-11Z"]));
+exports.System20Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('System20Filled', "20", ["M2 6.5A2.5 2.5 0 0 1 4.5 4h11A2.5 2.5 0 0 1 18 6.5v7a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 2 13.5v-7Zm2.5-1a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-7a1 1 0 0 0-1-1h-11Z"]));
+exports.System24Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('System24Regular', "24", ["M4.75 5h14.5A2.75 2.75 0 0 1 22 7.75v8.5A2.75 2.75 0 0 1 19.25 19H4.75A2.75 2.75 0 0 1 2 16.25v-8.5A2.75 2.75 0 0 1 4.75 5Zm0 1.5c-.69 0-1.25.56-1.25 1.25v8.5c0 .69.56 1.25 1.25 1.25h14.5c.69 0 1.25-.56 1.25-1.25v-8.5c0-.69-.56-1.25-1.25-1.25H4.75Z"]));
+exports.System24Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('System24Filled', "24", ["M4.95 5h14.1C20.68 5 22 6.3 22 7.92v8.16A2.93 2.93 0 0 1 19.05 19H4.95A2.93 2.93 0 0 1 2 16.08V7.92A2.93 2.93 0 0 1 4.95 5Zm0 2a.93.93 0 0 0-.95.92v8.16c0 .5.42.92.95.92h14.1c.53 0 .95-.41.95-.92V7.92c0-.5-.42-.92-.95-.92H4.95Z"]));

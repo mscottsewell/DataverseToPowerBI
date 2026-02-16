@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const PaymentWirelessFilled: FluentIcon;
+export declare const PaymentWirelessRegular: FluentIcon;
+export declare const PaymentWireless16Regular: FluentIcon;
+export declare const PaymentWireless16Filled: FluentIcon;
+export declare const PaymentWireless20Regular: FluentIcon;
+export declare const PaymentWireless20Filled: FluentIcon;
+export declare const PaymentWireless24Regular: FluentIcon;
+export declare const PaymentWireless24Filled: FluentIcon;
+export declare const PaymentWireless28Regular: FluentIcon;
+export declare const PaymentWireless28Filled: FluentIcon;
+export declare const PaymentWireless32Regular: FluentIcon;
+export declare const PaymentWireless32Filled: FluentIcon;
+export declare const PaymentWireless48Regular: FluentIcon;
+export declare const PaymentWireless48Filled: FluentIcon;

@@ -1,0 +1,11 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const TagLockFilled: FluentFontIcon;
+export declare const TagLockRegular: FluentFontIcon;
+export declare const TagLock16Regular: FluentFontIcon;
+export declare const TagLock16Filled: FluentFontIcon;
+export declare const TagLock20Regular: FluentFontIcon;
+export declare const TagLock20Filled: FluentFontIcon;
+export declare const TagLock24Regular: FluentFontIcon;
+export declare const TagLock24Filled: FluentFontIcon;
+export declare const TagLock32Regular: FluentFontIcon;
+export declare const TagLock32Filled: FluentFontIcon;

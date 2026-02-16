@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const TextIndentDecreaseLtrFilled: FluentFontIcon;
+export declare const TextIndentDecreaseLtrRegular: FluentFontIcon;
+export declare const TextIndentDecreaseLtr90Regular: FluentFontIcon;
+export declare const TextIndentDecreaseLtr90Filled: FluentFontIcon;
+export declare const TextIndentDecreaseLtr16Regular: FluentFontIcon;
+export declare const TextIndentDecreaseLtr16Filled: FluentFontIcon;
+export declare const TextIndentDecreaseLtr20Regular: FluentFontIcon;
+export declare const TextIndentDecreaseLtr20Filled: FluentFontIcon;
+export declare const TextIndentDecreaseLtr24Regular: FluentFontIcon;
+export declare const TextIndentDecreaseLtr24Filled: FluentFontIcon;
+export declare const TextIndentDecreaseLtr9020Regular: FluentFontIcon;
+export declare const TextIndentDecreaseLtr9020Filled: FluentFontIcon;
+export declare const TextIndentDecreaseLtr9024Regular: FluentFontIcon;
+export declare const TextIndentDecreaseLtr9024Filled: FluentFontIcon;

@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const CoinMultipleFilled: FluentFontIcon;
+export declare const CoinMultipleRegular: FluentFontIcon;
+export declare const CoinMultiple16Regular: FluentFontIcon;
+export declare const CoinMultiple16Filled: FluentFontIcon;
+export declare const CoinMultiple20Regular: FluentFontIcon;
+export declare const CoinMultiple20Filled: FluentFontIcon;
+export declare const CoinMultiple24Regular: FluentFontIcon;
+export declare const CoinMultiple24Filled: FluentFontIcon;
+export declare const CoinMultiple28Regular: FluentFontIcon;
+export declare const CoinMultiple28Filled: FluentFontIcon;
+export declare const CoinMultiple32Regular: FluentFontIcon;
+export declare const CoinMultiple32Filled: FluentFontIcon;
+export declare const CoinMultiple48Regular: FluentFontIcon;
+export declare const CoinMultiple48Filled: FluentFontIcon;

@@ -1,0 +1,11 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const VehicleCabFilled: FluentFontIcon;
+export declare const VehicleCabRegular: FluentFontIcon;
+export declare const VehicleCab16Regular: FluentFontIcon;
+export declare const VehicleCab16Filled: FluentFontIcon;
+export declare const VehicleCab20Regular: FluentFontIcon;
+export declare const VehicleCab20Filled: FluentFontIcon;
+export declare const VehicleCab24Regular: FluentFontIcon;
+export declare const VehicleCab24Filled: FluentFontIcon;
+export declare const VehicleCab28Regular: FluentFontIcon;
+export declare const VehicleCab28Filled: FluentFontIcon;

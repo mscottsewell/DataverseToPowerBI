@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const DeviceEqFilled: FluentFontIcon;
+export declare const DeviceEqRegular: FluentFontIcon;
+export declare const DeviceEq16Regular: FluentFontIcon;
+export declare const DeviceEq16Filled: FluentFontIcon;
+export declare const DeviceEq20Regular: FluentFontIcon;
+export declare const DeviceEq20Filled: FluentFontIcon;
+export declare const DeviceEq24Regular: FluentFontIcon;
+export declare const DeviceEq24Filled: FluentFontIcon;
+export declare const DeviceEq28Regular: FluentFontIcon;
+export declare const DeviceEq28Filled: FluentFontIcon;
+export declare const DeviceEq32Regular: FluentFontIcon;
+export declare const DeviceEq32Filled: FluentFontIcon;
+export declare const DeviceEq48Regular: FluentFontIcon;
+export declare const DeviceEq48Filled: FluentFontIcon;

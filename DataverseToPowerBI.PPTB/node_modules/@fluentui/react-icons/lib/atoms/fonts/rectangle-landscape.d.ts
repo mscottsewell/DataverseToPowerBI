@@ -1,0 +1,18 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const RectangleLandscapeFilled: FluentFontIcon;
+export declare const RectangleLandscapeRegular: FluentFontIcon;
+export declare const RectangleLandscape12Regular: FluentFontIcon;
+export declare const RectangleLandscape12Filled: FluentFontIcon;
+export declare const RectangleLandscape16Regular: FluentFontIcon;
+export declare const RectangleLandscape16Filled: FluentFontIcon;
+export declare const RectangleLandscape20Regular: FluentFontIcon;
+export declare const RectangleLandscape20Filled: FluentFontIcon;
+export declare const RectangleLandscape24Regular: FluentFontIcon;
+export declare const RectangleLandscape24Filled: FluentFontIcon;
+export declare const RectangleLandscape28Regular: FluentFontIcon;
+export declare const RectangleLandscape28Filled: FluentFontIcon;
+export declare const RectangleLandscape32Regular: FluentFontIcon;
+export declare const RectangleLandscape32Filled: FluentFontIcon;
+export declare const RectangleLandscape32Light: FluentFontIcon;
+export declare const RectangleLandscape48Regular: FluentFontIcon;
+export declare const RectangleLandscape48Filled: FluentFontIcon;

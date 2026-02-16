@@ -1,0 +1,16 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const WeatherSnowflakeColor: FluentIcon;
+export declare const WeatherSnowflakeFilled: FluentIcon;
+export declare const WeatherSnowflakeRegular: FluentIcon;
+export declare const WeatherSnowflake20Regular: FluentIcon;
+export declare const WeatherSnowflake20Filled: FluentIcon;
+export declare const WeatherSnowflake20Color: FluentIcon;
+export declare const WeatherSnowflake24Regular: FluentIcon;
+export declare const WeatherSnowflake24Filled: FluentIcon;
+export declare const WeatherSnowflake24Color: FluentIcon;
+export declare const WeatherSnowflake32Regular: FluentIcon;
+export declare const WeatherSnowflake32Filled: FluentIcon;
+export declare const WeatherSnowflake32Color: FluentIcon;
+export declare const WeatherSnowflake48Regular: FluentIcon;
+export declare const WeatherSnowflake48Filled: FluentIcon;
+export declare const WeatherSnowflake48Color: FluentIcon;

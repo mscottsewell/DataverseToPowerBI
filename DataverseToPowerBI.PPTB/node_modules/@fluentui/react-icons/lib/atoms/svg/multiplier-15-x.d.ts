@@ -1,0 +1,13 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const Multiplier15XFilled: FluentIcon;
+export declare const Multiplier15XRegular: FluentIcon;
+export declare const Multiplier15X20Regular: FluentIcon;
+export declare const Multiplier15X20Filled: FluentIcon;
+export declare const Multiplier15X24Regular: FluentIcon;
+export declare const Multiplier15X24Filled: FluentIcon;
+export declare const Multiplier15X28Regular: FluentIcon;
+export declare const Multiplier15X28Filled: FluentIcon;
+export declare const Multiplier15X32Regular: FluentIcon;
+export declare const Multiplier15X32Filled: FluentIcon;
+export declare const Multiplier15X48Regular: FluentIcon;
+export declare const Multiplier15X48Filled: FluentIcon;

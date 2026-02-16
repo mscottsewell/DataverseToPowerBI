@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const MailFishHookFilled: FluentIcon;
+export declare const MailFishHookRegular: FluentIcon;
+export declare const MailFishHook16Regular: FluentIcon;
+export declare const MailFishHook16Filled: FluentIcon;
+export declare const MailFishHook20Regular: FluentIcon;
+export declare const MailFishHook20Filled: FluentIcon;
+export declare const MailFishHook24Regular: FluentIcon;
+export declare const MailFishHook24Filled: FluentIcon;
+export declare const MailFishHook28Regular: FluentIcon;
+export declare const MailFishHook28Filled: FluentIcon;
+export declare const MailFishHook32Regular: FluentIcon;
+export declare const MailFishHook32Filled: FluentIcon;
+export declare const MailFishHook48Regular: FluentIcon;
+export declare const MailFishHook48Filled: FluentIcon;

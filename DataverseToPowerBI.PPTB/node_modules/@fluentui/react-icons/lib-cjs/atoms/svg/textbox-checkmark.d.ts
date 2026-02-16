@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const TextboxCheckmarkFilled: FluentIcon;
+export declare const TextboxCheckmarkRegular: FluentIcon;
+export declare const TextboxCheckmark16Regular: FluentIcon;
+export declare const TextboxCheckmark16Filled: FluentIcon;
+export declare const TextboxCheckmark20Regular: FluentIcon;
+export declare const TextboxCheckmark20Filled: FluentIcon;
+export declare const TextboxCheckmark24Regular: FluentIcon;
+export declare const TextboxCheckmark24Filled: FluentIcon;
+export declare const TextboxCheckmark28Regular: FluentIcon;
+export declare const TextboxCheckmark28Filled: FluentIcon;
+export declare const TextboxCheckmark32Regular: FluentIcon;
+export declare const TextboxCheckmark32Filled: FluentIcon;
+export declare const TextboxCheckmark48Regular: FluentIcon;
+export declare const TextboxCheckmark48Filled: FluentIcon;

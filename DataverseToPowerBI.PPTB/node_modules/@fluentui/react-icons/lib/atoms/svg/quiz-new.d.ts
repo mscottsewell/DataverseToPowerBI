@@ -1,0 +1,11 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const QuizNewFilled: FluentIcon;
+export declare const QuizNewRegular: FluentIcon;
+export declare const QuizNew20Regular: FluentIcon;
+export declare const QuizNew20Filled: FluentIcon;
+export declare const QuizNew24Regular: FluentIcon;
+export declare const QuizNew24Filled: FluentIcon;
+export declare const QuizNew28Regular: FluentIcon;
+export declare const QuizNew28Filled: FluentIcon;
+export declare const QuizNew48Regular: FluentIcon;
+export declare const QuizNew48Filled: FluentIcon;

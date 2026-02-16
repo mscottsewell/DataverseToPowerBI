@@ -1,0 +1,88 @@
+'use client';
+"use strict";
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+function _export(target, all) {
+    for(var name in all)Object.defineProperty(target, name, {
+        enumerable: true,
+        get: all[name]
+    });
+}
+_export(exports, {
+    imageClassNames: function() {
+        return imageClassNames;
+    },
+    useImageStyles_unstable: function() {
+        return useImageStyles_unstable;
+    }
+});
+const _react = require("@griffel/react");
+const _reacttheme = require("@fluentui/react-theme");
+const imageClassNames = {
+    root: 'fui-Image'
+};
+const useStyles = (0, _react.makeStyles)({
+    // Base styles
+    base: {
+        ..._react.shorthands.borderColor(_reacttheme.tokens.colorNeutralStroke1),
+        borderRadius: _reacttheme.tokens.borderRadiusNone,
+        boxSizing: 'border-box',
+        display: 'inline-block'
+    },
+    // Bordered styles
+    bordered: {
+        ..._react.shorthands.borderStyle('solid'),
+        ..._react.shorthands.borderWidth(_reacttheme.tokens.strokeWidthThin)
+    },
+    // Shape variations
+    circular: {
+        borderRadius: _reacttheme.tokens.borderRadiusCircular
+    },
+    rounded: {
+        borderRadius: _reacttheme.tokens.borderRadiusMedium
+    },
+    square: {},
+    // Shadow styles
+    shadow: {
+        boxShadow: _reacttheme.tokens.shadow4
+    },
+    // Fit variations
+    center: {
+        objectFit: 'none',
+        objectPosition: 'center'
+    },
+    contain: {
+        objectFit: 'contain',
+        objectPosition: 'center'
+    },
+    default: {},
+    cover: {
+        objectFit: 'cover',
+        objectPosition: 'center'
+    },
+    none: {
+        objectFit: 'none',
+        objectPosition: 'left top'
+    },
+    // When no explicit height/width props are provided, apply full-size
+    // sizing so fit modes behave as intended (object-fit fills the element).
+    fitFill: {
+        height: '100%',
+        width: '100%'
+    },
+    // Block styles
+    block: {
+        width: '100%'
+    }
+});
+const useImageStyles_unstable = (state)=>{
+    'use no memo';
+    const styles = useStyles();
+    const { height, width } = state.root;
+    // eslint-disable-next-line eqeqeq
+    const hasExplicitSize = height != null || width != null;
+    const shouldApplyFitFill = state.fit !== 'default' && !hasExplicitSize;
+    state.root.className = (0, _react.mergeClasses)(imageClassNames.root, styles.base, state.block && styles.block, state.bordered && styles.bordered, state.shadow && styles.shadow, styles[state.fit], shouldApplyFitFill && styles.fitFill, styles[state.shape], state.root.className);
+    return state;
+};

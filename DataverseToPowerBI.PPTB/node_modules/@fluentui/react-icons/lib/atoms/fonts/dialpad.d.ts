@@ -1,0 +1,13 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const DialpadFilled: FluentFontIcon;
+export declare const DialpadRegular: FluentFontIcon;
+export declare const Dialpad20Regular: FluentFontIcon;
+export declare const Dialpad20Filled: FluentFontIcon;
+export declare const Dialpad24Regular: FluentFontIcon;
+export declare const Dialpad24Filled: FluentFontIcon;
+export declare const Dialpad28Regular: FluentFontIcon;
+export declare const Dialpad28Filled: FluentFontIcon;
+export declare const Dialpad32Regular: FluentFontIcon;
+export declare const Dialpad32Filled: FluentFontIcon;
+export declare const Dialpad48Regular: FluentFontIcon;
+export declare const Dialpad48Filled: FluentFontIcon;

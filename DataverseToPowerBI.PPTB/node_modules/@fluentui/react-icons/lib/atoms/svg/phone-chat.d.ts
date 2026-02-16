@@ -1,0 +1,11 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const PhoneChatFilled: FluentIcon;
+export declare const PhoneChatRegular: FluentIcon;
+export declare const PhoneChat16Regular: FluentIcon;
+export declare const PhoneChat16Filled: FluentIcon;
+export declare const PhoneChat20Regular: FluentIcon;
+export declare const PhoneChat20Filled: FluentIcon;
+export declare const PhoneChat24Regular: FluentIcon;
+export declare const PhoneChat24Filled: FluentIcon;
+export declare const PhoneChat28Regular: FluentIcon;
+export declare const PhoneChat28Filled: FluentIcon;

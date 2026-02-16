@@ -1,0 +1,13 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const RibbonOffFilled: FluentIcon;
+export declare const RibbonOffRegular: FluentIcon;
+export declare const RibbonOff12Regular: FluentIcon;
+export declare const RibbonOff12Filled: FluentIcon;
+export declare const RibbonOff16Regular: FluentIcon;
+export declare const RibbonOff16Filled: FluentIcon;
+export declare const RibbonOff20Regular: FluentIcon;
+export declare const RibbonOff20Filled: FluentIcon;
+export declare const RibbonOff24Regular: FluentIcon;
+export declare const RibbonOff24Filled: FluentIcon;
+export declare const RibbonOff32Regular: FluentIcon;
+export declare const RibbonOff32Filled: FluentIcon;

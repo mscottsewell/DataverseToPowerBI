@@ -1,0 +1,11 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const ClockWarningFilled: FluentFontIcon;
+export declare const ClockWarningRegular: FluentFontIcon;
+export declare const ClockWarning16Regular: FluentFontIcon;
+export declare const ClockWarning16Filled: FluentFontIcon;
+export declare const ClockWarning20Regular: FluentFontIcon;
+export declare const ClockWarning20Filled: FluentFontIcon;
+export declare const ClockWarning24Regular: FluentFontIcon;
+export declare const ClockWarning24Filled: FluentFontIcon;
+export declare const ClockWarning28Regular: FluentFontIcon;
+export declare const ClockWarning28Filled: FluentFontIcon;

@@ -1,0 +1,13 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const StarHalfFilled: FluentIcon;
+export declare const StarHalfRegular: FluentIcon;
+export declare const StarHalf12Regular: FluentIcon;
+export declare const StarHalf12Filled: FluentIcon;
+export declare const StarHalf16Regular: FluentIcon;
+export declare const StarHalf16Filled: FluentIcon;
+export declare const StarHalf20Regular: FluentIcon;
+export declare const StarHalf20Filled: FluentIcon;
+export declare const StarHalf24Regular: FluentIcon;
+export declare const StarHalf24Filled: FluentIcon;
+export declare const StarHalf28Regular: FluentIcon;
+export declare const StarHalf28Filled: FluentIcon;

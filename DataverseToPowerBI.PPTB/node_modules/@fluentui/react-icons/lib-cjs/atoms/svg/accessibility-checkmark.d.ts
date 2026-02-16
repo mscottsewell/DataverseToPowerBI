@@ -1,0 +1,14 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const AccessibilityCheckmarkFilled: FluentIcon;
+export declare const AccessibilityCheckmarkRegular: FluentIcon;
+export declare const AccessibilityCheckmark20Regular: FluentIcon;
+export declare const AccessibilityCheckmark20Filled: FluentIcon;
+export declare const AccessibilityCheckmark24Regular: FluentIcon;
+export declare const AccessibilityCheckmark24Filled: FluentIcon;
+export declare const AccessibilityCheckmark28Regular: FluentIcon;
+export declare const AccessibilityCheckmark28Filled: FluentIcon;
+export declare const AccessibilityCheckmark32Regular: FluentIcon;
+export declare const AccessibilityCheckmark32Filled: FluentIcon;
+export declare const AccessibilityCheckmark32Light: FluentIcon;
+export declare const AccessibilityCheckmark48Regular: FluentIcon;
+export declare const AccessibilityCheckmark48Filled: FluentIcon;

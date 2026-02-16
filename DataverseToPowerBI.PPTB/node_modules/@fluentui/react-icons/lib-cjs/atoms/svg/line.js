@@ -1,0 +1,15 @@
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Line48Filled = exports.Line48Regular = exports.Line32Filled = exports.Line32Regular = exports.Line24Filled = exports.Line24Regular = exports.Line20Filled = exports.Line20Regular = exports.LineRegular = exports.LineFilled = void 0;
+const createFluentIcon_1 = require("../../utils/createFluentIcon");
+exports.LineFilled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('LineFilled', "1em", ["M17.78 2.22c.3.3.3.77 0 1.06l-14.5 14.5a.75.75 0 0 1-1.06-1.06l14.5-14.5c.3-.3.77-.3 1.06 0Z"]));
+exports.LineRegular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('LineRegular', "1em", ["M17.85 2.15c.2.2.2.51 0 .7l-15 15a.5.5 0 0 1-.7-.7l15-15c.2-.2.5-.2.7 0Z"]));
+exports.Line20Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('Line20Regular', "20", ["M17.85 2.15c.2.2.2.51 0 .7l-15 15a.5.5 0 0 1-.7-.7l15-15c.2-.2.5-.2.7 0Z"]));
+exports.Line20Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('Line20Filled', "20", ["M17.78 2.22c.3.3.3.77 0 1.06l-14.5 14.5a.75.75 0 0 1-1.06-1.06l14.5-14.5c.3-.3.77-.3 1.06 0Z"]));
+exports.Line24Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('Line24Regular', "24", ["M21.78 2.22c.3.3.3.77 0 1.06l-18.5 18.5a.75.75 0 1 1-1.06-1.06l18.5-18.5c.3-.3.77-.3 1.06 0Z"]));
+exports.Line24Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('Line24Filled', "24", ["M21.7 2.3a1 1 0 0 1 0 1.4l-18 18a1 1 0 0 1-1.4-1.4l18-18a1 1 0 0 1 1.4 0Z"]));
+exports.Line32Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('Line32Regular', "32", ["M28.7 3.3a1 1 0 0 1 0 1.4l-24 24a1 1 0 0 1-1.4-1.4l24-24a1 1 0 0 1 1.4 0Z"]));
+exports.Line32Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('Line32Filled', "32", ["M28.63 3.37c.5.48.5 1.28 0 1.76l-23.5 23.5a1.25 1.25 0 0 1-1.76-1.76l23.5-23.5a1.25 1.25 0 0 1 1.76 0Z"]));
+exports.Line48Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('Line48Regular', "48", ["M43.63 4.37c.5.48.5 1.28 0 1.76l-37.5 37.5a1.25 1.25 0 0 1-1.76-1.76l37.5-37.5a1.25 1.25 0 0 1 1.76 0Z"]));
+exports.Line48Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('Line48Filled', "48", ["M43.56 4.44a1.5 1.5 0 0 1 0 2.12l-37 37a1.5 1.5 0 0 1-2.12-2.12l37-37a1.5 1.5 0 0 1 2.12 0Z"]));

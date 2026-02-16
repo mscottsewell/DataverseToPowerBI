@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const NumberSymbolFilled: FluentIcon;
+export declare const NumberSymbolRegular: FluentIcon;
+export declare const NumberSymbol16Regular: FluentIcon;
+export declare const NumberSymbol16Filled: FluentIcon;
+export declare const NumberSymbol20Regular: FluentIcon;
+export declare const NumberSymbol20Filled: FluentIcon;
+export declare const NumberSymbol24Regular: FluentIcon;
+export declare const NumberSymbol24Filled: FluentIcon;
+export declare const NumberSymbol28Regular: FluentIcon;
+export declare const NumberSymbol28Filled: FluentIcon;
+export declare const NumberSymbol32Regular: FluentIcon;
+export declare const NumberSymbol32Filled: FluentIcon;
+export declare const NumberSymbol48Regular: FluentIcon;
+export declare const NumberSymbol48Filled: FluentIcon;

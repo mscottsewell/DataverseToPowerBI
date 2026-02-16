@@ -1,0 +1,13 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const ShiftsFilled: FluentFontIcon;
+export declare const ShiftsRegular: FluentFontIcon;
+export declare const Shifts16Regular: FluentFontIcon;
+export declare const Shifts16Filled: FluentFontIcon;
+export declare const Shifts20Regular: FluentFontIcon;
+export declare const Shifts20Filled: FluentFontIcon;
+export declare const Shifts24Regular: FluentFontIcon;
+export declare const Shifts24Filled: FluentFontIcon;
+export declare const Shifts28Regular: FluentFontIcon;
+export declare const Shifts28Filled: FluentFontIcon;
+export declare const Shifts32Regular: FluentFontIcon;
+export declare const Shifts32Filled: FluentFontIcon;

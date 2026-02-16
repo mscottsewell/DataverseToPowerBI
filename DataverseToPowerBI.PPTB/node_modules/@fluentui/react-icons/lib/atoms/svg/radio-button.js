@@ -1,0 +1,10 @@
+"use client";
+import { createFluentIcon } from '../../utils/createFluentIcon';
+export const RadioButtonFilled = ( /*#__PURE__*/createFluentIcon('RadioButtonFilled', "1em", ["M10 15a5 5 0 1 0 0-10 5 5 0 0 0 0 10Zm0-13a8 8 0 1 0 0 16 8 8 0 0 0 0-16Zm-7 8a7 7 0 1 1 14 0 7 7 0 0 1-14 0Z"]));
+export const RadioButtonRegular = ( /*#__PURE__*/createFluentIcon('RadioButtonRegular', "1em", ["M10 3a7 7 0 1 0 0 14 7 7 0 0 0 0-14Zm-8 7a8 8 0 1 1 16 0 8 8 0 0 1-16 0Z"]));
+export const RadioButton16Regular = ( /*#__PURE__*/createFluentIcon('RadioButton16Regular', "16", ["M8 3a5 5 0 1 0 0 10A5 5 0 0 0 8 3ZM2 8a6 6 0 1 1 12 0A6 6 0 0 1 2 8Z"]));
+export const RadioButton16Filled = ( /*#__PURE__*/createFluentIcon('RadioButton16Filled', "16", ["M8 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm0-9a6 6 0 1 0 0 12A6 6 0 0 0 8 2ZM3 8a5 5 0 1 1 10 0A5 5 0 0 1 3 8Z"]));
+export const RadioButton20Regular = ( /*#__PURE__*/createFluentIcon('RadioButton20Regular', "20", ["M10 3a7 7 0 1 0 0 14 7 7 0 0 0 0-14Zm-8 7a8 8 0 1 1 16 0 8 8 0 0 1-16 0Z"]));
+export const RadioButton20Filled = ( /*#__PURE__*/createFluentIcon('RadioButton20Filled', "20", ["M10 15a5 5 0 1 0 0-10 5 5 0 0 0 0 10Zm0-13a8 8 0 1 0 0 16 8 8 0 0 0 0-16Zm-7 8a7 7 0 1 1 14 0 7 7 0 0 1-14 0Z"]));
+export const RadioButton24Regular = ( /*#__PURE__*/createFluentIcon('RadioButton24Regular', "24", ["M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Zm0-1.5a8.5 8.5 0 1 1 0-17 8.5 8.5 0 0 1 0 17Z"]));
+export const RadioButton24Filled = ( /*#__PURE__*/createFluentIcon('RadioButton24Filled', "24", ["M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20Zm0 1.5a8.5 8.5 0 1 0 0 17 8.5 8.5 0 0 0 0-17ZM12 6a6 6 0 1 1 0 12 6 6 0 0 1 0-12Z"]));

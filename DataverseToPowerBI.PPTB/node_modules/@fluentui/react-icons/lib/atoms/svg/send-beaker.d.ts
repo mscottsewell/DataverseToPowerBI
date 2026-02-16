@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const SendBeakerFilled: FluentIcon;
+export declare const SendBeakerRegular: FluentIcon;
+export declare const SendBeaker16Regular: FluentIcon;
+export declare const SendBeaker16Filled: FluentIcon;
+export declare const SendBeaker20Regular: FluentIcon;
+export declare const SendBeaker20Filled: FluentIcon;
+export declare const SendBeaker24Regular: FluentIcon;
+export declare const SendBeaker24Filled: FluentIcon;
+export declare const SendBeaker28Regular: FluentIcon;
+export declare const SendBeaker28Filled: FluentIcon;
+export declare const SendBeaker32Regular: FluentIcon;
+export declare const SendBeaker32Filled: FluentIcon;
+export declare const SendBeaker48Regular: FluentIcon;
+export declare const SendBeaker48Filled: FluentIcon;

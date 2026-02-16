@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const HeartCircleHintFilled: FluentIcon;
+export declare const HeartCircleHintRegular: FluentIcon;
+export declare const HeartCircleHint16Regular: FluentIcon;
+export declare const HeartCircleHint16Filled: FluentIcon;
+export declare const HeartCircleHint20Regular: FluentIcon;
+export declare const HeartCircleHint20Filled: FluentIcon;
+export declare const HeartCircleHint24Regular: FluentIcon;
+export declare const HeartCircleHint24Filled: FluentIcon;
+export declare const HeartCircleHint28Regular: FluentIcon;
+export declare const HeartCircleHint28Filled: FluentIcon;
+export declare const HeartCircleHint32Regular: FluentIcon;
+export declare const HeartCircleHint32Filled: FluentIcon;
+export declare const HeartCircleHint48Regular: FluentIcon;
+export declare const HeartCircleHint48Filled: FluentIcon;

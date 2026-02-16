@@ -1,0 +1,12 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const LassoFilled: FluentIcon;
+export declare const LassoRegular: FluentIcon;
+export declare const Lasso20Regular: FluentIcon;
+export declare const Lasso20Filled: FluentIcon;
+export declare const Lasso24Regular: FluentIcon;
+export declare const Lasso24Filled: FluentIcon;
+export declare const Lasso28Regular: FluentIcon;
+export declare const Lasso28Filled: FluentIcon;
+export declare const Lasso32Regular: FluentIcon;
+export declare const Lasso32Filled: FluentIcon;
+export declare const Lasso32Light: FluentIcon;

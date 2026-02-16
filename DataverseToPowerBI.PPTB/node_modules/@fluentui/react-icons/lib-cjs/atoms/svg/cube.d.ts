@@ -1,0 +1,17 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const CubeFilled: FluentIcon;
+export declare const CubeRegular: FluentIcon;
+export declare const Cube12Regular: FluentIcon;
+export declare const Cube12Filled: FluentIcon;
+export declare const Cube16Regular: FluentIcon;
+export declare const Cube16Filled: FluentIcon;
+export declare const Cube20Regular: FluentIcon;
+export declare const Cube20Filled: FluentIcon;
+export declare const Cube24Regular: FluentIcon;
+export declare const Cube24Filled: FluentIcon;
+export declare const Cube28Regular: FluentIcon;
+export declare const Cube28Filled: FluentIcon;
+export declare const Cube32Regular: FluentIcon;
+export declare const Cube32Filled: FluentIcon;
+export declare const Cube48Regular: FluentIcon;
+export declare const Cube48Filled: FluentIcon;

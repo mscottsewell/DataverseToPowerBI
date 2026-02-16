@@ -1,0 +1,11 @@
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.PhonePageHeader24Filled = exports.PhonePageHeader24Regular = exports.PhonePageHeader20Filled = exports.PhonePageHeader20Regular = exports.PhonePageHeaderRegular = exports.PhonePageHeaderFilled = void 0;
+const createFluentIcon_1 = require("../../utils/createFluentIcon");
+exports.PhonePageHeaderFilled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('PhonePageHeaderFilled', "1em", ["M5 4c0-1.1.9-2 2-2h6a2 2 0 0 1 2 2v1H5V4Zm0 2v10c0 1.1.9 2 2 2h6a2 2 0 0 0 2-2V6H5Z"]));
+exports.PhonePageHeaderRegular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('PhonePageHeaderRegular', "1em", ["M7 2a2 2 0 0 0-2 2v12c0 1.1.9 2 2 2h6a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H7ZM6 5h8v11a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V5Z"]));
+exports.PhonePageHeader20Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('PhonePageHeader20Regular', "20", ["M7 2a2 2 0 0 0-2 2v12c0 1.1.9 2 2 2h6a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H7ZM6 5h8v11a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V5Z"]));
+exports.PhonePageHeader20Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('PhonePageHeader20Filled', "20", ["M5 4c0-1.1.9-2 2-2h6a2 2 0 0 1 2 2v1H5V4Zm0 2v10c0 1.1.9 2 2 2h6a2 2 0 0 0 2-2V6H5Z"]));
+exports.PhonePageHeader24Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('PhonePageHeader24Regular', "24", ["M15.75 2C16.99 2 18 3 18 4.25v15.5c0 1.24-1 2.25-2.25 2.25h-7.5C7.01 22 6 21 6 19.75V4.25C6 3.01 7 2 8.25 2h7.5Zm.75 3h-9v14.75c0 .41.34.75.75.75h7.5c.41 0 .75-.34.75-.75V5Z"]));
+exports.PhonePageHeader24Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('PhonePageHeader24Filled', "24", ["M18 6v13.75c0 1.24-1 2.25-2.25 2.25h-7.5C7.01 22 6 21 6 19.75V6h12Zm-2.25-4C16.99 2 18 3 18 4.25V5H6v-.75C6 3.01 7 2 8.25 2h7.5Z"]));

@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const DeviceMeetingRoomFilled: FluentIcon;
+export declare const DeviceMeetingRoomRegular: FluentIcon;
+export declare const DeviceMeetingRoom16Regular: FluentIcon;
+export declare const DeviceMeetingRoom16Filled: FluentIcon;
+export declare const DeviceMeetingRoom20Regular: FluentIcon;
+export declare const DeviceMeetingRoom20Filled: FluentIcon;
+export declare const DeviceMeetingRoom24Regular: FluentIcon;
+export declare const DeviceMeetingRoom24Filled: FluentIcon;
+export declare const DeviceMeetingRoom28Regular: FluentIcon;
+export declare const DeviceMeetingRoom28Filled: FluentIcon;
+export declare const DeviceMeetingRoom32Regular: FluentIcon;
+export declare const DeviceMeetingRoom32Filled: FluentIcon;
+export declare const DeviceMeetingRoom48Regular: FluentIcon;
+export declare const DeviceMeetingRoom48Filled: FluentIcon;

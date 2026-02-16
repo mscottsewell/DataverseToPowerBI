@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const CalendarCheckmarkCenterFilled: FluentFontIcon;
+export declare const CalendarCheckmarkCenterRegular: FluentFontIcon;
+export declare const CalendarCheckmarkCenter16Regular: FluentFontIcon;
+export declare const CalendarCheckmarkCenter16Filled: FluentFontIcon;
+export declare const CalendarCheckmarkCenter20Regular: FluentFontIcon;
+export declare const CalendarCheckmarkCenter20Filled: FluentFontIcon;
+export declare const CalendarCheckmarkCenter24Regular: FluentFontIcon;
+export declare const CalendarCheckmarkCenter24Filled: FluentFontIcon;
+export declare const CalendarCheckmarkCenter28Regular: FluentFontIcon;
+export declare const CalendarCheckmarkCenter28Filled: FluentFontIcon;
+export declare const CalendarCheckmarkCenter32Regular: FluentFontIcon;
+export declare const CalendarCheckmarkCenter32Filled: FluentFontIcon;
+export declare const CalendarCheckmarkCenter48Regular: FluentFontIcon;
+export declare const CalendarCheckmarkCenter48Filled: FluentFontIcon;

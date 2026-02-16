@@ -1,0 +1,11 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const CircleLineFilled: FluentIcon;
+export declare const CircleLineRegular: FluentIcon;
+export declare const CircleLine12Regular: FluentIcon;
+export declare const CircleLine12Filled: FluentIcon;
+export declare const CircleLine16Regular: FluentIcon;
+export declare const CircleLine16Filled: FluentIcon;
+export declare const CircleLine20Regular: FluentIcon;
+export declare const CircleLine20Filled: FluentIcon;
+export declare const CircleLine24Regular: FluentIcon;
+export declare const CircleLine24Filled: FluentIcon;

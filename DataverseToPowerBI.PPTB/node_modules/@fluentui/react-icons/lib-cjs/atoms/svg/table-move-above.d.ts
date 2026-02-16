@@ -1,0 +1,12 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const TableMoveAboveFilled: FluentIcon;
+export declare const TableMoveAboveRegular: FluentIcon;
+export declare const TableMoveAbove16Regular: FluentIcon;
+export declare const TableMoveAbove16Filled: FluentIcon;
+export declare const TableMoveAbove20Regular: FluentIcon;
+export declare const TableMoveAbove20Filled: FluentIcon;
+export declare const TableMoveAbove24Regular: FluentIcon;
+export declare const TableMoveAbove24Filled: FluentIcon;
+export declare const TableMoveAbove28Regular: FluentIcon;
+export declare const TableMoveAbove28Filled: FluentIcon;
+export declare const TableMoveAbove32Light: FluentIcon;

@@ -1,0 +1,11 @@
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.SyncOff20Filled = exports.SyncOff20Regular = exports.SyncOff16Filled = exports.SyncOff16Regular = exports.SyncOffRegular = exports.SyncOffFilled = void 0;
+const createFluentIcon_1 = require("../../utils/createFluentIcon");
+exports.SyncOffFilled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('SyncOffFilled', "1em", ["M17.94 9H12.3l.67-2.36a.5.5 0 0 0-.96-.28l-2 7a.5.5 0 0 0 .96.28L12.02 10H18a8 8 0 0 1-16 0h5.98l-.96 3.36a.5.5 0 0 0 .96.28l2-7a.5.5 0 0 0-.96-.28L8.27 9h-6.2a8 8 0 0 1 15.87 0Z"]));
+exports.SyncOffRegular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('SyncOffRegular', "1em", ["M2 10a8 8 0 1 1 16 0 8 8 0 0 1-16 0Zm8-7a7 7 0 0 0-6.93 6h5.2l.75-2.64a.5.5 0 1 1 .96.28l-2 7a.5.5 0 1 1-.96-.28L7.98 10H3a7 7 0 1 0 14 0h-4.98l-1.04 3.64a.5.5 0 1 1-.96-.28l2-7a.5.5 0 1 1 .96.28L12.31 9h4.62A7 7 0 0 0 10 3Z"]));
+exports.SyncOff16Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('SyncOff16Regular', "16", ["M14 8A6 6 0 1 1 2 8a6 6 0 0 1 12 0Zm-1 0H9.94l-.97 2.67a.5.5 0 1 1-.94-.34l2-5.5a.5.5 0 0 1 .94.34L10.3 7h2.6a5 5 0 0 0-9.8 0h3.14l.79-2.17a.5.5 0 0 1 .94.34l-2 5.5a.5.5 0 1 1-.94-.34L5.88 8H3a5 5 0 0 0 10 0Z"]));
+exports.SyncOff16Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('SyncOff16Filled', "16", ["M14 8A6 6 0 0 1 2 8h3.88l-.85 2.33a.5.5 0 0 0 .94.34l2-5.5a.5.5 0 1 0-.94-.34L6.24 7H2.08a6 6 0 0 1 11.84 0H10.3l.67-1.83a.5.5 0 1 0-.94-.34l-2 5.5a.5.5 0 0 0 .94.34L9.94 8H14Z"]));
+exports.SyncOff20Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('SyncOff20Regular', "20", ["M2 10a8 8 0 1 1 16 0 8 8 0 0 1-16 0Zm8-7a7 7 0 0 0-6.93 6h5.2l.75-2.64a.5.5 0 1 1 .96.28l-2 7a.5.5 0 1 1-.96-.28L7.98 10H3a7 7 0 1 0 14 0h-4.98l-1.04 3.64a.5.5 0 1 1-.96-.28l2-7a.5.5 0 1 1 .96.28L12.31 9h4.62A7 7 0 0 0 10 3Z"]));
+exports.SyncOff20Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('SyncOff20Filled', "20", ["M17.94 9H12.3l.67-2.36a.5.5 0 0 0-.96-.28l-2 7a.5.5 0 0 0 .96.28L12.02 10H18a8 8 0 0 1-16 0h5.98l-.96 3.36a.5.5 0 0 0 .96.28l2-7a.5.5 0 0 0-.96-.28L8.27 9h-6.2a8 8 0 0 1 15.87 0Z"]));

@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const CubeCheckmarkFilled: FluentIcon;
+export declare const CubeCheckmarkRegular: FluentIcon;
+export declare const CubeCheckmark16Regular: FluentIcon;
+export declare const CubeCheckmark16Filled: FluentIcon;
+export declare const CubeCheckmark20Regular: FluentIcon;
+export declare const CubeCheckmark20Filled: FluentIcon;
+export declare const CubeCheckmark24Regular: FluentIcon;
+export declare const CubeCheckmark24Filled: FluentIcon;
+export declare const CubeCheckmark28Regular: FluentIcon;
+export declare const CubeCheckmark28Filled: FluentIcon;
+export declare const CubeCheckmark32Regular: FluentIcon;
+export declare const CubeCheckmark32Filled: FluentIcon;
+export declare const CubeCheckmark48Regular: FluentIcon;
+export declare const CubeCheckmark48Filled: FluentIcon;

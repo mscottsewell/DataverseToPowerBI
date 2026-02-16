@@ -1,0 +1,16 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const BuildingHomeColor: FluentIcon;
+export declare const BuildingHomeFilled: FluentIcon;
+export declare const BuildingHomeRegular: FluentIcon;
+export declare const BuildingHome16Regular: FluentIcon;
+export declare const BuildingHome16Filled: FluentIcon;
+export declare const BuildingHome16Color: FluentIcon;
+export declare const BuildingHome20Regular: FluentIcon;
+export declare const BuildingHome20Filled: FluentIcon;
+export declare const BuildingHome20Color: FluentIcon;
+export declare const BuildingHome24Regular: FluentIcon;
+export declare const BuildingHome24Filled: FluentIcon;
+export declare const BuildingHome24Color: FluentIcon;
+export declare const BuildingHome32Regular: FluentIcon;
+export declare const BuildingHome32Filled: FluentIcon;
+export declare const BuildingHome32Color: FluentIcon;

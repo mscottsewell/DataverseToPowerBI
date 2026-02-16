@@ -1,0 +1,15 @@
+'use client';
+import * as React from 'react';
+export function useNavCategoryContextValues_unstable(state) {
+    const { open, value } = state;
+    const navCategory = React.useMemo(()=>({
+            open,
+            value
+        }), [
+        open,
+        value
+    ]);
+    return {
+        categoryValue: navCategory
+    };
+}

@@ -1,0 +1,12 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const EyeOffFilled: FluentIcon;
+export declare const EyeOffRegular: FluentIcon;
+export declare const EyeOff16Regular: FluentIcon;
+export declare const EyeOff16Filled: FluentIcon;
+export declare const EyeOff20Regular: FluentIcon;
+export declare const EyeOff20Filled: FluentIcon;
+export declare const EyeOff24Regular: FluentIcon;
+export declare const EyeOff24Filled: FluentIcon;
+export declare const EyeOff32Regular: FluentIcon;
+export declare const EyeOff32Filled: FluentIcon;
+export declare const EyeOff32Light: FluentIcon;

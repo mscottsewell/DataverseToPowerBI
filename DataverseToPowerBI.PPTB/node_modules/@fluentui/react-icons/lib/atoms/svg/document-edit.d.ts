@@ -1,0 +1,13 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const DocumentEditColor: FluentIcon;
+export declare const DocumentEditFilled: FluentIcon;
+export declare const DocumentEditRegular: FluentIcon;
+export declare const DocumentEdit16Regular: FluentIcon;
+export declare const DocumentEdit16Filled: FluentIcon;
+export declare const DocumentEdit16Color: FluentIcon;
+export declare const DocumentEdit20Regular: FluentIcon;
+export declare const DocumentEdit20Filled: FluentIcon;
+export declare const DocumentEdit20Color: FluentIcon;
+export declare const DocumentEdit24Regular: FluentIcon;
+export declare const DocumentEdit24Filled: FluentIcon;
+export declare const DocumentEdit24Color: FluentIcon;

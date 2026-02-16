@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const TemperatureDegreeCelsiusFilled: FluentIcon;
+export declare const TemperatureDegreeCelsiusRegular: FluentIcon;
+export declare const TemperatureDegreeCelsius16Regular: FluentIcon;
+export declare const TemperatureDegreeCelsius16Filled: FluentIcon;
+export declare const TemperatureDegreeCelsius20Regular: FluentIcon;
+export declare const TemperatureDegreeCelsius20Filled: FluentIcon;
+export declare const TemperatureDegreeCelsius24Regular: FluentIcon;
+export declare const TemperatureDegreeCelsius24Filled: FluentIcon;
+export declare const TemperatureDegreeCelsius28Regular: FluentIcon;
+export declare const TemperatureDegreeCelsius28Filled: FluentIcon;
+export declare const TemperatureDegreeCelsius32Regular: FluentIcon;
+export declare const TemperatureDegreeCelsius32Filled: FluentIcon;
+export declare const TemperatureDegreeCelsius48Regular: FluentIcon;
+export declare const TemperatureDegreeCelsius48Filled: FluentIcon;

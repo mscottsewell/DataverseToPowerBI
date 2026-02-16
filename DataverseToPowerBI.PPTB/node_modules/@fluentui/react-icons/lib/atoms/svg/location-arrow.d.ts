@@ -1,0 +1,17 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const LocationArrowFilled: FluentIcon;
+export declare const LocationArrowRegular: FluentIcon;
+export declare const LocationArrow12Regular: FluentIcon;
+export declare const LocationArrow12Filled: FluentIcon;
+export declare const LocationArrow16Regular: FluentIcon;
+export declare const LocationArrow16Filled: FluentIcon;
+export declare const LocationArrow20Regular: FluentIcon;
+export declare const LocationArrow20Filled: FluentIcon;
+export declare const LocationArrow24Regular: FluentIcon;
+export declare const LocationArrow24Filled: FluentIcon;
+export declare const LocationArrow28Regular: FluentIcon;
+export declare const LocationArrow28Filled: FluentIcon;
+export declare const LocationArrow32Regular: FluentIcon;
+export declare const LocationArrow32Filled: FluentIcon;
+export declare const LocationArrow48Regular: FluentIcon;
+export declare const LocationArrow48Filled: FluentIcon;

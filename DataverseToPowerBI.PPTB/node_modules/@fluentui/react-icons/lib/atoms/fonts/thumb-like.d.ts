@@ -1,0 +1,13 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const ThumbLikeFilled: FluentFontIcon;
+export declare const ThumbLikeRegular: FluentFontIcon;
+export declare const ThumbLike16Regular: FluentFontIcon;
+export declare const ThumbLike16Filled: FluentFontIcon;
+export declare const ThumbLike20Regular: FluentFontIcon;
+export declare const ThumbLike20Filled: FluentFontIcon;
+export declare const ThumbLike24Regular: FluentFontIcon;
+export declare const ThumbLike24Filled: FluentFontIcon;
+export declare const ThumbLike28Regular: FluentFontIcon;
+export declare const ThumbLike28Filled: FluentFontIcon;
+export declare const ThumbLike48Regular: FluentFontIcon;
+export declare const ThumbLike48Filled: FluentFontIcon;

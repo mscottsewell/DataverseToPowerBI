@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const DocumentOnePageSparkleFilled: FluentFontIcon;
+export declare const DocumentOnePageSparkleRegular: FluentFontIcon;
+export declare const DocumentOnePageSparkle16Regular: FluentFontIcon;
+export declare const DocumentOnePageSparkle16Filled: FluentFontIcon;
+export declare const DocumentOnePageSparkle20Regular: FluentFontIcon;
+export declare const DocumentOnePageSparkle20Filled: FluentFontIcon;
+export declare const DocumentOnePageSparkle24Regular: FluentFontIcon;
+export declare const DocumentOnePageSparkle24Filled: FluentFontIcon;
+export declare const DocumentOnePageSparkle28Regular: FluentFontIcon;
+export declare const DocumentOnePageSparkle28Filled: FluentFontIcon;
+export declare const DocumentOnePageSparkle32Regular: FluentFontIcon;
+export declare const DocumentOnePageSparkle32Filled: FluentFontIcon;
+export declare const DocumentOnePageSparkle48Regular: FluentFontIcon;
+export declare const DocumentOnePageSparkle48Filled: FluentFontIcon;

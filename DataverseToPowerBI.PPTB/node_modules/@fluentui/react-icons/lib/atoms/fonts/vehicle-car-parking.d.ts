@@ -1,0 +1,13 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const VehicleCarParkingFilled: FluentFontIcon;
+export declare const VehicleCarParkingRegular: FluentFontIcon;
+export declare const VehicleCarParking16Regular: FluentFontIcon;
+export declare const VehicleCarParking16Filled: FluentFontIcon;
+export declare const VehicleCarParking20Regular: FluentFontIcon;
+export declare const VehicleCarParking20Filled: FluentFontIcon;
+export declare const VehicleCarParking24Regular: FluentFontIcon;
+export declare const VehicleCarParking24Filled: FluentFontIcon;
+export declare const VehicleCarParking32Regular: FluentFontIcon;
+export declare const VehicleCarParking32Filled: FluentFontIcon;
+export declare const VehicleCarParking48Regular: FluentFontIcon;
+export declare const VehicleCarParking48Filled: FluentFontIcon;

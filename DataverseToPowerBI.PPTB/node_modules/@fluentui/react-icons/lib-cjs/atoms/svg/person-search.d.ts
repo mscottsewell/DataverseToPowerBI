@@ -1,0 +1,11 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const PersonSearchFilled: FluentIcon;
+export declare const PersonSearchRegular: FluentIcon;
+export declare const PersonSearch16Regular: FluentIcon;
+export declare const PersonSearch16Filled: FluentIcon;
+export declare const PersonSearch20Regular: FluentIcon;
+export declare const PersonSearch20Filled: FluentIcon;
+export declare const PersonSearch24Regular: FluentIcon;
+export declare const PersonSearch24Filled: FluentIcon;
+export declare const PersonSearch32Regular: FluentIcon;
+export declare const PersonSearch32Filled: FluentIcon;

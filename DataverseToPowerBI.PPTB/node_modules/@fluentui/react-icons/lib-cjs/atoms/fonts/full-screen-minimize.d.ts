@@ -1,0 +1,13 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const FullScreenMinimizeFilled: FluentFontIcon;
+export declare const FullScreenMinimizeRegular: FluentFontIcon;
+export declare const FullScreenMinimize16Regular: FluentFontIcon;
+export declare const FullScreenMinimize16Filled: FluentFontIcon;
+export declare const FullScreenMinimize20Regular: FluentFontIcon;
+export declare const FullScreenMinimize20Filled: FluentFontIcon;
+export declare const FullScreenMinimize24Regular: FluentFontIcon;
+export declare const FullScreenMinimize24Filled: FluentFontIcon;
+export declare const FullScreenMinimize28Regular: FluentFontIcon;
+export declare const FullScreenMinimize28Filled: FluentFontIcon;
+export declare const FullScreenMinimize32Regular: FluentFontIcon;
+export declare const FullScreenMinimize32Filled: FluentFontIcon;

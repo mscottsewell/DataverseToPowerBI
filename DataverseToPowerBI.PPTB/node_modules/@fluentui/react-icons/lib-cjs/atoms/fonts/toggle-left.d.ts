@@ -1,0 +1,13 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const ToggleLeftFilled: FluentFontIcon;
+export declare const ToggleLeftRegular: FluentFontIcon;
+export declare const ToggleLeft16Regular: FluentFontIcon;
+export declare const ToggleLeft16Filled: FluentFontIcon;
+export declare const ToggleLeft20Regular: FluentFontIcon;
+export declare const ToggleLeft20Filled: FluentFontIcon;
+export declare const ToggleLeft24Regular: FluentFontIcon;
+export declare const ToggleLeft24Filled: FluentFontIcon;
+export declare const ToggleLeft28Regular: FluentFontIcon;
+export declare const ToggleLeft28Filled: FluentFontIcon;
+export declare const ToggleLeft48Regular: FluentFontIcon;
+export declare const ToggleLeft48Filled: FluentFontIcon;

@@ -1,0 +1,28 @@
+import { isVirtualElement } from './isVirtualElement';
+/**
+ * Gets the virtual parent given the child element, if it exists.
+ * @internal
+ */ function getVirtualParent(child) {
+    return isVirtualElement(child) ? child._virtual.parent || null : null;
+}
+/**
+ * Gets the element which is the parent of a given element.
+ * This method prefers the virtual parent over real DOM parent when present.
+ * @internal
+ */ export function getParent(child, options = {}) {
+    if (!child) {
+        return null;
+    }
+    if (!options.skipVirtual) {
+        const virtualParent = getVirtualParent(child);
+        if (virtualParent) {
+            return virtualParent;
+        }
+    }
+    const parent = child.parentNode;
+    // Node.DOCUMENT_FRAGMENT_NODE = 11
+    if (parent && parent.nodeType === 11) {
+        return parent.host;
+    }
+    return parent;
+}

@@ -1,0 +1,11 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const PanelTopGalleryFilled: FluentIcon;
+export declare const PanelTopGalleryRegular: FluentIcon;
+export declare const PanelTopGallery16Regular: FluentIcon;
+export declare const PanelTopGallery16Filled: FluentIcon;
+export declare const PanelTopGallery20Regular: FluentIcon;
+export declare const PanelTopGallery20Filled: FluentIcon;
+export declare const PanelTopGallery24Regular: FluentIcon;
+export declare const PanelTopGallery24Filled: FluentIcon;
+export declare const PanelTopGallery28Regular: FluentIcon;
+export declare const PanelTopGallery28Filled: FluentIcon;

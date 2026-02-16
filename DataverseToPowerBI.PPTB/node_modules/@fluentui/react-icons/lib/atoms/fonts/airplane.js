@@ -1,0 +1,16 @@
+"use client";
+import { createFluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export const AirplaneFilled = ( /*#__PURE__*/createFluentFontIcon("AirplaneFilled", "", 2, undefined));
+export const AirplaneRegular = ( /*#__PURE__*/createFluentFontIcon("AirplaneRegular", "", 2, undefined));
+export const Airplane16Regular = ( /*#__PURE__*/createFluentFontIcon("Airplane16Regular", "󰚍", 1, 16));
+export const Airplane16Filled = ( /*#__PURE__*/createFluentFontIcon("Airplane16Filled", "󰜈", 0, 16));
+export const Airplane20Regular = ( /*#__PURE__*/createFluentFontIcon("Airplane20Regular", "", 1, 20));
+export const Airplane20Filled = ( /*#__PURE__*/createFluentFontIcon("Airplane20Filled", "", 0, 20));
+export const Airplane24Regular = ( /*#__PURE__*/createFluentFontIcon("Airplane24Regular", "", 1, 24));
+export const Airplane24Filled = ( /*#__PURE__*/createFluentFontIcon("Airplane24Filled", "", 0, 24));
+export const Airplane28Regular = ( /*#__PURE__*/createFluentFontIcon("Airplane28Regular", "󰚎", 1, 28));
+export const Airplane28Filled = ( /*#__PURE__*/createFluentFontIcon("Airplane28Filled", "󰜉", 0, 28));
+export const Airplane32Regular = ( /*#__PURE__*/createFluentFontIcon("Airplane32Regular", "󰚏", 1, 32));
+export const Airplane32Filled = ( /*#__PURE__*/createFluentFontIcon("Airplane32Filled", "󰜊", 0, 32));
+export const Airplane48Regular = ( /*#__PURE__*/createFluentFontIcon("Airplane48Regular", "󰚐", 1, 48));
+export const Airplane48Filled = ( /*#__PURE__*/createFluentFontIcon("Airplane48Filled", "󰜋", 0, 48));

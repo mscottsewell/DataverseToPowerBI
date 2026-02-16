@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const ShoppingBagFilled: FluentIcon;
+export declare const ShoppingBagRegular: FluentIcon;
+export declare const ShoppingBag16Regular: FluentIcon;
+export declare const ShoppingBag16Filled: FluentIcon;
+export declare const ShoppingBag20Regular: FluentIcon;
+export declare const ShoppingBag20Filled: FluentIcon;
+export declare const ShoppingBag24Regular: FluentIcon;
+export declare const ShoppingBag24Filled: FluentIcon;
+export declare const ShoppingBag28Regular: FluentIcon;
+export declare const ShoppingBag28Filled: FluentIcon;
+export declare const ShoppingBag32Regular: FluentIcon;
+export declare const ShoppingBag32Filled: FluentIcon;
+export declare const ShoppingBag48Regular: FluentIcon;
+export declare const ShoppingBag48Filled: FluentIcon;

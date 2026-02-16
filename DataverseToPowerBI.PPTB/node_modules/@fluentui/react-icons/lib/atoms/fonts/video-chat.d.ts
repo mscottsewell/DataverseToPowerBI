@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const VideoChatFilled: FluentFontIcon;
+export declare const VideoChatRegular: FluentFontIcon;
+export declare const VideoChat16Regular: FluentFontIcon;
+export declare const VideoChat16Filled: FluentFontIcon;
+export declare const VideoChat20Regular: FluentFontIcon;
+export declare const VideoChat20Filled: FluentFontIcon;
+export declare const VideoChat24Regular: FluentFontIcon;
+export declare const VideoChat24Filled: FluentFontIcon;
+export declare const VideoChat28Regular: FluentFontIcon;
+export declare const VideoChat28Filled: FluentFontIcon;
+export declare const VideoChat32Regular: FluentFontIcon;
+export declare const VideoChat32Filled: FluentFontIcon;
+export declare const VideoChat48Regular: FluentFontIcon;
+export declare const VideoChat48Filled: FluentFontIcon;

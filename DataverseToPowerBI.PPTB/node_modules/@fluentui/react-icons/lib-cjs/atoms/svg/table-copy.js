@@ -1,0 +1,9 @@
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.TableCopy20Filled = exports.TableCopy20Regular = exports.TableCopyRegular = exports.TableCopyFilled = void 0;
+const createFluentIcon_1 = require("../../utils/createFluentIcon");
+exports.TableCopyFilled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('TableCopyFilled', "1em", ["M4 6v6a4 4 0 0 0 4 4h6.24A3 3 0 0 1 12 17H8a5 5 0 0 1-5-5V8a3 3 0 0 1 1-2.24V6Zm4 6v3a3 3 0 0 1-3-3h3Zm5 0v3H9v-3h4Zm4 0a3 3 0 0 1-3 3v-3h3ZM8 7v4H5V7h3Zm5 0v4H9V7h4Zm4 0v4h-3V7h3ZM8 6H5a3 3 0 0 1 3-3v3Zm5-3v3H9V3h4Zm1 0a3 3 0 0 1 3 3h-3V3Z"]));
+exports.TableCopyRegular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('TableCopyRegular', "1em", ["M4 6v6a4 4 0 0 0 4 4h6.24A3 3 0 0 1 12 17H8a5 5 0 0 1-5-5V8a3 3 0 0 1 1-2.24V6Zm10-3a3 3 0 0 1 3 3v6.15A3 3 0 0 1 14 15H8a3 3 0 0 1-3-3V6a3 3 0 0 1 2.85-3H14Zm-8 8v1c0 1.1.9 2 2 2h1v-3H6Zm4 0v3h2v-3h-2Zm3 0v3h1a2 2 0 0 0 1.99-1.8L16 12v-1h-3ZM6 8v2h3V8H6Zm4 0v2h2V8h-2Zm3 0v2h3V8h-3ZM8 4l-.2.01A2 2 0 0 0 6 6v1h3V4H8Zm2 0v3h2V4h-2Zm3 0v3h3V6a2 2 0 0 0-2-2h-1Z"]));
+exports.TableCopy20Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('TableCopy20Regular', "20", ["M4 6v6a4 4 0 0 0 4 4h6.24A3 3 0 0 1 12 17H8a5 5 0 0 1-5-5V8a3 3 0 0 1 1-2.24V6Zm10-3a3 3 0 0 1 3 3v6.15A3 3 0 0 1 14 15H8a3 3 0 0 1-3-3V6a3 3 0 0 1 2.85-3H14Zm-8 8v1c0 1.1.9 2 2 2h1v-3H6Zm4 0v3h2v-3h-2Zm3 0v3h1a2 2 0 0 0 1.99-1.8L16 12v-1h-3ZM6 8v2h3V8H6Zm4 0v2h2V8h-2Zm3 0v2h3V8h-3ZM8 4l-.2.01A2 2 0 0 0 6 6v1h3V4H8Zm2 0v3h2V4h-2Zm3 0v3h3V6a2 2 0 0 0-2-2h-1Z"]));
+exports.TableCopy20Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('TableCopy20Filled', "20", ["M4 6v6a4 4 0 0 0 4 4h6.24A3 3 0 0 1 12 17H8a5 5 0 0 1-5-5V8a3 3 0 0 1 1-2.24V6Zm4 6v3a3 3 0 0 1-3-3h3Zm5 0v3H9v-3h4Zm4 0a3 3 0 0 1-3 3v-3h3ZM8 7v4H5V7h3Zm5 0v4H9V7h4Zm4 0v4h-3V7h3ZM8 6H5a3 3 0 0 1 3-3v3Zm5-3v3H9V3h4Zm1 0a3 3 0 0 1 3 3h-3V3Z"]));

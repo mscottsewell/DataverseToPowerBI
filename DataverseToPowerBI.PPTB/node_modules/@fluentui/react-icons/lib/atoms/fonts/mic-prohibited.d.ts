@@ -1,0 +1,13 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const MicProhibitedFilled: FluentFontIcon;
+export declare const MicProhibitedRegular: FluentFontIcon;
+export declare const MicProhibited16Regular: FluentFontIcon;
+export declare const MicProhibited16Filled: FluentFontIcon;
+export declare const MicProhibited20Regular: FluentFontIcon;
+export declare const MicProhibited20Filled: FluentFontIcon;
+export declare const MicProhibited24Regular: FluentFontIcon;
+export declare const MicProhibited24Filled: FluentFontIcon;
+export declare const MicProhibited28Regular: FluentFontIcon;
+export declare const MicProhibited28Filled: FluentFontIcon;
+export declare const MicProhibited48Regular: FluentFontIcon;
+export declare const MicProhibited48Filled: FluentFontIcon;

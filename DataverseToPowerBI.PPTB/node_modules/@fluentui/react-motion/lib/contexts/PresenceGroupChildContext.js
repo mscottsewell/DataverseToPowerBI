@@ -1,0 +1,7 @@
+'use client';
+import * as React from 'react';
+/**
+ * @internal
+ */ export const PresenceGroupChildContext = React.createContext(undefined);
+export const PresenceGroupChildProvider = PresenceGroupChildContext.Provider;
+export const usePresenceGroupChildContext = ()=>React.useContext(PresenceGroupChildContext);

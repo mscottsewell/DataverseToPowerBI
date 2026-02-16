@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const PersonArrowBackFilled: FluentFontIcon;
+export declare const PersonArrowBackRegular: FluentFontIcon;
+export declare const PersonArrowBack16Regular: FluentFontIcon;
+export declare const PersonArrowBack16Filled: FluentFontIcon;
+export declare const PersonArrowBack20Regular: FluentFontIcon;
+export declare const PersonArrowBack20Filled: FluentFontIcon;
+export declare const PersonArrowBack24Regular: FluentFontIcon;
+export declare const PersonArrowBack24Filled: FluentFontIcon;
+export declare const PersonArrowBack28Regular: FluentFontIcon;
+export declare const PersonArrowBack28Filled: FluentFontIcon;
+export declare const PersonArrowBack32Regular: FluentFontIcon;
+export declare const PersonArrowBack32Filled: FluentFontIcon;
+export declare const PersonArrowBack48Regular: FluentFontIcon;
+export declare const PersonArrowBack48Filled: FluentFontIcon;

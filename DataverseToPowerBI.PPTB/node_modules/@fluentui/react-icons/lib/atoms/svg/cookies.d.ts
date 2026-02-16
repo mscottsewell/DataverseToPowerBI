@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const CookiesFilled: FluentIcon;
+export declare const CookiesRegular: FluentIcon;
+export declare const Cookies16Regular: FluentIcon;
+export declare const Cookies16Filled: FluentIcon;
+export declare const Cookies20Regular: FluentIcon;
+export declare const Cookies20Filled: FluentIcon;
+export declare const Cookies24Regular: FluentIcon;
+export declare const Cookies24Filled: FluentIcon;
+export declare const Cookies28Regular: FluentIcon;
+export declare const Cookies28Filled: FluentIcon;
+export declare const Cookies32Regular: FluentIcon;
+export declare const Cookies32Filled: FluentIcon;
+export declare const Cookies48Regular: FluentIcon;
+export declare const Cookies48Filled: FluentIcon;

@@ -1,0 +1,7 @@
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Component2DoubleTapSwipeUp24Filled = exports.Component2DoubleTapSwipeUp24Regular = void 0;
+const createFluentIcon_1 = require("../../utils/createFluentIcon");
+exports.Component2DoubleTapSwipeUp24Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('Component2DoubleTapSwipeUp24Regular', "24", ["M12 16.02c.38 0 .7-.29.74-.65l.01-.1V4.57l2.22 2.21c.27.27.68.3.98.07l.08-.07a.75.75 0 0 0 .07-.98l-.07-.08-3.5-3.5a.75.75 0 0 0-.98-.07l-.08.07-3.5 3.5a.75.75 0 0 0 .98 1.13l.08-.07 2.22-2.22v10.7c0 .42.34.76.75.76Zm0 6a7 7 0 0 0 1.75-13.78V9.8a5.5 5.5 0 1 1-3.5 0V8.24A7 7 0 0 0 12 22.02Zm0-2.5a4.5 4.5 0 0 0 1.75-8.65v1.71a3 3 0 1 1-3.5 0v-1.71A4.5 4.5 0 0 0 12 19.52Z"]));
+exports.Component2DoubleTapSwipeUp24Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('Component2DoubleTapSwipeUp24Filled', "24", ["M10 8.29v1.58a5.5 5.5 0 1 0 4.21.1l-.2-.1V8.3a7 7 0 1 1-4.26.08l.25-.08Zm0 2.68v1.8A3 3 0 0 0 12 18a3 3 0 0 0 2.14-5.1l-.14-.14v-1.8a4.5 4.5 0 1 1-4.2.1l.2-.1Zm1.39-8.76a1 1 0 0 1 1.22 0l.1.08 3 3 .08.1a1 1 0 0 1 0 1.22l-.08.1-.1.08a1 1 0 0 1-1.22 0l-.1-.08L13 5.4V15a1 1 0 0 1-2 .12V5.4l-1.3 1.3-.09.08a1 1 0 0 1-1.4-1.4l.08-.1 3-3 .1-.08Z"]));

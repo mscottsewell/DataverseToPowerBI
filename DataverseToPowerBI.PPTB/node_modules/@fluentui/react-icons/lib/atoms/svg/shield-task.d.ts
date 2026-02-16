@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const ShieldTaskFilled: FluentIcon;
+export declare const ShieldTaskRegular: FluentIcon;
+export declare const ShieldTask16Regular: FluentIcon;
+export declare const ShieldTask16Filled: FluentIcon;
+export declare const ShieldTask20Regular: FluentIcon;
+export declare const ShieldTask20Filled: FluentIcon;
+export declare const ShieldTask24Regular: FluentIcon;
+export declare const ShieldTask24Filled: FluentIcon;
+export declare const ShieldTask28Regular: FluentIcon;
+export declare const ShieldTask28Filled: FluentIcon;
+export declare const ShieldTask32Regular: FluentIcon;
+export declare const ShieldTask32Filled: FluentIcon;
+export declare const ShieldTask48Regular: FluentIcon;
+export declare const ShieldTask48Filled: FluentIcon;

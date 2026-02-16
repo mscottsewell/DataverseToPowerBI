@@ -1,0 +1,8 @@
+'use client';
+import * as React from 'react';
+/**
+ * @internal
+ */ export const ThemeContext = React.createContext(undefined);
+/**
+ * @internal
+ */ export const ThemeProvider = ThemeContext.Provider;

@@ -1,0 +1,5 @@
+'use client';
+import * as React from 'react';
+const FieldContext = React.createContext(undefined);
+export const FieldContextProvider = FieldContext.Provider;
+export const useFieldContext_unstable = ()=>React.useContext(FieldContext);

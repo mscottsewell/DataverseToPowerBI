@@ -1,0 +1,14 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const ZoomInFilled: FluentIcon;
+export declare const ZoomInRegular: FluentIcon;
+export declare const ZoomIn16Regular: FluentIcon;
+export declare const ZoomIn16Filled: FluentIcon;
+export declare const ZoomIn20Regular: FluentIcon;
+export declare const ZoomIn20Filled: FluentIcon;
+export declare const ZoomIn24Regular: FluentIcon;
+export declare const ZoomIn24Filled: FluentIcon;
+export declare const ZoomIn28Regular: FluentIcon;
+export declare const ZoomIn28Filled: FluentIcon;
+export declare const ZoomIn32Regular: FluentIcon;
+export declare const ZoomIn32Filled: FluentIcon;
+export declare const ZoomIn32Light: FluentIcon;

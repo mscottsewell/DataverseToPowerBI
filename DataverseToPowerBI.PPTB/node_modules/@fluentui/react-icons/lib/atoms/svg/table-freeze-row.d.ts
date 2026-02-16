@@ -1,0 +1,11 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const TableFreezeRowFilled: FluentIcon;
+export declare const TableFreezeRowRegular: FluentIcon;
+export declare const TableFreezeRow16Regular: FluentIcon;
+export declare const TableFreezeRow16Filled: FluentIcon;
+export declare const TableFreezeRow20Regular: FluentIcon;
+export declare const TableFreezeRow20Filled: FluentIcon;
+export declare const TableFreezeRow24Regular: FluentIcon;
+export declare const TableFreezeRow24Filled: FluentIcon;
+export declare const TableFreezeRow28Regular: FluentIcon;
+export declare const TableFreezeRow28Filled: FluentIcon;

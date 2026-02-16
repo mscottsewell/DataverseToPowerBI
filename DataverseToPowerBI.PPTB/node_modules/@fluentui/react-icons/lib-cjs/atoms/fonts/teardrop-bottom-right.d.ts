@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const TeardropBottomRightFilled: FluentFontIcon;
+export declare const TeardropBottomRightRegular: FluentFontIcon;
+export declare const TeardropBottomRight16Regular: FluentFontIcon;
+export declare const TeardropBottomRight16Filled: FluentFontIcon;
+export declare const TeardropBottomRight20Regular: FluentFontIcon;
+export declare const TeardropBottomRight20Filled: FluentFontIcon;
+export declare const TeardropBottomRight24Regular: FluentFontIcon;
+export declare const TeardropBottomRight24Filled: FluentFontIcon;
+export declare const TeardropBottomRight28Regular: FluentFontIcon;
+export declare const TeardropBottomRight28Filled: FluentFontIcon;
+export declare const TeardropBottomRight32Regular: FluentFontIcon;
+export declare const TeardropBottomRight32Filled: FluentFontIcon;
+export declare const TeardropBottomRight48Regular: FluentFontIcon;
+export declare const TeardropBottomRight48Filled: FluentFontIcon;

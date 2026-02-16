@@ -1,0 +1,13 @@
+'use client';
+import * as React from 'react';
+export function useMenuGroupContextValues_unstable(state) {
+    const { headerId } = state;
+    const menuGroup = React.useMemo(()=>({
+            headerId
+        }), [
+        headerId
+    ]);
+    return {
+        menuGroup
+    };
+}

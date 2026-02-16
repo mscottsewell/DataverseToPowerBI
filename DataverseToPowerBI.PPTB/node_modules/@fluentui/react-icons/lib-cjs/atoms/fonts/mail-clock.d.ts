@@ -1,0 +1,11 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const MailClockFilled: FluentFontIcon;
+export declare const MailClockRegular: FluentFontIcon;
+export declare const MailClock16Regular: FluentFontIcon;
+export declare const MailClock16Filled: FluentFontIcon;
+export declare const MailClock20Regular: FluentFontIcon;
+export declare const MailClock20Filled: FluentFontIcon;
+export declare const MailClock24Regular: FluentFontIcon;
+export declare const MailClock24Filled: FluentFontIcon;
+export declare const MailClock32Regular: FluentFontIcon;
+export declare const MailClock32Filled: FluentFontIcon;

@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const CloudDismissFilled: FluentFontIcon;
+export declare const CloudDismissRegular: FluentFontIcon;
+export declare const CloudDismiss16Regular: FluentFontIcon;
+export declare const CloudDismiss16Filled: FluentFontIcon;
+export declare const CloudDismiss20Regular: FluentFontIcon;
+export declare const CloudDismiss20Filled: FluentFontIcon;
+export declare const CloudDismiss24Regular: FluentFontIcon;
+export declare const CloudDismiss24Filled: FluentFontIcon;
+export declare const CloudDismiss28Regular: FluentFontIcon;
+export declare const CloudDismiss28Filled: FluentFontIcon;
+export declare const CloudDismiss32Regular: FluentFontIcon;
+export declare const CloudDismiss32Filled: FluentFontIcon;
+export declare const CloudDismiss48Regular: FluentFontIcon;
+export declare const CloudDismiss48Filled: FluentFontIcon;

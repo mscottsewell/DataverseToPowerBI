@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const TeardropBottomRightFilled: FluentIcon;
+export declare const TeardropBottomRightRegular: FluentIcon;
+export declare const TeardropBottomRight16Regular: FluentIcon;
+export declare const TeardropBottomRight16Filled: FluentIcon;
+export declare const TeardropBottomRight20Regular: FluentIcon;
+export declare const TeardropBottomRight20Filled: FluentIcon;
+export declare const TeardropBottomRight24Regular: FluentIcon;
+export declare const TeardropBottomRight24Filled: FluentIcon;
+export declare const TeardropBottomRight28Regular: FluentIcon;
+export declare const TeardropBottomRight28Filled: FluentIcon;
+export declare const TeardropBottomRight32Regular: FluentIcon;
+export declare const TeardropBottomRight32Filled: FluentIcon;
+export declare const TeardropBottomRight48Regular: FluentIcon;
+export declare const TeardropBottomRight48Filled: FluentIcon;

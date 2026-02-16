@@ -1,0 +1,11 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const TabDesktopLinkFilled: FluentIcon;
+export declare const TabDesktopLinkRegular: FluentIcon;
+export declare const TabDesktopLink16Regular: FluentIcon;
+export declare const TabDesktopLink16Filled: FluentIcon;
+export declare const TabDesktopLink20Regular: FluentIcon;
+export declare const TabDesktopLink20Filled: FluentIcon;
+export declare const TabDesktopLink24Regular: FluentIcon;
+export declare const TabDesktopLink24Filled: FluentIcon;
+export declare const TabDesktopLink28Regular: FluentIcon;
+export declare const TabDesktopLink28Filled: FluentIcon;

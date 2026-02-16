@@ -1,0 +1,13 @@
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.AgentsAdd24Filled = exports.AgentsAdd24Regular = exports.AgentsAdd20Filled = exports.AgentsAdd20Regular = exports.AgentsAdd16Filled = exports.AgentsAdd16Regular = exports.AgentsAddRegular = exports.AgentsAddFilled = void 0;
+const createFluentFontIcon_1 = require("../../utils/fonts/createFluentFontIcon");
+exports.AgentsAddFilled = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AgentsAddFilled", "", 2, undefined));
+exports.AgentsAddRegular = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AgentsAddRegular", "", 2, undefined));
+exports.AgentsAdd16Regular = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AgentsAdd16Regular", "󰪌", 1, 16));
+exports.AgentsAdd16Filled = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AgentsAdd16Filled", "󰬈", 0, 16));
+exports.AgentsAdd20Regular = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AgentsAdd20Regular", "󰧒", 1, 20));
+exports.AgentsAdd20Filled = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AgentsAdd20Filled", "󰩏", 0, 20));
+exports.AgentsAdd24Regular = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AgentsAdd24Regular", "󰧓", 1, 24));
+exports.AgentsAdd24Filled = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AgentsAdd24Filled", "󰩐", 0, 24));

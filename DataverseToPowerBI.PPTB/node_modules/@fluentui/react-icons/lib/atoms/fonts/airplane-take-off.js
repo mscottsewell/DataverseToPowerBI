@@ -1,0 +1,10 @@
+"use client";
+import { createFluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export const AirplaneTakeOffFilled = ( /*#__PURE__*/createFluentFontIcon("AirplaneTakeOffFilled", "", 2, undefined));
+export const AirplaneTakeOffRegular = ( /*#__PURE__*/createFluentFontIcon("AirplaneTakeOffRegular", "", 2, undefined));
+export const AirplaneTakeOff16Regular = ( /*#__PURE__*/createFluentFontIcon("AirplaneTakeOff16Regular", "", 1, 16));
+export const AirplaneTakeOff16Filled = ( /*#__PURE__*/createFluentFontIcon("AirplaneTakeOff16Filled", "", 0, 16));
+export const AirplaneTakeOff20Regular = ( /*#__PURE__*/createFluentFontIcon("AirplaneTakeOff20Regular", "", 1, 20));
+export const AirplaneTakeOff20Filled = ( /*#__PURE__*/createFluentFontIcon("AirplaneTakeOff20Filled", "", 0, 20));
+export const AirplaneTakeOff24Regular = ( /*#__PURE__*/createFluentFontIcon("AirplaneTakeOff24Regular", "", 1, 24));
+export const AirplaneTakeOff24Filled = ( /*#__PURE__*/createFluentFontIcon("AirplaneTakeOff24Filled", "", 0, 24));

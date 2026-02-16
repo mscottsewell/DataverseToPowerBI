@@ -1,0 +1,11 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const DesktopMacFilled: FluentIcon;
+export declare const DesktopMacRegular: FluentIcon;
+export declare const DesktopMac16Regular: FluentIcon;
+export declare const DesktopMac16Filled: FluentIcon;
+export declare const DesktopMac20Regular: FluentIcon;
+export declare const DesktopMac20Filled: FluentIcon;
+export declare const DesktopMac24Regular: FluentIcon;
+export declare const DesktopMac24Filled: FluentIcon;
+export declare const DesktopMac32Regular: FluentIcon;
+export declare const DesktopMac32Filled: FluentIcon;

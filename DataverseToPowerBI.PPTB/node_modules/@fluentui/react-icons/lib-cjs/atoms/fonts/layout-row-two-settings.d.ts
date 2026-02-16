@@ -1,0 +1,12 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const LayoutRowTwoSettingsFilled: FluentFontIcon;
+export declare const LayoutRowTwoSettingsRegular: FluentFontIcon;
+export declare const LayoutRowTwoSettings20Regular: FluentFontIcon;
+export declare const LayoutRowTwoSettings20Filled: FluentFontIcon;
+export declare const LayoutRowTwoSettings24Regular: FluentFontIcon;
+export declare const LayoutRowTwoSettings24Filled: FluentFontIcon;
+export declare const LayoutRowTwoSettings28Regular: FluentFontIcon;
+export declare const LayoutRowTwoSettings28Filled: FluentFontIcon;
+export declare const LayoutRowTwoSettings32Regular: FluentFontIcon;
+export declare const LayoutRowTwoSettings32Filled: FluentFontIcon;
+export declare const LayoutRowTwoSettings32Light: FluentFontIcon;

@@ -1,0 +1,11 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const InkingToolFilled: FluentIcon;
+export declare const InkingToolRegular: FluentIcon;
+export declare const InkingTool16Regular: FluentIcon;
+export declare const InkingTool16Filled: FluentIcon;
+export declare const InkingTool20Regular: FluentIcon;
+export declare const InkingTool20Filled: FluentIcon;
+export declare const InkingTool24Regular: FluentIcon;
+export declare const InkingTool24Filled: FluentIcon;
+export declare const InkingTool32Regular: FluentIcon;
+export declare const InkingTool32Filled: FluentIcon;

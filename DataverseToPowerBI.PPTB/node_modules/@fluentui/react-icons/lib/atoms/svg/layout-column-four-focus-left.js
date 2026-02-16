@@ -1,0 +1,6 @@
+"use client";
+import { createFluentIcon } from '../../utils/createFluentIcon';
+export const LayoutColumnFourFocusLeftFilled = ( /*#__PURE__*/createFluentIcon('LayoutColumnFourFocusLeftFilled', "1em", ["M14 3a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3h8Zm2 3a2 2 0 0 0-2-2h-.5v12h.5a2 2 0 0 0 2-2V6Zm-3.5 10V4H10v12h2.5Zm-6 0H9V4H6.5v12Z"]));
+export const LayoutColumnFourFocusLeft16Filled = ( /*#__PURE__*/createFluentIcon('LayoutColumnFourFocusLeft16Filled', "16", ["M4.5 2A2.5 2.5 0 0 0 2 4.5v7A2.5 2.5 0 0 0 4.5 14h7a2.5 2.5 0 0 0 2.5-2.5v-7A2.5 2.5 0 0 0 11.5 2h-7ZM5 13V3h2v10H5Zm3 0V3h2v10H8Zm3 0V3h.5c.83 0 1.5.67 1.5 1.5v7c0 .83-.67 1.5-1.5 1.5H11Z"]));
+export const LayoutColumnFourFocusLeft20Filled = ( /*#__PURE__*/createFluentIcon('LayoutColumnFourFocusLeft20Filled', "20", ["M14 3a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3h8Zm2 3a2 2 0 0 0-2-2h-.5v12h.5a2 2 0 0 0 2-2V6Zm-3.5 10V4H10v12h2.5Zm-6 0H9V4H6.5v12Z"]));
+export const LayoutColumnFourFocusLeft24Filled = ( /*#__PURE__*/createFluentIcon('LayoutColumnFourFocusLeft24Filled', "24", ["M6.25 3A3.25 3.25 0 0 0 3 6.25v11.5C3 19.55 4.46 21 6.25 21h11.5c1.8 0 3.25-1.46 3.25-3.25V6.25C21 4.45 19.54 3 17.75 3H6.25ZM8 19.5v-15h3v15H8Zm4.5 0v-15H15v15h-2.5Zm4 0v-15h1.25c.97 0 1.75.78 1.75 1.75v11.5c0 .97-.78 1.75-1.75 1.75H16.5Z"]));

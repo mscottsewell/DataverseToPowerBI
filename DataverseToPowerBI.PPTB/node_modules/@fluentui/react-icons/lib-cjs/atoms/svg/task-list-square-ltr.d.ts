@@ -1,0 +1,11 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const TaskListSquareLtrFilled: FluentIcon;
+export declare const TaskListSquareLtrRegular: FluentIcon;
+export declare const TaskListSquareLtr16Regular: FluentIcon;
+export declare const TaskListSquareLtr16Filled: FluentIcon;
+export declare const TaskListSquareLtr20Regular: FluentIcon;
+export declare const TaskListSquareLtr20Filled: FluentIcon;
+export declare const TaskListSquareLtr24Regular: FluentIcon;
+export declare const TaskListSquareLtr24Filled: FluentIcon;
+export declare const TaskListSquareLtr48Regular: FluentIcon;
+export declare const TaskListSquareLtr48Filled: FluentIcon;

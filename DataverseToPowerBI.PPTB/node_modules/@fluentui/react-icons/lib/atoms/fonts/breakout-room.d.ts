@@ -1,0 +1,14 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const BreakoutRoomFilled: FluentFontIcon;
+export declare const BreakoutRoomRegular: FluentFontIcon;
+export declare const BreakoutRoom16Regular: FluentFontIcon;
+export declare const BreakoutRoom16Filled: FluentFontIcon;
+export declare const BreakoutRoom20Regular: FluentFontIcon;
+export declare const BreakoutRoom20Filled: FluentFontIcon;
+export declare const BreakoutRoom24Regular: FluentFontIcon;
+export declare const BreakoutRoom24Filled: FluentFontIcon;
+export declare const BreakoutRoom28Regular: FluentFontIcon;
+export declare const BreakoutRoom28Filled: FluentFontIcon;
+export declare const BreakoutRoom32Regular: FluentFontIcon;
+export declare const BreakoutRoom32Filled: FluentFontIcon;
+export declare const BreakoutRoom32Light: FluentFontIcon;

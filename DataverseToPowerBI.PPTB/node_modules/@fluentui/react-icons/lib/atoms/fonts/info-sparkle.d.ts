@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const InfoSparkleFilled: FluentFontIcon;
+export declare const InfoSparkleRegular: FluentFontIcon;
+export declare const InfoSparkle16Regular: FluentFontIcon;
+export declare const InfoSparkle16Filled: FluentFontIcon;
+export declare const InfoSparkle20Regular: FluentFontIcon;
+export declare const InfoSparkle20Filled: FluentFontIcon;
+export declare const InfoSparkle24Regular: FluentFontIcon;
+export declare const InfoSparkle24Filled: FluentFontIcon;
+export declare const InfoSparkle28Regular: FluentFontIcon;
+export declare const InfoSparkle28Filled: FluentFontIcon;
+export declare const InfoSparkle32Regular: FluentFontIcon;
+export declare const InfoSparkle32Filled: FluentFontIcon;
+export declare const InfoSparkle48Regular: FluentFontIcon;
+export declare const InfoSparkle48Filled: FluentFontIcon;

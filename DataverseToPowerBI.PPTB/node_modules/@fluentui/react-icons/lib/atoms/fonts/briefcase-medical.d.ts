@@ -1,0 +1,11 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const BriefcaseMedicalFilled: FluentFontIcon;
+export declare const BriefcaseMedicalRegular: FluentFontIcon;
+export declare const BriefcaseMedical16Regular: FluentFontIcon;
+export declare const BriefcaseMedical16Filled: FluentFontIcon;
+export declare const BriefcaseMedical20Regular: FluentFontIcon;
+export declare const BriefcaseMedical20Filled: FluentFontIcon;
+export declare const BriefcaseMedical24Regular: FluentFontIcon;
+export declare const BriefcaseMedical24Filled: FluentFontIcon;
+export declare const BriefcaseMedical32Regular: FluentFontIcon;
+export declare const BriefcaseMedical32Filled: FluentFontIcon;

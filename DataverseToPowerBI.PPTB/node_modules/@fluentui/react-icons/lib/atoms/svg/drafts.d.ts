@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const DraftsColor: FluentIcon;
+export declare const DraftsFilled: FluentIcon;
+export declare const DraftsRegular: FluentIcon;
+export declare const Drafts16Regular: FluentIcon;
+export declare const Drafts16Filled: FluentIcon;
+export declare const Drafts16Color: FluentIcon;
+export declare const Drafts20Regular: FluentIcon;
+export declare const Drafts20Filled: FluentIcon;
+export declare const Drafts20Color: FluentIcon;
+export declare const Drafts24Regular: FluentIcon;
+export declare const Drafts24Filled: FluentIcon;
+export declare const Drafts24Color: FluentIcon;
+export declare const Drafts28Regular: FluentIcon;
+export declare const Drafts28Filled: FluentIcon;

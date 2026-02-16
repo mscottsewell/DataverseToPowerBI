@@ -1,0 +1,11 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const TapSingleFilled: FluentIcon;
+export declare const TapSingleRegular: FluentIcon;
+export declare const TapSingle20Regular: FluentIcon;
+export declare const TapSingle20Filled: FluentIcon;
+export declare const TapSingle24Regular: FluentIcon;
+export declare const TapSingle24Filled: FluentIcon;
+export declare const TapSingle32Regular: FluentIcon;
+export declare const TapSingle32Filled: FluentIcon;
+export declare const TapSingle48Regular: FluentIcon;
+export declare const TapSingle48Filled: FluentIcon;

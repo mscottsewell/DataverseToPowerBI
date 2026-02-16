@@ -1,0 +1,18 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const LockClosedFilled: FluentFontIcon;
+export declare const LockClosedRegular: FluentFontIcon;
+export declare const LockClosed12Regular: FluentFontIcon;
+export declare const LockClosed12Filled: FluentFontIcon;
+export declare const LockClosed16Regular: FluentFontIcon;
+export declare const LockClosed16Filled: FluentFontIcon;
+export declare const LockClosed20Regular: FluentFontIcon;
+export declare const LockClosed20Filled: FluentFontIcon;
+export declare const LockClosed24Regular: FluentFontIcon;
+export declare const LockClosed24Filled: FluentFontIcon;
+export declare const LockClosed28Regular: FluentFontIcon;
+export declare const LockClosed28Filled: FluentFontIcon;
+export declare const LockClosed32Regular: FluentFontIcon;
+export declare const LockClosed32Filled: FluentFontIcon;
+export declare const LockClosed32Light: FluentFontIcon;
+export declare const LockClosed48Regular: FluentFontIcon;
+export declare const LockClosed48Filled: FluentFontIcon;

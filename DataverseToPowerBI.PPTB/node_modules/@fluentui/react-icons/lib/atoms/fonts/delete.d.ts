@@ -1,0 +1,18 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const DeleteFilled: FluentFontIcon;
+export declare const DeleteRegular: FluentFontIcon;
+export declare const Delete12Regular: FluentFontIcon;
+export declare const Delete12Filled: FluentFontIcon;
+export declare const Delete16Regular: FluentFontIcon;
+export declare const Delete16Filled: FluentFontIcon;
+export declare const Delete20Regular: FluentFontIcon;
+export declare const Delete20Filled: FluentFontIcon;
+export declare const Delete24Regular: FluentFontIcon;
+export declare const Delete24Filled: FluentFontIcon;
+export declare const Delete28Regular: FluentFontIcon;
+export declare const Delete28Filled: FluentFontIcon;
+export declare const Delete32Regular: FluentFontIcon;
+export declare const Delete32Filled: FluentFontIcon;
+export declare const Delete32Light: FluentFontIcon;
+export declare const Delete48Regular: FluentFontIcon;
+export declare const Delete48Filled: FluentFontIcon;

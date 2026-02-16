@@ -1,0 +1,16 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const MoleculeFilled: FluentFontIcon;
+export declare const MoleculeRegular: FluentFontIcon;
+export declare const Molecule16Regular: FluentFontIcon;
+export declare const Molecule16Filled: FluentFontIcon;
+export declare const Molecule20Regular: FluentFontIcon;
+export declare const Molecule20Filled: FluentFontIcon;
+export declare const Molecule24Regular: FluentFontIcon;
+export declare const Molecule24Filled: FluentFontIcon;
+export declare const Molecule28Regular: FluentFontIcon;
+export declare const Molecule28Filled: FluentFontIcon;
+export declare const Molecule32Regular: FluentFontIcon;
+export declare const Molecule32Filled: FluentFontIcon;
+export declare const Molecule32Light: FluentFontIcon;
+export declare const Molecule48Regular: FluentFontIcon;
+export declare const Molecule48Filled: FluentFontIcon;

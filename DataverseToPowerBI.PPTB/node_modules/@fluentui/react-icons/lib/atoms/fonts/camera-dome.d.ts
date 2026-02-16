@@ -1,0 +1,13 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const CameraDomeFilled: FluentFontIcon;
+export declare const CameraDomeRegular: FluentFontIcon;
+export declare const CameraDome16Regular: FluentFontIcon;
+export declare const CameraDome16Filled: FluentFontIcon;
+export declare const CameraDome20Regular: FluentFontIcon;
+export declare const CameraDome20Filled: FluentFontIcon;
+export declare const CameraDome24Regular: FluentFontIcon;
+export declare const CameraDome24Filled: FluentFontIcon;
+export declare const CameraDome28Regular: FluentFontIcon;
+export declare const CameraDome28Filled: FluentFontIcon;
+export declare const CameraDome48Regular: FluentFontIcon;
+export declare const CameraDome48Filled: FluentFontIcon;

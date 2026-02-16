@@ -1,0 +1,11 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const BowlChopsticksFilled: FluentIcon;
+export declare const BowlChopsticksRegular: FluentIcon;
+export declare const BowlChopsticks16Regular: FluentIcon;
+export declare const BowlChopsticks16Filled: FluentIcon;
+export declare const BowlChopsticks20Regular: FluentIcon;
+export declare const BowlChopsticks20Filled: FluentIcon;
+export declare const BowlChopsticks24Regular: FluentIcon;
+export declare const BowlChopsticks24Filled: FluentIcon;
+export declare const BowlChopsticks28Regular: FluentIcon;
+export declare const BowlChopsticks28Filled: FluentIcon;

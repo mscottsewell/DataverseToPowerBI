@@ -1,0 +1,11 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const ClipboardTextLtrFilled: FluentIcon;
+export declare const ClipboardTextLtrRegular: FluentIcon;
+export declare const ClipboardTextLtr16Regular: FluentIcon;
+export declare const ClipboardTextLtr16Filled: FluentIcon;
+export declare const ClipboardTextLtr20Regular: FluentIcon;
+export declare const ClipboardTextLtr20Filled: FluentIcon;
+export declare const ClipboardTextLtr24Regular: FluentIcon;
+export declare const ClipboardTextLtr24Filled: FluentIcon;
+export declare const ClipboardTextLtr32Regular: FluentIcon;
+export declare const ClipboardTextLtr32Filled: FluentIcon;

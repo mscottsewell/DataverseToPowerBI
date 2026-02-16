@@ -1,0 +1,11 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const CheckboxUncheckedFilled: FluentIcon;
+export declare const CheckboxUncheckedRegular: FluentIcon;
+export declare const CheckboxUnchecked12Regular: FluentIcon;
+export declare const CheckboxUnchecked12Filled: FluentIcon;
+export declare const CheckboxUnchecked16Regular: FluentIcon;
+export declare const CheckboxUnchecked16Filled: FluentIcon;
+export declare const CheckboxUnchecked20Regular: FluentIcon;
+export declare const CheckboxUnchecked20Filled: FluentIcon;
+export declare const CheckboxUnchecked24Regular: FluentIcon;
+export declare const CheckboxUnchecked24Filled: FluentIcon;

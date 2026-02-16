@@ -1,0 +1,7 @@
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.PersonStanding16Filled = exports.PersonStanding16Regular = void 0;
+const createFluentIcon_1 = require("../../utils/createFluentIcon");
+exports.PersonStanding16Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('PersonStanding16Regular', "16", ["M9.34 4.54A2.24 2.24 0 0 0 7.5 1a2.25 2.25 0 0 0-1.84 3.54A2 2 0 0 0 4 6.5v3a1 1 0 0 0 1 1v3c0 .83.67 1.5 1.5 1.5h2c.83 0 1.5-.67 1.5-1.5v-3a1 1 0 0 0 1-1v-3a2 2 0 0 0-1.66-1.96ZM7.5 2a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5ZM10 9.5H9v4a.5.5 0 0 1-.5.5H8v-3a.5.5 0 0 0-1 0v3h-.5a.5.5 0 0 1-.5-.5v-4H5v-3a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v3Z"]));
+exports.PersonStanding16Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('PersonStanding16Filled', "16", ["M7.5 4.5a1.75 1.75 0 1 0 0-3.5 1.75 1.75 0 0 0 0 3.5Zm3.5 2v3a1 1 0 0 1-1 1V14a1 1 0 0 1-2 0v-3a.5.5 0 0 0-1 0v3a1 1 0 0 1-2 0v-3.5a1 1 0 0 1-1-1v-3a2 2 0 0 1 1.46-1.92 2.74 2.74 0 0 0 4.08 0A2 2 0 0 1 11 6.5Z"]));

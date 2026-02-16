@@ -1,0 +1,13 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const LayerDiagonalPersonColor: FluentIcon;
+export declare const LayerDiagonalPersonFilled: FluentIcon;
+export declare const LayerDiagonalPersonRegular: FluentIcon;
+export declare const LayerDiagonalPerson16Regular: FluentIcon;
+export declare const LayerDiagonalPerson16Filled: FluentIcon;
+export declare const LayerDiagonalPerson16Color: FluentIcon;
+export declare const LayerDiagonalPerson20Regular: FluentIcon;
+export declare const LayerDiagonalPerson20Filled: FluentIcon;
+export declare const LayerDiagonalPerson20Color: FluentIcon;
+export declare const LayerDiagonalPerson24Regular: FluentIcon;
+export declare const LayerDiagonalPerson24Filled: FluentIcon;
+export declare const LayerDiagonalPerson24Color: FluentIcon;

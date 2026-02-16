@@ -1,0 +1,13 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const EarthLeafFilled: FluentIcon;
+export declare const EarthLeafRegular: FluentIcon;
+export declare const EarthLeaf16Regular: FluentIcon;
+export declare const EarthLeaf16Filled: FluentIcon;
+export declare const EarthLeaf20Regular: FluentIcon;
+export declare const EarthLeaf20Filled: FluentIcon;
+export declare const EarthLeaf24Regular: FluentIcon;
+export declare const EarthLeaf24Filled: FluentIcon;
+export declare const EarthLeaf32Regular: FluentIcon;
+export declare const EarthLeaf32Filled: FluentIcon;
+export declare const EarthLeaf48Regular: FluentIcon;
+export declare const EarthLeaf48Filled: FluentIcon;

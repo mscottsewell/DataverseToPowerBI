@@ -1,0 +1,13 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const BookOpenMicrophoneFilled: FluentFontIcon;
+export declare const BookOpenMicrophoneRegular: FluentFontIcon;
+export declare const BookOpenMicrophone20Regular: FluentFontIcon;
+export declare const BookOpenMicrophone20Filled: FluentFontIcon;
+export declare const BookOpenMicrophone24Regular: FluentFontIcon;
+export declare const BookOpenMicrophone24Filled: FluentFontIcon;
+export declare const BookOpenMicrophone28Regular: FluentFontIcon;
+export declare const BookOpenMicrophone28Filled: FluentFontIcon;
+export declare const BookOpenMicrophone32Regular: FluentFontIcon;
+export declare const BookOpenMicrophone32Filled: FluentFontIcon;
+export declare const BookOpenMicrophone48Regular: FluentFontIcon;
+export declare const BookOpenMicrophone48Filled: FluentFontIcon;

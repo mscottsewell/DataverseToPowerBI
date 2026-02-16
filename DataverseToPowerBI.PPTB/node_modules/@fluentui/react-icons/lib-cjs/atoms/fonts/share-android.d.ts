@@ -1,0 +1,11 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const ShareAndroidFilled: FluentFontIcon;
+export declare const ShareAndroidRegular: FluentFontIcon;
+export declare const ShareAndroid16Regular: FluentFontIcon;
+export declare const ShareAndroid16Filled: FluentFontIcon;
+export declare const ShareAndroid20Regular: FluentFontIcon;
+export declare const ShareAndroid20Filled: FluentFontIcon;
+export declare const ShareAndroid24Regular: FluentFontIcon;
+export declare const ShareAndroid24Filled: FluentFontIcon;
+export declare const ShareAndroid32Regular: FluentFontIcon;
+export declare const ShareAndroid32Filled: FluentFontIcon;

@@ -1,0 +1,11 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const VoicemailShieldFilled: FluentIcon;
+export declare const VoicemailShieldRegular: FluentIcon;
+export declare const VoicemailShield16Regular: FluentIcon;
+export declare const VoicemailShield16Filled: FluentIcon;
+export declare const VoicemailShield20Regular: FluentIcon;
+export declare const VoicemailShield20Filled: FluentIcon;
+export declare const VoicemailShield24Regular: FluentIcon;
+export declare const VoicemailShield24Filled: FluentIcon;
+export declare const VoicemailShield32Regular: FluentIcon;
+export declare const VoicemailShield32Filled: FluentIcon;

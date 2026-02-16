@@ -1,0 +1,8 @@
+"use client";
+import { createFluentIcon } from '../../utils/createFluentIcon';
+export const DualScreenHeaderFilled = ( /*#__PURE__*/createFluentIcon('DualScreenHeaderFilled', "1em", ["M16 16h-5.5V8H18v6a2 2 0 0 1-2 2Zm2-9V6a2 2 0 0 0-2-2h-5.5v3H18ZM9.5 7V4H4a2 2 0 0 0-2 2v1h7.5ZM2 8v6c0 1.1.9 2 2 2h5.5V8H2Z"]));
+export const DualScreenHeaderRegular = ( /*#__PURE__*/createFluentIcon('DualScreenHeaderRegular', "1em", ["M2 6c0-1.1.9-2 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6Zm7.5 9V7H3v7a1 1 0 0 0 1 1h5.5Zm1-8v8H16a1 1 0 0 0 1-1V7h-6.5Z"]));
+export const DualScreenHeader20Regular = ( /*#__PURE__*/createFluentIcon('DualScreenHeader20Regular', "20", ["M2 6c0-1.1.9-2 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6Zm7.5 9V7H3v7a1 1 0 0 0 1 1h5.5Zm1-8v8H16a1 1 0 0 0 1-1V7h-6.5Z"]));
+export const DualScreenHeader20Filled = ( /*#__PURE__*/createFluentIcon('DualScreenHeader20Filled', "20", ["M16 16h-5.5V8H18v6a2 2 0 0 1-2 2Zm2-9V6a2 2 0 0 0-2-2h-5.5v3H18ZM9.5 7V4H4a2 2 0 0 0-2 2v1h7.5ZM2 8v6c0 1.1.9 2 2 2h5.5V8H2Z"]));
+export const DualScreenHeader24Regular = ( /*#__PURE__*/createFluentIcon('DualScreenHeader24Regular', "24", ["M12.75 4h7.5C21.2 4 22 4.8 22 5.75v12.5c0 .97-.79 1.75-1.75 1.75H3.75C2.78 20 2 19.2 2 18.25V5.75C2 4.8 2.78 4 3.75 4h9Zm7.75 3h-7.75v11.5h7.5c.13 0 .25-.11.25-.25V7Zm-9.25 0H3.5v11.25c0 .14.11.25.25.25h7.5V7Z"]));
+export const DualScreenHeader24Filled = ( /*#__PURE__*/createFluentIcon('DualScreenHeader24Filled', "24", ["M22 8v10.25c0 .97-.79 1.75-1.75 1.75H13c-.09 0-.17 0-.26-.02V8H22ZM11.24 8v11.98L11 20H3.75C2.78 20 2 19.2 2 18.25V8h9.24ZM11 4c.08 0 .16 0 .24.02V7H2V5.75C2 4.8 2.78 4 3.75 4H11Zm9.25 0C21.2 4 22 4.8 22 5.75V7h-9.26V4.02L13 4h7.25Z"]));

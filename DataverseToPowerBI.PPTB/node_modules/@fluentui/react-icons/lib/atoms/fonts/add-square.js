@@ -1,0 +1,16 @@
+"use client";
+import { createFluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export const AddSquareFilled = ( /*#__PURE__*/createFluentFontIcon("AddSquareFilled", "", 2, undefined));
+export const AddSquareRegular = ( /*#__PURE__*/createFluentFontIcon("AddSquareRegular", "", 2, undefined));
+export const AddSquare16Regular = ( /*#__PURE__*/createFluentFontIcon("AddSquare16Regular", "󰇢", 1, 16));
+export const AddSquare16Filled = ( /*#__PURE__*/createFluentFontIcon("AddSquare16Filled", "󰇢", 0, 16));
+export const AddSquare20Regular = ( /*#__PURE__*/createFluentFontIcon("AddSquare20Regular", "", 1, 20));
+export const AddSquare20Filled = ( /*#__PURE__*/createFluentFontIcon("AddSquare20Filled", "", 0, 20));
+export const AddSquare24Regular = ( /*#__PURE__*/createFluentFontIcon("AddSquare24Regular", "", 1, 24));
+export const AddSquare24Filled = ( /*#__PURE__*/createFluentFontIcon("AddSquare24Filled", "", 0, 24));
+export const AddSquare28Regular = ( /*#__PURE__*/createFluentFontIcon("AddSquare28Regular", "󰇣", 1, 28));
+export const AddSquare28Filled = ( /*#__PURE__*/createFluentFontIcon("AddSquare28Filled", "󰇣", 0, 28));
+export const AddSquare32Regular = ( /*#__PURE__*/createFluentFontIcon("AddSquare32Regular", "󰇤", 1, 32));
+export const AddSquare32Filled = ( /*#__PURE__*/createFluentFontIcon("AddSquare32Filled", "󰇤", 0, 32));
+export const AddSquare48Regular = ( /*#__PURE__*/createFluentFontIcon("AddSquare48Regular", "󰇥", 1, 48));
+export const AddSquare48Filled = ( /*#__PURE__*/createFluentFontIcon("AddSquare48Filled", "󰇥", 0, 48));

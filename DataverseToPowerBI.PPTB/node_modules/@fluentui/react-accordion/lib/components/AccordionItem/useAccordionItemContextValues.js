@@ -1,0 +1,20 @@
+'use client';
+import * as React from 'react';
+export function useAccordionItemContextValues_unstable(state) {
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
+    const { disabled, open, value, onHeaderClick } = state;
+    const accordionItem = React.useMemo(()=>({
+            disabled,
+            open,
+            value,
+            onHeaderClick
+        }), [
+        disabled,
+        open,
+        value,
+        onHeaderClick
+    ]);
+    return {
+        accordionItem
+    };
+}

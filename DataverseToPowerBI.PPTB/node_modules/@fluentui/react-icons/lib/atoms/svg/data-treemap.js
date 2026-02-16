@@ -1,0 +1,8 @@
+"use client";
+import { createFluentIcon } from '../../utils/createFluentIcon';
+export const DataTreemapFilled = ( /*#__PURE__*/createFluentIcon('DataTreemapFilled', "1em", ["M7 3H6a3 3 0 0 0-3 3v8a3 3 0 0 0 3 3h1V3Zm1 14h6a3 3 0 0 0 3-3v-1H8v4Zm9-5V6a3 3 0 0 0-3-3H8v9h9Z"]));
+export const DataTreemapRegular = ( /*#__PURE__*/createFluentIcon('DataTreemapRegular', "1em", ["M6 3a3 3 0 0 0-3 3v8a3 3 0 0 0 3 3h8a3 3 0 0 0 3-3V6a3 3 0 0 0-3-3H6Zm1 1v12H6a2 2 0 0 1-2-2V6c0-1.1.9-2 2-2h1Zm1 12v-3h8v1a2 2 0 0 1-2 2H8Zm8-4H8V4h6a2 2 0 0 1 2 2v6Z"]));
+export const DataTreemap20Regular = ( /*#__PURE__*/createFluentIcon('DataTreemap20Regular', "20", ["M6 3a3 3 0 0 0-3 3v8a3 3 0 0 0 3 3h8a3 3 0 0 0 3-3V6a3 3 0 0 0-3-3H6Zm1 1v12H6a2 2 0 0 1-2-2V6c0-1.1.9-2 2-2h1Zm1 12v-3h8v1a2 2 0 0 1-2 2H8Zm8-4H8V4h6a2 2 0 0 1 2 2v6Z"]));
+export const DataTreemap20Filled = ( /*#__PURE__*/createFluentIcon('DataTreemap20Filled', "20", ["M7 3H6a3 3 0 0 0-3 3v8a3 3 0 0 0 3 3h1V3Zm1 14h6a3 3 0 0 0 3-3v-1H8v4Zm9-5V6a3 3 0 0 0-3-3H8v9h9Z"]));
+export const DataTreemap24Regular = ( /*#__PURE__*/createFluentIcon('DataTreemap24Regular', "24", ["M3 6.25C3 4.45 4.46 3 6.25 3h11.5C19.55 3 21 4.46 21 6.25v11.5c0 1.8-1.46 3.25-3.25 3.25H6.25A3.25 3.25 0 0 1 3 17.75V6.25ZM6.25 4.5c-.97 0-1.75.78-1.75 1.75v11.5c0 .97.78 1.75 1.75 1.75H9v-15H6.25Zm4.25 0V14h9V6.25c0-.97-.78-1.75-1.75-1.75H10.5Zm9 11h-9v4h7.25c.97 0 1.75-.78 1.75-1.75V15.5Z"]));
+export const DataTreemap24Filled = ( /*#__PURE__*/createFluentIcon('DataTreemap24Filled', "24", ["M3 6.25C3 4.45 4.46 3 6.25 3H9v18H6.25A3.25 3.25 0 0 1 3 17.75V6.25ZM10.5 21h7.25c1.8 0 3.25-1.46 3.25-3.25V15.5H10.5V21ZM21 14V6.25C21 4.45 19.54 3 17.75 3H10.5v11H21Z"]));

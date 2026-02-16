@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const ContractUpRightFilled: FluentIcon;
+export declare const ContractUpRightRegular: FluentIcon;
+export declare const ContractUpRight16Regular: FluentIcon;
+export declare const ContractUpRight16Filled: FluentIcon;
+export declare const ContractUpRight20Regular: FluentIcon;
+export declare const ContractUpRight20Filled: FluentIcon;
+export declare const ContractUpRight24Regular: FluentIcon;
+export declare const ContractUpRight24Filled: FluentIcon;
+export declare const ContractUpRight28Regular: FluentIcon;
+export declare const ContractUpRight28Filled: FluentIcon;
+export declare const ContractUpRight32Regular: FluentIcon;
+export declare const ContractUpRight32Filled: FluentIcon;
+export declare const ContractUpRight48Regular: FluentIcon;
+export declare const ContractUpRight48Filled: FluentIcon;

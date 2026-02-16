@@ -1,0 +1,13 @@
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.AddSquareMultiple24Filled = exports.AddSquareMultiple24Regular = exports.AddSquareMultiple20Filled = exports.AddSquareMultiple20Regular = exports.AddSquareMultiple16Filled = exports.AddSquareMultiple16Regular = exports.AddSquareMultipleRegular = exports.AddSquareMultipleFilled = void 0;
+const createFluentFontIcon_1 = require("../../utils/fonts/createFluentFontIcon");
+exports.AddSquareMultipleFilled = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AddSquareMultipleFilled", "", 2, undefined));
+exports.AddSquareMultipleRegular = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AddSquareMultipleRegular", "", 2, undefined));
+exports.AddSquareMultiple16Regular = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AddSquareMultiple16Regular", "", 1, 16));
+exports.AddSquareMultiple16Filled = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AddSquareMultiple16Filled", "", 0, 16));
+exports.AddSquareMultiple20Regular = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AddSquareMultiple20Regular", "", 1, 20));
+exports.AddSquareMultiple20Filled = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AddSquareMultiple20Filled", "", 0, 20));
+exports.AddSquareMultiple24Regular = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AddSquareMultiple24Regular", "󰉦", 1, 24));
+exports.AddSquareMultiple24Filled = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AddSquareMultiple24Filled", "󰉹", 0, 24));

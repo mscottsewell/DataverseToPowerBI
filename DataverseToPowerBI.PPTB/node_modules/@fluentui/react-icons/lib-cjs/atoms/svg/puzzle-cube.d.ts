@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const PuzzleCubeFilled: FluentIcon;
+export declare const PuzzleCubeRegular: FluentIcon;
+export declare const PuzzleCube16Regular: FluentIcon;
+export declare const PuzzleCube16Filled: FluentIcon;
+export declare const PuzzleCube20Regular: FluentIcon;
+export declare const PuzzleCube20Filled: FluentIcon;
+export declare const PuzzleCube24Regular: FluentIcon;
+export declare const PuzzleCube24Filled: FluentIcon;
+export declare const PuzzleCube28Regular: FluentIcon;
+export declare const PuzzleCube28Filled: FluentIcon;
+export declare const PuzzleCube32Regular: FluentIcon;
+export declare const PuzzleCube32Filled: FluentIcon;
+export declare const PuzzleCube48Regular: FluentIcon;
+export declare const PuzzleCube48Filled: FluentIcon;

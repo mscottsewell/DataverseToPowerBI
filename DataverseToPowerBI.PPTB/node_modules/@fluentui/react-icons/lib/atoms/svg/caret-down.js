@@ -1,0 +1,12 @@
+"use client";
+import { createFluentIcon } from '../../utils/createFluentIcon';
+export const CaretDownFilled = ( /*#__PURE__*/createFluentIcon('CaretDownFilled', "1em", ["M5.8 7a1 1 0 0 0-.78 1.63l3.81 4.72c.6.74 1.74.74 2.34 0l3.81-4.72A1 1 0 0 0 14.2 7H5.8Z"]));
+export const CaretDownRegular = ( /*#__PURE__*/createFluentIcon('CaretDownRegular', "1em", ["M5.02 8.63A1 1 0 0 1 5.8 7h8.4a1 1 0 0 1 .78 1.63l-3.81 4.72a1.5 1.5 0 0 1-2.34 0L5.02 8.63ZM14.2 8H5.8l3.81 4.72c.2.25.58.25.78 0L14.2 8Z"]));
+export const CaretDown12Regular = ( /*#__PURE__*/createFluentIcon('CaretDown12Regular', "12", ["M3.08 4.62A1 1 0 0 1 4 4h4a1 1 0 0 1 .7 1.7l-2 2a1 1 0 0 1-1.4 0l-2-2a1 1 0 0 1-.22-1.08ZM4 5l1.82 1.82c.1.1.26.1.36 0L8 5H4Z"]));
+export const CaretDown12Filled = ( /*#__PURE__*/createFluentIcon('CaretDown12Filled', "12", ["M3.08 4.62A1 1 0 0 1 4 4h4a1 1 0 0 1 .7 1.7l-2 2a1 1 0 0 1-1.4 0l-2-2a1 1 0 0 1-.22-1.08Z"]));
+export const CaretDown16Regular = ( /*#__PURE__*/createFluentIcon('CaretDown16Regular', "16", ["M4.14 6.57A1 1 0 0 1 4.96 5h6.08a1 1 0 0 1 .82 1.57l-2.63 3.79a1.5 1.5 0 0 1-2.46 0L4.14 6.57ZM4.96 6l2.63 3.78c.2.29.62.29.82 0L11.04 6H4.96Z"]));
+export const CaretDown16Filled = ( /*#__PURE__*/createFluentIcon('CaretDown16Filled', "16", ["M4.96 5a1 1 0 0 0-.82 1.57l2.63 3.79c.6.85 1.86.85 2.46 0l2.63-3.79A1 1 0 0 0 11.04 5H4.96Z"]));
+export const CaretDown20Regular = ( /*#__PURE__*/createFluentIcon('CaretDown20Regular', "20", ["M5.02 8.63A1 1 0 0 1 5.8 7h8.4a1 1 0 0 1 .78 1.63l-3.81 4.72a1.5 1.5 0 0 1-2.34 0L5.02 8.63ZM14.2 8H5.8l3.81 4.72c.2.25.58.25.78 0L14.2 8Z"]));
+export const CaretDown20Filled = ( /*#__PURE__*/createFluentIcon('CaretDown20Filled', "20", ["M5.8 7a1 1 0 0 0-.78 1.63l3.81 4.72c.6.74 1.74.74 2.34 0l3.81-4.72A1 1 0 0 0 14.2 7H5.8Z"]));
+export const CaretDown24Regular = ( /*#__PURE__*/createFluentIcon('CaretDown24Regular', "24", ["M5.16 10.07C4.46 9.27 5.03 8 6.1 8h11.8c1.07 0 1.65 1.26.94 2.07l-5.52 6.31c-.7.8-1.94.8-2.64 0l-5.52-6.3Zm1.5-.57 5.15 5.9c.1.11.28.11.38 0l5.16-5.9H6.65Z"]));
+export const CaretDown24Filled = ( /*#__PURE__*/createFluentIcon('CaretDown24Filled', "24", ["M6.1 8a1.25 1.25 0 0 0-.94 2.07l5.52 6.31c.7.8 1.94.8 2.64 0l5.52-6.3c.7-.82.13-2.08-.94-2.08H6.1Z"]));

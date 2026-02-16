@@ -1,0 +1,11 @@
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ListRtl20Filled = exports.ListRtl20Regular = exports.ListRtl16Filled = exports.ListRtl16Regular = exports.ListRtlRegular = exports.ListRtlFilled = void 0;
+const createFluentIcon_1 = require("../../utils/createFluentIcon");
+exports.ListRtlFilled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('ListRtlFilled', "1em", ["M6 4.75c0-.41.34-.75.75-.75h10.5a.75.75 0 0 1 0 1.5H6.75A.75.75 0 0 1 6 4.75Zm1 10c0-.41.34-.75.75-.75h9.5a.75.75 0 0 1 0 1.5h-9.5a.75.75 0 0 1-.75-.75ZM2.75 9a.75.75 0 0 0 0 1.5h14.5a.75.75 0 0 0 0-1.5H2.75Z"]));
+exports.ListRtlRegular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('ListRtlRegular', "1em", ["M6 4.5c0-.28.22-.5.5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5Zm1 10c0-.28.22-.5.5-.5h10a.5.5 0 0 1 0 1h-10a.5.5 0 0 1-.5-.5ZM2.5 9a.5.5 0 0 0 0 1h15a.5.5 0 0 0 0-1h-15Z"]));
+exports.ListRtl16Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('ListRtl16Regular', "16", ["M5 3.5c0-.28.22-.5.5-.5h8a.5.5 0 0 1 0 1h-8a.5.5 0 0 1-.5-.5Zm1 8c0-.28.22-.5.5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5ZM2.5 7a.5.5 0 0 0 0 1h11a.5.5 0 0 0 0-1h-11Z"]));
+exports.ListRtl16Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('ListRtl16Filled', "16", ["M5 3.75c0-.41.34-.75.75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5A.75.75 0 0 1 5 3.75Zm1 8c0-.41.34-.75.75-.75h6.5a.75.75 0 0 1 0 1.5h-6.5a.75.75 0 0 1-.75-.75ZM2.75 7a.75.75 0 0 0 0 1.5h10.5a.75.75 0 0 0 0-1.5H2.75Z"]));
+exports.ListRtl20Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('ListRtl20Regular', "20", ["M6 4.5c0-.28.22-.5.5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5Zm1 10c0-.28.22-.5.5-.5h10a.5.5 0 0 1 0 1h-10a.5.5 0 0 1-.5-.5ZM2.5 9a.5.5 0 0 0 0 1h15a.5.5 0 0 0 0-1h-15Z"]));
+exports.ListRtl20Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('ListRtl20Filled', "20", ["M6 4.75c0-.41.34-.75.75-.75h10.5a.75.75 0 0 1 0 1.5H6.75A.75.75 0 0 1 6 4.75Zm1 10c0-.41.34-.75.75-.75h9.5a.75.75 0 0 1 0 1.5h-9.5a.75.75 0 0 1-.75-.75ZM2.75 9a.75.75 0 0 0 0 1.5h14.5a.75.75 0 0 0 0-1.5H2.75Z"]));

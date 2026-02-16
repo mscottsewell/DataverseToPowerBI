@@ -1,0 +1,11 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const ProhibitedMultipleFilled: FluentFontIcon;
+export declare const ProhibitedMultipleRegular: FluentFontIcon;
+export declare const ProhibitedMultiple16Regular: FluentFontIcon;
+export declare const ProhibitedMultiple16Filled: FluentFontIcon;
+export declare const ProhibitedMultiple20Regular: FluentFontIcon;
+export declare const ProhibitedMultiple20Filled: FluentFontIcon;
+export declare const ProhibitedMultiple24Regular: FluentFontIcon;
+export declare const ProhibitedMultiple24Filled: FluentFontIcon;
+export declare const ProhibitedMultiple28Regular: FluentFontIcon;
+export declare const ProhibitedMultiple28Filled: FluentFontIcon;

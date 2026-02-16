@@ -1,0 +1,17 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const TooltipQuoteOffFilled: FluentFontIcon;
+export declare const TooltipQuoteOffRegular: FluentFontIcon;
+export declare const TooltipQuoteOff12Regular: FluentFontIcon;
+export declare const TooltipQuoteOff12Filled: FluentFontIcon;
+export declare const TooltipQuoteOff16Regular: FluentFontIcon;
+export declare const TooltipQuoteOff16Filled: FluentFontIcon;
+export declare const TooltipQuoteOff20Regular: FluentFontIcon;
+export declare const TooltipQuoteOff20Filled: FluentFontIcon;
+export declare const TooltipQuoteOff24Regular: FluentFontIcon;
+export declare const TooltipQuoteOff24Filled: FluentFontIcon;
+export declare const TooltipQuoteOff28Regular: FluentFontIcon;
+export declare const TooltipQuoteOff28Filled: FluentFontIcon;
+export declare const TooltipQuoteOff32Regular: FluentFontIcon;
+export declare const TooltipQuoteOff32Filled: FluentFontIcon;
+export declare const TooltipQuoteOff48Regular: FluentFontIcon;
+export declare const TooltipQuoteOff48Filled: FluentFontIcon;

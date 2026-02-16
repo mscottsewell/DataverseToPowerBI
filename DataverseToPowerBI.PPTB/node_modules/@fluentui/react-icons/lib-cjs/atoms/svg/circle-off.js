@@ -1,0 +1,11 @@
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.CircleOff20Filled = exports.CircleOff20Regular = exports.CircleOff16Filled = exports.CircleOff16Regular = exports.CircleOffRegular = exports.CircleOffFilled = void 0;
+const createFluentIcon_1 = require("../../utils/createFluentIcon");
+exports.CircleOffFilled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('CircleOffFilled', "1em", ["m15.3 16 1.85 1.85a.5.5 0 0 0 .7-.7l-15-15a.5.5 0 1 0-.7.7L4 4.71A8 8 0 0 0 15.3 16Zm2.7-6c0 1.67-.51 3.21-1.38 4.5L5.5 3.38A8 8 0 0 1 18 10Z"]));
+exports.CircleOffRegular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('CircleOffRegular', "1em", ["M4 4.7 2.15 2.86a.5.5 0 1 1 .7-.7l15 15a.5.5 0 0 1-.7.7L15.29 16A8 8 0 0 1 4 4.7Zm10.58 10.6L4.71 5.41a7 7 0 0 0 9.87 9.87ZM17 10c0 1.39-.4 2.69-1.1 3.77l.72.73A8 8 0 0 0 5.5 3.39l.72.71A7 7 0 0 1 17 10Z"]));
+exports.CircleOff16Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('CircleOff16Regular', "16", ["m11.87 12.58 2.28 2.27a.5.5 0 0 0 .7-.7l-13-13a.5.5 0 1 0-.7.7l2.27 2.28a6 6 0 0 0 8.46 8.46Zm-.7-.7a5 5 0 0 1-7.04-7.04l7.03 7.03ZM13 8c0 .83-.2 1.62-.57 2.31l.74.74a6 6 0 0 0-8.22-8.22l.74.74A5 5 0 0 1 13 8Z"]));
+exports.CircleOff16Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('CircleOff16Filled', "16", ["m11.87 12.58 2.28 2.27a.5.5 0 0 0 .7-.7l-13-13a.5.5 0 1 0-.7.7l2.27 2.28a6 6 0 0 0 8.46 8.46ZM14 8c0 1.11-.3 2.15-.83 3.05L4.95 2.83A6 6 0 0 1 14 8Z"]));
+exports.CircleOff20Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('CircleOff20Regular', "20", ["M4 4.7 2.15 2.86a.5.5 0 1 1 .7-.7l15 15a.5.5 0 0 1-.7.7L15.29 16A8 8 0 0 1 4 4.7Zm10.58 10.6L4.71 5.41a7 7 0 0 0 9.87 9.87ZM17 10c0 1.39-.4 2.69-1.1 3.77l.72.73A8 8 0 0 0 5.5 3.39l.72.71A7 7 0 0 1 17 10Z"]));
+exports.CircleOff20Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('CircleOff20Filled', "20", ["m15.3 16 1.85 1.85a.5.5 0 0 0 .7-.7l-15-15a.5.5 0 1 0-.7.7L4 4.71A8 8 0 0 0 15.3 16Zm2.7-6c0 1.67-.51 3.21-1.38 4.5L5.5 3.38A8 8 0 0 1 18 10Z"]));

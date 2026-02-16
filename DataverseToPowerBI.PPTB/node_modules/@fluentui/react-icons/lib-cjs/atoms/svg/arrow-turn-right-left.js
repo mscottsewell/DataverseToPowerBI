@@ -1,0 +1,11 @@
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ArrowTurnRightLeft48Filled = exports.ArrowTurnRightLeft48Regular = exports.ArrowTurnRightLeft20Filled = exports.ArrowTurnRightLeft20Regular = exports.ArrowTurnRightLeftRegular = exports.ArrowTurnRightLeftFilled = void 0;
+const createFluentIcon_1 = require("../../utils/createFluentIcon");
+exports.ArrowTurnRightLeftFilled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('ArrowTurnRightLeftFilled', "1em", ["M4.47 15.45a.75.75 0 0 1-.4-1.03l2.5-5a.75.75 0 1 1 1.35.67L6.3 13.33 16.12 9 5.45 4.44a.75.75 0 0 1 .6-1.38l11.19 4.8c1 .43 1 1.85 0 2.29l-10.46 4.6 3.25 1.3a.75.75 0 1 1-.56 1.4l-5-2Z"]));
+exports.ArrowTurnRightLeftRegular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('ArrowTurnRightLeftRegular', "1em", ["M4 14.57a.5.5 0 0 0 .31.4l5 2a.5.5 0 1 0 .38-.93L5.85 14.5l11.52-4.59a1 1 0 0 0 .03-1.85L5.7 3.04a.5.5 0 0 0-.4.92L17 8.98 5.53 13.55l1.92-3.83a.5.5 0 1 0-.9-.44l-2.49 4.98a.5.5 0 0 0-.06.3Z"]));
+exports.ArrowTurnRightLeft20Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('ArrowTurnRightLeft20Regular', "20", ["M4 14.57a.5.5 0 0 0 .31.4l5 2a.5.5 0 1 0 .38-.93L5.85 14.5l11.52-4.59a1 1 0 0 0 .03-1.85L5.7 3.04a.5.5 0 0 0-.4.92L17 8.98 5.53 13.55l1.92-3.83a.5.5 0 1 0-.9-.44l-2.49 4.98a.5.5 0 0 0-.06.3Z"]));
+exports.ArrowTurnRightLeft20Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('ArrowTurnRightLeft20Filled', "20", ["M4.47 15.45a.75.75 0 0 1-.4-1.03l2.5-5a.75.75 0 1 1 1.35.67L6.3 13.33 16.12 9 5.45 4.44a.75.75 0 0 1 .6-1.38l11.19 4.8c1 .43 1 1.85 0 2.29l-10.46 4.6 3.25 1.3a.75.75 0 1 1-.56 1.4l-5-2Z"]));
+exports.ArrowTurnRightLeft48Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('ArrowTurnRightLeft48Regular', "48", ["M9.53 9.4a1.25 1.25 0 0 1 .94-2.3l31.31 12.82a2.25 2.25 0 0 1 0 4.16l-30.2 12.38 8.71 4.16a1.25 1.25 0 1 1-1.08 2.26l-11.5-5.5c-.6-.29-.87-1-.61-1.61l5-12a1.25 1.25 0 1 1 2.3.96l-3.95 9.48L40.27 22 9.53 9.4Z"]));
+exports.ArrowTurnRightLeft48Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('ArrowTurnRightLeft48Filled', "48", ["M8.94 9.9a1.5 1.5 0 0 1 1.12-2.8L41.6 19.7a2.5 2.5 0 0 1 .04 4.63L12.4 36.63l7.73 3.5a1.5 1.5 0 0 1-1.24 2.74l-11-5a1.5 1.5 0 0 1-.76-1.95l5-12a1.5 1.5 0 0 1 2.77 1.16l-3.66 8.78 28.13-11.82L8.94 9.89Z"]));

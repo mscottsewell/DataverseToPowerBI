@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const LuggageFilled: FluentFontIcon;
+export declare const LuggageRegular: FluentFontIcon;
+export declare const Luggage16Regular: FluentFontIcon;
+export declare const Luggage16Filled: FluentFontIcon;
+export declare const Luggage20Regular: FluentFontIcon;
+export declare const Luggage20Filled: FluentFontIcon;
+export declare const Luggage24Regular: FluentFontIcon;
+export declare const Luggage24Filled: FluentFontIcon;
+export declare const Luggage28Regular: FluentFontIcon;
+export declare const Luggage28Filled: FluentFontIcon;
+export declare const Luggage32Regular: FluentFontIcon;
+export declare const Luggage32Filled: FluentFontIcon;
+export declare const Luggage48Regular: FluentFontIcon;
+export declare const Luggage48Filled: FluentFontIcon;

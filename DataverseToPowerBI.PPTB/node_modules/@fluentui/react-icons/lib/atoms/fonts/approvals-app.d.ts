@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const ApprovalsAppFilled: FluentFontIcon;
+export declare const ApprovalsAppRegular: FluentFontIcon;
+export declare const ApprovalsApp16Regular: FluentFontIcon;
+export declare const ApprovalsApp16Filled: FluentFontIcon;
+export declare const ApprovalsApp20Regular: FluentFontIcon;
+export declare const ApprovalsApp20Filled: FluentFontIcon;
+export declare const ApprovalsApp24Regular: FluentFontIcon;
+export declare const ApprovalsApp24Filled: FluentFontIcon;
+export declare const ApprovalsApp28Regular: FluentFontIcon;
+export declare const ApprovalsApp28Filled: FluentFontIcon;
+export declare const ApprovalsApp32Regular: FluentFontIcon;
+export declare const ApprovalsApp32Filled: FluentFontIcon;
+export declare const ApprovalsApp48Regular: FluentFontIcon;
+export declare const ApprovalsApp48Filled: FluentFontIcon;

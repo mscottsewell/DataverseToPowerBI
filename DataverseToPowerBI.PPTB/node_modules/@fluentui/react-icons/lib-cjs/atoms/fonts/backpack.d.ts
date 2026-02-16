@@ -1,0 +1,17 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const BackpackFilled: FluentFontIcon;
+export declare const BackpackRegular: FluentFontIcon;
+export declare const Backpack12Regular: FluentFontIcon;
+export declare const Backpack12Filled: FluentFontIcon;
+export declare const Backpack16Regular: FluentFontIcon;
+export declare const Backpack16Filled: FluentFontIcon;
+export declare const Backpack20Regular: FluentFontIcon;
+export declare const Backpack20Filled: FluentFontIcon;
+export declare const Backpack24Regular: FluentFontIcon;
+export declare const Backpack24Filled: FluentFontIcon;
+export declare const Backpack28Regular: FluentFontIcon;
+export declare const Backpack28Filled: FluentFontIcon;
+export declare const Backpack32Regular: FluentFontIcon;
+export declare const Backpack32Filled: FluentFontIcon;
+export declare const Backpack48Regular: FluentFontIcon;
+export declare const Backpack48Filled: FluentFontIcon;

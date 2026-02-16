@@ -1,0 +1,11 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const DishwasherFilled: FluentIcon;
+export declare const DishwasherRegular: FluentIcon;
+export declare const Dishwasher20Regular: FluentIcon;
+export declare const Dishwasher20Filled: FluentIcon;
+export declare const Dishwasher24Regular: FluentIcon;
+export declare const Dishwasher24Filled: FluentIcon;
+export declare const Dishwasher32Regular: FluentIcon;
+export declare const Dishwasher32Filled: FluentIcon;
+export declare const Dishwasher48Regular: FluentIcon;
+export declare const Dishwasher48Filled: FluentIcon;

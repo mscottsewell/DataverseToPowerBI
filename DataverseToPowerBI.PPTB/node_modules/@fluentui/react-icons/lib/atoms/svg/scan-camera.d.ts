@@ -1,0 +1,13 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const ScanCameraFilled: FluentIcon;
+export declare const ScanCameraRegular: FluentIcon;
+export declare const ScanCamera16Regular: FluentIcon;
+export declare const ScanCamera16Filled: FluentIcon;
+export declare const ScanCamera20Regular: FluentIcon;
+export declare const ScanCamera20Filled: FluentIcon;
+export declare const ScanCamera24Regular: FluentIcon;
+export declare const ScanCamera24Filled: FluentIcon;
+export declare const ScanCamera28Regular: FluentIcon;
+export declare const ScanCamera28Filled: FluentIcon;
+export declare const ScanCamera48Regular: FluentIcon;
+export declare const ScanCamera48Filled: FluentIcon;

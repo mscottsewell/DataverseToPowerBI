@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const BluetoothFilled: FluentFontIcon;
+export declare const BluetoothRegular: FluentFontIcon;
+export declare const Bluetooth16Regular: FluentFontIcon;
+export declare const Bluetooth16Filled: FluentFontIcon;
+export declare const Bluetooth20Regular: FluentFontIcon;
+export declare const Bluetooth20Filled: FluentFontIcon;
+export declare const Bluetooth24Regular: FluentFontIcon;
+export declare const Bluetooth24Filled: FluentFontIcon;
+export declare const Bluetooth28Regular: FluentFontIcon;
+export declare const Bluetooth28Filled: FluentFontIcon;
+export declare const Bluetooth32Regular: FluentFontIcon;
+export declare const Bluetooth32Filled: FluentFontIcon;
+export declare const Bluetooth48Regular: FluentFontIcon;
+export declare const Bluetooth48Filled: FluentFontIcon;

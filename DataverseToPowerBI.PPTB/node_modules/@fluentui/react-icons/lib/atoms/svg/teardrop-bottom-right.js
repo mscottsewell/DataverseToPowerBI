@@ -1,0 +1,16 @@
+"use client";
+import { createFluentIcon } from '../../utils/createFluentIcon';
+export const TeardropBottomRightFilled = ( /*#__PURE__*/createFluentIcon('TeardropBottomRightFilled', "1em", ["M2 10a8 8 0 1 1 16 0v6a2 2 0 0 1-2 2h-6a8 8 0 0 1-8-8Z"]));
+export const TeardropBottomRightRegular = ( /*#__PURE__*/createFluentIcon('TeardropBottomRightRegular', "1em", ["M2 10a8 8 0 1 1 16 0v6a2 2 0 0 1-2 2h-6a8 8 0 0 1-8-8Zm8-7a7 7 0 0 0 0 14h6a1 1 0 0 0 1-1v-6a7 7 0 0 0-7-7Z"]));
+export const TeardropBottomRight16Regular = ( /*#__PURE__*/createFluentIcon('TeardropBottomRight16Regular', "16", ["M1 8a7 7 0 0 1 14 0v5.25c0 .97-.78 1.75-1.75 1.75H8a7 7 0 0 1-7-7Zm7-6a6 6 0 1 0 0 12h5.25c.41 0 .75-.34.75-.75V8a6 6 0 0 0-6-6Z"]));
+export const TeardropBottomRight16Filled = ( /*#__PURE__*/createFluentIcon('TeardropBottomRight16Filled', "16", ["M1 8a7 7 0 0 1 14 0v5.25c0 .97-.78 1.75-1.75 1.75H8a7 7 0 0 1-7-7Z"]));
+export const TeardropBottomRight20Regular = ( /*#__PURE__*/createFluentIcon('TeardropBottomRight20Regular', "20", ["M2 10a8 8 0 1 1 16 0v6a2 2 0 0 1-2 2h-6a8 8 0 0 1-8-8Zm8-7a7 7 0 0 0 0 14h6a1 1 0 0 0 1-1v-6a7 7 0 0 0-7-7Z"]));
+export const TeardropBottomRight20Filled = ( /*#__PURE__*/createFluentIcon('TeardropBottomRight20Filled', "20", ["M2 10a8 8 0 1 1 16 0v6a2 2 0 0 1-2 2h-6a8 8 0 0 1-8-8Z"]));
+export const TeardropBottomRight24Regular = ( /*#__PURE__*/createFluentIcon('TeardropBottomRight24Regular', "24", ["M2 12a10 10 0 1 1 20 0v7.75c0 1.24-1 2.25-2.25 2.25H12A10 10 0 0 1 2 12Zm10-8.5a8.5 8.5 0 0 0 0 17h7.75c.41 0 .75-.34.75-.75V12c0-4.7-3.8-8.5-8.5-8.5Z"]));
+export const TeardropBottomRight24Filled = ( /*#__PURE__*/createFluentIcon('TeardropBottomRight24Filled', "24", ["M2 12a10 10 0 1 1 20 0v7.75c0 1.24-1 2.25-2.25 2.25H12A10 10 0 0 1 2 12Z"]));
+export const TeardropBottomRight28Regular = ( /*#__PURE__*/createFluentIcon('TeardropBottomRight28Regular', "28", ["M2 13.75C2 7.26 7.26 2 13.75 2h.5C20.74 2 26 7.26 26 13.75v9.5A2.75 2.75 0 0 1 23.25 26h-9.5A11.75 11.75 0 0 1 2 14.25v-.5ZM13.75 3.5A10.25 10.25 0 0 0 3.5 13.75v.5c0 5.66 4.59 10.25 10.25 10.25h9.5c.69 0 1.25-.56 1.25-1.25v-9.5c0-5.66-4.59-10.25-10.25-10.25h-.5Z"]));
+export const TeardropBottomRight28Filled = ( /*#__PURE__*/createFluentIcon('TeardropBottomRight28Filled', "28", ["M13.75 2A11.75 11.75 0 0 0 2 13.75v.5C2 20.74 7.26 26 13.75 26h9.5A2.75 2.75 0 0 0 26 23.25v-9.5C26 7.26 20.74 2 14.25 2h-.5Z"]));
+export const TeardropBottomRight32Regular = ( /*#__PURE__*/createFluentIcon('TeardropBottomRight32Regular', "32", ["M2 16a14 14 0 1 1 28 0v10.75c0 1.8-1.46 3.25-3.25 3.25H16A14 14 0 0 1 2 16ZM16 4a12 12 0 1 0 0 24h10.75c.69 0 1.25-.56 1.25-1.25V16A12 12 0 0 0 16 4Z"]));
+export const TeardropBottomRight32Filled = ( /*#__PURE__*/createFluentIcon('TeardropBottomRight32Filled', "32", ["M2 16a14 14 0 1 1 28 0v10.75c0 1.8-1.46 3.25-3.25 3.25H16A14 14 0 0 1 2 16Z"]));
+export const TeardropBottomRight48Regular = ( /*#__PURE__*/createFluentIcon('TeardropBottomRight48Regular', "48", ["M4 24a20 20 0 1 1 40 0v15.75C44 42.1 42.1 44 39.75 44H24A20 20 0 0 1 4 24ZM24 6.5a17.5 17.5 0 1 0 0 35h15.75c.97 0 1.75-.78 1.75-1.75V24A17.5 17.5 0 0 0 24 6.5Z"]));
+export const TeardropBottomRight48Filled = ( /*#__PURE__*/createFluentIcon('TeardropBottomRight48Filled', "48", ["M4 24a20 20 0 1 1 40 0v15.75C44 42.1 42.1 44 39.75 44H24A20 20 0 0 1 4 24Z"]));

@@ -1,0 +1,13 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const BrainSparkleFilled: FluentIcon;
+export declare const BrainSparkleRegular: FluentIcon;
+export declare const BrainSparkle20Regular: FluentIcon;
+export declare const BrainSparkle20Filled: FluentIcon;
+export declare const BrainSparkle24Regular: FluentIcon;
+export declare const BrainSparkle24Filled: FluentIcon;
+export declare const BrainSparkle28Regular: FluentIcon;
+export declare const BrainSparkle28Filled: FluentIcon;
+export declare const BrainSparkle32Regular: FluentIcon;
+export declare const BrainSparkle32Filled: FluentIcon;
+export declare const BrainSparkle48Regular: FluentIcon;
+export declare const BrainSparkle48Filled: FluentIcon;

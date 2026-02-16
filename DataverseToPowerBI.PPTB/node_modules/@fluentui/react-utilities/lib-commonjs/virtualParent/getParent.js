@@ -1,0 +1,34 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+Object.defineProperty(exports, "getParent", {
+    enumerable: true,
+    get: function() {
+        return getParent;
+    }
+});
+const _isVirtualElement = require("./isVirtualElement");
+/**
+ * Gets the virtual parent given the child element, if it exists.
+ * @internal
+ */ function getVirtualParent(child) {
+    return (0, _isVirtualElement.isVirtualElement)(child) ? child._virtual.parent || null : null;
+}
+function getParent(child, options = {}) {
+    if (!child) {
+        return null;
+    }
+    if (!options.skipVirtual) {
+        const virtualParent = getVirtualParent(child);
+        if (virtualParent) {
+            return virtualParent;
+        }
+    }
+    const parent = child.parentNode;
+    // Node.DOCUMENT_FRAGMENT_NODE = 11
+    if (parent && parent.nodeType === 11) {
+        return parent.host;
+    }
+    return parent;
+}

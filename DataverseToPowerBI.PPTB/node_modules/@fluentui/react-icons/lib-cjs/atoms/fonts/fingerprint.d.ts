@@ -1,0 +1,13 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const FingerprintFilled: FluentFontIcon;
+export declare const FingerprintRegular: FluentFontIcon;
+export declare const Fingerprint16Regular: FluentFontIcon;
+export declare const Fingerprint16Filled: FluentFontIcon;
+export declare const Fingerprint20Regular: FluentFontIcon;
+export declare const Fingerprint20Filled: FluentFontIcon;
+export declare const Fingerprint24Regular: FluentFontIcon;
+export declare const Fingerprint24Filled: FluentFontIcon;
+export declare const Fingerprint32Regular: FluentFontIcon;
+export declare const Fingerprint32Filled: FluentFontIcon;
+export declare const Fingerprint48Regular: FluentFontIcon;
+export declare const Fingerprint48Filled: FluentFontIcon;

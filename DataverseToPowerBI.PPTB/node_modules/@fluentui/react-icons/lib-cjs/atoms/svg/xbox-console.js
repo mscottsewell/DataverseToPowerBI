@@ -1,0 +1,11 @@
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.XboxConsole24Filled = exports.XboxConsole24Regular = exports.XboxConsole20Filled = exports.XboxConsole20Regular = exports.XboxConsoleRegular = exports.XboxConsoleFilled = void 0;
+const createFluentIcon_1 = require("../../utils/createFluentIcon");
+exports.XboxConsoleFilled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('XboxConsoleFilled', "1em", ["M4.5 2a.5.5 0 0 0-.5.5v15c0 .28.22.5.5.5H7V9.5a.5.5 0 0 1 1 0V18h7.5a.5.5 0 0 0 .5-.5v-15a.5.5 0 0 0-.5-.5h-11Zm3 4.5a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5Z"]));
+exports.XboxConsoleRegular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('XboxConsoleRegular', "1em", ["M7.5 6.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM4 2.5c0-.28.22-.5.5-.5h11c.28 0 .5.22.5.5v15a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-15Zm4 7V17h7V3H5v14h2V9.5a.5.5 0 0 1 1 0Z"]));
+exports.XboxConsole20Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('XboxConsole20Regular', "20", ["M7.5 6.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM4 2.5c0-.28.22-.5.5-.5h11c.28 0 .5.22.5.5v15a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-15Zm4 7V17h7V3H5v14h2V9.5a.5.5 0 0 1 1 0Z"]));
+exports.XboxConsole20Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('XboxConsole20Filled', "20", ["M4.5 2a.5.5 0 0 0-.5.5v15c0 .28.22.5.5.5H7V9.5a.5.5 0 0 1 1 0V18h7.5a.5.5 0 0 0 .5-.5v-15a.5.5 0 0 0-.5-.5h-11Zm3 4.5a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5Z"]));
+exports.XboxConsole24Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('XboxConsole24Regular', "24", ["M9.5 5.75a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM5.75 2a.75.75 0 0 0-.75.75v18.5c0 .41.34.75.75.75h12.5c.41 0 .75-.34.75-.75V2.75a.75.75 0 0 0-.75-.75H5.75ZM9.5 20.5v-8.75a.75.75 0 0 0-1.5 0v8.75H6.5v-17h11v17h-8Z"]));
+exports.XboxConsole24Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('XboxConsole24Filled', "24", ["M5.75 2a.75.75 0 0 0-.75.75v18.5c0 .41.34.75.75.75H8V11.75a.75.75 0 0 1 1.5 0V22h8.75c.41 0 .75-.34.75-.75V2.75a.75.75 0 0 0-.75-.75H5.75ZM9.5 5.75a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z"]));

@@ -1,0 +1,16 @@
+"use client";
+import { createFluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export const AccessibilityFilled = ( /*#__PURE__*/createFluentFontIcon("AccessibilityFilled", "", 2, undefined));
+export const AccessibilityRegular = ( /*#__PURE__*/createFluentFontIcon("AccessibilityRegular", "", 2, undefined));
+export const Accessibility16Regular = ( /*#__PURE__*/createFluentFontIcon("Accessibility16Regular", "", 1, 16));
+export const Accessibility16Filled = ( /*#__PURE__*/createFluentFontIcon("Accessibility16Filled", "", 0, 16));
+export const Accessibility20Regular = ( /*#__PURE__*/createFluentFontIcon("Accessibility20Regular", "", 1, 20));
+export const Accessibility20Filled = ( /*#__PURE__*/createFluentFontIcon("Accessibility20Filled", "", 0, 20));
+export const Accessibility24Regular = ( /*#__PURE__*/createFluentFontIcon("Accessibility24Regular", "", 1, 24));
+export const Accessibility24Filled = ( /*#__PURE__*/createFluentFontIcon("Accessibility24Filled", "", 0, 24));
+export const Accessibility28Regular = ( /*#__PURE__*/createFluentFontIcon("Accessibility28Regular", "", 1, 28));
+export const Accessibility28Filled = ( /*#__PURE__*/createFluentFontIcon("Accessibility28Filled", "", 0, 28));
+export const Accessibility32Regular = ( /*#__PURE__*/createFluentFontIcon("Accessibility32Regular", "", 1, 32));
+export const Accessibility32Filled = ( /*#__PURE__*/createFluentFontIcon("Accessibility32Filled", "", 0, 32));
+export const Accessibility48Regular = ( /*#__PURE__*/createFluentFontIcon("Accessibility48Regular", "", 1, 48));
+export const Accessibility48Filled = ( /*#__PURE__*/createFluentFontIcon("Accessibility48Filled", "", 0, 48));

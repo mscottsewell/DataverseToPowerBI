@@ -1,0 +1,11 @@
+'use client';
+import * as React from 'react';
+/**
+ * @internal
+ */ export const BackgroundAppearanceContext = React.createContext(undefined);
+/**
+ * @internal
+ */ export const BackgroundAppearanceProvider = BackgroundAppearanceContext.Provider;
+export function useBackgroundAppearance() {
+    return React.useContext(BackgroundAppearanceContext);
+}

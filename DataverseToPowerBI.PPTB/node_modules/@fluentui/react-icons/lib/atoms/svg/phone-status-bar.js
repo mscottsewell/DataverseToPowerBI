@@ -1,0 +1,8 @@
+"use client";
+import { createFluentIcon } from '../../utils/createFluentIcon';
+export const PhoneStatusBarFilled = ( /*#__PURE__*/createFluentIcon('PhoneStatusBarFilled', "1em", ["M5 4c0-1.1.9-2 2-2h6a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V4Zm2.5 0a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1h-5Z"]));
+export const PhoneStatusBarRegular = ( /*#__PURE__*/createFluentIcon('PhoneStatusBarRegular', "1em", ["M7.5 4a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1h-5ZM7 2a2 2 0 0 0-2 2v12c0 1.1.9 2 2 2h6a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H7ZM6 4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4Z"]));
+export const PhoneStatusBar20Regular = ( /*#__PURE__*/createFluentIcon('PhoneStatusBar20Regular', "20", ["M7.5 4a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1h-5ZM7 2a2 2 0 0 0-2 2v12c0 1.1.9 2 2 2h6a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H7ZM6 4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4Z"]));
+export const PhoneStatusBar20Filled = ( /*#__PURE__*/createFluentIcon('PhoneStatusBar20Filled', "20", ["M5 4c0-1.1.9-2 2-2h6a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V4Zm2.5 0a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1h-5Z"]));
+export const PhoneStatusBar24Regular = ( /*#__PURE__*/createFluentIcon('PhoneStatusBar24Regular', "24", ["M15.75 2C16.99 2 18 3 18 4.25v15.5c0 1.24-1 2.25-2.25 2.25h-7.5C7.01 22 6 21 6 19.75V4.25C6 3.01 7 2 8.25 2h7.5Zm0 1.5h-7.5a.75.75 0 0 0-.75.75v15.5c0 .41.34.75.75.75h7.5c.41 0 .75-.34.75-.75V4.25a.75.75 0 0 0-.75-.75Zm-1 1a.75.75 0 0 1 0 1.5h-5.5a.75.75 0 0 1 0-1.5h5.5Z"]));
+export const PhoneStatusBar24Filled = ( /*#__PURE__*/createFluentIcon('PhoneStatusBar24Filled', "24", ["M15.75 2C16.99 2 18 3 18 4.25v15.5c0 1.24-1 2.25-2.25 2.25h-7.5C7.01 22 6 21 6 19.75V4.25C6 3.01 7 2 8.25 2h7.5Zm-1 2.5h-5.5a.75.75 0 0 0-.1 1.5h5.6a.75.75 0 0 0 .1-1.5h-.1Z"]));

@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const MusicNoteOff1Regular: FluentFontIcon;
+export declare const MusicNoteOff1Filled: FluentFontIcon;
+export declare const MusicNoteOff2Regular: FluentFontIcon;
+export declare const MusicNoteOff2Filled: FluentFontIcon;
+export declare const MusicNoteOff120Regular: FluentFontIcon;
+export declare const MusicNoteOff120Filled: FluentFontIcon;
+export declare const MusicNoteOff124Regular: FluentFontIcon;
+export declare const MusicNoteOff124Filled: FluentFontIcon;
+export declare const MusicNoteOff216Regular: FluentFontIcon;
+export declare const MusicNoteOff216Filled: FluentFontIcon;
+export declare const MusicNoteOff220Regular: FluentFontIcon;
+export declare const MusicNoteOff220Filled: FluentFontIcon;
+export declare const MusicNoteOff224Regular: FluentFontIcon;
+export declare const MusicNoteOff224Filled: FluentFontIcon;

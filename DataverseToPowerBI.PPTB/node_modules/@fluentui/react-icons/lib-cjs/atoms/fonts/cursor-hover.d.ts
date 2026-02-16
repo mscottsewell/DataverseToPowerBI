@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const CursorHoverFilled: FluentFontIcon;
+export declare const CursorHoverRegular: FluentFontIcon;
+export declare const CursorHover16Regular: FluentFontIcon;
+export declare const CursorHover16Filled: FluentFontIcon;
+export declare const CursorHover20Regular: FluentFontIcon;
+export declare const CursorHover20Filled: FluentFontIcon;
+export declare const CursorHover24Regular: FluentFontIcon;
+export declare const CursorHover24Filled: FluentFontIcon;
+export declare const CursorHover28Regular: FluentFontIcon;
+export declare const CursorHover28Filled: FluentFontIcon;
+export declare const CursorHover32Regular: FluentFontIcon;
+export declare const CursorHover32Filled: FluentFontIcon;
+export declare const CursorHover48Regular: FluentFontIcon;
+export declare const CursorHover48Filled: FluentFontIcon;

@@ -1,0 +1,17 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const ChevronCircleRightFilled: FluentFontIcon;
+export declare const ChevronCircleRightRegular: FluentFontIcon;
+export declare const ChevronCircleRight12Regular: FluentFontIcon;
+export declare const ChevronCircleRight12Filled: FluentFontIcon;
+export declare const ChevronCircleRight16Regular: FluentFontIcon;
+export declare const ChevronCircleRight16Filled: FluentFontIcon;
+export declare const ChevronCircleRight20Regular: FluentFontIcon;
+export declare const ChevronCircleRight20Filled: FluentFontIcon;
+export declare const ChevronCircleRight24Regular: FluentFontIcon;
+export declare const ChevronCircleRight24Filled: FluentFontIcon;
+export declare const ChevronCircleRight28Regular: FluentFontIcon;
+export declare const ChevronCircleRight28Filled: FluentFontIcon;
+export declare const ChevronCircleRight32Regular: FluentFontIcon;
+export declare const ChevronCircleRight32Filled: FluentFontIcon;
+export declare const ChevronCircleRight48Regular: FluentFontIcon;
+export declare const ChevronCircleRight48Filled: FluentFontIcon;

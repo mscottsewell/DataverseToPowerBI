@@ -1,0 +1,17 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const ScanDashFilled: FluentIcon;
+export declare const ScanDashRegular: FluentIcon;
+export declare const ScanDash12Regular: FluentIcon;
+export declare const ScanDash12Filled: FluentIcon;
+export declare const ScanDash16Regular: FluentIcon;
+export declare const ScanDash16Filled: FluentIcon;
+export declare const ScanDash20Regular: FluentIcon;
+export declare const ScanDash20Filled: FluentIcon;
+export declare const ScanDash24Regular: FluentIcon;
+export declare const ScanDash24Filled: FluentIcon;
+export declare const ScanDash28Regular: FluentIcon;
+export declare const ScanDash28Filled: FluentIcon;
+export declare const ScanDash32Regular: FluentIcon;
+export declare const ScanDash32Filled: FluentIcon;
+export declare const ScanDash48Regular: FluentIcon;
+export declare const ScanDash48Filled: FluentIcon;

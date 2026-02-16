@@ -1,0 +1,16 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const ImmersiveReaderFilled: FluentIcon;
+export declare const ImmersiveReaderRegular: FluentIcon;
+export declare const ImmersiveReader16Regular: FluentIcon;
+export declare const ImmersiveReader16Filled: FluentIcon;
+export declare const ImmersiveReader20Regular: FluentIcon;
+export declare const ImmersiveReader20Filled: FluentIcon;
+export declare const ImmersiveReader24Regular: FluentIcon;
+export declare const ImmersiveReader24Filled: FluentIcon;
+export declare const ImmersiveReader28Regular: FluentIcon;
+export declare const ImmersiveReader28Filled: FluentIcon;
+export declare const ImmersiveReader32Regular: FluentIcon;
+export declare const ImmersiveReader32Filled: FluentIcon;
+export declare const ImmersiveReader32Light: FluentIcon;
+export declare const ImmersiveReader48Regular: FluentIcon;
+export declare const ImmersiveReader48Filled: FluentIcon;

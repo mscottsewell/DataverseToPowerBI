@@ -1,0 +1,13 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const Multiplier15XFilled: FluentFontIcon;
+export declare const Multiplier15XRegular: FluentFontIcon;
+export declare const Multiplier15X20Regular: FluentFontIcon;
+export declare const Multiplier15X20Filled: FluentFontIcon;
+export declare const Multiplier15X24Regular: FluentFontIcon;
+export declare const Multiplier15X24Filled: FluentFontIcon;
+export declare const Multiplier15X28Regular: FluentFontIcon;
+export declare const Multiplier15X28Filled: FluentFontIcon;
+export declare const Multiplier15X32Regular: FluentFontIcon;
+export declare const Multiplier15X32Filled: FluentFontIcon;
+export declare const Multiplier15X48Regular: FluentFontIcon;
+export declare const Multiplier15X48Filled: FluentFontIcon;

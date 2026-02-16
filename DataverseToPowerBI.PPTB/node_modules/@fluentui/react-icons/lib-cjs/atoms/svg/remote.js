@@ -1,0 +1,11 @@
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Remote20Filled = exports.Remote20Regular = exports.Remote16Filled = exports.Remote16Regular = exports.RemoteRegular = exports.RemoteFilled = void 0;
+const createFluentIcon_1 = require("../../utils/createFluentIcon");
+exports.RemoteFilled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('RemoteFilled', "1em", ["M16.97 15.03a.75.75 0 1 0 1.06-1.06L12.56 8.5l5.47-5.47a.75.75 0 0 0-1.06-1.06l-6 6c-.3.3-.3.77 0 1.06l6 6ZM3.03 4.97a.75.75 0 0 0-1.06 1.06l5.47 5.47-5.47 5.47a.75.75 0 1 0 1.06 1.06l6-6c.3-.3.3-.77 0-1.06l-6-6Z"]));
+exports.RemoteRegular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('RemoteRegular', "1em", ["M17.15 14.85a.5.5 0 0 0 .7-.7L12.21 8.5l5.64-5.65a.5.5 0 0 0-.7-.7l-6 6a.5.5 0 0 0 0 .7l6 6Zm-14.3-9.7a.5.5 0 1 0-.7.7l5.64 5.65-5.64 5.65a.5.5 0 0 0 .7.7l6-6a.5.5 0 0 0 0-.7l-6-6Z"]));
+exports.Remote16Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('Remote16Regular', "16", ["M13.85 2.85a.5.5 0 0 0-.7-.7l-4.5 4.5a.5.5 0 0 0 0 .7l4.5 4.5a.5.5 0 0 0 .7-.7L9.71 7l4.14-4.15Zm-11 1.3a.5.5 0 1 0-.7.7L6.29 9l-4.14 4.15a.5.5 0 0 0 .7.7l4.5-4.5a.5.5 0 0 0 0-.7l-4.5-4.5Z"]));
+exports.Remote16Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('Remote16Filled', "16", ["M13.8 3.26a.75.75 0 1 0-1.1-1.02l-4 4.25a.75.75 0 0 0 0 1.02l4 4.25a.75.75 0 1 0 1.1-1.02L10.28 7l3.52-3.74Zm-10.5.98a.75.75 0 1 0-1.1 1.02L5.72 9 2.2 12.74a.75.75 0 1 0 1.1 1.02l4-4.25a.75.75 0 0 0 0-1.02l-4-4.25Z"]));
+exports.Remote20Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('Remote20Regular', "20", ["M17.15 14.85a.5.5 0 0 0 .7-.7L12.21 8.5l5.64-5.65a.5.5 0 0 0-.7-.7l-6 6a.5.5 0 0 0 0 .7l6 6Zm-14.3-9.7a.5.5 0 1 0-.7.7l5.64 5.65-5.64 5.65a.5.5 0 0 0 .7.7l6-6a.5.5 0 0 0 0-.7l-6-6Z"]));
+exports.Remote20Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('Remote20Filled', "20", ["M16.97 15.03a.75.75 0 1 0 1.06-1.06L12.56 8.5l5.47-5.47a.75.75 0 0 0-1.06-1.06l-6 6c-.3.3-.3.77 0 1.06l6 6ZM3.03 4.97a.75.75 0 0 0-1.06 1.06l5.47 5.47-5.47 5.47a.75.75 0 1 0 1.06 1.06l6-6c.3-.3.3-.77 0-1.06l-6-6Z"]));

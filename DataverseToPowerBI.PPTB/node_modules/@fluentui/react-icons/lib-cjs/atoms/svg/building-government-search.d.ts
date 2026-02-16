@@ -1,0 +1,16 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const BuildingGovernmentSearchColor: FluentIcon;
+export declare const BuildingGovernmentSearchFilled: FluentIcon;
+export declare const BuildingGovernmentSearchRegular: FluentIcon;
+export declare const BuildingGovernmentSearch16Regular: FluentIcon;
+export declare const BuildingGovernmentSearch16Filled: FluentIcon;
+export declare const BuildingGovernmentSearch16Color: FluentIcon;
+export declare const BuildingGovernmentSearch20Regular: FluentIcon;
+export declare const BuildingGovernmentSearch20Filled: FluentIcon;
+export declare const BuildingGovernmentSearch20Color: FluentIcon;
+export declare const BuildingGovernmentSearch24Regular: FluentIcon;
+export declare const BuildingGovernmentSearch24Filled: FluentIcon;
+export declare const BuildingGovernmentSearch24Color: FluentIcon;
+export declare const BuildingGovernmentSearch32Regular: FluentIcon;
+export declare const BuildingGovernmentSearch32Filled: FluentIcon;
+export declare const BuildingGovernmentSearch32Color: FluentIcon;

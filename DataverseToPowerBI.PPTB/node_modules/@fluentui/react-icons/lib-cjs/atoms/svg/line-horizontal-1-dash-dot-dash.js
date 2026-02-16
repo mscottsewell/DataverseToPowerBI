@@ -1,0 +1,9 @@
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.LineHorizontal1DashDotDash20Filled = exports.LineHorizontal1DashDotDash20Regular = exports.LineHorizontal1DashDotDashRegular = exports.LineHorizontal1DashDotDashFilled = void 0;
+const createFluentIcon_1 = require("../../utils/createFluentIcon");
+exports.LineHorizontal1DashDotDashFilled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('LineHorizontal1DashDotDashFilled', "1em", ["M10 11.75a1.75 1.75 0 1 0 0-3.5 1.75 1.75 0 0 0 0 3.5ZM2.75 9a.75.75 0 0 0 0 1.5h2.5a.75.75 0 0 0 0-1.5h-2.5Zm12 0a.75.75 0 0 0 0 1.5h2.5a.75.75 0 0 0 0-1.5h-2.5Z"]));
+exports.LineHorizontal1DashDotDashRegular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('LineHorizontal1DashDotDashRegular', "1em", ["M10 10.75a1.25 1.25 0 1 0 0-2.5 1.25 1.25 0 0 0 0 2.5ZM2 9.5c0-.28.22-.5.5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5Zm11 0c0-.28.22-.5.5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5Z"]));
+exports.LineHorizontal1DashDotDash20Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('LineHorizontal1DashDotDash20Regular', "20", ["M10 10.75a1.25 1.25 0 1 0 0-2.5 1.25 1.25 0 0 0 0 2.5ZM2 9.5c0-.28.22-.5.5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5Zm11 0c0-.28.22-.5.5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5Z"]));
+exports.LineHorizontal1DashDotDash20Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('LineHorizontal1DashDotDash20Filled', "20", ["M10 11.75a1.75 1.75 0 1 0 0-3.5 1.75 1.75 0 0 0 0 3.5ZM2.75 9a.75.75 0 0 0 0 1.5h2.5a.75.75 0 0 0 0-1.5h-2.5Zm12 0a.75.75 0 0 0 0 1.5h2.5a.75.75 0 0 0 0-1.5h-2.5Z"]));

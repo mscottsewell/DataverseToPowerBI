@@ -1,0 +1,13 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const ContactCardGroupFilled: FluentIcon;
+export declare const ContactCardGroupRegular: FluentIcon;
+export declare const ContactCardGroup16Regular: FluentIcon;
+export declare const ContactCardGroup16Filled: FluentIcon;
+export declare const ContactCardGroup20Regular: FluentIcon;
+export declare const ContactCardGroup20Filled: FluentIcon;
+export declare const ContactCardGroup24Regular: FluentIcon;
+export declare const ContactCardGroup24Filled: FluentIcon;
+export declare const ContactCardGroup28Regular: FluentIcon;
+export declare const ContactCardGroup28Filled: FluentIcon;
+export declare const ContactCardGroup48Regular: FluentIcon;
+export declare const ContactCardGroup48Filled: FluentIcon;

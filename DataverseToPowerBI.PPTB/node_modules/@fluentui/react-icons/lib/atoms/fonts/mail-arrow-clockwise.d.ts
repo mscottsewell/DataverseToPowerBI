@@ -1,0 +1,12 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const MailArrowClockwiseFilled: FluentFontIcon;
+export declare const MailArrowClockwiseRegular: FluentFontIcon;
+export declare const MailArrowClockwise16Regular: FluentFontIcon;
+export declare const MailArrowClockwise16Filled: FluentFontIcon;
+export declare const MailArrowClockwise20Regular: FluentFontIcon;
+export declare const MailArrowClockwise20Filled: FluentFontIcon;
+export declare const MailArrowClockwise24Regular: FluentFontIcon;
+export declare const MailArrowClockwise24Filled: FluentFontIcon;
+export declare const MailArrowClockwise32Regular: FluentFontIcon;
+export declare const MailArrowClockwise32Filled: FluentFontIcon;
+export declare const MailArrowClockwise32Light: FluentFontIcon;

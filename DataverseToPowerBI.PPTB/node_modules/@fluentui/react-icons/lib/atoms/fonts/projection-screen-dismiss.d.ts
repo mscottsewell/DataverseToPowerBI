@@ -1,0 +1,11 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const ProjectionScreenDismissFilled: FluentFontIcon;
+export declare const ProjectionScreenDismissRegular: FluentFontIcon;
+export declare const ProjectionScreenDismiss16Regular: FluentFontIcon;
+export declare const ProjectionScreenDismiss16Filled: FluentFontIcon;
+export declare const ProjectionScreenDismiss20Regular: FluentFontIcon;
+export declare const ProjectionScreenDismiss20Filled: FluentFontIcon;
+export declare const ProjectionScreenDismiss24Regular: FluentFontIcon;
+export declare const ProjectionScreenDismiss24Filled: FluentFontIcon;
+export declare const ProjectionScreenDismiss28Regular: FluentFontIcon;
+export declare const ProjectionScreenDismiss28Filled: FluentFontIcon;

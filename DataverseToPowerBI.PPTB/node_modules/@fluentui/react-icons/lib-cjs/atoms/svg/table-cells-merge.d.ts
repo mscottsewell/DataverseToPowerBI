@@ -1,0 +1,12 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const TableCellsMergeFilled: FluentIcon;
+export declare const TableCellsMergeRegular: FluentIcon;
+export declare const TableCellsMerge16Regular: FluentIcon;
+export declare const TableCellsMerge16Filled: FluentIcon;
+export declare const TableCellsMerge20Regular: FluentIcon;
+export declare const TableCellsMerge20Filled: FluentIcon;
+export declare const TableCellsMerge24Regular: FluentIcon;
+export declare const TableCellsMerge24Filled: FluentIcon;
+export declare const TableCellsMerge28Regular: FluentIcon;
+export declare const TableCellsMerge28Filled: FluentIcon;
+export declare const TableCellsMerge32Light: FluentIcon;

@@ -1,0 +1,11 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const BinderTriangleFilled: FluentFontIcon;
+export declare const BinderTriangleRegular: FluentFontIcon;
+export declare const BinderTriangle16Regular: FluentFontIcon;
+export declare const BinderTriangle16Filled: FluentFontIcon;
+export declare const BinderTriangle20Regular: FluentFontIcon;
+export declare const BinderTriangle20Filled: FluentFontIcon;
+export declare const BinderTriangle24Regular: FluentFontIcon;
+export declare const BinderTriangle24Filled: FluentFontIcon;
+export declare const BinderTriangle32Regular: FluentFontIcon;
+export declare const BinderTriangle32Filled: FluentFontIcon;

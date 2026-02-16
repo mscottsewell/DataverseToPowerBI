@@ -1,0 +1,12 @@
+'use client';
+import * as React from 'react';
+export function useAriaLiveAnnouncerContextValues_unstable(state) {
+    const { announce } = state;
+    return React.useMemo(()=>({
+            announce: {
+                announce
+            }
+        }), [
+        announce
+    ]);
+}

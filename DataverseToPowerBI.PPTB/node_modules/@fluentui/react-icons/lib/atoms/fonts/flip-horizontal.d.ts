@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const FlipHorizontalFilled: FluentFontIcon;
+export declare const FlipHorizontalRegular: FluentFontIcon;
+export declare const FlipHorizontal16Regular: FluentFontIcon;
+export declare const FlipHorizontal16Filled: FluentFontIcon;
+export declare const FlipHorizontal20Regular: FluentFontIcon;
+export declare const FlipHorizontal20Filled: FluentFontIcon;
+export declare const FlipHorizontal24Regular: FluentFontIcon;
+export declare const FlipHorizontal24Filled: FluentFontIcon;
+export declare const FlipHorizontal28Regular: FluentFontIcon;
+export declare const FlipHorizontal28Filled: FluentFontIcon;
+export declare const FlipHorizontal32Regular: FluentFontIcon;
+export declare const FlipHorizontal32Filled: FluentFontIcon;
+export declare const FlipHorizontal48Regular: FluentFontIcon;
+export declare const FlipHorizontal48Filled: FluentFontIcon;

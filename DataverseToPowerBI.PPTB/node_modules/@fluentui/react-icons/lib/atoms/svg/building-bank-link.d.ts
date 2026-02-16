@@ -1,0 +1,13 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const BuildingBankLinkFilled: FluentIcon;
+export declare const BuildingBankLinkRegular: FluentIcon;
+export declare const BuildingBankLink16Regular: FluentIcon;
+export declare const BuildingBankLink16Filled: FluentIcon;
+export declare const BuildingBankLink20Regular: FluentIcon;
+export declare const BuildingBankLink20Filled: FluentIcon;
+export declare const BuildingBankLink24Regular: FluentIcon;
+export declare const BuildingBankLink24Filled: FluentIcon;
+export declare const BuildingBankLink28Regular: FluentIcon;
+export declare const BuildingBankLink28Filled: FluentIcon;
+export declare const BuildingBankLink48Regular: FluentIcon;
+export declare const BuildingBankLink48Filled: FluentIcon;

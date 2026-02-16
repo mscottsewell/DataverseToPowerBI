@@ -1,0 +1,11 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const ArrowMaximizeTopLeftBottomRightFilled: FluentIcon;
+export declare const ArrowMaximizeTopLeftBottomRightRegular: FluentIcon;
+export declare const ArrowMaximizeTopLeftBottomRight16Regular: FluentIcon;
+export declare const ArrowMaximizeTopLeftBottomRight16Filled: FluentIcon;
+export declare const ArrowMaximizeTopLeftBottomRight20Regular: FluentIcon;
+export declare const ArrowMaximizeTopLeftBottomRight20Filled: FluentIcon;
+export declare const ArrowMaximizeTopLeftBottomRight24Regular: FluentIcon;
+export declare const ArrowMaximizeTopLeftBottomRight24Filled: FluentIcon;
+export declare const ArrowMaximizeTopLeftBottomRight28Regular: FluentIcon;
+export declare const ArrowMaximizeTopLeftBottomRight28Filled: FluentIcon;

@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const PeopleInterwovenFilled: FluentFontIcon;
+export declare const PeopleInterwovenRegular: FluentFontIcon;
+export declare const PeopleInterwoven16Regular: FluentFontIcon;
+export declare const PeopleInterwoven16Filled: FluentFontIcon;
+export declare const PeopleInterwoven20Regular: FluentFontIcon;
+export declare const PeopleInterwoven20Filled: FluentFontIcon;
+export declare const PeopleInterwoven24Regular: FluentFontIcon;
+export declare const PeopleInterwoven24Filled: FluentFontIcon;
+export declare const PeopleInterwoven28Regular: FluentFontIcon;
+export declare const PeopleInterwoven28Filled: FluentFontIcon;
+export declare const PeopleInterwoven32Regular: FluentFontIcon;
+export declare const PeopleInterwoven32Filled: FluentFontIcon;
+export declare const PeopleInterwoven48Regular: FluentFontIcon;
+export declare const PeopleInterwoven48Filled: FluentFontIcon;

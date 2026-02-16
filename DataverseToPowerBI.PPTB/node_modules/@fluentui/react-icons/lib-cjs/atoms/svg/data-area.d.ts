@@ -1,0 +1,13 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const DataAreaColor: FluentIcon;
+export declare const DataAreaFilled: FluentIcon;
+export declare const DataAreaRegular: FluentIcon;
+export declare const DataArea20Regular: FluentIcon;
+export declare const DataArea20Filled: FluentIcon;
+export declare const DataArea20Color: FluentIcon;
+export declare const DataArea24Regular: FluentIcon;
+export declare const DataArea24Filled: FluentIcon;
+export declare const DataArea24Color: FluentIcon;
+export declare const DataArea32Regular: FluentIcon;
+export declare const DataArea32Filled: FluentIcon;
+export declare const DataArea32Color: FluentIcon;

@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const PersonCircleFilled: FluentFontIcon;
+export declare const PersonCircleRegular: FluentFontIcon;
+export declare const PersonCircle12Regular: FluentFontIcon;
+export declare const PersonCircle12Filled: FluentFontIcon;
+export declare const PersonCircle16Regular: FluentFontIcon;
+export declare const PersonCircle16Filled: FluentFontIcon;
+export declare const PersonCircle20Regular: FluentFontIcon;
+export declare const PersonCircle20Filled: FluentFontIcon;
+export declare const PersonCircle24Regular: FluentFontIcon;
+export declare const PersonCircle24Filled: FluentFontIcon;
+export declare const PersonCircle28Regular: FluentFontIcon;
+export declare const PersonCircle28Filled: FluentFontIcon;
+export declare const PersonCircle32Regular: FluentFontIcon;
+export declare const PersonCircle32Filled: FluentFontIcon;

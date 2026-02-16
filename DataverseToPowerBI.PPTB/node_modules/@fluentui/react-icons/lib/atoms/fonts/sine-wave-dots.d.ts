@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const SineWaveDotsFilled: FluentFontIcon;
+export declare const SineWaveDotsRegular: FluentFontIcon;
+export declare const SineWaveDots16Regular: FluentFontIcon;
+export declare const SineWaveDots16Filled: FluentFontIcon;
+export declare const SineWaveDots20Regular: FluentFontIcon;
+export declare const SineWaveDots20Filled: FluentFontIcon;
+export declare const SineWaveDots24Regular: FluentFontIcon;
+export declare const SineWaveDots24Filled: FluentFontIcon;
+export declare const SineWaveDots28Regular: FluentFontIcon;
+export declare const SineWaveDots28Filled: FluentFontIcon;
+export declare const SineWaveDots32Regular: FluentFontIcon;
+export declare const SineWaveDots32Filled: FluentFontIcon;
+export declare const SineWaveDots48Regular: FluentFontIcon;
+export declare const SineWaveDots48Filled: FluentFontIcon;

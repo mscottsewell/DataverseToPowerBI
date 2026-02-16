@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const TextboxFilled: FluentIcon;
+export declare const TextboxRegular: FluentIcon;
+export declare const Textbox16Regular: FluentIcon;
+export declare const Textbox16Filled: FluentIcon;
+export declare const Textbox20Regular: FluentIcon;
+export declare const Textbox20Filled: FluentIcon;
+export declare const Textbox24Regular: FluentIcon;
+export declare const Textbox24Filled: FluentIcon;
+export declare const Textbox28Regular: FluentIcon;
+export declare const Textbox28Filled: FluentIcon;
+export declare const Textbox32Regular: FluentIcon;
+export declare const Textbox32Filled: FluentIcon;
+export declare const Textbox48Regular: FluentIcon;
+export declare const Textbox48Filled: FluentIcon;

@@ -1,0 +1,11 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const TableInsertColumnFilled: FluentIcon;
+export declare const TableInsertColumnRegular: FluentIcon;
+export declare const TableInsertColumn16Regular: FluentIcon;
+export declare const TableInsertColumn16Filled: FluentIcon;
+export declare const TableInsertColumn20Regular: FluentIcon;
+export declare const TableInsertColumn20Filled: FluentIcon;
+export declare const TableInsertColumn24Regular: FluentIcon;
+export declare const TableInsertColumn24Filled: FluentIcon;
+export declare const TableInsertColumn28Regular: FluentIcon;
+export declare const TableInsertColumn28Filled: FluentIcon;

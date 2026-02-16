@@ -1,0 +1,7 @@
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ClipboardText32Filled = exports.ClipboardText32Regular = void 0;
+const createFluentIcon_1 = require("../../utils/createFluentIcon");
+exports.ClipboardText32Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('ClipboardText32Regular', "32", ["M11 12a1 1 0 1 0 0 2h10a1 1 0 1 0 0-2H11Zm-1 6a1 1 0 0 1 1-1h5a1 1 0 1 1 0 2h-5a1 1 0 0 1-1-1Zm1 4a1 1 0 1 0 0 2h8a1 1 0 1 0 0-2h-8ZM21.83 4A3 3 0 0 0 19 2h-6a3 3 0 0 0-2.83 2H8.5A3.5 3.5 0 0 0 5 7.5v19A3.5 3.5 0 0 0 8.5 30h15a3.5 3.5 0 0 0 3.5-3.5v-19A3.5 3.5 0 0 0 23.5 4h-1.67ZM12 5a1 1 0 0 1 1-1h6a1 1 0 1 1 0 2h-6a1 1 0 0 1-1-1ZM7 7.5C7 6.67 7.67 6 8.5 6h1.67A3 3 0 0 0 13 8h6a3 3 0 0 0 2.83-2h1.67c.83 0 1.5.67 1.5 1.5v19c0 .83-.67 1.5-1.5 1.5h-15A1.5 1.5 0 0 1 7 26.5v-19Z"], { flipInRtl: true }));
+exports.ClipboardText32Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('ClipboardText32Filled', "32", ["M21.83 4h1.67A3.5 3.5 0 0 1 27 7.5v19a3.5 3.5 0 0 1-3.5 3.5h-15A3.5 3.5 0 0 1 5 26.5v-19A3.5 3.5 0 0 1 8.5 4h1.67A3 3 0 0 1 13 2h6a3 3 0 0 1 2.83 2ZM19 4h-6a1 1 0 1 0 0 2h6a1 1 0 1 0 0-2Zm-8 8a1 1 0 1 0 0 2h10a1 1 0 1 0 0-2H11Zm-1 6a1 1 0 0 0 1 1h5a1 1 0 1 0 0-2h-5a1 1 0 0 0-1 1Zm1 4a1 1 0 1 0 0 2h8a1 1 0 1 0 0-2h-8Z"], { flipInRtl: true }));

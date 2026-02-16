@@ -1,0 +1,11 @@
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.NextFrame24Filled = exports.NextFrame24Regular = exports.NextFrame20Filled = exports.NextFrame20Regular = exports.NextFrameRegular = exports.NextFrameFilled = void 0;
+const createFluentIcon_1 = require("../../utils/createFluentIcon");
+exports.NextFrameFilled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('NextFrameFilled', "1em", ["M4.5 3c.28 0 .5.22.5.5v13a.5.5 0 0 1-1 0v-13c0-.28.22-.5.5-.5Zm5.45.21A1.25 1.25 0 0 0 8 4.25v11.5c0 1 1.12 1.6 1.95 1.04l8.5-5.8c.73-.5.73-1.58 0-2.07l-8.5-5.7Z"]));
+exports.NextFrameRegular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('NextFrameRegular', "1em", ["M4.5 3c.28 0 .5.22.5.5v13a.5.5 0 0 1-1 0v-13c0-.28.22-.5.5-.5Zm5.45.21A1.25 1.25 0 0 0 8 4.25v11.5c0 1 1.12 1.6 1.95 1.04l8.5-5.8c.73-.5.73-1.58 0-2.07l-8.5-5.7ZM9 4.25c0-.2.22-.32.39-.2l8.5 5.7c.15.1.15.32 0 .42l-8.5 5.79c-.17.11-.39 0-.39-.2V4.25Z"]));
+exports.NextFrame20Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('NextFrame20Regular', "20", ["M4.5 3c.28 0 .5.22.5.5v13a.5.5 0 0 1-1 0v-13c0-.28.22-.5.5-.5Zm5.45.21A1.25 1.25 0 0 0 8 4.25v11.5c0 1 1.12 1.6 1.95 1.04l8.5-5.8c.73-.5.73-1.58 0-2.07l-8.5-5.7ZM9 4.25c0-.2.22-.32.39-.2l8.5 5.7c.15.1.15.32 0 .42l-8.5 5.79c-.17.11-.39 0-.39-.2V4.25Z"]));
+exports.NextFrame20Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('NextFrame20Filled', "20", ["M4.5 3c.28 0 .5.22.5.5v13a.5.5 0 0 1-1 0v-13c0-.28.22-.5.5-.5Zm5.45.21A1.25 1.25 0 0 0 8 4.25v11.5c0 1 1.12 1.6 1.95 1.04l8.5-5.8c.73-.5.73-1.58 0-2.07l-8.5-5.7Z"]));
+exports.NextFrame24Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('NextFrame24Regular', "24", ["M5.5 3.75a.75.75 0 0 0-1.5 0v16.5a.75.75 0 0 0 1.5 0V3.75Zm6.24-.44A1.75 1.75 0 0 0 9 4.75v14.5a1.75 1.75 0 0 0 2.75 1.43l10.5-7.3c1-.7 1-2.19-.01-2.88l-10.5-7.2ZM10.5 4.75c0-.2.23-.32.4-.2l10.49 7.19c.14.1.14.31 0 .41l-10.5 7.3c-.16.12-.39 0-.39-.2V4.75Z"]));
+exports.NextFrame24Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('NextFrame24Filled', "24", ["M5.5 3.75a.75.75 0 0 0-1.5 0v16.5a.75.75 0 0 0 1.5 0V3.75Zm6.24-.44A1.75 1.75 0 0 0 9 4.75v14.5a1.75 1.75 0 0 0 2.75 1.43l10.5-7.3c1-.7 1-2.19-.01-2.88l-10.5-7.2Z"]));

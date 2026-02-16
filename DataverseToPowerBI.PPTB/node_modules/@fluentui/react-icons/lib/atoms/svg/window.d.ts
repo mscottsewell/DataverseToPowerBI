@@ -1,0 +1,16 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const WindowFilled: FluentIcon;
+export declare const WindowRegular: FluentIcon;
+export declare const Window16Regular: FluentIcon;
+export declare const Window16Filled: FluentIcon;
+export declare const Window20Regular: FluentIcon;
+export declare const Window20Filled: FluentIcon;
+export declare const Window24Regular: FluentIcon;
+export declare const Window24Filled: FluentIcon;
+export declare const Window28Regular: FluentIcon;
+export declare const Window28Filled: FluentIcon;
+export declare const Window32Regular: FluentIcon;
+export declare const Window32Filled: FluentIcon;
+export declare const Window32Light: FluentIcon;
+export declare const Window48Regular: FluentIcon;
+export declare const Window48Filled: FluentIcon;

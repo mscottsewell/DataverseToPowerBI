@@ -1,0 +1,13 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const TextIndentDecreaseRotate90Regular: FluentIcon;
+export declare const TextIndentDecreaseRotate90Filled: FluentIcon;
+export declare const TextIndentDecreaseRotate270Regular: FluentIcon;
+export declare const TextIndentDecreaseRotate270Filled: FluentIcon;
+export declare const TextIndentDecreaseRotate9020Regular: FluentIcon;
+export declare const TextIndentDecreaseRotate9020Filled: FluentIcon;
+export declare const TextIndentDecreaseRotate9024Regular: FluentIcon;
+export declare const TextIndentDecreaseRotate9024Filled: FluentIcon;
+export declare const TextIndentDecreaseRotate27020Regular: FluentIcon;
+export declare const TextIndentDecreaseRotate27020Filled: FluentIcon;
+export declare const TextIndentDecreaseRotate27024Regular: FluentIcon;
+export declare const TextIndentDecreaseRotate27024Filled: FluentIcon;

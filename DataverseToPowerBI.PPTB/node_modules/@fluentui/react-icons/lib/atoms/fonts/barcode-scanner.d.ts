@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const BarcodeScannerFilled: FluentFontIcon;
+export declare const BarcodeScannerRegular: FluentFontIcon;
+export declare const BarcodeScanner16Regular: FluentFontIcon;
+export declare const BarcodeScanner16Filled: FluentFontIcon;
+export declare const BarcodeScanner20Regular: FluentFontIcon;
+export declare const BarcodeScanner20Filled: FluentFontIcon;
+export declare const BarcodeScanner24Regular: FluentFontIcon;
+export declare const BarcodeScanner24Filled: FluentFontIcon;
+export declare const BarcodeScanner28Regular: FluentFontIcon;
+export declare const BarcodeScanner28Filled: FluentFontIcon;
+export declare const BarcodeScanner32Regular: FluentFontIcon;
+export declare const BarcodeScanner32Filled: FluentFontIcon;
+export declare const BarcodeScanner48Regular: FluentFontIcon;
+export declare const BarcodeScanner48Filled: FluentFontIcon;

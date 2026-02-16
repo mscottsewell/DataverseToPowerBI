@@ -1,0 +1,11 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const FormNewFilled: FluentIcon;
+export declare const FormNewRegular: FluentIcon;
+export declare const FormNew20Regular: FluentIcon;
+export declare const FormNew20Filled: FluentIcon;
+export declare const FormNew24Regular: FluentIcon;
+export declare const FormNew24Filled: FluentIcon;
+export declare const FormNew28Regular: FluentIcon;
+export declare const FormNew28Filled: FluentIcon;
+export declare const FormNew48Regular: FluentIcon;
+export declare const FormNew48Filled: FluentIcon;

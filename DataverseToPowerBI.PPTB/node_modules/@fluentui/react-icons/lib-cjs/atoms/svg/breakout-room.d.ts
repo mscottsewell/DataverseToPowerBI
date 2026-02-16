@@ -1,0 +1,14 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const BreakoutRoomFilled: FluentIcon;
+export declare const BreakoutRoomRegular: FluentIcon;
+export declare const BreakoutRoom16Regular: FluentIcon;
+export declare const BreakoutRoom16Filled: FluentIcon;
+export declare const BreakoutRoom20Regular: FluentIcon;
+export declare const BreakoutRoom20Filled: FluentIcon;
+export declare const BreakoutRoom24Regular: FluentIcon;
+export declare const BreakoutRoom24Filled: FluentIcon;
+export declare const BreakoutRoom28Regular: FluentIcon;
+export declare const BreakoutRoom28Filled: FluentIcon;
+export declare const BreakoutRoom32Regular: FluentIcon;
+export declare const BreakoutRoom32Filled: FluentIcon;
+export declare const BreakoutRoom32Light: FluentIcon;

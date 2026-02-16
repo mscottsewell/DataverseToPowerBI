@@ -1,0 +1,11 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const HomeHeartFilled: FluentFontIcon;
+export declare const HomeHeartRegular: FluentFontIcon;
+export declare const HomeHeart16Regular: FluentFontIcon;
+export declare const HomeHeart16Filled: FluentFontIcon;
+export declare const HomeHeart20Regular: FluentFontIcon;
+export declare const HomeHeart20Filled: FluentFontIcon;
+export declare const HomeHeart24Regular: FluentFontIcon;
+export declare const HomeHeart24Filled: FluentFontIcon;
+export declare const HomeHeart32Regular: FluentFontIcon;
+export declare const HomeHeart32Filled: FluentFontIcon;

@@ -1,0 +1,16 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const StickerFilled: FluentFontIcon;
+export declare const StickerRegular: FluentFontIcon;
+export declare const Sticker12Regular: FluentFontIcon;
+export declare const Sticker12Filled: FluentFontIcon;
+export declare const Sticker16Regular: FluentFontIcon;
+export declare const Sticker16Filled: FluentFontIcon;
+export declare const Sticker20Regular: FluentFontIcon;
+export declare const Sticker20Filled: FluentFontIcon;
+export declare const Sticker24Regular: FluentFontIcon;
+export declare const Sticker24Filled: FluentFontIcon;
+export declare const Sticker28Regular: FluentFontIcon;
+export declare const Sticker28Filled: FluentFontIcon;
+export declare const Sticker32Regular: FluentFontIcon;
+export declare const Sticker32Filled: FluentFontIcon;
+export declare const Sticker32Light: FluentFontIcon;

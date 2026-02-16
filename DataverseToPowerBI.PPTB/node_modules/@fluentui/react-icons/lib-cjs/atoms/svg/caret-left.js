@@ -1,0 +1,15 @@
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.CaretLeft24Filled = exports.CaretLeft24Regular = exports.CaretLeft20Filled = exports.CaretLeft20Regular = exports.CaretLeft16Filled = exports.CaretLeft16Regular = exports.CaretLeft12Filled = exports.CaretLeft12Regular = exports.CaretLeftRegular = exports.CaretLeftFilled = void 0;
+const createFluentIcon_1 = require("../../utils/createFluentIcon");
+exports.CaretLeftFilled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('CaretLeftFilled', "1em", ["M13 14.2a1 1 0 0 1-1.63.78l-4.72-3.81a1.5 1.5 0 0 1 0-2.34l4.72-3.81A1 1 0 0 1 13 5.8v8.4Z"]));
+exports.CaretLeftRegular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('CaretLeftRegular', "1em", ["M11.37 14.98A1 1 0 0 0 13 14.2V5.8a1 1 0 0 0-1.63-.78L6.65 8.83a1.5 1.5 0 0 0 0 2.34l4.72 3.81ZM12 5.8v8.4L7.28 10.4a.5.5 0 0 1 0-.78L12 5.8Z"]));
+exports.CaretLeft12Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('CaretLeft12Regular', "12", ["M8 4a1 1 0 0 0-1.7-.72l-2.04 2a1 1 0 0 0 0 1.43l2.04 2a1 1 0 0 0 1.7-.7V3.99ZM4.96 6 7 4v4L4.96 6Z"]));
+exports.CaretLeft12Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('CaretLeft12Filled', "12", ["M6.3 3.28A1 1 0 0 1 8 4v4.02a1 1 0 0 1-1.7.7l-2.04-2a1 1 0 0 1 0-1.42l2.04-2Z"]));
+exports.CaretLeft16Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('CaretLeft16Regular', "16", ["M9.43 11.86a1 1 0 0 0 1.57-.82V4.96a1 1 0 0 0-1.57-.82L5.64 6.77a1.5 1.5 0 0 0 0 2.46l3.79 2.63Zm.57-.82L6.22 8.41a.5.5 0 0 1 0-.82L10 4.96v6.08Z"]));
+exports.CaretLeft16Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('CaretLeft16Filled', "16", ["M9.43 11.84a1 1 0 0 0 1.57-.82V4.98a1 1 0 0 0-1.57-.82L5.64 6.78c-.85.59-.85 1.85 0 2.44l3.79 2.62Z"]));
+exports.CaretLeft20Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('CaretLeft20Regular', "20", ["M11.37 14.98A1 1 0 0 0 13 14.2V5.8a1 1 0 0 0-1.63-.78L6.65 8.83a1.5 1.5 0 0 0 0 2.34l4.72 3.81ZM12 5.8v8.4L7.28 10.4a.5.5 0 0 1 0-.78L12 5.8Z"]));
+exports.CaretLeft20Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('CaretLeft20Filled', "20", ["M13 14.2a1 1 0 0 1-1.63.78l-4.72-3.81a1.5 1.5 0 0 1 0-2.34l4.72-3.81A1 1 0 0 1 13 5.8v8.4Z"]));
+exports.CaretLeft24Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('CaretLeft24Regular', "24", ["M12.93 18.84c.8.7 2.07.13 2.07-.94V6.1a1.25 1.25 0 0 0-2.07-.94l-6.31 5.52c-.8.7-.8 1.94 0 2.64l6.3 5.52Zm.57-1.5L7.6 12.2a.25.25 0 0 1 0-.38l5.9-5.16v10.7Z"]));
+exports.CaretLeft24Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('CaretLeft24Filled', "24", ["M15 17.9a1.25 1.25 0 0 1-2.07.94l-6.31-5.52c-.8-.7-.8-1.94 0-2.64l6.3-5.52c.82-.7 2.08-.13 2.08.94v11.8Z"]));

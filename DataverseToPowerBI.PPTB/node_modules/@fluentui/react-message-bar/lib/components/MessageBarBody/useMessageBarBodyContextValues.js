@@ -1,0 +1,10 @@
+'use client';
+import * as React from 'react';
+export function useMessageBarBodyContextValues_unstable(state) {
+    const link = React.useMemo(()=>({
+            inline: true
+        }), []);
+    return {
+        link
+    };
+}

@@ -1,0 +1,16 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const ToolboxFilled: FluentFontIcon;
+export declare const ToolboxRegular: FluentFontIcon;
+export declare const Toolbox12Regular: FluentFontIcon;
+export declare const Toolbox12Filled: FluentFontIcon;
+export declare const Toolbox16Regular: FluentFontIcon;
+export declare const Toolbox16Filled: FluentFontIcon;
+export declare const Toolbox20Regular: FluentFontIcon;
+export declare const Toolbox20Filled: FluentFontIcon;
+export declare const Toolbox24Regular: FluentFontIcon;
+export declare const Toolbox24Filled: FluentFontIcon;
+export declare const Toolbox28Regular: FluentFontIcon;
+export declare const Toolbox28Filled: FluentFontIcon;
+export declare const Toolbox32Regular: FluentFontIcon;
+export declare const Toolbox32Filled: FluentFontIcon;
+export declare const Toolbox32Light: FluentFontIcon;

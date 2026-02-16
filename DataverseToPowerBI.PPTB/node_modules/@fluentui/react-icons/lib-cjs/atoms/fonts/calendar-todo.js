@@ -1,0 +1,6 @@
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.CalendarTodo32Light = void 0;
+const createFluentFontIcon_1 = require("../../utils/fonts/createFluentFontIcon");
+exports.CalendarTodo32Light = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("CalendarTodo32Light", "", 3, 32));

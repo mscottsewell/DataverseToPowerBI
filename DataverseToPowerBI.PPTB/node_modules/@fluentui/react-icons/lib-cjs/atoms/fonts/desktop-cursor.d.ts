@@ -1,0 +1,11 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const DesktopCursorFilled: FluentFontIcon;
+export declare const DesktopCursorRegular: FluentFontIcon;
+export declare const DesktopCursor16Regular: FluentFontIcon;
+export declare const DesktopCursor16Filled: FluentFontIcon;
+export declare const DesktopCursor20Regular: FluentFontIcon;
+export declare const DesktopCursor20Filled: FluentFontIcon;
+export declare const DesktopCursor24Regular: FluentFontIcon;
+export declare const DesktopCursor24Filled: FluentFontIcon;
+export declare const DesktopCursor28Regular: FluentFontIcon;
+export declare const DesktopCursor28Filled: FluentFontIcon;

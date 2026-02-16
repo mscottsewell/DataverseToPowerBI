@@ -1,0 +1,11 @@
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.UsbStick24Filled = exports.UsbStick24Regular = exports.UsbStick20Filled = exports.UsbStick20Regular = exports.UsbStickRegular = exports.UsbStickFilled = void 0;
+const createFluentIcon_1 = require("../../utils/createFluentIcon");
+exports.UsbStickFilled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('UsbStickFilled', "1em", ["M7 2.5c0-.28.22-.5.5-.5h5c.28 0 .5.22.5.5V6a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V8c0-1.1.9-2 2-2V2.5ZM8 6h4V3H8v3Z"]));
+exports.UsbStickRegular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('UsbStickRegular', "1em", ["M7.5 2h5c.28 0 .5.22.5.5V6a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V8c0-1.1.9-2 2-2V2.5c0-.28.22-.5.5-.5ZM12 6V3H8v3h4ZM7 7a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1H7Z"]));
+exports.UsbStick20Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('UsbStick20Regular', "20", ["M7.5 2h5c.28 0 .5.22.5.5V6a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V8c0-1.1.9-2 2-2V2.5c0-.28.22-.5.5-.5ZM12 6V3H8v3h4ZM7 7a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1H7Z"]));
+exports.UsbStick20Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('UsbStick20Filled', "20", ["M7 2.5c0-.28.22-.5.5-.5h5c.28 0 .5.22.5.5V6a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V8c0-1.1.9-2 2-2V2.5ZM8 6h4V3H8v3Z"]));
+exports.UsbStick24Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('UsbStick24Regular', "24", ["M15.27 2c.38 0 .7.28.74.65V7.13c.82.3 1.42 1.05 1.49 1.95v10.67c0 1.2-.92 2.17-2.1 2.24l-.15.01h-6.5c-1.19 0-2.16-.93-2.24-2.1V9.25c0-.98.63-1.82 1.5-2.13V2.75c0-.38.29-.7.65-.75h6.6Zm-.02 6.5h-6.5c-.38 0-.69.28-.74.65v10.6c0 .38.28.7.64.74l.1.01h6.5c.38 0 .7-.28.75-.65V9.25c0-.38-.28-.7-.64-.74l-.1-.01Zm-.73-5h-5V7h5V3.5Z"]));
+exports.UsbStick24Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('UsbStick24Filled', "24", ["M15.27 2c.38 0 .7.28.74.65V7.13c.82.3 1.42 1.05 1.49 1.95v10.67c0 1.2-.92 2.17-2.1 2.24l-.15.01h-6.5c-1.19 0-2.16-.93-2.24-2.1V9.25c0-.98.63-1.82 1.5-2.13V2.75c0-.38.29-.7.65-.75h6.6Zm-.75 1.5h-5V7h5V3.5Z"]));

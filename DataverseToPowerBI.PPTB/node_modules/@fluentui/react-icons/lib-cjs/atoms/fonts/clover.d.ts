@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const CloverFilled: FluentFontIcon;
+export declare const CloverRegular: FluentFontIcon;
+export declare const Clover16Regular: FluentFontIcon;
+export declare const Clover16Filled: FluentFontIcon;
+export declare const Clover20Regular: FluentFontIcon;
+export declare const Clover20Filled: FluentFontIcon;
+export declare const Clover24Regular: FluentFontIcon;
+export declare const Clover24Filled: FluentFontIcon;
+export declare const Clover28Regular: FluentFontIcon;
+export declare const Clover28Filled: FluentFontIcon;
+export declare const Clover32Regular: FluentFontIcon;
+export declare const Clover32Filled: FluentFontIcon;
+export declare const Clover48Regular: FluentFontIcon;
+export declare const Clover48Filled: FluentFontIcon;

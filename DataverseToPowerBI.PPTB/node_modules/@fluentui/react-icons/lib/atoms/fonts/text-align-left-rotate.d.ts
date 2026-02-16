@@ -1,0 +1,17 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const TextAlignLeftRotate90Regular: FluentFontIcon;
+export declare const TextAlignLeftRotate90Filled: FluentFontIcon;
+export declare const TextAlignLeftRotate270Regular: FluentFontIcon;
+export declare const TextAlignLeftRotate270Filled: FluentFontIcon;
+export declare const TextAlignLeftRotate9016Regular: FluentFontIcon;
+export declare const TextAlignLeftRotate9016Filled: FluentFontIcon;
+export declare const TextAlignLeftRotate9020Regular: FluentFontIcon;
+export declare const TextAlignLeftRotate9020Filled: FluentFontIcon;
+export declare const TextAlignLeftRotate9024Regular: FluentFontIcon;
+export declare const TextAlignLeftRotate9024Filled: FluentFontIcon;
+export declare const TextAlignLeftRotate27016Regular: FluentFontIcon;
+export declare const TextAlignLeftRotate27016Filled: FluentFontIcon;
+export declare const TextAlignLeftRotate27020Regular: FluentFontIcon;
+export declare const TextAlignLeftRotate27020Filled: FluentFontIcon;
+export declare const TextAlignLeftRotate27024Regular: FluentFontIcon;
+export declare const TextAlignLeftRotate27024Filled: FluentFontIcon;

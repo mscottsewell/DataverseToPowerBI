@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const GamesFilled: FluentIcon;
+export declare const GamesRegular: FluentIcon;
+export declare const Games16Regular: FluentIcon;
+export declare const Games16Filled: FluentIcon;
+export declare const Games20Regular: FluentIcon;
+export declare const Games20Filled: FluentIcon;
+export declare const Games24Regular: FluentIcon;
+export declare const Games24Filled: FluentIcon;
+export declare const Games28Regular: FluentIcon;
+export declare const Games28Filled: FluentIcon;
+export declare const Games32Regular: FluentIcon;
+export declare const Games32Filled: FluentIcon;
+export declare const Games48Regular: FluentIcon;
+export declare const Games48Filled: FluentIcon;

@@ -1,0 +1,17 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const RectanglePortraitFilled: FluentIcon;
+export declare const RectanglePortraitRegular: FluentIcon;
+export declare const RectanglePortrait12Regular: FluentIcon;
+export declare const RectanglePortrait12Filled: FluentIcon;
+export declare const RectanglePortrait16Regular: FluentIcon;
+export declare const RectanglePortrait16Filled: FluentIcon;
+export declare const RectanglePortrait20Regular: FluentIcon;
+export declare const RectanglePortrait20Filled: FluentIcon;
+export declare const RectanglePortrait24Regular: FluentIcon;
+export declare const RectanglePortrait24Filled: FluentIcon;
+export declare const RectanglePortrait28Regular: FluentIcon;
+export declare const RectanglePortrait28Filled: FluentIcon;
+export declare const RectanglePortrait32Regular: FluentIcon;
+export declare const RectanglePortrait32Filled: FluentIcon;
+export declare const RectanglePortrait48Regular: FluentIcon;
+export declare const RectanglePortrait48Filled: FluentIcon;

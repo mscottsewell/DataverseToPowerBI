@@ -1,0 +1,11 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const FilmstripPlayFilled: FluentIcon;
+export declare const FilmstripPlayRegular: FluentIcon;
+export declare const FilmstripPlay16Regular: FluentIcon;
+export declare const FilmstripPlay16Filled: FluentIcon;
+export declare const FilmstripPlay20Regular: FluentIcon;
+export declare const FilmstripPlay20Filled: FluentIcon;
+export declare const FilmstripPlay24Regular: FluentIcon;
+export declare const FilmstripPlay24Filled: FluentIcon;
+export declare const FilmstripPlay32Regular: FluentIcon;
+export declare const FilmstripPlay32Filled: FluentIcon;

@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const TagEditFilled: FluentFontIcon;
+export declare const TagEditRegular: FluentFontIcon;
+export declare const TagEdit16Regular: FluentFontIcon;
+export declare const TagEdit16Filled: FluentFontIcon;
+export declare const TagEdit20Regular: FluentFontIcon;
+export declare const TagEdit20Filled: FluentFontIcon;
+export declare const TagEdit24Regular: FluentFontIcon;
+export declare const TagEdit24Filled: FluentFontIcon;
+export declare const TagEdit28Regular: FluentFontIcon;
+export declare const TagEdit28Filled: FluentFontIcon;
+export declare const TagEdit32Regular: FluentFontIcon;
+export declare const TagEdit32Filled: FluentFontIcon;
+export declare const TagEdit48Regular: FluentFontIcon;
+export declare const TagEdit48Filled: FluentFontIcon;

@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const ShoppingBagTagFilled: FluentFontIcon;
+export declare const ShoppingBagTagRegular: FluentFontIcon;
+export declare const ShoppingBagTag16Regular: FluentFontIcon;
+export declare const ShoppingBagTag16Filled: FluentFontIcon;
+export declare const ShoppingBagTag20Regular: FluentFontIcon;
+export declare const ShoppingBagTag20Filled: FluentFontIcon;
+export declare const ShoppingBagTag24Regular: FluentFontIcon;
+export declare const ShoppingBagTag24Filled: FluentFontIcon;
+export declare const ShoppingBagTag28Regular: FluentFontIcon;
+export declare const ShoppingBagTag28Filled: FluentFontIcon;
+export declare const ShoppingBagTag32Regular: FluentFontIcon;
+export declare const ShoppingBagTag32Filled: FluentFontIcon;
+export declare const ShoppingBagTag48Regular: FluentFontIcon;
+export declare const ShoppingBagTag48Filled: FluentFontIcon;

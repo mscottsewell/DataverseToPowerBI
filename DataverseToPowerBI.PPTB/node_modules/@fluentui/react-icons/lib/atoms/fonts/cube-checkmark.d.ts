@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const CubeCheckmarkFilled: FluentFontIcon;
+export declare const CubeCheckmarkRegular: FluentFontIcon;
+export declare const CubeCheckmark16Regular: FluentFontIcon;
+export declare const CubeCheckmark16Filled: FluentFontIcon;
+export declare const CubeCheckmark20Regular: FluentFontIcon;
+export declare const CubeCheckmark20Filled: FluentFontIcon;
+export declare const CubeCheckmark24Regular: FluentFontIcon;
+export declare const CubeCheckmark24Filled: FluentFontIcon;
+export declare const CubeCheckmark28Regular: FluentFontIcon;
+export declare const CubeCheckmark28Filled: FluentFontIcon;
+export declare const CubeCheckmark32Regular: FluentFontIcon;
+export declare const CubeCheckmark32Filled: FluentFontIcon;
+export declare const CubeCheckmark48Regular: FluentFontIcon;
+export declare const CubeCheckmark48Filled: FluentFontIcon;

@@ -1,0 +1,11 @@
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.KeyboardTab24Filled = exports.KeyboardTab24Regular = exports.KeyboardTab20Filled = exports.KeyboardTab20Regular = exports.KeyboardTabRegular = exports.KeyboardTabFilled = void 0;
+const createFluentIcon_1 = require("../../utils/createFluentIcon");
+exports.KeyboardTabFilled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('KeyboardTabFilled', "1em", ["M17 4.75a.75.75 0 0 0-1.5 0v10.5a.75.75 0 0 0 1.5 0V4.75Zm-8.47-.53a.75.75 0 0 0-1.06 1.06l3.97 3.97H2.75a.75.75 0 0 0 0 1.5h8.69l-3.97 3.97a.75.75 0 1 0 1.06 1.06l5.25-5.25c.3-.3.3-.77 0-1.06L8.53 4.22Z"]));
+exports.KeyboardTabRegular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('KeyboardTabRegular', "1em", ["M9.35 4.15a.5.5 0 1 0-.7.7l4.64 4.65H3.5a.5.5 0 0 0 0 1h9.8l-4.65 4.65a.5.5 0 0 0 .7.7l5.5-5.5a.5.5 0 0 0 0-.7l-5.5-5.5ZM17 4.5a.5.5 0 0 0-1 0v11a.5.5 0 0 0 1 0v-11Z"]));
+exports.KeyboardTab20Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('KeyboardTab20Regular', "20", ["M9.35 4.15a.5.5 0 1 0-.7.7l4.64 4.65H3.5a.5.5 0 0 0 0 1h9.8l-4.65 4.65a.5.5 0 0 0 .7.7l5.5-5.5a.5.5 0 0 0 0-.7l-5.5-5.5ZM17 4.5a.5.5 0 0 0-1 0v11a.5.5 0 0 0 1 0v-11Z"]));
+exports.KeyboardTab20Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('KeyboardTab20Filled', "20", ["M17 4.75a.75.75 0 0 0-1.5 0v10.5a.75.75 0 0 0 1.5 0V4.75Zm-8.47-.53a.75.75 0 0 0-1.06 1.06l3.97 3.97H2.75a.75.75 0 0 0 0 1.5h8.69l-3.97 3.97a.75.75 0 1 0 1.06 1.06l5.25-5.25c.3-.3.3-.77 0-1.06L8.53 4.22Z"]));
+exports.KeyboardTab24Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('KeyboardTab24Regular', "24", ["m18.03 11.47-6.5-6.5a.75.75 0 0 0-1.13.98l.07.08 5.22 5.22H3.75c-.38 0-.7.28-.74.65L3 12c0 .38.28.7.65.74l.1.01h11.94l-5.22 5.22a.75.75 0 0 0-.07.98l.07.08c.27.27.68.3.98.07l.08-.07 6.5-6.5a.75.75 0 0 0 .07-.98l-.07-.08-6.5-6.5 6.5 6.5ZM21 18.5v-13a.75.75 0 0 0-1.5 0v13a.75.75 0 0 0 1.5 0Z"]));
+exports.KeyboardTab24Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('KeyboardTab24Filled', "24", ["m18.2 11.3-6.5-6.5a1 1 0 0 0-1.49 1.31l.08.1L15.1 11H4a1 1 0 0 0-1 .88V12a1 1 0 0 0 .88 1H15.1l-4.8 4.8a1 1 0 0 0-.08 1.31l.08.1a1 1 0 0 0 1.32.08l.1-.08 6.5-6.5a1 1 0 0 0 .08-1.32l-.08-.1-6.5-6.5 6.5 6.5Zm2.8 7.2v-13a1 1 0 1 0-2 0v13a1 1 0 1 0 2 0Z"]));

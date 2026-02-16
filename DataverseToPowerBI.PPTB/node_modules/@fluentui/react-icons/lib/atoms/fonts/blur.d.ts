@@ -1,0 +1,11 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const BlurFilled: FluentFontIcon;
+export declare const BlurRegular: FluentFontIcon;
+export declare const Blur16Regular: FluentFontIcon;
+export declare const Blur16Filled: FluentFontIcon;
+export declare const Blur20Regular: FluentFontIcon;
+export declare const Blur20Filled: FluentFontIcon;
+export declare const Blur24Regular: FluentFontIcon;
+export declare const Blur24Filled: FluentFontIcon;
+export declare const Blur28Regular: FluentFontIcon;
+export declare const Blur28Filled: FluentFontIcon;

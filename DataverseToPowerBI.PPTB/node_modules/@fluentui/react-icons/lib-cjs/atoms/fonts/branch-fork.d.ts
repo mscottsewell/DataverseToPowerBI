@@ -1,0 +1,11 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const BranchForkFilled: FluentFontIcon;
+export declare const BranchForkRegular: FluentFontIcon;
+export declare const BranchFork16Regular: FluentFontIcon;
+export declare const BranchFork16Filled: FluentFontIcon;
+export declare const BranchFork20Regular: FluentFontIcon;
+export declare const BranchFork20Filled: FluentFontIcon;
+export declare const BranchFork24Regular: FluentFontIcon;
+export declare const BranchFork24Filled: FluentFontIcon;
+export declare const BranchFork32Regular: FluentFontIcon;
+export declare const BranchFork32Filled: FluentFontIcon;

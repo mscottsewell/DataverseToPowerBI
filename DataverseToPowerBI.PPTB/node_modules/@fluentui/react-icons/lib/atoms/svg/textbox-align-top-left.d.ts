@@ -1,0 +1,10 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const TextboxAlignTopLeftFilled: FluentIcon;
+export declare const TextboxAlignTopLeftRegular: FluentIcon;
+export declare const TextboxAlignTopLeft16Regular: FluentIcon;
+export declare const TextboxAlignTopLeft16Filled: FluentIcon;
+export declare const TextboxAlignTopLeft20Regular: FluentIcon;
+export declare const TextboxAlignTopLeft20Filled: FluentIcon;
+export declare const TextboxAlignTopLeft24Regular: FluentIcon;
+export declare const TextboxAlignTopLeft24Filled: FluentIcon;
+export declare const TextboxAlignTopLeft32Light: FluentIcon;

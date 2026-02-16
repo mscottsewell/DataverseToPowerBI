@@ -1,0 +1,11 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const ClockSparkleFilled: FluentIcon;
+export declare const ClockSparkleRegular: FluentIcon;
+export declare const ClockSparkle16Regular: FluentIcon;
+export declare const ClockSparkle16Filled: FluentIcon;
+export declare const ClockSparkle20Regular: FluentIcon;
+export declare const ClockSparkle20Filled: FluentIcon;
+export declare const ClockSparkle24Regular: FluentIcon;
+export declare const ClockSparkle24Filled: FluentIcon;
+export declare const ClockSparkle32Regular: FluentIcon;
+export declare const ClockSparkle32Filled: FluentIcon;

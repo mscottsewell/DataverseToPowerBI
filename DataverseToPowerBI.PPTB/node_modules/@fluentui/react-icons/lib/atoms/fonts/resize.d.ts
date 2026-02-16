@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const ResizeFilled: FluentFontIcon;
+export declare const ResizeRegular: FluentFontIcon;
+export declare const Resize16Regular: FluentFontIcon;
+export declare const Resize16Filled: FluentFontIcon;
+export declare const Resize20Regular: FluentFontIcon;
+export declare const Resize20Filled: FluentFontIcon;
+export declare const Resize24Regular: FluentFontIcon;
+export declare const Resize24Filled: FluentFontIcon;
+export declare const Resize28Regular: FluentFontIcon;
+export declare const Resize28Filled: FluentFontIcon;
+export declare const Resize32Regular: FluentFontIcon;
+export declare const Resize32Filled: FluentFontIcon;
+export declare const Resize48Regular: FluentFontIcon;
+export declare const Resize48Filled: FluentFontIcon;

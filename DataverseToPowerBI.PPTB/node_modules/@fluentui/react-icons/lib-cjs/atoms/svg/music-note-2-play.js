@@ -1,0 +1,9 @@
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.MusicNote2Play20Filled = exports.MusicNote2Play20Regular = exports.MusicNote2PlayRegular = exports.MusicNote2PlayFilled = void 0;
+const createFluentIcon_1 = require("../../utils/createFluentIcon");
+exports.MusicNote2PlayFilled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('MusicNote2PlayFilled', "1em", ["M15.99 3.02a1 1 0 0 0-1.29-.8l-7 2.2a1 1 0 0 0-.7.95v8.13a2.5 2.5 0 1 0 1 2V8.37l7-2.19v2.84c.34.03.68.1 1 .19V3.18l-.01-.16ZM19 14.5a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0Zm-2.26-.44-3-1.65a.5.5 0 0 0-.74.44v3.3c0 .38.4.62.74.44l3-1.65a.5.5 0 0 0 0-.88Z"]));
+exports.MusicNote2PlayRegular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('MusicNote2PlayRegular', "1em", ["M14.7 2.23a1 1 0 0 1 1.3.95v6.03c-.32-.1-.66-.16-1-.19V6.18L8 8.37v7.13a2.5 2.5 0 1 1-1-2V5.37a1 1 0 0 1 .7-.96l7-2.18ZM8 7.32l7-2.19V3.18L8 5.37v1.95ZM5.5 14a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3Zm13.5.5a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0Zm-2.26-.44-3-1.65a.5.5 0 0 0-.74.44v3.3c0 .38.4.62.74.44l3-1.65a.5.5 0 0 0 0-.88Z"]));
+exports.MusicNote2Play20Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('MusicNote2Play20Regular', "20", ["M14.7 2.23a1 1 0 0 1 1.3.95v6.03c-.32-.1-.66-.16-1-.19V6.18L8 8.37v7.13a2.5 2.5 0 1 1-1-2V5.37a1 1 0 0 1 .7-.96l7-2.18ZM8 7.32l7-2.19V3.18L8 5.37v1.95ZM5.5 14a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3Zm13.5.5a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0Zm-2.26-.44-3-1.65a.5.5 0 0 0-.74.44v3.3c0 .38.4.62.74.44l3-1.65a.5.5 0 0 0 0-.88Z"]));
+exports.MusicNote2Play20Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('MusicNote2Play20Filled', "20", ["M15.99 3.02a1 1 0 0 0-1.29-.8l-7 2.2a1 1 0 0 0-.7.95v8.13a2.5 2.5 0 1 0 1 2V8.37l7-2.19v2.84c.34.03.68.1 1 .19V3.18l-.01-.16ZM19 14.5a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0Zm-2.26-.44-3-1.65a.5.5 0 0 0-.74.44v3.3c0 .38.4.62.74.44l3-1.65a.5.5 0 0 0 0-.88Z"]));

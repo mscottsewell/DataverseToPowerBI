@@ -1,0 +1,11 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const HatGraduationSparkleFilled: FluentFontIcon;
+export declare const HatGraduationSparkleRegular: FluentFontIcon;
+export declare const HatGraduationSparkle16Regular: FluentFontIcon;
+export declare const HatGraduationSparkle16Filled: FluentFontIcon;
+export declare const HatGraduationSparkle20Regular: FluentFontIcon;
+export declare const HatGraduationSparkle20Filled: FluentFontIcon;
+export declare const HatGraduationSparkle24Regular: FluentFontIcon;
+export declare const HatGraduationSparkle24Filled: FluentFontIcon;
+export declare const HatGraduationSparkle28Regular: FluentFontIcon;
+export declare const HatGraduationSparkle28Filled: FluentFontIcon;

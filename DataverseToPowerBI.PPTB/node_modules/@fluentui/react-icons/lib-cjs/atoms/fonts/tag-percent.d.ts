@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const TagPercentFilled: FluentFontIcon;
+export declare const TagPercentRegular: FluentFontIcon;
+export declare const TagPercent16Regular: FluentFontIcon;
+export declare const TagPercent16Filled: FluentFontIcon;
+export declare const TagPercent20Regular: FluentFontIcon;
+export declare const TagPercent20Filled: FluentFontIcon;
+export declare const TagPercent24Regular: FluentFontIcon;
+export declare const TagPercent24Filled: FluentFontIcon;
+export declare const TagPercent28Regular: FluentFontIcon;
+export declare const TagPercent28Filled: FluentFontIcon;
+export declare const TagPercent32Regular: FluentFontIcon;
+export declare const TagPercent32Filled: FluentFontIcon;
+export declare const TagPercent48Regular: FluentFontIcon;
+export declare const TagPercent48Filled: FluentFontIcon;

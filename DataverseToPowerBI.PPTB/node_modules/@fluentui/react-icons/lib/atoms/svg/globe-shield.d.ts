@@ -1,0 +1,13 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const GlobeShieldColor: FluentIcon;
+export declare const GlobeShieldFilled: FluentIcon;
+export declare const GlobeShieldRegular: FluentIcon;
+export declare const GlobeShield20Regular: FluentIcon;
+export declare const GlobeShield20Filled: FluentIcon;
+export declare const GlobeShield20Color: FluentIcon;
+export declare const GlobeShield24Regular: FluentIcon;
+export declare const GlobeShield24Filled: FluentIcon;
+export declare const GlobeShield24Color: FluentIcon;
+export declare const GlobeShield48Regular: FluentIcon;
+export declare const GlobeShield48Filled: FluentIcon;
+export declare const GlobeShield48Color: FluentIcon;

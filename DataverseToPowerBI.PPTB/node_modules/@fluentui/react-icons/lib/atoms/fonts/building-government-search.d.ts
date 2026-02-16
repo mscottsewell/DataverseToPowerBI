@@ -1,0 +1,11 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const BuildingGovernmentSearchFilled: FluentFontIcon;
+export declare const BuildingGovernmentSearchRegular: FluentFontIcon;
+export declare const BuildingGovernmentSearch16Regular: FluentFontIcon;
+export declare const BuildingGovernmentSearch16Filled: FluentFontIcon;
+export declare const BuildingGovernmentSearch20Regular: FluentFontIcon;
+export declare const BuildingGovernmentSearch20Filled: FluentFontIcon;
+export declare const BuildingGovernmentSearch24Regular: FluentFontIcon;
+export declare const BuildingGovernmentSearch24Filled: FluentFontIcon;
+export declare const BuildingGovernmentSearch32Regular: FluentFontIcon;
+export declare const BuildingGovernmentSearch32Filled: FluentFontIcon;

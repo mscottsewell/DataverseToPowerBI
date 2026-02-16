@@ -1,0 +1,17 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const SquareDovetailJointFilled: FluentFontIcon;
+export declare const SquareDovetailJointRegular: FluentFontIcon;
+export declare const SquareDovetailJoint12Regular: FluentFontIcon;
+export declare const SquareDovetailJoint12Filled: FluentFontIcon;
+export declare const SquareDovetailJoint16Regular: FluentFontIcon;
+export declare const SquareDovetailJoint16Filled: FluentFontIcon;
+export declare const SquareDovetailJoint20Regular: FluentFontIcon;
+export declare const SquareDovetailJoint20Filled: FluentFontIcon;
+export declare const SquareDovetailJoint24Regular: FluentFontIcon;
+export declare const SquareDovetailJoint24Filled: FluentFontIcon;
+export declare const SquareDovetailJoint28Regular: FluentFontIcon;
+export declare const SquareDovetailJoint28Filled: FluentFontIcon;
+export declare const SquareDovetailJoint32Regular: FluentFontIcon;
+export declare const SquareDovetailJoint32Filled: FluentFontIcon;
+export declare const SquareDovetailJoint48Regular: FluentFontIcon;
+export declare const SquareDovetailJoint48Filled: FluentFontIcon;

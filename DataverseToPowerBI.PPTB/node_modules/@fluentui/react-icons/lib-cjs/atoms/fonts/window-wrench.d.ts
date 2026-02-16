@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const WindowWrenchFilled: FluentFontIcon;
+export declare const WindowWrenchRegular: FluentFontIcon;
+export declare const WindowWrench16Regular: FluentFontIcon;
+export declare const WindowWrench16Filled: FluentFontIcon;
+export declare const WindowWrench20Regular: FluentFontIcon;
+export declare const WindowWrench20Filled: FluentFontIcon;
+export declare const WindowWrench24Regular: FluentFontIcon;
+export declare const WindowWrench24Filled: FluentFontIcon;
+export declare const WindowWrench28Regular: FluentFontIcon;
+export declare const WindowWrench28Filled: FluentFontIcon;
+export declare const WindowWrench32Regular: FluentFontIcon;
+export declare const WindowWrench32Filled: FluentFontIcon;
+export declare const WindowWrench48Regular: FluentFontIcon;
+export declare const WindowWrench48Filled: FluentFontIcon;

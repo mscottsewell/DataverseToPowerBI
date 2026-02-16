@@ -1,0 +1,24 @@
+'use client';
+import * as React from 'react';
+export const useRatingDisplayContextValues = (state)=>{
+    const { color, compact, icon, size, value } = state;
+    const ratingItem = React.useMemo(()=>({
+            color,
+            compact,
+            iconFilled: icon,
+            iconOutline: icon,
+            interactive: false,
+            step: 0.5,
+            size,
+            value
+        }), [
+        color,
+        compact,
+        icon,
+        size,
+        value
+    ]);
+    return {
+        ratingItem
+    };
+};

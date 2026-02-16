@@ -1,0 +1,16 @@
+"use client";
+import { createFluentIcon } from '../../utils/createFluentIcon';
+export const SubtractFilled = ( /*#__PURE__*/createFluentIcon('SubtractFilled', "1em", ["M3 10c0-.41.34-.75.75-.75h12.5a.75.75 0 0 1 0 1.5H3.75A.75.75 0 0 1 3 10Z"]));
+export const SubtractRegular = ( /*#__PURE__*/createFluentIcon('SubtractRegular', "1em", ["M3 10c0-.28.22-.5.5-.5h13a.5.5 0 0 1 0 1h-13A.5.5 0 0 1 3 10Z"]));
+export const Subtract12Regular = ( /*#__PURE__*/createFluentIcon('Subtract12Regular', "12", ["M2 6c0-.28.22-.5.5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 2 6Z"]));
+export const Subtract12Filled = ( /*#__PURE__*/createFluentIcon('Subtract12Filled', "12", ["M2 6c0-.41.34-.75.75-.75h6.5a.75.75 0 0 1 0 1.5h-6.5A.75.75 0 0 1 2 6Z"]));
+export const Subtract16Regular = ( /*#__PURE__*/createFluentIcon('Subtract16Regular', "16", ["M3 8c0-.28.22-.5.5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 8Z"]));
+export const Subtract16Filled = ( /*#__PURE__*/createFluentIcon('Subtract16Filled', "16", ["M3 8c0-.41.34-.75.75-.75h8.5a.75.75 0 0 1 0 1.5h-8.5A.75.75 0 0 1 3 8Z"]));
+export const Subtract20Regular = ( /*#__PURE__*/createFluentIcon('Subtract20Regular', "20", ["M3 10c0-.28.22-.5.5-.5h13a.5.5 0 0 1 0 1h-13A.5.5 0 0 1 3 10Z"]));
+export const Subtract20Filled = ( /*#__PURE__*/createFluentIcon('Subtract20Filled', "20", ["M3 10c0-.41.34-.75.75-.75h12.5a.75.75 0 0 1 0 1.5H3.75A.75.75 0 0 1 3 10Z"]));
+export const Subtract24Regular = ( /*#__PURE__*/createFluentIcon('Subtract24Regular', "24", ["M3.75 12.5h16.5a.75.75 0 0 0 0-1.5H3.75a.75.75 0 0 0 0 1.5Z"]));
+export const Subtract24Filled = ( /*#__PURE__*/createFluentIcon('Subtract24Filled', "24", ["M4 13h16a1 1 0 1 0 0-2H4a1 1 0 1 0 0 2Z"]));
+export const Subtract28Regular = ( /*#__PURE__*/createFluentIcon('Subtract28Regular', "28", ["M3 13.75c0-.41.34-.75.75-.75h20.5a.75.75 0 0 1 0 1.5H3.75a.75.75 0 0 1-.75-.75Z"]));
+export const Subtract28Filled = ( /*#__PURE__*/createFluentIcon('Subtract28Filled', "28", ["M3 14a1 1 0 0 1 1-1h20a1 1 0 1 1 0 2H4a1 1 0 0 1-1-1Z"]));
+export const Subtract48Regular = ( /*#__PURE__*/createFluentIcon('Subtract48Regular', "48", ["M6 23.25c0-.69.56-1.25 1.25-1.25h33.5a1.25 1.25 0 1 1 0 2.5H7.25c-.69 0-1.25-.56-1.25-1.25Z"]));
+export const Subtract48Filled = ( /*#__PURE__*/createFluentIcon('Subtract48Filled', "48", ["M6 23.5c0-.83.67-1.5 1.5-1.5h33a1.5 1.5 0 0 1 0 3h-33A1.5 1.5 0 0 1 6 23.5Z"]));

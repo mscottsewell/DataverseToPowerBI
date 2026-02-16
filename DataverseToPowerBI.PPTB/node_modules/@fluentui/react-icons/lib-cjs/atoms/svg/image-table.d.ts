@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const ImageTableFilled: FluentIcon;
+export declare const ImageTableRegular: FluentIcon;
+export declare const ImageTable16Regular: FluentIcon;
+export declare const ImageTable16Filled: FluentIcon;
+export declare const ImageTable20Regular: FluentIcon;
+export declare const ImageTable20Filled: FluentIcon;
+export declare const ImageTable24Regular: FluentIcon;
+export declare const ImageTable24Filled: FluentIcon;
+export declare const ImageTable28Regular: FluentIcon;
+export declare const ImageTable28Filled: FluentIcon;
+export declare const ImageTable32Regular: FluentIcon;
+export declare const ImageTable32Filled: FluentIcon;
+export declare const ImageTable48Regular: FluentIcon;
+export declare const ImageTable48Filled: FluentIcon;

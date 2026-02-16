@@ -1,0 +1,13 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const StarOneQuarterFilled: FluentFontIcon;
+export declare const StarOneQuarterRegular: FluentFontIcon;
+export declare const StarOneQuarter12Regular: FluentFontIcon;
+export declare const StarOneQuarter12Filled: FluentFontIcon;
+export declare const StarOneQuarter16Regular: FluentFontIcon;
+export declare const StarOneQuarter16Filled: FluentFontIcon;
+export declare const StarOneQuarter20Regular: FluentFontIcon;
+export declare const StarOneQuarter20Filled: FluentFontIcon;
+export declare const StarOneQuarter24Regular: FluentFontIcon;
+export declare const StarOneQuarter24Filled: FluentFontIcon;
+export declare const StarOneQuarter28Regular: FluentFontIcon;
+export declare const StarOneQuarter28Filled: FluentFontIcon;

@@ -1,0 +1,11 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const StarCheckmarkFilled: FluentFontIcon;
+export declare const StarCheckmarkRegular: FluentFontIcon;
+export declare const StarCheckmark16Regular: FluentFontIcon;
+export declare const StarCheckmark16Filled: FluentFontIcon;
+export declare const StarCheckmark20Regular: FluentFontIcon;
+export declare const StarCheckmark20Filled: FluentFontIcon;
+export declare const StarCheckmark24Regular: FluentFontIcon;
+export declare const StarCheckmark24Filled: FluentFontIcon;
+export declare const StarCheckmark28Regular: FluentFontIcon;
+export declare const StarCheckmark28Filled: FluentFontIcon;

@@ -1,0 +1,10 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const MailRewindFilled: FluentFontIcon;
+export declare const MailRewindRegular: FluentFontIcon;
+export declare const MailRewind16Regular: FluentFontIcon;
+export declare const MailRewind16Filled: FluentFontIcon;
+export declare const MailRewind20Regular: FluentFontIcon;
+export declare const MailRewind20Filled: FluentFontIcon;
+export declare const MailRewind24Regular: FluentFontIcon;
+export declare const MailRewind24Filled: FluentFontIcon;
+export declare const MailRewind32Light: FluentFontIcon;

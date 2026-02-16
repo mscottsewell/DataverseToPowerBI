@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const PersonSoundSpatialFilled: FluentIcon;
+export declare const PersonSoundSpatialRegular: FluentIcon;
+export declare const PersonSoundSpatial16Regular: FluentIcon;
+export declare const PersonSoundSpatial16Filled: FluentIcon;
+export declare const PersonSoundSpatial20Regular: FluentIcon;
+export declare const PersonSoundSpatial20Filled: FluentIcon;
+export declare const PersonSoundSpatial24Regular: FluentIcon;
+export declare const PersonSoundSpatial24Filled: FluentIcon;
+export declare const PersonSoundSpatial28Regular: FluentIcon;
+export declare const PersonSoundSpatial28Filled: FluentIcon;
+export declare const PersonSoundSpatial32Regular: FluentIcon;
+export declare const PersonSoundSpatial32Filled: FluentIcon;
+export declare const PersonSoundSpatial48Regular: FluentIcon;
+export declare const PersonSoundSpatial48Filled: FluentIcon;

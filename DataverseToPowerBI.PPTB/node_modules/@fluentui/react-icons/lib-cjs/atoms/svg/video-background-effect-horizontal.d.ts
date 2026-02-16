@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const VideoBackgroundEffectHorizontalFilled: FluentIcon;
+export declare const VideoBackgroundEffectHorizontalRegular: FluentIcon;
+export declare const VideoBackgroundEffectHorizontal16Regular: FluentIcon;
+export declare const VideoBackgroundEffectHorizontal16Filled: FluentIcon;
+export declare const VideoBackgroundEffectHorizontal20Regular: FluentIcon;
+export declare const VideoBackgroundEffectHorizontal20Filled: FluentIcon;
+export declare const VideoBackgroundEffectHorizontal24Regular: FluentIcon;
+export declare const VideoBackgroundEffectHorizontal24Filled: FluentIcon;
+export declare const VideoBackgroundEffectHorizontal28Regular: FluentIcon;
+export declare const VideoBackgroundEffectHorizontal28Filled: FluentIcon;
+export declare const VideoBackgroundEffectHorizontal32Regular: FluentIcon;
+export declare const VideoBackgroundEffectHorizontal32Filled: FluentIcon;
+export declare const VideoBackgroundEffectHorizontal48Regular: FluentIcon;
+export declare const VideoBackgroundEffectHorizontal48Filled: FluentIcon;

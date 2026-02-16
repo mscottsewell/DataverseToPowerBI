@@ -1,0 +1,13 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const FullScreenMaximizeFilled: FluentIcon;
+export declare const FullScreenMaximizeRegular: FluentIcon;
+export declare const FullScreenMaximize16Regular: FluentIcon;
+export declare const FullScreenMaximize16Filled: FluentIcon;
+export declare const FullScreenMaximize20Regular: FluentIcon;
+export declare const FullScreenMaximize20Filled: FluentIcon;
+export declare const FullScreenMaximize24Regular: FluentIcon;
+export declare const FullScreenMaximize24Filled: FluentIcon;
+export declare const FullScreenMaximize28Regular: FluentIcon;
+export declare const FullScreenMaximize28Filled: FluentIcon;
+export declare const FullScreenMaximize32Regular: FluentIcon;
+export declare const FullScreenMaximize32Filled: FluentIcon;

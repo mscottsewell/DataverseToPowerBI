@@ -1,0 +1,12 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const MailArrowClockwiseFilled: FluentIcon;
+export declare const MailArrowClockwiseRegular: FluentIcon;
+export declare const MailArrowClockwise16Regular: FluentIcon;
+export declare const MailArrowClockwise16Filled: FluentIcon;
+export declare const MailArrowClockwise20Regular: FluentIcon;
+export declare const MailArrowClockwise20Filled: FluentIcon;
+export declare const MailArrowClockwise24Regular: FluentIcon;
+export declare const MailArrowClockwise24Filled: FluentIcon;
+export declare const MailArrowClockwise32Regular: FluentIcon;
+export declare const MailArrowClockwise32Filled: FluentIcon;
+export declare const MailArrowClockwise32Light: FluentIcon;

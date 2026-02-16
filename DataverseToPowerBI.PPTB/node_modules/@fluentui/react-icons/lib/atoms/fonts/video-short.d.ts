@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const VideoShortFilled: FluentFontIcon;
+export declare const VideoShortRegular: FluentFontIcon;
+export declare const VideoShort16Regular: FluentFontIcon;
+export declare const VideoShort16Filled: FluentFontIcon;
+export declare const VideoShort20Regular: FluentFontIcon;
+export declare const VideoShort20Filled: FluentFontIcon;
+export declare const VideoShort24Regular: FluentFontIcon;
+export declare const VideoShort24Filled: FluentFontIcon;
+export declare const VideoShort28Regular: FluentFontIcon;
+export declare const VideoShort28Filled: FluentFontIcon;
+export declare const VideoShort32Regular: FluentFontIcon;
+export declare const VideoShort32Filled: FluentFontIcon;
+export declare const VideoShort48Regular: FluentFontIcon;
+export declare const VideoShort48Filled: FluentFontIcon;

@@ -1,0 +1,17 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const SplitHorizontalFilled: FluentIcon;
+export declare const SplitHorizontalRegular: FluentIcon;
+export declare const SplitHorizontal12Regular: FluentIcon;
+export declare const SplitHorizontal12Filled: FluentIcon;
+export declare const SplitHorizontal16Regular: FluentIcon;
+export declare const SplitHorizontal16Filled: FluentIcon;
+export declare const SplitHorizontal20Regular: FluentIcon;
+export declare const SplitHorizontal20Filled: FluentIcon;
+export declare const SplitHorizontal24Regular: FluentIcon;
+export declare const SplitHorizontal24Filled: FluentIcon;
+export declare const SplitHorizontal28Regular: FluentIcon;
+export declare const SplitHorizontal28Filled: FluentIcon;
+export declare const SplitHorizontal32Regular: FluentIcon;
+export declare const SplitHorizontal32Filled: FluentIcon;
+export declare const SplitHorizontal48Regular: FluentIcon;
+export declare const SplitHorizontal48Filled: FluentIcon;

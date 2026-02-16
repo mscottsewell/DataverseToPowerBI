@@ -1,0 +1,26 @@
+'use client';
+import { createContext, useContextSelector } from '@fluentui/react-context-selector';
+export const carouselContextDefaultValue = {
+    activeIndex: 0,
+    appearance: 'flat',
+    selectPageByElement: ()=>{
+        return 0;
+    },
+    selectPageByDirection: ()=>{
+        return 0;
+    },
+    selectPageByIndex: ()=>{
+    /** noop */ },
+    subscribeForValues: ()=>()=>{
+        /** noop */ },
+    enableAutoplay: ()=>{
+    /** noop */ },
+    resetAutoplay: ()=>{
+    /** noop */ },
+    circular: false,
+    containerRef: undefined,
+    viewportRef: undefined
+};
+const CarouselContext = createContext(undefined);
+export const CarouselProvider = CarouselContext.Provider;
+export const useCarouselContext_unstable = (selector)=>useContextSelector(CarouselContext, (ctx = carouselContextDefaultValue)=>selector(ctx));

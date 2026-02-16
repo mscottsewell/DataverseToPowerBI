@@ -1,0 +1,18 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const DeleteFilled: FluentIcon;
+export declare const DeleteRegular: FluentIcon;
+export declare const Delete12Regular: FluentIcon;
+export declare const Delete12Filled: FluentIcon;
+export declare const Delete16Regular: FluentIcon;
+export declare const Delete16Filled: FluentIcon;
+export declare const Delete20Regular: FluentIcon;
+export declare const Delete20Filled: FluentIcon;
+export declare const Delete24Regular: FluentIcon;
+export declare const Delete24Filled: FluentIcon;
+export declare const Delete28Regular: FluentIcon;
+export declare const Delete28Filled: FluentIcon;
+export declare const Delete32Regular: FluentIcon;
+export declare const Delete32Filled: FluentIcon;
+export declare const Delete32Light: FluentIcon;
+export declare const Delete48Regular: FluentIcon;
+export declare const Delete48Filled: FluentIcon;

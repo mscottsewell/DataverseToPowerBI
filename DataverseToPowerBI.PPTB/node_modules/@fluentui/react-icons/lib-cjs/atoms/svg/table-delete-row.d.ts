@@ -1,0 +1,11 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const TableDeleteRowFilled: FluentIcon;
+export declare const TableDeleteRowRegular: FluentIcon;
+export declare const TableDeleteRow16Regular: FluentIcon;
+export declare const TableDeleteRow16Filled: FluentIcon;
+export declare const TableDeleteRow20Regular: FluentIcon;
+export declare const TableDeleteRow20Filled: FluentIcon;
+export declare const TableDeleteRow24Regular: FluentIcon;
+export declare const TableDeleteRow24Filled: FluentIcon;
+export declare const TableDeleteRow28Regular: FluentIcon;
+export declare const TableDeleteRow28Filled: FluentIcon;

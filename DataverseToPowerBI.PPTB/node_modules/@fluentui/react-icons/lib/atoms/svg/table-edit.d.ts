@@ -1,0 +1,11 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const TableEditFilled: FluentIcon;
+export declare const TableEditRegular: FluentIcon;
+export declare const TableEdit16Regular: FluentIcon;
+export declare const TableEdit16Filled: FluentIcon;
+export declare const TableEdit20Regular: FluentIcon;
+export declare const TableEdit20Filled: FluentIcon;
+export declare const TableEdit24Regular: FluentIcon;
+export declare const TableEdit24Filled: FluentIcon;
+export declare const TableEdit28Regular: FluentIcon;
+export declare const TableEdit28Filled: FluentIcon;

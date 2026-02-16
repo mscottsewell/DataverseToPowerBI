@@ -1,0 +1,13 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const MobileOptimizedFilled: FluentFontIcon;
+export declare const MobileOptimizedRegular: FluentFontIcon;
+export declare const MobileOptimized20Regular: FluentFontIcon;
+export declare const MobileOptimized20Filled: FluentFontIcon;
+export declare const MobileOptimized24Regular: FluentFontIcon;
+export declare const MobileOptimized24Filled: FluentFontIcon;
+export declare const MobileOptimized28Regular: FluentFontIcon;
+export declare const MobileOptimized28Filled: FluentFontIcon;
+export declare const MobileOptimized32Regular: FluentFontIcon;
+export declare const MobileOptimized32Filled: FluentFontIcon;
+export declare const MobileOptimized48Regular: FluentFontIcon;
+export declare const MobileOptimized48Filled: FluentFontIcon;

@@ -1,0 +1,11 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const FolderOpenDownFilled: FluentIcon;
+export declare const FolderOpenDownRegular: FluentIcon;
+export declare const FolderOpenDown16Regular: FluentIcon;
+export declare const FolderOpenDown16Filled: FluentIcon;
+export declare const FolderOpenDown20Regular: FluentIcon;
+export declare const FolderOpenDown20Filled: FluentIcon;
+export declare const FolderOpenDown24Regular: FluentIcon;
+export declare const FolderOpenDown24Filled: FluentIcon;
+export declare const FolderOpenDown28Regular: FluentIcon;
+export declare const FolderOpenDown28Filled: FluentIcon;

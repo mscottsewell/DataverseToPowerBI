@@ -1,0 +1,17 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const BuildingMosqueFilled: FluentIcon;
+export declare const BuildingMosqueRegular: FluentIcon;
+export declare const BuildingMosque12Regular: FluentIcon;
+export declare const BuildingMosque12Filled: FluentIcon;
+export declare const BuildingMosque16Regular: FluentIcon;
+export declare const BuildingMosque16Filled: FluentIcon;
+export declare const BuildingMosque20Regular: FluentIcon;
+export declare const BuildingMosque20Filled: FluentIcon;
+export declare const BuildingMosque24Regular: FluentIcon;
+export declare const BuildingMosque24Filled: FluentIcon;
+export declare const BuildingMosque28Regular: FluentIcon;
+export declare const BuildingMosque28Filled: FluentIcon;
+export declare const BuildingMosque32Regular: FluentIcon;
+export declare const BuildingMosque32Filled: FluentIcon;
+export declare const BuildingMosque48Regular: FluentIcon;
+export declare const BuildingMosque48Filled: FluentIcon;

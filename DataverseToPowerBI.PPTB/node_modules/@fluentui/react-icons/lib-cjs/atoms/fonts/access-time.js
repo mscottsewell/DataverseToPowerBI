@@ -1,0 +1,11 @@
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.AccessTime24Filled = exports.AccessTime24Regular = exports.AccessTime20Filled = exports.AccessTime20Regular = exports.AccessTimeRegular = exports.AccessTimeFilled = void 0;
+const createFluentFontIcon_1 = require("../../utils/fonts/createFluentFontIcon");
+exports.AccessTimeFilled = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AccessTimeFilled", "", 2, undefined));
+exports.AccessTimeRegular = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AccessTimeRegular", "", 2, undefined));
+exports.AccessTime20Regular = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AccessTime20Regular", "", 1, 20));
+exports.AccessTime20Filled = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AccessTime20Filled", "", 0, 20));
+exports.AccessTime24Regular = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AccessTime24Regular", "", 1, 24));
+exports.AccessTime24Filled = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AccessTime24Filled", "", 0, 24));

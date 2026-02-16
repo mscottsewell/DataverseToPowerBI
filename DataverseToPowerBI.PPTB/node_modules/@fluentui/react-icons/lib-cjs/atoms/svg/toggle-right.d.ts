@@ -1,0 +1,13 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const ToggleRightFilled: FluentIcon;
+export declare const ToggleRightRegular: FluentIcon;
+export declare const ToggleRight16Regular: FluentIcon;
+export declare const ToggleRight16Filled: FluentIcon;
+export declare const ToggleRight20Regular: FluentIcon;
+export declare const ToggleRight20Filled: FluentIcon;
+export declare const ToggleRight24Regular: FluentIcon;
+export declare const ToggleRight24Filled: FluentIcon;
+export declare const ToggleRight28Regular: FluentIcon;
+export declare const ToggleRight28Filled: FluentIcon;
+export declare const ToggleRight48Regular: FluentIcon;
+export declare const ToggleRight48Filled: FluentIcon;

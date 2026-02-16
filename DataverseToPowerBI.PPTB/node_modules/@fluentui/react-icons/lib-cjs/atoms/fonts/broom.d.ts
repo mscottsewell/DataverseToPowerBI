@@ -1,0 +1,14 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const BroomFilled: FluentFontIcon;
+export declare const BroomRegular: FluentFontIcon;
+export declare const Broom16Regular: FluentFontIcon;
+export declare const Broom16Filled: FluentFontIcon;
+export declare const Broom20Regular: FluentFontIcon;
+export declare const Broom20Filled: FluentFontIcon;
+export declare const Broom24Regular: FluentFontIcon;
+export declare const Broom24Filled: FluentFontIcon;
+export declare const Broom28Regular: FluentFontIcon;
+export declare const Broom28Filled: FluentFontIcon;
+export declare const Broom32Regular: FluentFontIcon;
+export declare const Broom32Filled: FluentFontIcon;
+export declare const Broom32Light: FluentFontIcon;

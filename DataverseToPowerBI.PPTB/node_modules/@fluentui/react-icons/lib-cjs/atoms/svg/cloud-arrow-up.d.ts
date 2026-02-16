@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const CloudArrowUpFilled: FluentIcon;
+export declare const CloudArrowUpRegular: FluentIcon;
+export declare const CloudArrowUp16Regular: FluentIcon;
+export declare const CloudArrowUp16Filled: FluentIcon;
+export declare const CloudArrowUp20Regular: FluentIcon;
+export declare const CloudArrowUp20Filled: FluentIcon;
+export declare const CloudArrowUp24Regular: FluentIcon;
+export declare const CloudArrowUp24Filled: FluentIcon;
+export declare const CloudArrowUp28Regular: FluentIcon;
+export declare const CloudArrowUp28Filled: FluentIcon;
+export declare const CloudArrowUp32Regular: FluentIcon;
+export declare const CloudArrowUp32Filled: FluentIcon;
+export declare const CloudArrowUp48Regular: FluentIcon;
+export declare const CloudArrowUp48Filled: FluentIcon;

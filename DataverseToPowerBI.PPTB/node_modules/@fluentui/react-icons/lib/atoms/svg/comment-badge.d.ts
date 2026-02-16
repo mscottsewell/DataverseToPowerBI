@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const CommentBadgeFilled: FluentIcon;
+export declare const CommentBadgeRegular: FluentIcon;
+export declare const CommentBadge16Regular: FluentIcon;
+export declare const CommentBadge16Filled: FluentIcon;
+export declare const CommentBadge20Regular: FluentIcon;
+export declare const CommentBadge20Filled: FluentIcon;
+export declare const CommentBadge24Regular: FluentIcon;
+export declare const CommentBadge24Filled: FluentIcon;
+export declare const CommentBadge28Regular: FluentIcon;
+export declare const CommentBadge28Filled: FluentIcon;
+export declare const CommentBadge32Regular: FluentIcon;
+export declare const CommentBadge32Filled: FluentIcon;
+export declare const CommentBadge48Regular: FluentIcon;
+export declare const CommentBadge48Filled: FluentIcon;

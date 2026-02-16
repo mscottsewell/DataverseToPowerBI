@@ -1,0 +1,11 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const GuitarFilled: FluentFontIcon;
+export declare const GuitarRegular: FluentFontIcon;
+export declare const Guitar16Regular: FluentFontIcon;
+export declare const Guitar16Filled: FluentFontIcon;
+export declare const Guitar20Regular: FluentFontIcon;
+export declare const Guitar20Filled: FluentFontIcon;
+export declare const Guitar24Regular: FluentFontIcon;
+export declare const Guitar24Filled: FluentFontIcon;
+export declare const Guitar28Regular: FluentFontIcon;
+export declare const Guitar28Filled: FluentFontIcon;

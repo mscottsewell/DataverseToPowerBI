@@ -1,0 +1,13 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const TriangleLeftFilled: FluentIcon;
+export declare const TriangleLeftRegular: FluentIcon;
+export declare const TriangleLeft12Regular: FluentIcon;
+export declare const TriangleLeft12Filled: FluentIcon;
+export declare const TriangleLeft16Regular: FluentIcon;
+export declare const TriangleLeft16Filled: FluentIcon;
+export declare const TriangleLeft20Regular: FluentIcon;
+export declare const TriangleLeft20Filled: FluentIcon;
+export declare const TriangleLeft32Regular: FluentIcon;
+export declare const TriangleLeft32Filled: FluentIcon;
+export declare const TriangleLeft48Regular: FluentIcon;
+export declare const TriangleLeft48Filled: FluentIcon;

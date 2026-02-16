@@ -1,0 +1,18 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const AttachFilled: FluentIcon;
+export declare const AttachRegular: FluentIcon;
+export declare const Attach12Regular: FluentIcon;
+export declare const Attach12Filled: FluentIcon;
+export declare const Attach16Regular: FluentIcon;
+export declare const Attach16Filled: FluentIcon;
+export declare const Attach20Regular: FluentIcon;
+export declare const Attach20Filled: FluentIcon;
+export declare const Attach24Regular: FluentIcon;
+export declare const Attach24Filled: FluentIcon;
+export declare const Attach28Regular: FluentIcon;
+export declare const Attach28Filled: FluentIcon;
+export declare const Attach32Regular: FluentIcon;
+export declare const Attach32Filled: FluentIcon;
+export declare const Attach32Light: FluentIcon;
+export declare const Attach48Regular: FluentIcon;
+export declare const Attach48Filled: FluentIcon;

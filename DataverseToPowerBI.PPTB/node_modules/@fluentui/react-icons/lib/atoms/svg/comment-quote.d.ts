@@ -1,0 +1,11 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const CommentQuoteFilled: FluentIcon;
+export declare const CommentQuoteRegular: FluentIcon;
+export declare const CommentQuote16Regular: FluentIcon;
+export declare const CommentQuote16Filled: FluentIcon;
+export declare const CommentQuote20Regular: FluentIcon;
+export declare const CommentQuote20Filled: FluentIcon;
+export declare const CommentQuote24Regular: FluentIcon;
+export declare const CommentQuote24Filled: FluentIcon;
+export declare const CommentQuote28Regular: FluentIcon;
+export declare const CommentQuote28Filled: FluentIcon;

@@ -1,0 +1,17 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const ChatBubblesQuestionColor: FluentIcon;
+export declare const ChatBubblesQuestionFilled: FluentIcon;
+export declare const ChatBubblesQuestionRegular: FluentIcon;
+export declare const ChatBubblesQuestion16Regular: FluentIcon;
+export declare const ChatBubblesQuestion16Filled: FluentIcon;
+export declare const ChatBubblesQuestion16Color: FluentIcon;
+export declare const ChatBubblesQuestion20Regular: FluentIcon;
+export declare const ChatBubblesQuestion20Filled: FluentIcon;
+export declare const ChatBubblesQuestion20Color: FluentIcon;
+export declare const ChatBubblesQuestion24Regular: FluentIcon;
+export declare const ChatBubblesQuestion24Filled: FluentIcon;
+export declare const ChatBubblesQuestion24Color: FluentIcon;
+export declare const ChatBubblesQuestion28Regular: FluentIcon;
+export declare const ChatBubblesQuestion28Filled: FluentIcon;
+export declare const ChatBubblesQuestion32Regular: FluentIcon;
+export declare const ChatBubblesQuestion32Filled: FluentIcon;

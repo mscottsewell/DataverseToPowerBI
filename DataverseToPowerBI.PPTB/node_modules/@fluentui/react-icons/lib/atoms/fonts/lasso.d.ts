@@ -1,0 +1,12 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const LassoFilled: FluentFontIcon;
+export declare const LassoRegular: FluentFontIcon;
+export declare const Lasso20Regular: FluentFontIcon;
+export declare const Lasso20Filled: FluentFontIcon;
+export declare const Lasso24Regular: FluentFontIcon;
+export declare const Lasso24Filled: FluentFontIcon;
+export declare const Lasso28Regular: FluentFontIcon;
+export declare const Lasso28Filled: FluentFontIcon;
+export declare const Lasso32Regular: FluentFontIcon;
+export declare const Lasso32Filled: FluentFontIcon;
+export declare const Lasso32Light: FluentFontIcon;

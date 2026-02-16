@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const DeviceMeetingRoomBarFilled: FluentFontIcon;
+export declare const DeviceMeetingRoomBarRegular: FluentFontIcon;
+export declare const DeviceMeetingRoomBar12Regular: FluentFontIcon;
+export declare const DeviceMeetingRoomBar12Filled: FluentFontIcon;
+export declare const DeviceMeetingRoomBar16Regular: FluentFontIcon;
+export declare const DeviceMeetingRoomBar16Filled: FluentFontIcon;
+export declare const DeviceMeetingRoomBar20Regular: FluentFontIcon;
+export declare const DeviceMeetingRoomBar20Filled: FluentFontIcon;
+export declare const DeviceMeetingRoomBar24Regular: FluentFontIcon;
+export declare const DeviceMeetingRoomBar24Filled: FluentFontIcon;
+export declare const DeviceMeetingRoomBar28Regular: FluentFontIcon;
+export declare const DeviceMeetingRoomBar28Filled: FluentFontIcon;
+export declare const DeviceMeetingRoomBar32Regular: FluentFontIcon;
+export declare const DeviceMeetingRoomBar32Filled: FluentFontIcon;

@@ -1,0 +1,13 @@
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Autosum24Filled = exports.Autosum24Regular = exports.Autosum20Filled = exports.Autosum20Regular = exports.Autosum16Filled = exports.Autosum16Regular = exports.AutosumRegular = exports.AutosumFilled = void 0;
+const createFluentIcon_1 = require("../../utils/createFluentIcon");
+exports.AutosumFilled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('AutosumFilled', "1em", ["M3.81 3.7a.75.75 0 0 1 .69-.45h11a.75.75 0 0 1 0 1.5H6.26l4.15 4.3c.26.28.28.72.03 1l-4.34 5.2h9.4a.75.75 0 0 1 0 1.5h-11a.75.75 0 0 1-.58-1.23l4.94-5.9-4.9-5.1a.75.75 0 0 1-.15-.81Z"]));
+exports.AutosumRegular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('AutosumRegular', "1em", ["M4.04 3.8a.5.5 0 0 1 .46-.3h11a.5.5 0 1 1 0 1H5.67l4.56 4.73a.5.5 0 0 1 .02.67l-4.68 5.6h9.93a.5.5 0 1 1 0 1h-11a.5.5 0 0 1-.38-.82L9.2 9.6 4.14 4.35a.5.5 0 0 1-.1-.55Z"]));
+exports.Autosum16Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('Autosum16Regular', "16", ["M2.54 2.3A.5.5 0 0 1 3 2h9.5a.5.5 0 1 1 0 1H4.17l4.08 4.25a.5.5 0 0 1 .02.67L4.07 13h8.43a.5.5 0 1 1 0 1H3a.5.5 0 0 1-.39-.82l4.6-5.56-4.57-4.77a.5.5 0 0 1-.1-.55Z"]));
+exports.Autosum16Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('Autosum16Filled', "16", ["M2.06 1.96a.75.75 0 0 1 .69-.46h9.5a.75.75 0 0 1 0 1.5H4.51l3.92 4.08c.27.28.27.73 0 1.02l-3.99 4.4h7.81a.75.75 0 0 1 0 1.5h-9.5a.75.75 0 0 1-.56-1.25L6.86 7.6 2.2 2.77a.75.75 0 0 1-.15-.81Z"]));
+exports.Autosum20Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('Autosum20Regular', "20", ["M4.04 3.8a.5.5 0 0 1 .46-.3h11a.5.5 0 1 1 0 1H5.67l4.56 4.73a.5.5 0 0 1 .02.67l-4.68 5.6h9.93a.5.5 0 1 1 0 1h-11a.5.5 0 0 1-.38-.82L9.2 9.6 4.14 4.35a.5.5 0 0 1-.1-.55Z"]));
+exports.Autosum20Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('Autosum20Filled', "20", ["M3.81 3.7a.75.75 0 0 1 .69-.45h11a.75.75 0 0 1 0 1.5H6.26l4.15 4.3c.26.28.28.72.03 1l-4.34 5.2h9.4a.75.75 0 0 1 0 1.5h-11a.75.75 0 0 1-.58-1.23l4.94-5.9-4.9-5.1a.75.75 0 0 1-.15-.81Z"]));
+exports.Autosum24Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('Autosum24Regular', "24", ["M5.06 4.46A.75.75 0 0 1 5.75 4h12.5a.75.75 0 0 1 0 1.5H7.52l5.36 5.54c.27.28.28.71.03 1L7.38 18.5h10.87a.75.75 0 0 1 0 1.5H5.75a.75.75 0 0 1-.57-1.24l6.15-7.17L5.2 5.27a.75.75 0 0 1-.15-.81Z"]));
+exports.Autosum24Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('Autosum24Filled', "24", ["M4.83 4.61A1 1 0 0 1 5.75 4h12.5a1 1 0 1 1 0 2H8.11l4.95 5.12a1 1 0 0 1 .04 1.34L7.92 18.5h10.33a1 1 0 1 1 0 2H5.75a1 1 0 0 1-.76-1.65l6-7L5.03 5.7a1 1 0 0 1-.2-1.09Z"]));

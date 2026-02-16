@@ -1,0 +1,11 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const ChatMultipleCheckmarkFilled: FluentFontIcon;
+export declare const ChatMultipleCheckmarkRegular: FluentFontIcon;
+export declare const ChatMultipleCheckmark16Regular: FluentFontIcon;
+export declare const ChatMultipleCheckmark16Filled: FluentFontIcon;
+export declare const ChatMultipleCheckmark20Regular: FluentFontIcon;
+export declare const ChatMultipleCheckmark20Filled: FluentFontIcon;
+export declare const ChatMultipleCheckmark24Regular: FluentFontIcon;
+export declare const ChatMultipleCheckmark24Filled: FluentFontIcon;
+export declare const ChatMultipleCheckmark28Regular: FluentFontIcon;
+export declare const ChatMultipleCheckmark28Filled: FluentFontIcon;

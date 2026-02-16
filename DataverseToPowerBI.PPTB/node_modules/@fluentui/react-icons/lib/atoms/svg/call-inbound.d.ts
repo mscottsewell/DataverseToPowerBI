@@ -1,0 +1,13 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const CallInboundFilled: FluentIcon;
+export declare const CallInboundRegular: FluentIcon;
+export declare const CallInbound16Regular: FluentIcon;
+export declare const CallInbound16Filled: FluentIcon;
+export declare const CallInbound20Regular: FluentIcon;
+export declare const CallInbound20Filled: FluentIcon;
+export declare const CallInbound24Regular: FluentIcon;
+export declare const CallInbound24Filled: FluentIcon;
+export declare const CallInbound28Regular: FluentIcon;
+export declare const CallInbound28Filled: FluentIcon;
+export declare const CallInbound48Regular: FluentIcon;
+export declare const CallInbound48Filled: FluentIcon;

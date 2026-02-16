@@ -1,0 +1,11 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const MicRecordFilled: FluentIcon;
+export declare const MicRecordRegular: FluentIcon;
+export declare const MicRecord16Regular: FluentIcon;
+export declare const MicRecord16Filled: FluentIcon;
+export declare const MicRecord20Regular: FluentIcon;
+export declare const MicRecord20Filled: FluentIcon;
+export declare const MicRecord24Regular: FluentIcon;
+export declare const MicRecord24Filled: FluentIcon;
+export declare const MicRecord28Regular: FluentIcon;
+export declare const MicRecord28Filled: FluentIcon;

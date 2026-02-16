@@ -1,0 +1,13 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const ChatMultipleHeartFilled: FluentIcon;
+export declare const ChatMultipleHeartRegular: FluentIcon;
+export declare const ChatMultipleHeart16Regular: FluentIcon;
+export declare const ChatMultipleHeart16Filled: FluentIcon;
+export declare const ChatMultipleHeart20Regular: FluentIcon;
+export declare const ChatMultipleHeart20Filled: FluentIcon;
+export declare const ChatMultipleHeart24Regular: FluentIcon;
+export declare const ChatMultipleHeart24Filled: FluentIcon;
+export declare const ChatMultipleHeart28Regular: FluentIcon;
+export declare const ChatMultipleHeart28Filled: FluentIcon;
+export declare const ChatMultipleHeart32Regular: FluentIcon;
+export declare const ChatMultipleHeart32Filled: FluentIcon;

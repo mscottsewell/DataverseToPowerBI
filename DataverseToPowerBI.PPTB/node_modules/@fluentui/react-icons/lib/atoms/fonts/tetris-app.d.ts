@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const TetrisAppFilled: FluentFontIcon;
+export declare const TetrisAppRegular: FluentFontIcon;
+export declare const TetrisApp16Regular: FluentFontIcon;
+export declare const TetrisApp16Filled: FluentFontIcon;
+export declare const TetrisApp20Regular: FluentFontIcon;
+export declare const TetrisApp20Filled: FluentFontIcon;
+export declare const TetrisApp24Regular: FluentFontIcon;
+export declare const TetrisApp24Filled: FluentFontIcon;
+export declare const TetrisApp28Regular: FluentFontIcon;
+export declare const TetrisApp28Filled: FluentFontIcon;
+export declare const TetrisApp32Regular: FluentFontIcon;
+export declare const TetrisApp32Filled: FluentFontIcon;
+export declare const TetrisApp48Regular: FluentFontIcon;
+export declare const TetrisApp48Filled: FluentFontIcon;

@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const ChatMultiplePersonFilled: FluentIcon;
+export declare const ChatMultiplePersonRegular: FluentIcon;
+export declare const ChatMultiplePerson16Regular: FluentIcon;
+export declare const ChatMultiplePerson16Filled: FluentIcon;
+export declare const ChatMultiplePerson20Regular: FluentIcon;
+export declare const ChatMultiplePerson20Filled: FluentIcon;
+export declare const ChatMultiplePerson24Regular: FluentIcon;
+export declare const ChatMultiplePerson24Filled: FluentIcon;
+export declare const ChatMultiplePerson28Regular: FluentIcon;
+export declare const ChatMultiplePerson28Filled: FluentIcon;
+export declare const ChatMultiplePerson32Regular: FluentIcon;
+export declare const ChatMultiplePerson32Filled: FluentIcon;
+export declare const ChatMultiplePerson48Regular: FluentIcon;
+export declare const ChatMultiplePerson48Filled: FluentIcon;

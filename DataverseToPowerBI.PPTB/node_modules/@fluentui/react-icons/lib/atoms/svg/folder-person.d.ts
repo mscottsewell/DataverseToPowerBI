@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const FolderPersonFilled: FluentIcon;
+export declare const FolderPersonRegular: FluentIcon;
+export declare const FolderPerson16Regular: FluentIcon;
+export declare const FolderPerson16Filled: FluentIcon;
+export declare const FolderPerson20Regular: FluentIcon;
+export declare const FolderPerson20Filled: FluentIcon;
+export declare const FolderPerson24Regular: FluentIcon;
+export declare const FolderPerson24Filled: FluentIcon;
+export declare const FolderPerson28Regular: FluentIcon;
+export declare const FolderPerson28Filled: FluentIcon;
+export declare const FolderPerson32Regular: FluentIcon;
+export declare const FolderPerson32Filled: FluentIcon;
+export declare const FolderPerson48Regular: FluentIcon;
+export declare const FolderPerson48Filled: FluentIcon;

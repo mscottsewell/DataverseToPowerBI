@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const DeviceEqFilled: FluentIcon;
+export declare const DeviceEqRegular: FluentIcon;
+export declare const DeviceEq16Regular: FluentIcon;
+export declare const DeviceEq16Filled: FluentIcon;
+export declare const DeviceEq20Regular: FluentIcon;
+export declare const DeviceEq20Filled: FluentIcon;
+export declare const DeviceEq24Regular: FluentIcon;
+export declare const DeviceEq24Filled: FluentIcon;
+export declare const DeviceEq28Regular: FluentIcon;
+export declare const DeviceEq28Filled: FluentIcon;
+export declare const DeviceEq32Regular: FluentIcon;
+export declare const DeviceEq32Filled: FluentIcon;
+export declare const DeviceEq48Regular: FluentIcon;
+export declare const DeviceEq48Filled: FluentIcon;

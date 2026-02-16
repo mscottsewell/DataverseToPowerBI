@@ -1,0 +1,11 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const DataBarVerticalStarFilled: FluentFontIcon;
+export declare const DataBarVerticalStarRegular: FluentFontIcon;
+export declare const DataBarVerticalStar16Regular: FluentFontIcon;
+export declare const DataBarVerticalStar16Filled: FluentFontIcon;
+export declare const DataBarVerticalStar20Regular: FluentFontIcon;
+export declare const DataBarVerticalStar20Filled: FluentFontIcon;
+export declare const DataBarVerticalStar24Regular: FluentFontIcon;
+export declare const DataBarVerticalStar24Filled: FluentFontIcon;
+export declare const DataBarVerticalStar32Regular: FluentFontIcon;
+export declare const DataBarVerticalStar32Filled: FluentFontIcon;

@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const LockShieldFilled: FluentFontIcon;
+export declare const LockShieldRegular: FluentFontIcon;
+export declare const LockShield16Regular: FluentFontIcon;
+export declare const LockShield16Filled: FluentFontIcon;
+export declare const LockShield20Regular: FluentFontIcon;
+export declare const LockShield20Filled: FluentFontIcon;
+export declare const LockShield24Regular: FluentFontIcon;
+export declare const LockShield24Filled: FluentFontIcon;
+export declare const LockShield28Regular: FluentFontIcon;
+export declare const LockShield28Filled: FluentFontIcon;
+export declare const LockShield32Regular: FluentFontIcon;
+export declare const LockShield32Filled: FluentFontIcon;
+export declare const LockShield48Regular: FluentFontIcon;
+export declare const LockShield48Filled: FluentFontIcon;

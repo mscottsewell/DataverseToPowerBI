@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const ClipboardChatEmptyFilled: FluentFontIcon;
+export declare const ClipboardChatEmptyRegular: FluentFontIcon;
+export declare const ClipboardChatEmpty16Regular: FluentFontIcon;
+export declare const ClipboardChatEmpty16Filled: FluentFontIcon;
+export declare const ClipboardChatEmpty20Regular: FluentFontIcon;
+export declare const ClipboardChatEmpty20Filled: FluentFontIcon;
+export declare const ClipboardChatEmpty24Regular: FluentFontIcon;
+export declare const ClipboardChatEmpty24Filled: FluentFontIcon;
+export declare const ClipboardChatEmpty28Regular: FluentFontIcon;
+export declare const ClipboardChatEmpty28Filled: FluentFontIcon;
+export declare const ClipboardChatEmpty32Regular: FluentFontIcon;
+export declare const ClipboardChatEmpty32Filled: FluentFontIcon;
+export declare const ClipboardChatEmpty48Regular: FluentFontIcon;
+export declare const ClipboardChatEmpty48Filled: FluentFontIcon;

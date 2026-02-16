@@ -1,0 +1,15 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const HardDriveFilled: FluentFontIcon;
+export declare const HardDriveRegular: FluentFontIcon;
+export declare const HardDrive16Regular: FluentFontIcon;
+export declare const HardDrive16Filled: FluentFontIcon;
+export declare const HardDrive20Regular: FluentFontIcon;
+export declare const HardDrive20Filled: FluentFontIcon;
+export declare const HardDrive24Regular: FluentFontIcon;
+export declare const HardDrive24Filled: FluentFontIcon;
+export declare const HardDrive28Regular: FluentFontIcon;
+export declare const HardDrive28Filled: FluentFontIcon;
+export declare const HardDrive32Regular: FluentFontIcon;
+export declare const HardDrive32Filled: FluentFontIcon;
+export declare const HardDrive48Regular: FluentFontIcon;
+export declare const HardDrive48Filled: FluentFontIcon;

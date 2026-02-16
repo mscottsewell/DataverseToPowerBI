@@ -1,0 +1,18 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const GlobeFilled: FluentFontIcon;
+export declare const GlobeRegular: FluentFontIcon;
+export declare const Globe12Regular: FluentFontIcon;
+export declare const Globe12Filled: FluentFontIcon;
+export declare const Globe16Regular: FluentFontIcon;
+export declare const Globe16Filled: FluentFontIcon;
+export declare const Globe20Regular: FluentFontIcon;
+export declare const Globe20Filled: FluentFontIcon;
+export declare const Globe24Regular: FluentFontIcon;
+export declare const Globe24Filled: FluentFontIcon;
+export declare const Globe28Regular: FluentFontIcon;
+export declare const Globe28Filled: FluentFontIcon;
+export declare const Globe32Regular: FluentFontIcon;
+export declare const Globe32Filled: FluentFontIcon;
+export declare const Globe32Light: FluentFontIcon;
+export declare const Globe48Regular: FluentFontIcon;
+export declare const Globe48Filled: FluentFontIcon;

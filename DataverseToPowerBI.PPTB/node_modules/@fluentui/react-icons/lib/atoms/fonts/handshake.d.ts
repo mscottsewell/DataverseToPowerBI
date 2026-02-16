@@ -1,0 +1,11 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const HandshakeFilled: FluentFontIcon;
+export declare const HandshakeRegular: FluentFontIcon;
+export declare const Handshake16Regular: FluentFontIcon;
+export declare const Handshake16Filled: FluentFontIcon;
+export declare const Handshake20Regular: FluentFontIcon;
+export declare const Handshake20Filled: FluentFontIcon;
+export declare const Handshake24Regular: FluentFontIcon;
+export declare const Handshake24Filled: FluentFontIcon;
+export declare const Handshake32Regular: FluentFontIcon;
+export declare const Handshake32Filled: FluentFontIcon;

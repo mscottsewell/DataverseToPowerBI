@@ -1,0 +1,18 @@
+"use client";
+import { createFluentIcon } from '../../utils/createFluentIcon';
+export const SubtractCircleFilled = ( /*#__PURE__*/createFluentIcon('SubtractCircleFilled', "1em", ["M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0ZM6 10c0 .28.22.5.5.5h7a.5.5 0 0 0 0-1h-7a.5.5 0 0 0-.5.5Z"]));
+export const SubtractCircleRegular = ( /*#__PURE__*/createFluentIcon('SubtractCircleRegular', "1em", ["M6 10c0-.28.22-.5.5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 6 10Zm4 8a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm0-1a7 7 0 1 1 0-14 7 7 0 0 1 0 14Z"]));
+export const SubtractCircle12Regular = ( /*#__PURE__*/createFluentIcon('SubtractCircle12Regular', "12", ["M4 5.5a.5.5 0 0 0 0 1h4a.5.5 0 0 0 0-1H4ZM6 1a5 5 0 1 0 0 10A5 5 0 0 0 6 1ZM2 6a4 4 0 1 1 8 0 4 4 0 0 1-8 0Z"]));
+export const SubtractCircle12Filled = ( /*#__PURE__*/createFluentIcon('SubtractCircle12Filled', "12", ["M1 6a5 5 0 1 1 10 0A5 5 0 0 1 1 6Zm3-.5a.5.5 0 0 0 0 1h4a.5.5 0 0 0 0-1H4Z"]));
+export const SubtractCircle16Regular = ( /*#__PURE__*/createFluentIcon('SubtractCircle16Regular', "16", ["M2 8a6 6 0 1 1 12 0A6 6 0 0 1 2 8Zm6-7a7 7 0 1 0 0 14A7 7 0 0 0 8 1ZM5 7.5a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5Z"]));
+export const SubtractCircle16Filled = ( /*#__PURE__*/createFluentIcon('SubtractCircle16Filled', "16", ["M1 8a7 7 0 1 1 14 0A7 7 0 0 1 1 8Zm4-.5a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5Z"]));
+export const SubtractCircle20Regular = ( /*#__PURE__*/createFluentIcon('SubtractCircle20Regular', "20", ["M6 10c0-.28.22-.5.5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 6 10Zm4 8a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm0-1a7 7 0 1 1 0-14 7 7 0 0 1 0 14Z"]));
+export const SubtractCircle20Filled = ( /*#__PURE__*/createFluentIcon('SubtractCircle20Filled', "20", ["M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0ZM6 10c0 .28.22.5.5.5h7a.5.5 0 0 0 0-1h-7a.5.5 0 0 0-.5.5Z"]));
+export const SubtractCircle24Regular = ( /*#__PURE__*/createFluentIcon('SubtractCircle24Regular', "24", ["M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20Zm0 1.5a8.5 8.5 0 1 0 0 17 8.5 8.5 0 0 0 0-17Zm4.25 7.75a.75.75 0 0 1 0 1.5h-8.5a.75.75 0 0 1 0-1.5h8.5Z"]));
+export const SubtractCircle24Filled = ( /*#__PURE__*/createFluentIcon('SubtractCircle24Filled', "24", ["M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20Zm-4.25 9.25a.75.75 0 0 0-.1 1.5h8.6a.75.75 0 0 0 .1-1.5h-8.6Z"]));
+export const SubtractCircle28Regular = ( /*#__PURE__*/createFluentIcon('SubtractCircle28Regular', "28", ["M14 2a12 12 0 1 1 0 24 12 12 0 0 1 0-24Zm0 1.5a10.5 10.5 0 1 0 0 21 10.5 10.5 0 0 0 0-21Zm5.25 9.75a.75.75 0 0 1 0 1.5H8.75a.75.75 0 0 1 0-1.5h10.5Z"]));
+export const SubtractCircle28Filled = ( /*#__PURE__*/createFluentIcon('SubtractCircle28Filled', "28", ["M14 2a12 12 0 1 1 0 24 12 12 0 0 1 0-24ZM8.75 13.25a.75.75 0 0 0-.1 1.5h10.6a.75.75 0 0 0 .1-1.5H8.75Z"]));
+export const SubtractCircle32Regular = ( /*#__PURE__*/createFluentIcon('SubtractCircle32Regular', "32", ["M28 16a12 12 0 1 0-24 0 12 12 0 0 0 24 0Zm2 0a14 14 0 1 1-28 0 14 14 0 0 1 28 0Zm-20-1a1 1 0 1 0 0 2h12a1 1 0 1 0 0-2H10Z"]));
+export const SubtractCircle32Filled = ( /*#__PURE__*/createFluentIcon('SubtractCircle32Filled', "32", ["M30 16a14 14 0 1 1-28 0 14 14 0 0 1 28 0Zm-20-1a1 1 0 1 0 0 2h12a1 1 0 1 0 0-2H10Z"]));
+export const SubtractCircle48Regular = ( /*#__PURE__*/createFluentIcon('SubtractCircle48Regular', "48", ["M6.5 24a17.5 17.5 0 1 1 35 0 17.5 17.5 0 0 1-35 0ZM24 4a20 20 0 1 0 0 40 20 20 0 0 0 0-40ZM14 24c0-.69.56-1.25 1.25-1.25h17.5a1.25 1.25 0 1 1 0 2.5h-17.5c-.69 0-1.25-.56-1.25-1.25Z"]));
+export const SubtractCircle48Filled = ( /*#__PURE__*/createFluentIcon('SubtractCircle48Filled', "48", ["M24 4a20 20 0 1 0 0 40 20 20 0 0 0 0-40ZM14 24c0-.69.56-1.25 1.25-1.25h17.5a1.25 1.25 0 1 1 0 2.5h-17.5c-.69 0-1.25-.56-1.25-1.25Z"]));

@@ -1,0 +1,13 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const AddSubtractCircleFilled: FluentFontIcon;
+export declare const AddSubtractCircleRegular: FluentFontIcon;
+export declare const AddSubtractCircle16Regular: FluentFontIcon;
+export declare const AddSubtractCircle16Filled: FluentFontIcon;
+export declare const AddSubtractCircle20Regular: FluentFontIcon;
+export declare const AddSubtractCircle20Filled: FluentFontIcon;
+export declare const AddSubtractCircle24Regular: FluentFontIcon;
+export declare const AddSubtractCircle24Filled: FluentFontIcon;
+export declare const AddSubtractCircle28Regular: FluentFontIcon;
+export declare const AddSubtractCircle28Filled: FluentFontIcon;
+export declare const AddSubtractCircle48Regular: FluentFontIcon;
+export declare const AddSubtractCircle48Filled: FluentFontIcon;

@@ -1,0 +1,15 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const BookmarkMultipleFilled: FluentIcon;
+export declare const BookmarkMultipleRegular: FluentIcon;
+export declare const BookmarkMultiple16Regular: FluentIcon;
+export declare const BookmarkMultiple16Filled: FluentIcon;
+export declare const BookmarkMultiple20Regular: FluentIcon;
+export declare const BookmarkMultiple20Filled: FluentIcon;
+export declare const BookmarkMultiple24Regular: FluentIcon;
+export declare const BookmarkMultiple24Filled: FluentIcon;
+export declare const BookmarkMultiple28Regular: FluentIcon;
+export declare const BookmarkMultiple28Filled: FluentIcon;
+export declare const BookmarkMultiple32Regular: FluentIcon;
+export declare const BookmarkMultiple32Filled: FluentIcon;
+export declare const BookmarkMultiple48Regular: FluentIcon;
+export declare const BookmarkMultiple48Filled: FluentIcon;

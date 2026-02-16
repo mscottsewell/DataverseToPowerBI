@@ -1,0 +1,11 @@
+import type { FluentIcon } from '../../utils/createFluentIcon';
+export declare const DocumentSearchFilled: FluentIcon;
+export declare const DocumentSearchRegular: FluentIcon;
+export declare const DocumentSearch16Regular: FluentIcon;
+export declare const DocumentSearch16Filled: FluentIcon;
+export declare const DocumentSearch20Regular: FluentIcon;
+export declare const DocumentSearch20Filled: FluentIcon;
+export declare const DocumentSearch24Regular: FluentIcon;
+export declare const DocumentSearch24Filled: FluentIcon;
+export declare const DocumentSearch32Regular: FluentIcon;
+export declare const DocumentSearch32Filled: FluentIcon;

@@ -1,0 +1,11 @@
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.AccessibilityQuestionMark24Filled = exports.AccessibilityQuestionMark24Regular = exports.AccessibilityQuestionMark20Filled = exports.AccessibilityQuestionMark20Regular = exports.AccessibilityQuestionMarkRegular = exports.AccessibilityQuestionMarkFilled = void 0;
+const createFluentFontIcon_1 = require("../../utils/fonts/createFluentFontIcon");
+exports.AccessibilityQuestionMarkFilled = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AccessibilityQuestionMarkFilled", "", 2, undefined));
+exports.AccessibilityQuestionMarkRegular = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AccessibilityQuestionMarkRegular", "", 2, undefined));
+exports.AccessibilityQuestionMark20Regular = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AccessibilityQuestionMark20Regular", "󰕓", 1, 20));
+exports.AccessibilityQuestionMark20Filled = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AccessibilityQuestionMark20Filled", "󰗌", 0, 20));
+exports.AccessibilityQuestionMark24Regular = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AccessibilityQuestionMark24Regular", "󰕔", 1, 24));
+exports.AccessibilityQuestionMark24Filled = ( /*#__PURE__*/createFluentFontIcon_1.createFluentFontIcon("AccessibilityQuestionMark24Filled", "󰗍", 0, 24));

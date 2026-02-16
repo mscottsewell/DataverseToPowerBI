@@ -1,0 +1,11 @@
+import type { FluentFontIcon } from '../../utils/fonts/createFluentFontIcon';
+export declare const LeafOneFilled: FluentFontIcon;
+export declare const LeafOneRegular: FluentFontIcon;
+export declare const LeafOne16Regular: FluentFontIcon;
+export declare const LeafOne16Filled: FluentFontIcon;
+export declare const LeafOne20Regular: FluentFontIcon;
+export declare const LeafOne20Filled: FluentFontIcon;
+export declare const LeafOne24Regular: FluentFontIcon;
+export declare const LeafOne24Filled: FluentFontIcon;
+export declare const LeafOne32Regular: FluentFontIcon;
+export declare const LeafOne32Filled: FluentFontIcon;

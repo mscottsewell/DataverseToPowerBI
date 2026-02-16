@@ -1,0 +1,13 @@
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.TextUnderlineCharacterU24Filled = exports.TextUnderlineCharacterU24Regular = exports.TextUnderlineCharacterU20Filled = exports.TextUnderlineCharacterU20Regular = exports.TextUnderlineCharacterU16Filled = exports.TextUnderlineCharacterU16Regular = exports.TextUnderlineCharacterURegular = exports.TextUnderlineCharacterUFilled = void 0;
+const createFluentIcon_1 = require("../../utils/createFluentIcon");
+exports.TextUnderlineCharacterUFilled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('TextUnderlineCharacterUFilled', "1em", ["M7 3.75a.75.75 0 0 0-1.5 0V9.5a4.5 4.5 0 1 0 9 0V3.75a.75.75 0 0 0-1.5 0V9.5a3 3 0 1 1-6 0V3.75ZM5.75 15.5a.75.75 0 0 0 0 1.5h8.5a.75.75 0 0 0 0-1.5h-8.5Z"]));
+exports.TextUnderlineCharacterURegular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('TextUnderlineCharacterURegular', "1em", ["M7 3.5a.5.5 0 0 0-1 0V10a4 4 0 0 0 8 0V3.5a.5.5 0 0 0-1 0V10a3 3 0 1 1-6 0V3.5ZM5.5 16a.5.5 0 0 0 0 1h9a.5.5 0 0 0 0-1h-9Z"]));
+exports.TextUnderlineCharacterU16Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('TextUnderlineCharacterU16Regular', "16", ["M5.5 2.5a.5.5 0 0 0-1 0v5a3.5 3.5 0 1 0 7 0v-5a.5.5 0 0 0-1 0v5a2.5 2.5 0 0 1-5 0v-5ZM4.5 13a.5.5 0 0 0 0 1h7a.5.5 0 0 0 0-1h-7Z"]));
+exports.TextUnderlineCharacterU16Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('TextUnderlineCharacterU16Filled', "16", ["M6 2.75a.75.75 0 0 0-1.5 0V7.5a3.5 3.5 0 1 0 7 0V2.75a.75.75 0 0 0-1.5 0V7.5a2 2 0 1 1-4 0V2.75ZM4.75 12.5a.75.75 0 0 0 0 1.5h6.5a.75.75 0 0 0 0-1.5h-6.5Z"]));
+exports.TextUnderlineCharacterU20Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('TextUnderlineCharacterU20Regular', "20", ["M7 3.5a.5.5 0 0 0-1 0V10a4 4 0 0 0 8 0V3.5a.5.5 0 0 0-1 0V10a3 3 0 1 1-6 0V3.5ZM5.5 16a.5.5 0 0 0 0 1h9a.5.5 0 0 0 0-1h-9Z"]));
+exports.TextUnderlineCharacterU20Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('TextUnderlineCharacterU20Filled', "20", ["M7 3.75a.75.75 0 0 0-1.5 0V9.5a4.5 4.5 0 1 0 9 0V3.75a.75.75 0 0 0-1.5 0V9.5a3 3 0 1 1-6 0V3.75ZM5.75 15.5a.75.75 0 0 0 0 1.5h8.5a.75.75 0 0 0 0-1.5h-8.5Z"]));
+exports.TextUnderlineCharacterU24Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('TextUnderlineCharacterU24Regular', "24", ["M8.5 4.75a.75.75 0 0 0-1.5 0V12a5 5 0 0 0 10 0V4.75a.75.75 0 0 0-1.5 0V12a3.5 3.5 0 1 1-7 0V4.75ZM6.75 18.5a.75.75 0 0 0 0 1.5h10.5a.75.75 0 0 0 0-1.5H6.75Z"]));
+exports.TextUnderlineCharacterU24Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('TextUnderlineCharacterU24Filled', "24", ["M9 5a1 1 0 0 0-2 0v6.5a5 5 0 0 0 10 0V5a1 1 0 1 0-2 0v6.5a3 3 0 1 1-6 0V5ZM7 18a1 1 0 1 0 0 2h10a1 1 0 1 0 0-2H7Z"]));

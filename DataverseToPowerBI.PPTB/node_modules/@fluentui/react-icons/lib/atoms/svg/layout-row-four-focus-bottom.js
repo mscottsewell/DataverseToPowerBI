@@ -1,0 +1,6 @@
+"use client";
+import { createFluentIcon } from '../../utils/createFluentIcon';
+export const LayoutRowFourFocusBottomFilled = ( /*#__PURE__*/createFluentIcon('LayoutRowFourFocusBottomFilled', "1em", ["M3 6a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V6Zm3-2a2 2 0 0 0-2 2v.5h12V6a2 2 0 0 0-2-2H6Zm10 3.5H4V10h12V7.5Zm0 6V11H4v2.5h12Z"]));
+export const LayoutRowFourFocusBottom16Filled = ( /*#__PURE__*/createFluentIcon('LayoutRowFourFocusBottom16Filled', "16", ["M14 11.5a2.5 2.5 0 0 1-2.5 2.5h-7A2.5 2.5 0 0 1 2 11.5v-7A2.5 2.5 0 0 1 4.5 2h7A2.5 2.5 0 0 1 14 4.5v7ZM3 11h10V9H3v2Zm0-3h10V6H3v2Zm0-3h10v-.5c0-.83-.67-1.5-1.5-1.5h-7C3.67 3 3 3.67 3 4.5V5Z"]));
+export const LayoutRowFourFocusBottom20Filled = ( /*#__PURE__*/createFluentIcon('LayoutRowFourFocusBottom20Filled', "20", ["M3 6a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V6Zm3-2a2 2 0 0 0-2 2v.5h12V6a2 2 0 0 0-2-2H6Zm10 3.5H4V10h12V7.5Zm0 6V11H4v2.5h12Z"]));
+export const LayoutRowFourFocusBottom24Filled = ( /*#__PURE__*/createFluentIcon('LayoutRowFourFocusBottom24Filled', "24", ["M21 17.75c0 1.8-1.46 3.25-3.25 3.25H6.25A3.25 3.25 0 0 1 3 17.75V6.25C3 4.45 4.46 3 6.25 3h11.5C19.55 3 21 4.46 21 6.25v11.5ZM4.5 16h15v-3h-15v3Zm0-4.5h15V9h-15v2.5Zm0-4h15V6.25c0-.97-.78-1.75-1.75-1.75H6.25c-.97 0-1.75.78-1.75 1.75V7.5Z"]));

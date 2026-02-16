@@ -1,0 +1,15 @@
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.CaretDownRight24Filled = exports.CaretDownRight24Regular = exports.CaretDownRight20Filled = exports.CaretDownRight20Regular = exports.CaretDownRight16Filled = exports.CaretDownRight16Regular = exports.CaretDownRight12Filled = exports.CaretDownRight12Regular = exports.CaretDownRightRegular = exports.CaretDownRightFilled = void 0;
+const createFluentIcon_1 = require("../../utils/createFluentIcon");
+exports.CaretDownRightFilled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('CaretDownRightFilled', "1em", ["M15 5.96a1 1 0 0 0-1.7-.71l-8.05 8.04a1 1 0 0 0 .7 1.71h7.55c.83 0 1.5-.67 1.5-1.5V5.96Z"]));
+exports.CaretDownRightRegular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('CaretDownRightRegular', "1em", ["M13.3 5.25a1 1 0 0 1 1.7.7v7.55c0 .83-.67 1.5-1.5 1.5H5.96a1 1 0 0 1-.71-1.7l8.04-8.05Zm.7.7L5.96 14h7.54a.5.5 0 0 0 .5-.5V5.96Z"]));
+exports.CaretDownRight12Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('CaretDownRight12Regular', "12", ["M7.3 3.26a1 1 0 0 1 1.7.7v3.55C9 8.33 8.33 9 7.5 9H3.96a1 1 0 0 1-.7-1.71L7.3 3.26Zm.7.7L3.96 8.01H7.5a.5.5 0 0 0 .5-.5V3.96Z"]));
+exports.CaretDownRight12Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('CaretDownRight12Filled', "12", ["M9 3.96a1 1 0 0 0-1.7-.7L3.25 7.3A1 1 0 0 0 3.96 9H7.5C8.33 9 9 8.34 9 7.5V3.97Z"]));
+exports.CaretDownRight16Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('CaretDownRight16Regular', "16", ["M10.3 4.25a1 1 0 0 1 1.7.7v5.55c0 .83-.67 1.5-1.5 1.5H4.96a1 1 0 0 1-.71-1.7l6.04-6.05Zm.7.7L4.96 11h5.54a.5.5 0 0 0 .5-.5V4.96Z"]));
+exports.CaretDownRight16Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('CaretDownRight16Filled', "16", ["M12 4.96a1 1 0 0 0-1.7-.71l-6.05 6.04a1 1 0 0 0 .7 1.71h5.55c.83 0 1.5-.67 1.5-1.5V4.96Z"]));
+exports.CaretDownRight20Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('CaretDownRight20Regular', "20", ["M13.3 5.25a1 1 0 0 1 1.7.7v7.55c0 .83-.67 1.5-1.5 1.5H5.96a1 1 0 0 1-.71-1.7l8.04-8.05Zm.7.7L5.96 14h7.54a.5.5 0 0 0 .5-.5V5.96Z"]));
+exports.CaretDownRight20Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('CaretDownRight20Filled', "20", ["M15 5.96a1 1 0 0 0-1.7-.71l-8.05 8.04a1 1 0 0 0 .7 1.71h7.55c.83 0 1.5-.67 1.5-1.5V5.96Z"]));
+exports.CaretDownRight24Regular = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('CaretDownRight24Regular', "24", ["m16.5 7.81-8.69 8.7h8.44c.14-.01.25-.12.25-.26V7.81Zm-.63-1.49a1.25 1.25 0 0 1 2.13.89v9.04c0 .97-.78 1.75-1.75 1.75H7.21a1.25 1.25 0 0 1-.89-2.13l9.55-9.55Z"]));
+exports.CaretDownRight24Filled = ( /*#__PURE__*/createFluentIcon_1.createFluentIcon('CaretDownRight24Filled', "24", ["M18 7.2a1.25 1.25 0 0 0-2.13-.88l-9.55 9.55c-.78.78-.23 2.13.89 2.13h9.04c.97 0 1.75-.78 1.75-1.75V7.21Z"]));
