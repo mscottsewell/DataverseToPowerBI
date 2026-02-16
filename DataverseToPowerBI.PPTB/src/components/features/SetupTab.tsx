@@ -31,7 +31,6 @@ const useStyles = makeStyles({
     display: 'flex',
     flexDirection: 'column',
     gap: '16px',
-    maxWidth: '800px',
   },
   card: {
     padding: '20px',
@@ -42,14 +41,20 @@ const useStyles = makeStyles({
     gap: '12px',
     marginTop: '12px',
   },
+  twoCol: {
+    display: 'grid',
+    gridTemplateColumns: '1fr 1fr',
+    gap: '16px',
+    alignItems: 'start',
+  },
   field: {
     display: 'flex',
     flexDirection: 'column',
     gap: '4px',
   },
-  row: {
+  browseRow: {
     display: 'flex',
-    gap: '12px',
+    gap: '8px',
     alignItems: 'end',
   },
   flex1: {
@@ -122,7 +127,6 @@ export function SetupTab() {
       const folder = await fs.selectFolder('Select Output Folder');
       if (folder) {
         setOutputFolder(folder);
-        // Persist as default for future sessions
         try {
           const settings = new SettingsAdapter();
           await settings.updatePreferenceAsync('lastOutputFolder', folder);
@@ -137,7 +141,6 @@ export function SetupTab() {
       const folder = await fs.selectFolder('Select PBIP Template Folder');
       if (folder) {
         setTemplatePath(folder);
-        // Persist as default for future sessions
         try {
           const settings = new SettingsAdapter();
           await settings.updatePreferenceAsync('lastTemplatePath', folder);
@@ -154,67 +157,100 @@ export function SetupTab() {
       <Card className={styles.card}>
         <CardHeader header={<Text weight="semibold" size={400}>General Settings</Text>} />
         <div className={styles.fieldGroup}>
-          <div className={styles.field}>
-            <Label htmlFor="projectName" required>Project Name</Label>
-            <Input
-              id="projectName"
-              value={projectName}
-              onChange={(_, d) => setProjectName(d.value)}
-              placeholder="My Semantic Model"
-            />
-          </div>
-
-          <div className={styles.field}>
-            <Label htmlFor="solution">Solution</Label>
-            <Select
-              id="solution"
-              value={selectedSolution ?? ''}
-              onChange={(_, d) => handleSolutionChange(d.value || null)}
-              disabled={loadingSolutions || status !== 'connected'}
-            >
-              <option value="">
-                {loadingSolutions ? 'Loading solutions...' : status !== 'connected' ? 'Connect to load solutions' : '-- Select Solution --'}
-              </option>
-              {solutions.map((s) => (
-                <option key={s.solutionId} value={s.solutionId}>
-                  {s.friendlyName} ({s.uniqueName})
+          {/* Row 1: Project Name | Solution */}
+          <div className={styles.twoCol}>
+            <div className={styles.field}>
+              <Label htmlFor="projectName" required>Project Name</Label>
+              <Input
+                id="projectName"
+                value={projectName}
+                onChange={(_, d) => setProjectName(d.value)}
+                placeholder="My Semantic Model"
+              />
+            </div>
+            <div className={styles.field}>
+              <Label htmlFor="solution">Solution</Label>
+              <Select
+                id="solution"
+                value={selectedSolution ?? ''}
+                onChange={(_, d) => handleSolutionChange(d.value || null)}
+                disabled={loadingSolutions || status !== 'connected'}
+              >
+                <option value="">
+                  {loadingSolutions ? 'Loading solutions...' : status !== 'connected' ? 'Connect to load solutions' : '-- Select Solution --'}
                 </option>
-              ))}
-            </Select>
-          </div>
-
-          <div className={styles.row}>
-            <div className={`${styles.field} ${styles.flex1}`}>
-              <Label htmlFor="outputFolder">Output Folder</Label>
-              <Input
-                id="outputFolder"
-                value={outputFolder ?? ''}
-                placeholder="Select output folder..."
-                readOnly
-              />
+                {solutions.map((s) => (
+                  <option key={s.solutionId} value={s.solutionId}>
+                    {s.friendlyName} ({s.uniqueName})
+                  </option>
+                ))}
+              </Select>
             </div>
-            <Button icon={<FolderOpen24Regular />} appearance="secondary" onClick={handleBrowseOutput}>
-              Browse
-            </Button>
           </div>
 
-          <div className={styles.row}>
-            <div className={`${styles.field} ${styles.flex1}`}>
+          {/* Row 2: PBIP Template | Output Folder */}
+          <div className={styles.twoCol}>
+            <div className={styles.field}>
               <Label htmlFor="templatePath">PBIP Template</Label>
-              <Input
-                id="templatePath"
-                value={templatePath ?? ''}
-                placeholder="Select PBIP template folder..."
-                readOnly
+              <div className={styles.browseRow}>
+                <Input
+                  id="templatePath"
+                  className={styles.flex1}
+                  value={templatePath ?? ''}
+                  placeholder="Select PBIP template folder..."
+                  readOnly
+                />
+                <Button icon={<FolderOpen24Regular />} appearance="secondary" onClick={handleBrowseTemplate}>
+                  Browse
+                </Button>
+              </div>
+              <Text size={200} style={{ color: 'var(--colorNeutralForeground3)' }}>
+                Uses built-in template by default.
+              </Text>
+            </div>
+            <div className={styles.field}>
+              <Label htmlFor="outputFolder">Output Folder</Label>
+              <div className={styles.browseRow}>
+                <Input
+                  id="outputFolder"
+                  className={styles.flex1}
+                  value={outputFolder ?? ''}
+                  placeholder="Select output folder..."
+                  readOnly
+                />
+                <Button icon={<FolderOpen24Regular />} appearance="secondary" onClick={handleBrowseOutput}>
+                  Browse
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Row 3: Default Storage Mode | Use Display Names */}
+          <div className={styles.twoCol}>
+            <div className={styles.field}>
+              <Label htmlFor="storageMode">Default Storage Mode</Label>
+              <Select
+                id="storageMode"
+                value={storageMode}
+                onChange={(_, d) => setStorageMode(d.value as StorageMode)}
+              >
+                <option value={StorageMode.DirectQuery}>DirectQuery</option>
+                <option value={StorageMode.Import}>Import</option>
+                <option value={StorageMode.Dual}>Dual</option>
+              </Select>
+              <Text size={200} style={{ color: 'var(--colorNeutralForeground3)' }}>
+                Per-table overrides on the Tables tab.
+              </Text>
+            </div>
+            <div className={styles.field}>
+              <Label>&nbsp;</Label>
+              <Switch
+                label="Use display names as SQL column aliases"
+                checked={useDisplayNameAliasesInSql}
+                onChange={(_, d) => setUseDisplayNameAliases(d.checked)}
               />
             </div>
-            <Button icon={<FolderOpen24Regular />} appearance="secondary" onClick={handleBrowseTemplate}>
-              Browse
-            </Button>
           </div>
-          <Text size={200} style={{ color: 'var(--colorNeutralForeground3)', marginTop: '-8px' }}>
-            Uses built-in template by default. Browse to override with your own PBIP project template.
-          </Text>
         </div>
       </Card>
 
@@ -238,54 +274,28 @@ export function SetupTab() {
             <>
               <Divider />
               <Text size={300} italic>Fabric Link Settings</Text>
-              <div className={styles.field}>
-                <Label htmlFor="fabricEndpoint">SQL Endpoint</Label>
-                <Input
-                  id="fabricEndpoint"
-                  value={fabricLinkEndpoint ?? ''}
-                  onChange={(_, d) => setFabricLinkEndpoint(d.value || null)}
-                  placeholder="your-endpoint.datawarehouse.fabric.microsoft.com"
-                />
-              </div>
-              <div className={styles.field}>
-                <Label htmlFor="fabricDb">Database Name</Label>
-                <Input
-                  id="fabricDb"
-                  value={fabricLinkDatabase ?? ''}
-                  onChange={(_, d) => setFabricLinkDatabase(d.value || null)}
-                  placeholder="your_database"
-                />
+              <div className={styles.twoCol}>
+                <div className={styles.field}>
+                  <Label htmlFor="fabricEndpoint">SQL Endpoint</Label>
+                  <Input
+                    id="fabricEndpoint"
+                    value={fabricLinkEndpoint ?? ''}
+                    onChange={(_, d) => setFabricLinkEndpoint(d.value || null)}
+                    placeholder="your-endpoint.datawarehouse.fabric.microsoft.com"
+                  />
+                </div>
+                <div className={styles.field}>
+                  <Label htmlFor="fabricDb">Database Name</Label>
+                  <Input
+                    id="fabricDb"
+                    value={fabricLinkDatabase ?? ''}
+                    onChange={(_, d) => setFabricLinkDatabase(d.value || null)}
+                    placeholder="your_database"
+                  />
+                </div>
               </div>
             </>
           )}
-        </div>
-      </Card>
-
-      {/* Storage Mode */}
-      <Card className={styles.card}>
-        <CardHeader header={<Text weight="semibold" size={400}>Storage Mode</Text>} />
-        <div className={styles.fieldGroup}>
-          <div className={styles.field}>
-            <Label htmlFor="storageMode">Default Storage Mode</Label>
-            <Select
-              id="storageMode"
-              value={storageMode}
-              onChange={(_, d) => setStorageMode(d.value as StorageMode)}
-            >
-              <option value={StorageMode.DirectQuery}>DirectQuery</option>
-              <option value={StorageMode.Import}>Import</option>
-              <option value={StorageMode.Dual}>Dual</option>
-            </Select>
-            <Text size={200} style={{ color: 'var(--colorNeutralForeground3)' }}>
-              Per-table overrides can be configured on the Tables tab.
-            </Text>
-          </div>
-
-          <Switch
-            label="Use display names as SQL column aliases"
-            checked={useDisplayNameAliasesInSql}
-            onChange={(_, d) => setUseDisplayNameAliases(d.checked)}
-          />
         </div>
       </Card>
     </div>

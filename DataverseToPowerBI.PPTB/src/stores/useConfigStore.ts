@@ -152,7 +152,7 @@ const initialState: ConfigState = {
   fabricLinkEndpoint: null,
   fabricLinkDatabase: null,
   templatePath: null,
-  useDisplayNameAliasesInSql: false,
+  useDisplayNameAliasesInSql: true,
   showAllAttributes: true,
   autoloadCache: true,
 };
