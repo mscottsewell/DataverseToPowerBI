@@ -1,5 +1,7 @@
 /**
  * BuildTab - TMDL preview, generation, and change detection
+ *
+ * Wires the useBuild hook to generate TMDL preview and save output files.
  */
 
 import { useState, useCallback } from 'react';
@@ -18,8 +20,10 @@ import {
   Eye24Regular,
   ArrowDownload24Regular,
   ArrowSync24Regular,
+  Copy24Regular,
 } from '@fluentui/react-icons';
 import { useConfigStore, useUIStore } from '../../stores';
+import { useBuild } from '../../hooks';
 import { EmptyState, LoadingOverlay } from '../shared';
 
 const useStyles = makeStyles({
@@ -49,6 +53,8 @@ const useStyles = makeStyles({
     borderRadius: '4px',
     fontFamily: 'monospace',
     fontSize: '13px',
+    maxHeight: '200px',
+    overflow: 'auto',
   },
   fileItem: {
     padding: '2px 8px',
@@ -82,19 +88,66 @@ const useStyles = makeStyles({
     flexWrap: 'wrap',
     marginBottom: '12px',
   },
+  codeHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: '8px',
+  },
 });
 
 export function BuildTab() {
   const styles = useStyles();
   const selectedTables = useConfigStore((s) => s.selectedTables);
   const projectName = useConfigStore((s) => s.projectName);
-  const [previewFiles] = useState<Record<string, string>>({});
-  const [selectedFile, setSelectedFile] = useState<string | null>(null);
-  const [building] = useState(false);
-  const [buildResult] = useState<'success' | 'error' | null>(null);
+  const connectionMode = useConfigStore((s) => s.connectionMode);
+  const { generatePreview, generateAndSave } = useBuild();
+  const addToast = useUIStore((s) => s.addToast);
 
-  const openPreview = useUIStore((s) => s.openDialog);
-  const openChangePreview = useCallback(() => openPreview('changePreview'), [openPreview]);
+  const [previewFiles, setPreviewFiles] = useState<Map<string, string>>(new Map());
+  const [selectedFile, setSelectedFile] = useState<string | null>(null);
+  const [building, setBuilding] = useState(false);
+  const [buildResult, setBuildResult] = useState<'success' | 'error' | null>(null);
+  const [, setStatusMessages] = useState<string[]>([]);
+
+  const openDialog = useUIStore((s) => s.openDialog);
+  const openChangePreview = useCallback(() => openDialog('changePreview'), [openDialog]);
+
+  const handlePreview = useCallback(() => {
+    setBuilding(true);
+    setBuildResult(null);
+    try {
+      const result = generatePreview();
+      if (result && result.files.size > 0) {
+        setPreviewFiles(result.files);
+        setStatusMessages(result.statusMessages);
+        setBuildResult('success');
+        // Auto-select first file
+        const firstKey = result.files.keys().next().value;
+        if (firstKey) setSelectedFile(firstKey);
+        addToast({ type: 'success', title: `Preview generated: ${result.files.size} files` });
+      } else {
+        setBuildResult('error');
+        addToast({ type: 'error', title: 'No files generated' });
+      }
+    } catch {
+      setBuildResult('error');
+    } finally {
+      setBuilding(false);
+    }
+  }, [generatePreview, addToast]);
+
+  const handleSave = useCallback(async () => {
+    setBuilding(true);
+    try {
+      await generateAndSave();
+      setBuildResult('success');
+    } catch {
+      setBuildResult('error');
+    } finally {
+      setBuilding(false);
+    }
+  }, [generateAndSave]);
 
   if (selectedTables.length === 0) {
     return (
@@ -106,7 +159,7 @@ export function BuildTab() {
     );
   }
 
-  const fileNames = Object.keys(previewFiles);
+  const fileNames = Array.from(previewFiles.keys());
 
   return (
     <div className={styles.container}>
@@ -117,8 +170,10 @@ export function BuildTab() {
         <div className={styles.summary}>
           <Badge appearance="filled" color="brand">{selectedTables.length} tables</Badge>
           <Badge appearance="tint">{projectName || 'Unnamed Project'}</Badge>
+          <Badge appearance="tint">{connectionMode}</Badge>
           {buildResult === 'success' && <Badge appearance="filled" color="success">Build Successful</Badge>}
           {buildResult === 'error' && <Badge appearance="filled" color="danger">Build Failed</Badge>}
+          {previewFiles.size > 0 && <Badge appearance="tint" color="informative">{previewFiles.size} files</Badge>}
         </div>
 
         <div className={styles.actions}>
@@ -126,6 +181,7 @@ export function BuildTab() {
             appearance="primary"
             icon={<Eye24Regular />}
             disabled={building}
+            onClick={handlePreview}
           >
             Preview TMDL
           </Button>
@@ -133,6 +189,7 @@ export function BuildTab() {
             appearance="primary"
             icon={<ArrowDownload24Regular />}
             disabled={building || selectedTables.length === 0}
+            onClick={handleSave}
           >
             Generate & Save
           </Button>
@@ -158,24 +215,25 @@ export function BuildTab() {
                   className={selectedFile === name ? styles.fileItemSelected : styles.fileItem}
                   onClick={() => setSelectedFile(name)}
                 >
-                  📄 {name}
+                  📄 {name.split('/').pop()}
                 </div>
               ))}
             </div>
-            {selectedFile && previewFiles[selectedFile] && (
+            {selectedFile && previewFiles.get(selectedFile) && (
               <>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                  <Text weight="semibold">{selectedFile}</Text>
+                <div className={styles.codeHeader}>
+                  <Text weight="semibold" size={300}>{selectedFile}</Text>
                   <Button
                     size="small"
                     appearance="subtle"
-                    onClick={() => navigator.clipboard.writeText(previewFiles[selectedFile])}
+                    icon={<Copy24Regular />}
+                    onClick={() => navigator.clipboard.writeText(previewFiles.get(selectedFile)!)}
                   >
                     Copy
                   </Button>
                 </div>
                 <div className={styles.codeBlock}>
-                  {previewFiles[selectedFile]}
+                  {previewFiles.get(selectedFile)}
                 </div>
               </>
             )}
