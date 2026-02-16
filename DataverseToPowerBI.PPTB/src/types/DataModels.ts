@@ -137,6 +137,9 @@ export interface AppSettings {
 
   /** FabricLink database/lakehouse name */
   fabricLinkDatabase?: string;
+
+  /** PBIP template folder path */
+  templatePath?: string;
 }
 
 // ============================================================================

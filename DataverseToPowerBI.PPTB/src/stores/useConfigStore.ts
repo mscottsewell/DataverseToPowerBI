@@ -63,6 +63,8 @@ interface ConfigState {
   /** FabricLink settings */
   fabricLinkEndpoint: string | null;
   fabricLinkDatabase: string | null;
+  /** PBIP template folder path */
+  templatePath: string | null;
   /** Misc settings */
   useDisplayNameAliasesInSql: boolean;
   showAllAttributes: boolean;
@@ -85,6 +87,7 @@ interface ConfigActions {
   setOutputFolder: (folder: string | null) => void;
   setFabricLinkEndpoint: (endpoint: string | null) => void;
   setFabricLinkDatabase: (database: string | null) => void;
+  setTemplatePath: (path: string | null) => void;
 
   // Table selection
   setSelectedTables: (tables: string[]) => void;
@@ -148,6 +151,7 @@ const initialState: ConfigState = {
   dateTableConfig: null,
   fabricLinkEndpoint: null,
   fabricLinkDatabase: null,
+  templatePath: null,
   useDisplayNameAliasesInSql: false,
   showAllAttributes: true,
   autoloadCache: true,
@@ -192,6 +196,7 @@ export const useConfigStore = create<ConfigState & ConfigActions>()(
             : {};
           state.fabricLinkEndpoint = settings.fabricLinkEndpoint ?? null;
           state.fabricLinkDatabase = settings.fabricLinkDatabase ?? null;
+          state.templatePath = settings.templatePath ?? null;
         }),
 
       toSettings: (): AppSettings => {
@@ -224,6 +229,7 @@ export const useConfigStore = create<ConfigState & ConfigActions>()(
           tableStorageModes: { ...s.tableStorageModes },
           fabricLinkEndpoint: s.fabricLinkEndpoint ?? undefined,
           fabricLinkDatabase: s.fabricLinkDatabase ?? undefined,
+          templatePath: s.templatePath ?? undefined,
         };
       },
 
@@ -239,6 +245,7 @@ export const useConfigStore = create<ConfigState & ConfigActions>()(
       setOutputFolder: (folder) => set((state) => { state.outputFolder = folder; state.isDirty = true; }),
       setFabricLinkEndpoint: (endpoint) => set((state) => { state.fabricLinkEndpoint = endpoint; state.isDirty = true; }),
       setFabricLinkDatabase: (database) => set((state) => { state.fabricLinkDatabase = database; state.isDirty = true; }),
+      setTemplatePath: (path) => set((state) => { state.templatePath = path; state.isDirty = true; }),
 
       // --- Table selection ---
       setSelectedTables: (tables) =>

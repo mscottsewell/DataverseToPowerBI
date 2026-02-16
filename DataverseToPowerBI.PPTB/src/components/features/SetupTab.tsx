@@ -1,5 +1,6 @@
 /**
- * SetupTab - Configuration setup: project name, connection mode, solution selector, output folder
+ * SetupTab - Configuration setup: project name, solution selector, connection mode,
+ * storage mode, template path, and output folder.
  */
 
 import { useEffect } from 'react';
@@ -14,11 +15,13 @@ import {
   Select,
   Button,
   Divider,
+  Switch,
 } from '@fluentui/react-components';
-import { FolderOpen24Regular, CalendarLtr24Regular } from '@fluentui/react-icons';
-import { useConfigStore, useConnectionStore, useMetadataStore, useUIStore } from '../../stores';
+import { FolderOpen24Regular } from '@fluentui/react-icons';
+import { useConfigStore, useConnectionStore, useMetadataStore } from '../../stores';
 import { ConnectionMode, StorageMode } from '../../types/Constants';
 import { useFetchSolutions, useFetchTables } from '../../hooks';
+import { FileSystemAdapter } from '../../adapters/FileSystemAdapter';
 
 const useStyles = makeStyles({
   container: {
@@ -62,13 +65,14 @@ export function SetupTab() {
     outputFolder, setOutputFolder,
     fabricLinkEndpoint, setFabricLinkEndpoint,
     fabricLinkDatabase, setFabricLinkDatabase,
+    useDisplayNameAliasesInSql, setUseDisplayNameAliases,
   } = useConfigStore();
+  const templatePath = useConfigStore((s) => s.templatePath);
+  const setTemplatePath = useConfigStore((s) => s.setTemplatePath);
   const solutions = useMetadataStore((s) => s.solutions);
   const loadingSolutions = useMetadataStore((s) => s.loading.solutions);
   const fetchSolutions = useFetchSolutions();
   const fetchTables = useFetchTables();
-  const dateTableConfig = useConfigStore((s) => s.dateTableConfig);
-  const openDialog = useUIStore((s) => s.openDialog);
 
   // Auto-fetch solutions when connected
   useEffect(() => {
@@ -78,15 +82,32 @@ export function SetupTab() {
   }, [status, solutions.length, fetchSolutions]);
 
   // Fetch tables when solution changes
-  const handleSolutionChange = (value: string | null) => {
-    setSelectedSolution(value);
-    if (value) fetchTables(value);
+  const handleSolutionChange = (solutionId: string | null) => {
+    setSelectedSolution(solutionId);
+    if (solutionId) fetchTables(solutionId);
+  };
+
+  const handleBrowseOutput = async () => {
+    try {
+      const fs = new FileSystemAdapter();
+      const folder = await fs.selectFolder();
+      if (folder) setOutputFolder(folder);
+    } catch { /* user cancelled */ }
+  };
+
+  const handleBrowseTemplate = async () => {
+    try {
+      const fs = new FileSystemAdapter();
+      const folder = await fs.selectFolder();
+      if (folder) setTemplatePath(folder);
+    } catch { /* user cancelled */ }
   };
 
   return (
     <div className={styles.container}>
       <Title2>Project Setup</Title2>
 
+      {/* General Settings */}
       <Card className={styles.card}>
         <CardHeader header={<Text weight="semibold" size={400}>General Settings</Text>} />
         <div className={styles.fieldGroup}>
@@ -106,11 +127,13 @@ export function SetupTab() {
               id="solution"
               value={selectedSolution ?? ''}
               onChange={(_, d) => handleSolutionChange(d.value || null)}
-              disabled={loadingSolutions}
+              disabled={loadingSolutions || status !== 'connected'}
             >
-              <option value="">-- Select Solution --</option>
+              <option value="">
+                {loadingSolutions ? 'Loading solutions...' : status !== 'connected' ? 'Connect to load solutions' : '-- Select Solution --'}
+              </option>
               {solutions.map((s) => (
-                <option key={s.solutionId} value={s.uniqueName}>
+                <option key={s.solutionId} value={s.solutionId}>
                   {s.friendlyName} ({s.uniqueName})
                 </option>
               ))}
@@ -123,18 +146,33 @@ export function SetupTab() {
               <Input
                 id="outputFolder"
                 value={outputFolder ?? ''}
-                onChange={(_, d) => setOutputFolder(d.value || null)}
                 placeholder="Select output folder..."
                 readOnly
               />
             </div>
-            <Button icon={<FolderOpen24Regular />} appearance="secondary">
+            <Button icon={<FolderOpen24Regular />} appearance="secondary" onClick={handleBrowseOutput}>
+              Browse
+            </Button>
+          </div>
+
+          <div className={styles.row}>
+            <div className={`${styles.field} ${styles.flex1}`}>
+              <Label htmlFor="templatePath">PBIP Template</Label>
+              <Input
+                id="templatePath"
+                value={templatePath ?? ''}
+                placeholder="Select PBIP template folder..."
+                readOnly
+              />
+            </div>
+            <Button icon={<FolderOpen24Regular />} appearance="secondary" onClick={handleBrowseTemplate}>
               Browse
             </Button>
           </div>
         </div>
       </Card>
 
+      {/* Connection Settings */}
       <Card className={styles.card}>
         <CardHeader header={<Text weight="semibold" size={400}>Connection Settings</Text>} />
         <div className={styles.fieldGroup}>
@@ -147,19 +185,6 @@ export function SetupTab() {
             >
               <option value={ConnectionMode.DataverseTDS}>Dataverse TDS Endpoint</option>
               <option value={ConnectionMode.FabricLink}>Fabric Link</option>
-            </Select>
-          </div>
-
-          <div className={styles.field}>
-            <Label htmlFor="storageMode">Default Storage Mode</Label>
-            <Select
-              id="storageMode"
-              value={storageMode}
-              onChange={(_, d) => setStorageMode(d.value as StorageMode)}
-            >
-              <option value={StorageMode.DirectQuery}>DirectQuery</option>
-              <option value={StorageMode.Import}>Import</option>
-              <option value={StorageMode.Dual}>Dual</option>
             </Select>
           </div>
 
@@ -190,21 +215,31 @@ export function SetupTab() {
         </div>
       </Card>
 
+      {/* Storage Mode */}
       <Card className={styles.card}>
-        <CardHeader header={<Text weight="semibold" size={400}>Calendar Table</Text>} />
+        <CardHeader header={<Text weight="semibold" size={400}>Storage Mode</Text>} />
         <div className={styles.fieldGroup}>
-          <Text size={300}>
-            {dateTableConfig
-              ? `Enabled: ${dateTableConfig.startYear}–${dateTableConfig.endYear}, UTC${dateTableConfig.utcOffsetHours >= 0 ? '+' : ''}${dateTableConfig.utcOffsetHours}`
-              : 'No calendar table configured.'}
-          </Text>
-          <Button
-            appearance="secondary"
-            icon={<CalendarLtr24Regular />}
-            onClick={() => openDialog('calendarTable')}
-          >
-            {dateTableConfig ? 'Edit Calendar Table' : 'Add Calendar Table'}
-          </Button>
+          <div className={styles.field}>
+            <Label htmlFor="storageMode">Default Storage Mode</Label>
+            <Select
+              id="storageMode"
+              value={storageMode}
+              onChange={(_, d) => setStorageMode(d.value as StorageMode)}
+            >
+              <option value={StorageMode.DirectQuery}>DirectQuery</option>
+              <option value={StorageMode.Import}>Import</option>
+              <option value={StorageMode.Dual}>Dual</option>
+            </Select>
+            <Text size={200} style={{ color: 'var(--colorNeutralForeground3)' }}>
+              Per-table overrides can be configured on the Tables tab.
+            </Text>
+          </div>
+
+          <Switch
+            label="Use display names as SQL column aliases"
+            checked={useDisplayNameAliasesInSql}
+            onChange={(_, d) => setUseDisplayNameAliases(d.checked)}
+          />
         </div>
       </Card>
     </div>
