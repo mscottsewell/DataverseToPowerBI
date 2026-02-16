@@ -2,7 +2,7 @@
  * AttributesTab - Per-table attribute selection with form/view pickers and display name overrides
  */
 
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import {
   makeStyles,
   Card,
@@ -15,9 +15,10 @@ import {
   Badge,
   tokens,
 } from '@fluentui/react-components';
-import { TextColumnOne24Regular } from '@fluentui/react-icons';
+import { TextColumnOne24Regular, Form24Regular, TableSimple24Regular } from '@fluentui/react-icons';
 import { useConfigStore, useMetadataStore, useUIStore } from '../../stores';
 import { SearchInput, EmptyState, LoadingOverlay } from '../shared';
+import { useFetchAttributes } from '../../hooks/useDataverse';
 import { StorageMode } from '../../types/Constants';
 
 const useStyles = makeStyles({
@@ -114,6 +115,17 @@ export function AttributesTab() {
   const setSelectedAttributeTable = useUIStore((s) => s.setSelectedAttributeTable);
   const searchText = useUIStore((s) => s.attributeSearchText);
   const setSearchText = useUIStore((s) => s.setAttributeSearchText);
+  const openDialog = useUIStore((s) => s.openDialog);
+  const tableFormNames = useConfigStore((s) => s.tableFormNames);
+  const tableViewNames = useConfigStore((s) => s.tableViewNames);
+  const fetchAttributes = useFetchAttributes();
+
+  // Auto-fetch attributes when selecting a table
+  useEffect(() => {
+    if (selectedAttributeTable && !metaAttributes[selectedAttributeTable]) {
+      fetchAttributes(selectedAttributeTable);
+    }
+  }, [selectedAttributeTable, metaAttributes, fetchAttributes]);
 
   const currentAttrs = useMemo(() => {
     if (!selectedAttributeTable) return [];
@@ -190,6 +202,24 @@ export function AttributesTab() {
                 <Badge appearance="filled" color="brand" size="small">
                   {selectedAttrs.length} / {(metaAttributes[selectedAttributeTable] ?? []).length}
                 </Badge>
+                <Button
+                  size="small"
+                  appearance="secondary"
+                  icon={<Form24Regular />}
+                  onClick={() => openDialog('formPicker', { tableName: selectedAttributeTable! })}
+                >
+                  {tableFormNames[selectedAttributeTable!] ?? 'Form'}
+                </Button>
+                <Button
+                  size="small"
+                  appearance="secondary"
+                  icon={<TableSimple24Regular />}
+                  onClick={() => openDialog('viewPicker', { tableName: selectedAttributeTable! })}
+                >
+                  {tableViewNames[selectedAttributeTable!] ?? 'View'}
+                </Button>
+              </div>
+              <div className={styles.attrToolbar}>
                 <SearchInput value={searchText} onChange={setSearchText} placeholder="Filter attributes..." />
                 <Button size="small" appearance="secondary" onClick={handleSelectAll}>Select All</Button>
                 <Button size="small" appearance="secondary" onClick={handleDeselectAll}>Deselect All</Button>
