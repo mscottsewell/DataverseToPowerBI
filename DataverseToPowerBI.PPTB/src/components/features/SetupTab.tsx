@@ -207,14 +207,14 @@ export function SetupTab() {
                 placeholder="Select PBIP template folder..."
                 readOnly
               />
-              <Text size={200} style={{ color: 'var(--colorNeutralForeground3)' }}>
-                Uses built-in template by default. Browse to override with your own PBIP project template.
-              </Text>
             </div>
             <Button icon={<FolderOpen24Regular />} appearance="secondary" onClick={handleBrowseTemplate}>
               Browse
             </Button>
           </div>
+          <Text size={200} style={{ color: 'var(--colorNeutralForeground3)', marginTop: '-8px' }}>
+            Uses built-in template by default. Browse to override with your own PBIP project template.
+          </Text>
         </div>
       </Card>
 
