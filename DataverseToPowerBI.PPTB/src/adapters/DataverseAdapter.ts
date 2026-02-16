@@ -80,19 +80,23 @@ export class DataverseAdapter implements IDataverseConnection {
     try {
       const result = await this.api.getSolutions([
         'solutionid', 'uniquename', 'friendlyname', 'version',
-        'ismanaged', 'publisherid', 'modifiedon'
+        'ismanaged', 'isvisible', 'publisherid', 'modifiedon'
       ]);
       
       const solutions: DataverseSolution[] = [];
       
       if (result?.value) {
         for (const entity of result.value) {
+          // Match original filters: isvisible=true, ismanaged=false
+          if (entity.isvisible !== true || entity.ismanaged === true) {
+            continue;
+          }
           solutions.push({
             solutionId: String(entity.solutionid ?? ''),
             uniqueName: String(entity.uniquename ?? ''),
             friendlyName: String(entity.friendlyname ?? ''),
             version: entity.version as string | undefined,
-            isManaged: entity.ismanaged === true,
+            isManaged: false,
             publisherId: entity.publisherid as string | undefined,
             modifiedOn: entity.modifiedon as string | undefined,
           });
