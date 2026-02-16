@@ -1,8 +1,11 @@
 /**
  * SchemaTab - Star-schema configuration: fact table picker and dimension selector
+ *
+ * Uses relationship detection from Dataverse lookup attributes to auto-populate
+ * the dimension tree. Users can toggle relationships active/inactive.
  */
 
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import {
   makeStyles,
   Card,
@@ -12,11 +15,14 @@ import {
   Radio,
   RadioGroup,
   Switch,
+  Button,
   Badge,
   tokens,
 } from '@fluentui/react-components';
-import { Organization24Regular } from '@fluentui/react-icons';
+import { Organization24Regular, ArrowSync24Regular } from '@fluentui/react-icons';
 import { useConfigStore, useMetadataStore } from '../../stores';
+import { useRelationshipDetection } from '../../hooks/useRelationshipDetection';
+import { useFetchAttributes } from '../../hooks/useDataverse';
 import { EmptyState } from '../shared';
 
 const useStyles = makeStyles({
@@ -58,6 +64,19 @@ const useStyles = makeStyles({
       backgroundColor: tokens.colorNeutralBackground1Hover,
     },
   },
+  dimHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: '8px',
+    marginBottom: '8px',
+  },
+  solutionFilter: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    marginTop: '8px',
+  },
 });
 
 export function SchemaTab() {
@@ -68,8 +87,26 @@ export function SchemaTab() {
   const relationships = useConfigStore((s) => s.relationships);
   const toggleRelationshipActive = useConfigStore((s) => s.toggleRelationshipActive);
   const getTableDisplayName = useMetadataStore((s) => s.getTableDisplayName);
+  const tableAttributes = useMetadataStore((s) => s.tableAttributes);
 
-  // Group relationships by target table
+  const { detectedRelationships, autoDetect } = useRelationshipDetection();
+  const fetchAttributes = useFetchAttributes();
+
+  // Auto-fetch attributes for fact table when it changes
+  useEffect(() => {
+    if (factTable && !tableAttributes[factTable]) {
+      fetchAttributes(factTable);
+    }
+  }, [factTable, tableAttributes, fetchAttributes]);
+
+  // Auto-detect relationships when fact table attributes are loaded
+  useEffect(() => {
+    if (factTable && tableAttributes[factTable] && relationships.length === 0) {
+      autoDetect();
+    }
+  }, [factTable, tableAttributes, relationships.length, autoDetect]);
+
+  // Group current relationships by target table
   const groupedRelationships = useMemo(() => {
     const groups: Record<string, typeof relationships> = {};
     for (const rel of relationships) {
@@ -117,45 +154,65 @@ export function SchemaTab() {
 
         {/* Dimension Tables */}
         <Card className={styles.card}>
-          <CardHeader header={<Text weight="semibold" size={400}>Dimensions & Relationships</Text>} />
+          <div className={styles.dimHeader}>
+            <CardHeader header={<Text weight="semibold" size={400}>Dimensions & Relationships</Text>} />
+            {factTable && (
+              <Button
+                size="small"
+                appearance="secondary"
+                icon={<ArrowSync24Regular />}
+                onClick={autoDetect}
+              >
+                Detect
+              </Button>
+            )}
+          </div>
           <Text size={200}>
             {factTable
-              ? `Relationships from ${getTableDisplayName(factTable)}`
-              : 'Select a fact table to see relationships'}
+              ? `${detectedRelationships.length} lookup relationships found from ${getTableDisplayName(factTable)}`
+              : 'Select a fact table to detect relationships'}
           </Text>
 
           <div className={styles.list}>
-            {Object.entries(groupedRelationships).map(([targetTable, rels]) => (
-              <div key={targetTable}>
-                <Text weight="semibold" size={300}>
-                  {getTableDisplayName(targetTable)}
-                  <Badge appearance="tint" size="tiny" style={{ marginLeft: 8 }}>
-                    {rels.length}
-                  </Badge>
-                </Text>
-                <div className={styles.relGroup}>
-                  {rels.map((rel) => (
-                    <div key={`${rel.sourceAttribute}-${rel.targetTable}`} className={styles.relItem}>
-                      <Switch
-                        checked={rel.isActive}
-                        onChange={() =>
-                          toggleRelationshipActive(rel.sourceTable, rel.sourceAttribute, rel.targetTable)
-                        }
-                        label={`${rel.sourceAttribute} → ${rel.targetTable}`}
-                      />
-                      {!rel.isActive && (
-                        <Badge appearance="tint" color="subtle" size="tiny">inactive</Badge>
-                      )}
-                    </div>
-                  ))}
+            {Object.entries(groupedRelationships).map(([targetTable, rels]) => {
+              const isInSolution = selectedTables.includes(targetTable);
+              return (
+                <div key={targetTable}>
+                  <Text weight="semibold" size={300}>
+                    {getTableDisplayName(targetTable)}
+                    <Badge appearance="tint" size="tiny" style={{ marginLeft: 8 }}>
+                      {rels.length}
+                    </Badge>
+                    {!isInSolution && (
+                      <Badge appearance="tint" color="warning" size="tiny" style={{ marginLeft: 4 }}>
+                        external
+                      </Badge>
+                    )}
+                  </Text>
+                  <div className={styles.relGroup}>
+                    {rels.map((rel) => (
+                      <div key={`${rel.sourceAttribute}-${rel.targetTable}`} className={styles.relItem}>
+                        <Switch
+                          checked={rel.isActive}
+                          onChange={() =>
+                            toggleRelationshipActive(rel.sourceTable, rel.sourceAttribute, rel.targetTable)
+                          }
+                          label={`${rel.sourceAttribute} → ${rel.targetTable}`}
+                        />
+                        {!rel.isActive && (
+                          <Badge appearance="tint" color="subtle" size="tiny">inactive</Badge>
+                        )}
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
 
             {Object.keys(groupedRelationships).length === 0 && factTable && (
               <EmptyState
                 title="No Relationships Found"
-                description="No lookup relationships detected from the fact table."
+                description="Click Detect to scan for lookup relationships, or no lookup attributes found."
               />
             )}
           </div>
