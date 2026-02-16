@@ -24,6 +24,9 @@ __pycache__/
 # IDE
 .vs/
 
+# Node.js
+node_modules/
+
 # User-specific settings
 *.user
 *.suo
