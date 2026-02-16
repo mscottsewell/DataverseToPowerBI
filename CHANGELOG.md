@@ -6,6 +6,50 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.2026.5.37] - 2026-02-16
+
+### Fixed
+
+- **TMDL Description Property Compatibility** — Fixed Power BI Desktop schema validation errors caused by `description` properties on relationships
+  - Power BI Desktop (Feb 2026) rejects TMDL files containing description properties in relationship blocks
+  - Added `SanitizeRelationshipBlock()` and `SanitizeRelationshipsTmdl()` methods to strip unsupported properties
+  - Global TMDL sanitization in `WriteTmdlFile()` removes description properties from all generated files
+  - Prevents "relationship schema validation failed" errors when opening PBIP projects
+
+- **Ambiguous Relationship Path Resolution** — Automatically resolves conflicts when multiple active relationships exist between same source→target table pair
+  - Added `ResolveAmbiguousRelationshipPaths()` method that marks extra active relationships as inactive
+  - Only one active relationship allowed per source→target path (Power BI requirement)
+  - Logs resolved conflicts to debug output for transparency
+  - Prevents "ambiguous relationship path" errors in Power BI Desktop
+
+- **Relationship Dialog Null Reference Crashes** — Fixed `NullReferenceException` when checking/unchecking relationships in Fact/Dimension selector
+  - Added comprehensive null checks throughout `ListViewRelationships_ItemChecked` event handler
+  - Added null guards to all LINQ queries accessing `_allRelationshipItems` collection
+  - Fixed iteration safeguards in `UpdateItemStatus`, `FilterRelationships`, and `BtnFinish_Click`
+  - Applied same fixes to snowflake dimension selector dialog (`SnowflakeDimensionForm`)
+
+- **Relationship State Tracking** — Fixed relationship active/inactive state determination using incorrect ListView.Checked property
+  - Added `IsChecked` property to `RelationshipTag` and `SnowflakeTag` classes
+  - State now tracked in tag object instead of relying on ListView control state
+  - Prevents race conditions when items are filtered out of view but still logically selected
+  - Fixed conflict detection to use `IsChecked` from tag for accurate state determination
+
+- **Out-of-Solution Relationship Filtering** — Fixed "Solution tables only" filter hiding already-selected relationships to tables outside solution
+  - Filter now preserves relationships that are already checked/selected
+  - Only hides unselected relationships to out-of-solution tables
+  - Prevents accidental loss of snowflake dimension selections when toggling filter
+
+- **Duplicate Partition Mode Declaration** — Fixed duplicate `mode:` line appearing in generated table partition TMDL
+  - Removed redundant `sb.AppendLine($"\t\tmode: {GetPartitionMode(table.Role, table.LogicalName)}");` statement
+  - TMDL now contains single partition mode declaration per table
+
+- **Relationship Ambiguity User Prompts** — Added confirmation dialogs when selecting relationships that conflict with existing active relationships
+  - User can choose to keep newly selected relationship active or existing one
+  - Applied to both checkbox selection and double-click activation
+  - Prevents silent relationship state changes that could break DAX measures
+
+---
+
 ## [1.2026.5.24] - 2026-02-14
 
 ### Added

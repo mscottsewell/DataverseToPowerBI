@@ -2,7 +2,7 @@
 <package>
 	<metadata>
     <id>DataverseToPowerBI.XrmToolBox</id>
-    <version>1.2026.5.24</version>
+    <version>1.2026.5.38</version>
     <title>Dataverse to Power BI Semantic Model</title>
     <authors>Scott Sewell</authors>
     <owners>mScottSewell</owners>
@@ -11,27 +11,26 @@
     <description>Extract Dataverse metadata and generate Power BI TMDL/PBIP semantic models with automatic table relationships, calendar tables, and incremental change detection.</description>
     <summary>XrmToolBox plugin for generating Power BI semantic models from Dataverse metadata</summary>
     <releaseNotes>
-v1.2026.5.21 — Comprehensive update with storage modes, preservation logic, and redesigned change preview.
+v1.2026.5.37 — Bug fix release addressing TMDL compatibility and relationship dialog stability.
 
-New Features:
+Bug Fixes Since v1.2026.5.21:
+- Fixed Power BI Desktop schema validation errors caused by 'description' properties on relationships (not supported in Feb 2026 builds)
+- Fixed automatic resolution of ambiguous relationship paths (multiple active relationships to same target now auto-resolved)
+- Fixed NullReferenceException crashes in relationship selector dialog when checking/unchecking relationships
+- Fixed relationship active/inactive state tracking to use tag property instead of ListView control state
+- Fixed "Solution tables only" filter hiding already-selected relationships to out-of-solution tables
+- Fixed duplicate 'mode:' line in generated table partition TMDL
+- Added user confirmation prompts when selecting relationships that conflict with existing active relationships
+
+Previous Release (v1.2026.5.21):
 - Storage Mode Support — DirectQuery, Dual (All/Select), and Import mode per semantic model with per-table overrides
 - Export/Import Configurations — Share model configs as JSON files between machines or team members
-- Change Preview Redesign — Grouped TreeView with impact analysis (Safe/Additive/Moderate/Destructive), filter toggles, and detail pane
-- Incremental Update Preservation — LineageTags, user relationships, column descriptions, formatting, annotations, and platform IDs preserved across rebuilds
-- Table Rename Detection — Detects renamed tables via source comment and carries over all customizations
-- Vista Folder Picker — Modern Explorer-style folder dialogs with breadcrumbs, search, and favorites
-
-Improvements:
-- FetchXML View Filtering — 20+ operator support including relative dates, user context, string matching, and logical grouping
-- Date Relationship Dedup — Stale date relationships automatically cleaned up when date field changes
-- Connection Type Warnings — Change preview warns when switching between TDS and FabricLink
+- Change Preview Redesign — Grouped TreeView with impact analysis, filter toggles, and detail pane
+- Incremental Update Preservation — LineageTags, user relationships, column descriptions, formatting, annotations preserved
+- Table Rename Detection — Detects renamed tables and carries over customizations
+- Vista Folder Picker — Modern Explorer-style folder dialogs
+- Date Relationship Dedup — Stale date relationships automatically cleaned up
 - Attribute List Performance — Pre-sorted cache for instant table/filter switching
-- Comprehensive README — New sections for Storage Modes, Configuration Management, Change Preview, and FetchXML operators
-
-Bug Fixes:
-- Fixed false "Storage Mode Change" warning when using Dual Select mode (Dual vs DualSelect equivalence)
-- Fixed false "query structure changed" warning for Boolean fields in FabricLink (GlobalOptionsetMetadata vs OptionsetMetadata)
-- Fixed DATEDIFF in older-than-x FetchXML operators, date table relationship display names, Font GDI resource leaks
     </releaseNotes>
     <tags>XrmToolBox PowerBI Dataverse TMDL PBIP SemanticModel</tags>
     <projectUrl>https://github.com/mscottsewell/DataverseMetadata-to-PowerBI-Semantic-Model</projectUrl>

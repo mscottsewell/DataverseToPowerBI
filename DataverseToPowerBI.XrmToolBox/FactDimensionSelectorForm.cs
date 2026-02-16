@@ -580,7 +580,7 @@ namespace DataverseToPowerBI.XrmToolBox
                 {
                     // Skip if already exists
                     if (_allRelationshipItems.Cast<ListViewItem>()
-                        .Any(i => i.Tag != null && 
+                        .Any(i => i != null && i.Tag != null && 
                                   ((RelationshipTag)i.Tag).SourceTable == rel.ReferencingEntity &&
                                   ((RelationshipTag)i.Tag).SourceAttribute == rel.ReferencingAttribute))
                         continue;
@@ -608,7 +608,8 @@ namespace DataverseToPowerBI.XrmToolBox
                         IsActive = true,
                         IsSnowflake = false,
                         IsOneToMany = true,
-                        AssumeReferentialIntegrity = false
+                        AssumeReferentialIntegrity = false,
+                        IsChecked = false
                     };
                     item.BackColor = Color.LightGreen;
                     _allRelationshipItems.Add(item);
@@ -617,11 +618,11 @@ namespace DataverseToPowerBI.XrmToolBox
                 // Apply current search filter if any
                 FilterRelationships();
                 
-                // Update status
+                // Update status (check for null items in collection)
                 var lookupCount = _allRelationshipItems.Cast<ListViewItem>()
-                    .Count(i => !((RelationshipTag)i.Tag).IsOneToMany);
+                    .Count(i => i != null && i.Tag != null && !((RelationshipTag)i.Tag).IsOneToMany);
                 var oneToManyCount = _allRelationshipItems.Cast<ListViewItem>()
-                    .Count(i => ((RelationshipTag)i.Tag).IsOneToMany);
+                    .Count(i => i != null && i.Tag != null && ((RelationshipTag)i.Tag).IsOneToMany);
                 
                 var factDisplay = SelectedFactTable?.DisplayName ?? SelectedFactTable?.LogicalName ?? "fact table";
                 lblStatus.Text = $"Found {lookupCount} lookup fields + {oneToManyCount} one-to-many relationships on {factDisplay}.";
@@ -658,7 +659,7 @@ namespace DataverseToPowerBI.XrmToolBox
 
                     // Skip if already exists
                     if (_allRelationshipItems.Cast<ListViewItem>()
-                        .Any(i => i.Tag != null && 
+                        .Any(i => i != null && i.Tag != null && 
                                   ((RelationshipTag)i.Tag).SourceAttribute == lookup.LogicalName &&
                                   ((RelationshipTag)i.Tag).TargetTable == target))
                         continue;
@@ -710,7 +711,8 @@ namespace DataverseToPowerBI.XrmToolBox
                         DisplayName = lookup.DisplayName ?? lookup.LogicalName,
                         IsActive = isActive,
                         IsSnowflake = existingRel?.IsSnowflake ?? isSnowflake,
-                        AssumeReferentialIntegrity = lookup.IsRequired
+                        AssumeReferentialIntegrity = lookup.IsRequired,
+                        IsChecked = isChecked
                     };
 
                     // Color coding - highlight only if multiple ACTIVE relationships to same target
@@ -748,22 +750,71 @@ namespace DataverseToPowerBI.XrmToolBox
             
             var config = (RelationshipTag)e.Item.Tag;
             
+            // Update the checked state in the tag
+            config.IsChecked = e.Item.Checked;
+            
             // When checking an item, set it to active and mark other relationships to the same target as inactive
             if (e.Item.Checked)
             {
-                config.IsActive = true;
-                
-                // Mark other relationships to the same target table as inactive
-                // Use _allRelationshipItems to affect all items, not just filtered ones
-                foreach (var otherItem in _allRelationshipItems)
+                var conflictingActive = _allRelationshipItems
+                    .Where(item => item != null && item != e.Item && item.Tag is RelationshipTag)
+                    .Select(item => (Item: item, Config: (RelationshipTag)item.Tag))
+                    .Where(x => x.Config.IsChecked && x.Config.IsActive &&
+                                x.Config.SourceTable == config.SourceTable &&
+                                x.Config.TargetTable == config.TargetTable)
+                    .ToList();
+
+                var keepCurrentActive = true;
+                if (conflictingActive.Count > 0)
                 {
-                    if (otherItem == e.Item) continue;
-                    var otherConfig = (RelationshipTag)otherItem.Tag;
-                    if (otherConfig.SourceTable == config.SourceTable &&
-                        otherConfig.TargetTable == config.TargetTable)
+                    var sourceDisplay = GetTableDisplayName(config.SourceTable);
+                    var targetDisplay = GetTableDisplayName(config.TargetTable);
+                    var existingFields = string.Join(", ", conflictingActive.Select(x => x.Config.DisplayName));
+
+                    var promptResult = MessageBox.Show(
+                        $"Ambiguous path detected between '{sourceDisplay}' and '{targetDisplay}'.\n\n" +
+                        $"Current active relationship(s): {existingFields}\n" +
+                        $"Newly selected relationship: {config.DisplayName}\n\n" +
+                        "Yes = Make newly selected relationship Active and mark the other one(s) Inactive\n" +
+                        "No = Keep existing relationship Active and mark this one Inactive\n" +
+                        "Cancel = Undo this selection",
+                        "Resolve Ambiguous Relationship Path",
+                        MessageBoxButtons.YesNoCancel,
+                        MessageBoxIcon.Warning,
+                        MessageBoxDefaultButton.Button1);
+
+                    if (promptResult == DialogResult.Cancel)
                     {
-                        otherConfig.IsActive = false;
-                        UpdateItemStatus(otherItem, otherConfig);
+                        _suppressItemCheckedEvent = true;
+                        e.Item.Checked = false;
+                        _suppressItemCheckedEvent = false;
+                        config.IsChecked = false;
+                        config.IsActive = false;
+                        UpdateItemStatus(e.Item, config);
+                        UpdateFinishButtonState();
+                        UpdateSnowflakeButtonState();
+                        return;
+                    }
+
+                    keepCurrentActive = promptResult == DialogResult.Yes;
+                }
+
+                config.IsActive = keepCurrentActive;
+
+                if (keepCurrentActive)
+                {
+                    // Mark other relationships to the same target table as inactive
+                    // Use _allRelationshipItems to affect all items, not just filtered ones
+                    foreach (var otherItem in _allRelationshipItems)
+                    {
+                        if (otherItem == e.Item || otherItem.Tag == null) continue;
+                        var otherConfig = (RelationshipTag)otherItem.Tag;
+                        if (otherConfig.SourceTable == config.SourceTable &&
+                            otherConfig.TargetTable == config.TargetTable)
+                        {
+                            otherConfig.IsActive = false;
+                            UpdateItemStatus(otherItem, otherConfig);
+                        }
                     }
                 }
                 
@@ -771,7 +822,7 @@ namespace DataverseToPowerBI.XrmToolBox
                 UpdateItemStatus(e.Item, config);
                 foreach (var otherItem in _allRelationshipItems)
                 {
-                    if (otherItem == e.Item) continue;
+                    if (otherItem == e.Item || otherItem.Tag == null) continue;
                     var otherConfig = (RelationshipTag)otherItem.Tag;
                     if (otherConfig.SourceTable == config.SourceTable &&
                         otherConfig.TargetTable == config.TargetTable)
@@ -784,12 +835,13 @@ namespace DataverseToPowerBI.XrmToolBox
             {
                 // When unchecking, normalize Active/Inactive states for this dimension
                 // Find all checked relationships to the same target
+                // Use the IsChecked property from the tag instead of item.Checked to avoid index errors
                 var checkedToSameTarget = _allRelationshipItems
-                    .Where(item => item.Tag != null && item.Checked)
+                    .Where(item => item != null && item.Tag != null)
                     .Where(item =>
                     {
                         var otherConfig = (RelationshipTag)item.Tag;
-                        return otherConfig.SourceTable == config.SourceTable &&
+                        return otherConfig.IsChecked && otherConfig.SourceTable == config.SourceTable &&
                                otherConfig.TargetTable == config.TargetTable;
                     })
                     .ToList();
@@ -805,7 +857,7 @@ namespace DataverseToPowerBI.XrmToolBox
                     // Mark all other relationships to this target as Inactive
                     foreach (var otherItem in _allRelationshipItems)
                     {
-                        if (otherItem == singleItem) continue;
+                        if (otherItem == singleItem || otherItem.Tag == null) continue;
                         var otherConfig = (RelationshipTag)otherItem.Tag;
                         if (otherConfig.SourceTable == config.SourceTable &&
                             otherConfig.TargetTable == config.TargetTable)
@@ -821,6 +873,7 @@ namespace DataverseToPowerBI.XrmToolBox
                     // (so whichever one user checks next will be ready to use)
                     foreach (var otherItem in _allRelationshipItems)
                     {
+                        if (otherItem.Tag == null) continue;
                         var otherConfig = (RelationshipTag)otherItem.Tag;
                         if (otherConfig.SourceTable == config.SourceTable &&
                             otherConfig.TargetTable == config.TargetTable)
@@ -841,7 +894,7 @@ namespace DataverseToPowerBI.XrmToolBox
                     // Mark all other relationships to this target as Inactive
                     foreach (var otherItem in _allRelationshipItems)
                     {
-                        if (otherItem == firstItem) continue;
+                        if (otherItem == firstItem || otherItem.Tag == null) continue;
                         var otherConfig = (RelationshipTag)otherItem.Tag;
                         if (otherConfig.SourceTable == config.SourceTable &&
                             otherConfig.TargetTable == config.TargetTable)
@@ -855,6 +908,7 @@ namespace DataverseToPowerBI.XrmToolBox
                 // Refresh display for all relationships to this target
                 foreach (var otherItem in _allRelationshipItems)
                 {
+                    if (otherItem.Tag == null) continue;
                     var otherConfig = (RelationshipTag)otherItem.Tag;
                     if (otherConfig.SourceTable == config.SourceTable &&
                         otherConfig.TargetTable == config.TargetTable)
@@ -883,10 +937,10 @@ namespace DataverseToPowerBI.XrmToolBox
             var config = (RelationshipTag)item.Tag;
 
             // If item is not checked, check it and set to active
-            if (!item.Checked)
+            if (!config.IsChecked)
             {
                 item.Checked = true;
-                config.IsActive = true;
+                return;
             }
             else
             {
@@ -897,6 +951,47 @@ namespace DataverseToPowerBI.XrmToolBox
             // If setting to active, set ALL other relationships to same target as inactive (whether selected or not)
             if (config.IsActive)
             {
+                var conflictingActive = _allRelationshipItems
+                    .Where(otherItem => otherItem != null && otherItem != item && otherItem.Tag is RelationshipTag)
+                    .Select(otherItem => (Item: otherItem, Config: (RelationshipTag)otherItem.Tag))
+                    .Where(x => x.Config.IsChecked && x.Config.IsActive &&
+                                x.Config.SourceTable == config.SourceTable &&
+                                x.Config.TargetTable == config.TargetTable)
+                    .ToList();
+
+                if (conflictingActive.Count > 0)
+                {
+                    var sourceDisplay = GetTableDisplayName(config.SourceTable);
+                    var targetDisplay = GetTableDisplayName(config.TargetTable);
+                    var existingFields = string.Join(", ", conflictingActive.Select(x => x.Config.DisplayName));
+
+                    var promptResult = MessageBox.Show(
+                        $"Ambiguous path detected between '{sourceDisplay}' and '{targetDisplay}'.\n\n" +
+                        $"Current active relationship(s): {existingFields}\n" +
+                        $"Relationship you activated: {config.DisplayName}\n\n" +
+                        "Yes = Keep this relationship Active and mark the other one(s) Inactive\n" +
+                        "No = Keep existing relationship Active and mark this one Inactive\n" +
+                        "Cancel = Revert this change",
+                        "Resolve Ambiguous Relationship Path",
+                        MessageBoxButtons.YesNoCancel,
+                        MessageBoxIcon.Warning,
+                        MessageBoxDefaultButton.Button1);
+
+                    if (promptResult == DialogResult.Cancel)
+                    {
+                        config.IsActive = false;
+                        UpdateItemStatus(item, config);
+                        return;
+                    }
+
+                    if (promptResult == DialogResult.No)
+                    {
+                        config.IsActive = false;
+                        UpdateItemStatus(item, config);
+                        return;
+                    }
+                }
+
                 foreach (var otherItem in _allRelationshipItems)
                 {
                     if (otherItem == item) continue;
@@ -913,13 +1008,25 @@ namespace DataverseToPowerBI.XrmToolBox
             UpdateItemStatus(item, config);
         }
 
+        private string GetTableDisplayName(string logicalName)
+        {
+            var table = _tables?.FirstOrDefault(t => t.LogicalName.Equals(logicalName, StringComparison.OrdinalIgnoreCase));
+            return table?.DisplayName ?? logicalName;
+        }
+
         private void UpdateItemStatus(ListViewItem item, RelationshipTag config)
         {
-            if (item == null || config == null || item.SubItems.Count < 8) return;
+            if (item == null || config == null) return;
+            
+            // Only update display properties if item is currently in the ListView
+            // Items in _allRelationshipItems might be filtered out and not in the control
+            if (item.ListView == null) return;
+            
+            if (item.SubItems.Count < 8) return;
             
             // Count total relationships to this target
             var allToTarget = _allRelationshipItems.Cast<ListViewItem>()
-                .Where(i => i.Tag != null)
+                .Where(i => i != null && i.Tag != null)
                 .Where(i =>
                 {
                     var c = (RelationshipTag)i.Tag;
@@ -930,10 +1037,12 @@ namespace DataverseToPowerBI.XrmToolBox
             var targetCount = allToTarget.Count;
             
             // Count ACTIVE relationships to this target (must be CHECKED to count)
+            // Use IsChecked from tag to avoid accessing ListView state
+            // allToTarget already filtered for non-null items and tags
             var activeCount = allToTarget.Count(i =>
             {
                 var c = (RelationshipTag)i.Tag;
-                return i.Checked && c.IsActive;
+                return c.IsChecked && c.IsActive;
             });
 
             // Update Status column
@@ -985,7 +1094,7 @@ namespace DataverseToPowerBI.XrmToolBox
             var config = (RelationshipTag)item.Tag;
 
             var targetExists = _tables.Any(t => t.LogicalName == config.TargetTable);
-            btnAddSnowflake.Enabled = item.Checked && !config.IsSnowflake && targetExists;
+            btnAddSnowflake.Enabled = config.IsChecked && !config.IsSnowflake && targetExists;
         }
 
         private void BtnAddSnowflake_Click(object sender, EventArgs e)
@@ -1022,7 +1131,7 @@ namespace DataverseToPowerBI.XrmToolBox
                 existingTargets.Add(dimensionTable.LogicalName);
 
                 var existingParents = _allRelationshipItems.Cast<ListViewItem>()
-                    .Where(i => i.Tag != null)
+                    .Where(i => i != null && i.Tag != null)
                     .Select(i => (RelationshipTag)i.Tag)
                     .Where(r => r.IsSnowflake && r.SourceTable == dimensionTable.LogicalName)
                     .Select(r => r.TargetTable);
@@ -1076,7 +1185,7 @@ namespace DataverseToPowerBI.XrmToolBox
         {
             // Check if already exists
             if (_allRelationshipItems.Cast<ListViewItem>()
-                .Any(i => i.Tag != null && 
+                .Any(i => i != null && i.Tag != null && 
                           ((RelationshipTag)i.Tag).SourceAttribute == rel.SourceAttribute &&
                           ((RelationshipTag)i.Tag).TargetTable == rel.TargetTable))
                 return;
@@ -1104,7 +1213,8 @@ namespace DataverseToPowerBI.XrmToolBox
                 DisplayName = relationshipDisplayName,
                 IsActive = rel.IsActive,
                 IsSnowflake = true,
-                AssumeReferentialIntegrity = rel.AssumeReferentialIntegrity
+                AssumeReferentialIntegrity = rel.AssumeReferentialIntegrity,
+                IsChecked = true
             };
             item.BackColor = Color.LightCyan;
 
@@ -1156,9 +1266,10 @@ namespace DataverseToPowerBI.XrmToolBox
                 if (_filterSolutionTablesOnly)
                 {
                     var isInSolution = _tables.Any(t => t.LogicalName.Equals(config.TargetTable, StringComparison.OrdinalIgnoreCase));
-                    if (!isInSolution && !config.IsOneToMany)
+                    var isSelected = config.IsChecked;
+                    if (!isInSolution && !config.IsOneToMany && !isSelected)
                     {
-                        continue; // Skip relationships to tables not in solution
+                        continue; // Skip out-of-solution relationships unless already selected
                     }
                 }
                 
@@ -1240,7 +1351,8 @@ namespace DataverseToPowerBI.XrmToolBox
         private void BtnFinish_Click(object sender, EventArgs e)
         {
             // Get all checked items from the full list (not just filtered view)
-            var checkedItems = _allRelationshipItems.Where(item => item.Checked && item.Tag != null).ToList();
+            // Use IsChecked from tag to avoid accessing ListView state
+            var checkedItems = _allRelationshipItems.Where(item => item.Tag != null && ((RelationshipTag)item.Tag).IsChecked).ToList();
             var configs = checkedItems.Select(i => (RelationshipTag)i.Tag).ToList();
 
             // Validate: one active relationship per source-target pair
@@ -1337,6 +1449,7 @@ namespace DataverseToPowerBI.XrmToolBox
             public bool IsSnowflake { get; set; }
             public bool IsOneToMany { get; set; }
             public bool AssumeReferentialIntegrity { get; set; }
+            public bool IsChecked { get; set; }
         }
     }
 
@@ -1491,7 +1604,8 @@ namespace DataverseToPowerBI.XrmToolBox
                         TargetTable = target,
                         DisplayName = sourceDisplayName,
                         IsActive = isActive,
-                        AssumeReferentialIntegrity = lookup.IsRequired
+                        AssumeReferentialIntegrity = lookup.IsRequired,
+                        IsChecked = isChecked
                     };
 
                     // Color will be set in UpdateItemStatus based on active conflict check
@@ -1544,9 +1658,9 @@ namespace DataverseToPowerBI.XrmToolBox
             // Update all item statuses to apply correct colors and text
             foreach (ListViewItem item in listViewParentTables.Items)
             {
-                if (item.Tag != null)
+                if (item?.Tag is SnowflakeTag statusConfig)
                 {
-                    UpdateItemStatus(item, (SnowflakeTag)item.Tag);
+                    UpdateItemStatus(item, statusConfig);
                 }
             }
             
@@ -1559,10 +1673,11 @@ namespace DataverseToPowerBI.XrmToolBox
             // Ignore if we're suppressing events during list manipulation
             if (_suppressItemCheckedEvent) return;
             
-            // Null check to prevent crashes
-            if (e?.Item?.Tag == null) return;
+            if (!(e?.Item?.Tag is SnowflakeTag config)) return;
+            if (listViewParentTables == null) return;
             
-            var config = (SnowflakeTag)e.Item.Tag;
+            // Update the checked state in the tag
+            config.IsChecked = e.Item.Checked;
             
             // When checking an item, set it to active and mark other relationships to the same target as inactive
             if (e.Item.Checked)
@@ -1573,9 +1688,7 @@ namespace DataverseToPowerBI.XrmToolBox
                 foreach (ListViewItem otherItem in listViewParentTables.Items)
                 {
                     if (otherItem == e.Item) continue;
-                    if (otherItem.Tag == null) continue;
-                    
-                    var otherConfig = (SnowflakeTag)otherItem.Tag;
+                    if (!(otherItem?.Tag is SnowflakeTag otherConfig)) continue;
                     if (otherConfig.TargetTable == config.TargetTable)
                     {
                         otherConfig.IsActive = false;
@@ -1588,9 +1701,7 @@ namespace DataverseToPowerBI.XrmToolBox
                 foreach (ListViewItem otherItem in listViewParentTables.Items)
                 {
                     if (otherItem == e.Item) continue;
-                    if (otherItem.Tag == null) continue;
-                    
-                    var otherConfig = (SnowflakeTag)otherItem.Tag;
+                    if (!(otherItem?.Tag is SnowflakeTag otherConfig)) continue;
                     if (otherConfig.TargetTable == config.TargetTable)
                     {
                         UpdateItemStatus(otherItem, otherConfig);
@@ -1601,20 +1712,19 @@ namespace DataverseToPowerBI.XrmToolBox
             {
                 // When unchecking, normalize Active/Inactive states for this dimension
                 // Find all checked relationships to the same target
+                // Use IsChecked from tag to avoid accessing ListView state on items not in the control
+                // Consolidate null checks into single Where clause to prevent race conditions
                 var checkedToSameTarget = listViewParentTables.Items.Cast<ListViewItem>()
-                    .Where(item => item.Tag != null && item.Checked)
-                    .Where(item =>
-                    {
-                        var otherConfig = (SnowflakeTag)item.Tag;
-                        return otherConfig.TargetTable == config.TargetTable;
-                    })
+                    .Where(item => item?.Tag is SnowflakeTag otherConfig &&
+                                   otherConfig.IsChecked &&
+                                   otherConfig.TargetTable == config.TargetTable)
                     .ToList();
                 
                 // If exactly one relationship remains checked, make it Active; others Inactive
                 if (checkedToSameTarget.Count == 1)
                 {
                     var singleItem = checkedToSameTarget[0];
-                    var singleConfig = (SnowflakeTag)singleItem.Tag;
+                    if (!(singleItem?.Tag is SnowflakeTag singleConfig)) return;
                     singleConfig.IsActive = true;
                     UpdateItemStatus(singleItem, singleConfig);
                     
@@ -1622,9 +1732,7 @@ namespace DataverseToPowerBI.XrmToolBox
                     foreach (ListViewItem otherItem in listViewParentTables.Items)
                     {
                         if (otherItem == singleItem) continue;
-                        if (otherItem.Tag == null) continue;
-                        
-                        var otherConfig = (SnowflakeTag)otherItem.Tag;
+                        if (!(otherItem?.Tag is SnowflakeTag otherConfig)) continue;
                         if (otherConfig.TargetTable == config.TargetTable)
                         {
                             otherConfig.IsActive = false;
@@ -1638,9 +1746,7 @@ namespace DataverseToPowerBI.XrmToolBox
                     // (so whichever one user checks next will be ready to use)
                     foreach (ListViewItem otherItem in listViewParentTables.Items)
                     {
-                        if (otherItem.Tag == null) continue;
-                        
-                        var otherConfig = (SnowflakeTag)otherItem.Tag;
+                        if (!(otherItem?.Tag is SnowflakeTag otherConfig)) continue;
                         if (otherConfig.TargetTable == config.TargetTable)
                         {
                             otherConfig.IsActive = true;
@@ -1652,7 +1758,7 @@ namespace DataverseToPowerBI.XrmToolBox
                 {
                     // Multiple relationships remain checked - auto-resolve by making first one Active, others Inactive
                     var firstItem = checkedToSameTarget[0];
-                    var firstConfig = (SnowflakeTag)firstItem.Tag;
+                    if (!(firstItem?.Tag is SnowflakeTag firstConfig)) return;
                     firstConfig.IsActive = true;
                     UpdateItemStatus(firstItem, firstConfig);
                     
@@ -1660,9 +1766,7 @@ namespace DataverseToPowerBI.XrmToolBox
                     foreach (ListViewItem otherItem in listViewParentTables.Items)
                     {
                         if (otherItem == firstItem) continue;
-                        if (otherItem.Tag == null) continue;
-                        
-                        var otherConfig = (SnowflakeTag)otherItem.Tag;
+                        if (!(otherItem?.Tag is SnowflakeTag otherConfig)) continue;
                         if (otherConfig.TargetTable == config.TargetTable)
                         {
                             otherConfig.IsActive = false;
@@ -1674,9 +1778,7 @@ namespace DataverseToPowerBI.XrmToolBox
                 // Refresh display for all relationships to this target
                 foreach (ListViewItem otherItem in listViewParentTables.Items)
                 {
-                    if (otherItem.Tag == null) continue;
-                    
-                    var otherConfig = (SnowflakeTag)otherItem.Tag;
+                    if (!(otherItem?.Tag is SnowflakeTag otherConfig)) continue;
                     if (otherConfig.TargetTable == config.TargetTable)
                     {
                         UpdateItemStatus(otherItem, otherConfig);
@@ -1690,14 +1792,13 @@ namespace DataverseToPowerBI.XrmToolBox
             if (listViewParentTables.SelectedItems.Count == 0) return;
 
             var item = listViewParentTables.SelectedItems[0];
-            if (item == null || item.Tag == null) return;
-            
-            var config = (SnowflakeTag)item.Tag;
+            if (!(item?.Tag is SnowflakeTag config)) return;
 
             // If item is not checked, check it and set to active
-            if (!item.Checked)
+            if (!config.IsChecked)
             {
                 item.Checked = true;
+                config.IsChecked = true;
                 config.IsActive = true;
             }
             else
@@ -1712,9 +1813,7 @@ namespace DataverseToPowerBI.XrmToolBox
                 foreach (ListViewItem otherItem in listViewParentTables.Items)
                 {
                     if (otherItem == item) continue;
-                    if (otherItem.Tag == null) continue;
-                    
-                    var otherConfig = (SnowflakeTag)otherItem.Tag;
+                    if (!(otherItem?.Tag is SnowflakeTag otherConfig)) continue;
                     if (otherConfig.TargetTable == config.TargetTable)
                     {
                         otherConfig.IsActive = false;
@@ -1728,9 +1827,7 @@ namespace DataverseToPowerBI.XrmToolBox
             foreach (ListViewItem otherItem in listViewParentTables.Items)
             {
                 if (otherItem == item) continue;
-                if (otherItem.Tag == null) continue;
-                
-                var otherConfig = (SnowflakeTag)otherItem.Tag;
+                if (!(otherItem?.Tag is SnowflakeTag otherConfig)) continue;
                 if (otherConfig.TargetTable == config.TargetTable)
                 {
                     UpdateItemStatus(otherItem, otherConfig);
@@ -1744,14 +1841,15 @@ namespace DataverseToPowerBI.XrmToolBox
             
             // Count total relationships to this target
             var allToTarget = listViewParentTables.Items.Cast<ListViewItem>()
-                .Where(i => i.Tag != null)
-                .Where(i => ((SnowflakeTag)i.Tag).TargetTable == config.TargetTable)
+                .Where(i => i?.Tag is SnowflakeTag tag && tag.TargetTable == config.TargetTable)
                 .ToList();
 
             var targetCount = allToTarget.Count;
             
             // Count ACTIVE relationships to this target (must be CHECKED to count)
-            var activeCount = allToTarget.Count(i => i.Checked && ((SnowflakeTag)i.Tag).IsActive);
+            // Use IsChecked from tag to avoid accessing ListView state
+            // allToTarget already filtered for non-null items and tags
+            var activeCount = allToTarget.Count(i => i?.Tag is SnowflakeTag tag && tag.IsChecked && tag.IsActive);
 
             // Update Status column to include (Inactive) suffix
             var statusText = config.IsActive ? "Active" : "Inactive";
@@ -1773,7 +1871,10 @@ namespace DataverseToPowerBI.XrmToolBox
         private void BtnOK_Click(object sender, EventArgs e)
         {
             var checkedItems = listViewParentTables.CheckedItems.Cast<ListViewItem>().ToList();
-            var configs = checkedItems.Select(i => (SnowflakeTag)i.Tag).ToList();
+            var configs = checkedItems
+                .Where(i => i?.Tag is SnowflakeTag)
+                .Select(i => (SnowflakeTag)i.Tag)
+                .ToList();
 
             // Validate
             var targetGroups = configs.GroupBy(c => c.TargetTable);
@@ -1818,6 +1919,7 @@ namespace DataverseToPowerBI.XrmToolBox
             public string DisplayName { get; set; } = "";
             public bool IsActive { get; set; }
             public bool AssumeReferentialIntegrity { get; set; }
+            public bool IsChecked { get; set; }
         }
     }
 }
