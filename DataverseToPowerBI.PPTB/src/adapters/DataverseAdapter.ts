@@ -78,45 +78,30 @@ export class DataverseAdapter implements IDataverseConnection {
    */
   async getSolutionsAsync(): Promise<DataverseSolution[]> {
     try {
-      // Use FetchXML to query solutions
-      const fetchXml = `
-        <fetch>
-          <entity name="solution">
-            <attribute name="solutionid" />
-            <attribute name="uniquename" />
-            <attribute name="friendlyname" />
-            <attribute name="version" />
-            <attribute name="ismanaged" />
-            <attribute name="publisherid" />
-            <attribute name="modifiedon" />
-            <filter>
-              <condition attribute="isvisible" operator="eq" value="true" />
-            </filter>
-            <order attribute="friendlyname" />
-          </entity>
-        </fetch>
-      `;
-
-      const result = await this.api.executeFetchXml(fetchXml);
+      const result = await this.api.getSolutions([
+        'solutionid', 'uniquename', 'friendlyname', 'version',
+        'ismanaged', 'publisherid', 'modifiedon'
+      ]);
       
-      // Transform result to DataverseSolution array
       const solutions: DataverseSolution[] = [];
       
-      if (result?.entities) {
-        for (const entity of result.entities) {
+      if (result?.value) {
+        for (const entity of result.value) {
           solutions.push({
-            solutionId: entity.solutionid || '',
-            uniqueName: entity.uniquename || '',
-            friendlyName: entity.friendlyname || '',
-            version: entity.version,
+            solutionId: String(entity.solutionid ?? ''),
+            uniqueName: String(entity.uniquename ?? ''),
+            friendlyName: String(entity.friendlyname ?? ''),
+            version: entity.version as string | undefined,
             isManaged: entity.ismanaged === true,
-            publisherId: entity.publisherid,
-            modifiedOn: entity.modifiedon,
+            publisherId: entity.publisherid as string | undefined,
+            modifiedOn: entity.modifiedon as string | undefined,
           });
         }
       }
 
-      return solutions;
+      return solutions.sort((a, b) =>
+        a.friendlyName.localeCompare(b.friendlyName)
+      );
     } catch (error) {
       console.error('Failed to fetch solutions:', error);
       throw new Error(`Failed to fetch solutions: ${error}`);
@@ -144,15 +129,16 @@ export class DataverseAdapter implements IDataverseConnection {
         </fetch>
       `;
 
-      const componentsResult = await this.api.executeFetchXml(componentsFetchXml);
-      const componentIds = componentsResult?.entities?.map((e: any) => e.objectid) || [];
+      const componentsResult = await this.api.fetchXmlQuery(componentsFetchXml);
+      const componentIds = componentsResult?.value?.map((e: any) => e.objectid) || [];
 
       if (componentIds.length === 0) {
         return [];
       }
 
       // Get entity metadata for these components
-      const entities = await this.api.retrieveAllEntityMetadata();
+      const entitiesResult = await this.api.getAllEntitiesMetadata(['LogicalName', 'DisplayName', 'SchemaName', 'ObjectTypeCode', 'PrimaryIdAttribute', 'PrimaryNameAttribute', 'IsActivity', 'IsIntersect', 'MetadataId']);
+      const entities = entitiesResult?.value ?? entitiesResult ?? [];
       
       const tables: TableInfo[] = [];
       
@@ -166,7 +152,7 @@ export class DataverseAdapter implements IDataverseConnection {
 
           tables.push({
             logicalName: entity.LogicalName || '',
-            displayName: entity.DisplayName?.UserLocalizedLabel?.Label,
+            displayName: entity.DisplayName?.LocalizedLabels?.[0]?.Label,
             schemaName: entity.SchemaName,
             objectTypeCode: entity.ObjectTypeCode || 0,
             primaryIdAttribute: entity.PrimaryIdAttribute,
@@ -190,11 +176,11 @@ export class DataverseAdapter implements IDataverseConnection {
    */
   async getTableMetadataAsync(logicalName: string): Promise<TableMetadata> {
     try {
-      const metadata = await this.api.retrieveEntityMetadata(logicalName);
+      const metadata = await this.api.getEntityMetadata(logicalName, true);
       
       return {
         logicalName: metadata.LogicalName || logicalName,
-        displayName: metadata.DisplayName?.UserLocalizedLabel?.Label,
+        displayName: metadata.DisplayName?.LocalizedLabels?.[0]?.Label,
         schemaName: metadata.SchemaName,
         primaryIdAttribute: metadata.PrimaryIdAttribute,
         primaryNameAttribute: metadata.PrimaryNameAttribute,
@@ -210,7 +196,7 @@ export class DataverseAdapter implements IDataverseConnection {
    */
   async getAttributesAsync(tableName: string): Promise<AttributeMetadata[]> {
     try {
-      const metadata = await this.api.retrieveEntityMetadata(tableName);
+      const metadata = await this.api.getEntityMetadata(tableName, true, ['LogicalName', 'DisplayName', 'SchemaName', 'Attributes']);
       const attributes: AttributeMetadata[] = [];
 
       if (metadata.Attributes) {
@@ -223,9 +209,9 @@ export class DataverseAdapter implements IDataverseConnection {
 
           attributes.push({
             logicalName: attr.LogicalName || '',
-            displayName: attr.DisplayName?.UserLocalizedLabel?.Label,
+            displayName: attr.DisplayName?.LocalizedLabels?.[0]?.Label,
             schemaName: attr.SchemaName,
-            description: attr.Description?.UserLocalizedLabel?.Label,
+            description: attr.Description?.LocalizedLabels?.[0]?.Label,
             attributeType: attr.AttributeType,
             isCustomAttribute: attr.IsCustomAttribute === true,
             isRequired: attr.RequiredLevel?.Value === 'ApplicationRequired',
@@ -267,11 +253,11 @@ export class DataverseAdapter implements IDataverseConnection {
         </fetch>
       `;
 
-      const result = await this.api.executeFetchXml(fetchXml);
+      const result = await this.api.fetchXmlQuery(fetchXml);
       const forms: FormMetadata[] = [];
 
-      if (result?.entities) {
-        for (const entity of result.entities) {
+      if (result?.value) {
+        for (const entity of result.value) {
           const form: FormMetadata = {
             formId: entity.formid || '',
             name: entity.name || '',
@@ -310,10 +296,10 @@ export class DataverseAdapter implements IDataverseConnection {
         </fetch>
       `;
 
-      const result = await this.api.executeFetchXml(fetchXml);
+      const result = await this.api.fetchXmlQuery(fetchXml);
       
-      if (result?.entities && result.entities.length > 0) {
-        return result.entities[0].formxml || null;
+      if (result?.value && result.value.length > 0) {
+        return result.value[0].formxml || null;
       }
 
       return null;
@@ -345,11 +331,11 @@ export class DataverseAdapter implements IDataverseConnection {
         </fetch>
       `;
 
-      const result = await this.api.executeFetchXml(fetchXml);
+      const result = await this.api.fetchXmlQuery(fetchXml);
       const views: ViewMetadata[] = [];
 
-      if (result?.entities) {
-        for (const entity of result.entities) {
+      if (result?.value) {
+        for (const entity of result.value) {
           views.push({
             viewId: entity.savedqueryid || '',
             name: entity.name || '',
@@ -383,10 +369,10 @@ export class DataverseAdapter implements IDataverseConnection {
         </fetch>
       `;
 
-      const result = await this.api.executeFetchXml(fetchXml);
+      const result = await this.api.fetchXmlQuery(fetchXml);
       
-      if (result?.entities && result.entities.length > 0) {
-        return result.entities[0].fetchxml || null;
+      if (result?.value && result.value.length > 0) {
+        return result.value[0].fetchxml || null;
       }
 
       return null;
