@@ -10,7 +10,7 @@ For user documentation, see [README.md](README.md).
 ## 🏗️ Repository Structure
 
 ```
-DataverseMetadata-to-PowerBI-Semantic-Model/
+DataverseToPowerBI/
 ├── DataverseToPowerBI.Core/           # Shared library (.NET Framework 4.8)
 │   ├── Interfaces/
 │   │   └── IDataverseConnection.cs    # Connection abstraction
@@ -75,8 +75,8 @@ DataverseMetadata-to-PowerBI-Semantic-Model/
 
 ```powershell
 # Clone the repository
-git clone https://github.com/your-org/DataverseMetadata-to-PowerBI-Semantic-Model.git
-cd DataverseMetadata-to-PowerBI-Semantic-Model
+git clone https://github.com/your-org/DataverseToPowerBI.git
+cd DataverseToPowerBI
 
 # Restore and build
 dotnet build -c Release

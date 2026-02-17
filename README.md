@@ -560,7 +560,7 @@ See [Managing Multiple Relationships](#-managing-multiple-relationships) for mor
 
 ## 🤝 Getting Help
 
-- **Report Issues:** [GitHub Issues](https://github.com/microsoft/DataverseMetadata-to-PowerBI-Semantic-Model/issues)
+- **Report Issues:** [GitHub Issues](https://github.com/microsoft/DataverseToPowerBI/issues)
 - **Power BI Community:** [Power BI Forums](https://community.powerbi.com/)
 - **XrmToolBox:** [XrmToolBox Forums](https://www.xrmtoolbox.com/)
 - **Dataverse Docs:** [Microsoft Dataverse Documentation](https://learn.microsoft.com/en-us/power-apps/developer/data-platform/)

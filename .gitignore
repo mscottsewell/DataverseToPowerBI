@@ -38,3 +38,4 @@ node_modules/
 tmpclaude-*
 DataverseToPowerBI.XrmToolBox/.Temp/
 
+nuget.exe
