@@ -41,7 +41,7 @@ DataverseToPowerBI/
 ├── Package/                           # NuGet package staging (gitignored)
 ├── Build-And-Deploy.ps1               # Build and deploy script
 ├── DataverseToPowerBI.XrmToolBox.nuspec  # NuGet package definition
-└── DataverseMetadata-to-PowerBI-Semantic-Model.sln
+└── DataverseToPowerBI.sln
 ```
 
 ---

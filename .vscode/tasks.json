@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/DataverseMetadata-to-PowerBI-Semantic-Model.sln",
+                "${workspaceFolder}/DataverseToPowerBI.sln",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary;ForceNoAlign"
             ],
@@ -19,7 +19,7 @@
             "type": "process",
             "args": [
                 "publish",
-                "${workspaceFolder}/DataverseMetadata-to-PowerBI-Semantic-Model.sln",
+                "${workspaceFolder}/DataverseToPowerBI.sln",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary;ForceNoAlign"
             ],
@@ -33,7 +33,7 @@
                 "watch",
                 "run",
                 "--project",
-                "${workspaceFolder}/DataverseMetadata-to-PowerBI-Semantic-Model.sln"
+                "${workspaceFolder}/DataverseToPowerBI.sln"
             ],
             "problemMatcher": "$msCompile"
         }

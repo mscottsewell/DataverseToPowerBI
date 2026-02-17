@@ -83,7 +83,7 @@ $nuspecFile = Join-Path $repoRoot "Package\DataverseToPowerBI.XrmToolBox.nuspec"
 # Step 1: Clean Build (unless DeployOnly)
 if (-not $DeployOnly) {
     Write-Host "[1/6] Cleaning solution..." -ForegroundColor Yellow
-    dotnet clean "$repoRoot\DataverseMetadata-to-PowerBI-Semantic-Model.sln" -c Release
+    dotnet clean "$repoRoot\DataverseToPowerBI.sln" -c Release
     if ($LASTEXITCODE -ne 0) { throw "Clean failed" }
     
     Write-Host "  ✓ Using version $fullVersion" -ForegroundColor Green
