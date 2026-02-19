@@ -4234,10 +4234,11 @@ namespace DataverseToPowerBI.XrmToolBox.Services
         {
             var parts = new List<string>();
 
-            // Add Dataverse description first if available
+            // Add Dataverse description first if available (strip CR/LF to keep single-line doc comment)
             if (!string.IsNullOrWhiteSpace(dataverseDescription))
             {
-                parts.Add(dataverseDescription);
+                var sanitized = dataverseDescription.Replace("\r", " ").Replace("\n", " ").Trim();
+                parts.Add(sanitized);
             }
 
             // Add Source information
