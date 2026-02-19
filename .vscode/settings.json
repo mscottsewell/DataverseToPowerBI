@@ -1,4 +1,5 @@
 {
     "sarif-viewer.connectToGithubCodeScanning": "off",
-    "dotnet.preferCSharpExtension": true
+    "dotnet.preferCSharpExtension": true,
+    "codeQL.githubDatabase.download": "never"
 }

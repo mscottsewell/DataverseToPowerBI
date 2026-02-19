@@ -264,6 +264,83 @@ namespace DataverseToPowerBI.Tests
             Assert.Equal(1, count);
         }
 
+        [Fact]
+        public void ExtractUserRelationships_SkipsRelationshipsWithMissingColumnReferences()
+        {
+            var blocks = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["Account.accountid→Contact.parentcustomerid"] = "relationship keep-guid\r\n\tfromColumn: Account.accountid\r\n\ttoColumn: Contact.parentcustomerid\r\n",
+                ["DeletedTable.deletedid→Account.accountid"] = "relationship stale-guid\r\n\tfromColumn: DeletedTable.deletedid\r\n\ttoColumn: Account.accountid\r\n"
+            };
+
+            var toolKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var validRefs = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Account|accountid",
+                "Contact|parentcustomerid"
+            };
+
+            var result = _builder.ExtractUserRelationships(blocks, toolKeys, validRefs);
+
+            Assert.NotNull(result);
+            Assert.Contains("keep-guid", result);
+            Assert.DoesNotContain("stale-guid", result);
+        }
+
+        [Fact]
+        public void FilterInvalidRelationshipBlocks_RemovesBlocksWithMissingToColumn()
+        {
+            var tmdl =
+                "relationship valid-guid\r\n" +
+                "\tfromColumn: Account.accountid\r\n" +
+                "\ttoColumn: Contact.parentcustomerid\r\n\r\n" +
+                "relationship invalid-guid\r\n" +
+                "\tfromColumn: Account.accountid\r\n" +
+                "\ttoColumn: DeletedTable.deletedid\r\n\r\n";
+
+            var validRefs = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Account|accountid",
+                "Contact|parentcustomerid"
+            };
+
+            var result = _builder.FilterInvalidRelationshipBlocks(tmdl, validRefs);
+
+            Assert.Contains("valid-guid", result);
+            Assert.DoesNotContain("invalid-guid", result);
+        }
+
+        [Fact]
+        public void RepairRelationshipsFile_RemovesInvalidRelationshipBlocks()
+        {
+            var projectName = "TestModel";
+            var pbipFolder = Path.Combine(_tempDir, "env", projectName);
+            var definitionFolder = Path.Combine(pbipFolder, $"{projectName}.SemanticModel", "definition");
+            var tablesFolder = Path.Combine(definitionFolder, "tables");
+            Directory.CreateDirectory(tablesFolder);
+
+            File.WriteAllText(Path.Combine(tablesFolder, "Account.tmdl"),
+                "table Account\r\n\tcolumn accountid\r\n");
+            File.WriteAllText(Path.Combine(tablesFolder, "Contact.tmdl"),
+                "table Contact\r\n\tcolumn parentcustomerid\r\n");
+
+            var relationshipsPath = Path.Combine(definitionFolder, "relationships.tmdl");
+            File.WriteAllText(relationshipsPath,
+                "relationship valid-guid\r\n" +
+                "\tfromColumn: Account.accountid\r\n" +
+                "\ttoColumn: Contact.parentcustomerid\r\n\r\n" +
+                "relationship invalid-guid\r\n" +
+                "\tfromColumn: Account.accountid\r\n" +
+                "\ttoColumn: MissingTable.missingid\r\n\r\n");
+
+            var removed = _builder.RepairRelationshipsFile(pbipFolder, projectName);
+            var repaired = File.ReadAllText(relationshipsPath);
+
+            Assert.Equal(1, removed);
+            Assert.Contains("valid-guid", repaired);
+            Assert.DoesNotContain("invalid-guid", repaired);
+        }
+
         #endregion
 
         #region GetOrNewLineageTag Tests
