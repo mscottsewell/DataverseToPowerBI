@@ -122,6 +122,7 @@
     <Compile Include="Services\SemanticModelBuilder.cs" />
     <Compile Include="Services\FetchXmlToSqlConverter.cs" />
     <Compile Include="Services\DebugLogger.cs" />
+    <Compile Include="Services\DiagramLayoutGenerator.cs" />
     <Compile Include="VistaFolderPicker.cs" />
     <Compile Include="ExpandLookupForm.cs">
       <SubType>Form</SubType>

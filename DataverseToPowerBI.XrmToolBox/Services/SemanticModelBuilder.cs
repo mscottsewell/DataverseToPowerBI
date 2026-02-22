@@ -21,6 +21,7 @@
 //       │  │  ├─ model.tmdl            - Model metadata and table/expression refs
 //       │  │  ├─ expressions.tmdl      - FabricLink: FabricSQLEndpoint, FabricLakehouse
 //       │  │  ├─ relationships.tmdl    - All relationship definitions
+//       │  │  ├─ diagramLayout.json    - Model View diagram layout (auto-arranged)
 //       │  │  └─ tables/               - Individual table TMDL files
 //       │  │     ├─ DataverseURL.tmdl  - Hidden parameter table (Enable Load, both TDS and FabricLink)
 //       │  │     ├─ Date.tmdl (if configured)
@@ -1363,6 +1364,20 @@ namespace DataverseToPowerBI.XrmToolBox.Services
             // Check if there's an existing date table OR if we created one
             var hasDateTable = FindExistingDateTable(tablesFolder) != null || dateTableConfig != null;
             UpdateModelTmdl(pbipFolder, projectName, tables, hasDateTable);
+
+            // Generate diagram layout for Model View
+            SetStatus("Generating diagram layout...");
+            try
+            {
+                var layoutJson = DiagramLayoutGenerator.Generate(tables, relationships, dateTableConfig);
+                var layoutPath = Path.Combine(definitionFolder, "diagramLayout.json");
+                File.WriteAllText(layoutPath, layoutJson, Utf8WithoutBom);
+                DebugLogger.Log($"Generated diagramLayout.json with {tables.Count} table(s)");
+            }
+            catch (Exception ex)
+            {
+                DebugLogger.Log($"Warning: Failed to generate diagram layout: {ex.Message}");
+            }
 
             // Verify critical files exist
             VerifyPbipStructure(pbipFolder, projectName);
@@ -3579,6 +3594,28 @@ namespace DataverseToPowerBI.XrmToolBox.Services
             var hasDateTable = FindExistingDateTable(tablesFolder) != null;
             UpdateModelTmdl(pbipFolder, projectName, tables, hasDateTable);
 
+            // Regenerate diagram layout if it doesn't exist (preserve user-arranged layouts)
+            var incrementalDefinitionFolder = Path.Combine(pbipFolder, $"{projectName}.SemanticModel", "definition");
+            var layoutPath = Path.Combine(incrementalDefinitionFolder, "diagramLayout.json");
+            if (!File.Exists(layoutPath))
+            {
+                SetStatus("Generating diagram layout...");
+                try
+                {
+                    var layoutJson = DiagramLayoutGenerator.Generate(tables, relationships, dateTableConfig);
+                    File.WriteAllText(layoutPath, layoutJson, Utf8WithoutBom);
+                    DebugLogger.Log($"Generated diagramLayout.json with {tables.Count} table(s)");
+                }
+                catch (Exception ex)
+                {
+                    DebugLogger.Log($"Warning: Failed to generate diagram layout: {ex.Message}");
+                }
+            }
+            else
+            {
+                DebugLogger.Log("Preserving existing diagramLayout.json (user may have customized layout)");
+            }
+
             // Verify critical files exist
             VerifyPbipStructure(pbipFolder, projectName);
 
@@ -3990,21 +4027,24 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                 var utcOffset = (int)(dateTableConfig?.UtcOffsetHours ?? -6);
                 var converter = new FetchXmlToSqlConverter(utcOffset, IsFabricLink, ShouldStripUserContext(table.Role, table.LogicalName));
                 var conversionResult = converter.ConvertToWhereClause(table.View.FetchXml, "Base");
-                
-                if (!string.IsNullOrWhiteSpace(conversionResult.SqlWhereClause))
+
+                if (!string.IsNullOrWhiteSpace(conversionResult.SqlWhereClause) || !conversionResult.IsFullySupported)
                 {
                     viewFilterClause = conversionResult.SqlWhereClause;
                     viewDisplayName = table.View.ViewName;
                     hasPartialSupport = !conversionResult.IsFullySupported;
-                    
+
                     // Create filter comment for SQL
                     var filterCommentBuilder = new StringBuilder();
                     filterCommentBuilder.Append($"-- View Filter: {viewDisplayName}{(hasPartialSupport ? " *" : "")}");
-                    
+
                     if (hasPartialSupport && conversionResult.UnsupportedFeatures.Any())
                     {
                         filterCommentBuilder.AppendLine();
-                        filterCommentBuilder.AppendLine($"-- * Partially supported - some conditions were not translated:");
+                        var notesHeader = string.IsNullOrWhiteSpace(viewFilterClause)
+                            ? "-- * View filter conditions could not be translated (no filter applied):"
+                            : "-- * Partially supported - some conditions were not translated:";
+                        filterCommentBuilder.AppendLine(notesHeader);
                         foreach (var unsupported in conversionResult.UnsupportedFeatures)
                         {
                             filterCommentBuilder.AppendLine($"--   - {unsupported}");
