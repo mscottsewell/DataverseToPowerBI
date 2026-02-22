@@ -130,6 +130,7 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="FeatureFlags.cs" />
+    <Compile Include="UrlHelper.cs" />
 
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

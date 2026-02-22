@@ -41,12 +41,15 @@ When publishing to Power BI Service, you **must enable Single Sign-On (SSO)** in
 - Published reports with many users
 - Executive dashboards refreshed daily
 
-## Dual Mode (The Best of Both Worlds)
+## Dual Modes (The Best of Both Worlds)
 
-You can use **different storage modes for different tables**—this is often the optimal approach:
+You can use **different storage modes for different tables**—this is often the optimal approach. The tool supports:
+
+- **Dual (All)** — Fact tables stay DirectQuery; all dimension tables use Dual
+- **Dual (Select)** — Fact tables stay DirectQuery; only selected dimension tables use Dual
 
 - Keep your large, frequently-changing **fact table in DirectQuery**
-- Import smaller, stable **dimension tables** for fast filtering
+- Use Dual for smaller, stable **dimension tables** for fast filtering
 
 | ✅ Advantages | ⚠️ Considerations |
 |--------------|-------------------|

@@ -129,24 +129,11 @@ namespace DataverseToPowerBI.XrmToolBox
         };
 
         /// <summary>
-        /// Extracts the environment name from a Dataverse URL
-        /// Example: "portfolioshapingdev.crm.dynamics.com" returns "portfolioshapingdev"
+        /// Extracts the environment name from a Dataverse URL.
+        /// Delegates to the shared <see cref="UrlHelper.ExtractEnvironmentName"/> utility.
         /// </summary>
-        private static string ExtractEnvironmentName(string dataverseUrl)
-        {
-            if (string.IsNullOrEmpty(dataverseUrl))
-                return "default";
-            
-            // Remove protocol if present
-            var url = dataverseUrl.Replace("https://", "").Replace("http://", "");
-            
-            // Get first segment before dot
-            var firstDot = url.IndexOf('.');
-            if (firstDot > 0)
-                return url.Substring(0, firstDot);
-            
-            return url;
-        }
+        private static string ExtractEnvironmentName(string dataverseUrl) =>
+            UrlHelper.ExtractEnvironmentName(dataverseUrl);
         
         // Solution 
         private string? _currentSolutionName;
@@ -741,7 +728,33 @@ namespace DataverseToPowerBI.XrmToolBox
                     });
                 }
             }
-            
+
+            // Migration: re-derive SnowflakeLevel for old settings that lack it
+            if (_relationships.Any(r => r.IsSnowflake && r.SnowflakeLevel == 0))
+            {
+                var factLookupTargets = _relationships
+                    .Where(r => !r.IsSnowflake)
+                    .Select(r => r.TargetTable)
+                    .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+                foreach (var r in _relationships.Where(r => r.IsSnowflake && r.SnowflakeLevel == 0
+                    && factLookupTargets.Contains(r.SourceTable)))
+                {
+                    r.SnowflakeLevel = 1;
+                }
+
+                var level1Targets = _relationships
+                    .Where(r => r.IsSnowflake && r.SnowflakeLevel == 1)
+                    .Select(r => r.TargetTable)
+                    .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+                foreach (var r in _relationships.Where(r => r.IsSnowflake && r.SnowflakeLevel == 0
+                    && level1Targets.Contains(r.SourceTable)))
+                {
+                    r.SnowflakeLevel = 2;
+                }
+            }
+
             // Restore radio button state
             if (settings.ShowAllAttributes)
                 radioShowAll.Checked = true;

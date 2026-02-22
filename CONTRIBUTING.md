@@ -26,7 +26,7 @@ DataverseToPowerBI/
 │   ├── Services/
 │   │   ├── DebugLogger.cs             # File-based diagnostic logging
 │   │   ├── FetchXmlToSqlConverter.cs  # FetchXML → SQL WHERE translation
-│   │   └── SemanticModelBuilder.cs    # TMDL generation engine (~3,000 lines)
+│   │   └── SemanticModelBuilder.cs    # TMDL generation engine (~5,000 lines)
 │   ├── CalendarTableDialog.cs         # Date table configuration UI
 │   ├── FactDimensionSelectorForm.cs   # Star-schema configuration UI
 │   ├── FormViewSelectorForm.cs        # Form/View selection UI
@@ -36,6 +36,7 @@ DataverseToPowerBI/
 │   ├── SolutionSelectorForm.cs        # Solution picker UI
 │   ├── TableSelectorForm.cs           # Table selection UI
 │   ├── TmdlPluginTool.cs              # XrmToolBox plugin entry point
+│   ├── UrlHelper.cs                   # Shared URL/environment utilities
 │   └── XrmServiceAdapterImpl.cs       # SDK-based Dataverse adapter
 │
 ├── Package/                           # NuGet package staging (gitignored)
@@ -294,6 +295,18 @@ DebugLogger.LogSection("FetchXML", fetchXmlContent);
 
 Log location: `%APPDATA%\DataverseToPowerBI\debug_log.txt`
 
+### FetchXML Debug Output
+
+FetchXML conversion debug files can be written to `{outputFolder}/FetchXML_Debug/` during builds. This is **off by default** and must be explicitly enabled via the `enableFetchXmlDebugLogs` constructor parameter on `SemanticModelBuilder`. Debug output includes the source FetchXML, generated SQL, and conversion trace — useful for troubleshooting view filter translation.
+
+### Automated Tests
+
+Run the xUnit test suite (58 builder tests + 28 FetchXML converter tests + 12 incremental update tests):
+
+```powershell
+dotnet test DataverseToPowerBI.Tests -c Release
+```
+
 ---
 
 ## 🔐 Security Considerations
@@ -330,6 +343,7 @@ Authentication is handled by XrmToolBox's connection manager. The plugin never
 - **File Headers:** Each file includes a purpose comment block
 - **Regions:** Use `#region` to organize large files (>500 lines)
 - **Null Safety:** Use nullable reference types where appropriate
+- **TMDL Annotations:** Columns include a `DataverseToPowerBI_LogicalName` annotation containing the Dataverse logical name. This enables stable lineage tag resolution when display names change. The annotation is always regenerated (not treated as a user annotation).
 
 ---
 

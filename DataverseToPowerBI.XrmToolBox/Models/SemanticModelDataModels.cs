@@ -37,25 +37,42 @@ namespace DataverseToPowerBI.XrmToolBox.Models
     // NOTE: DateTableConfig and DateTimeFieldConfig are imported from Core.Models
     // to avoid duplication and type conflicts
 
+    /// <summary>
+    /// Represents a relationship for TMDL export in the FactDimensionSelectorForm.
+    /// Uses DataContract serialization for XrmToolBox settings persistence.
+    /// </summary>
+    /// <remarks>
+    /// This model intentionally duplicates some properties from
+    /// <see cref="DataverseToPowerBI.Core.Models.RelationshipConfig"/> in Core.
+    /// The models use different serialization strategies and cannot be consolidated
+    /// without breaking existing saved configurations.
+    /// </remarks>
     [System.Runtime.Serialization.DataContract]
     public class ExportRelationship
     {
+        /// <summary>Source (Many-side) table logical name — the fact or dimension table containing the lookup.</summary>
         [System.Runtime.Serialization.DataMember]
-        public string SourceTable { get; set; } = "";       // Fact or Dimension table (Many side)
+        public string SourceTable { get; set; } = "";
+        /// <summary>Lookup attribute logical name on the source table.</summary>
         [System.Runtime.Serialization.DataMember]
-        public string SourceAttribute { get; set; } = "";   // Lookup attribute
+        public string SourceAttribute { get; set; } = "";
+        /// <summary>Target (One-side) table logical name — the dimension table referenced by the lookup.</summary>
         [System.Runtime.Serialization.DataMember]
-        public string TargetTable { get; set; } = "";       // Dimension table (One side)
+        public string TargetTable { get; set; } = "";
+        /// <summary>User-friendly display name for the relationship.</summary>
         [System.Runtime.Serialization.DataMember]
         public string DisplayName { get; set; } = "";
+        /// <summary>Whether the relationship is active in the Power BI model. Inactive relationships require DAX USERELATIONSHIP().</summary>
         [System.Runtime.Serialization.DataMember]
         public bool IsActive { get; set; } = true;
+        /// <summary>True if this is a snowflake relationship (Dimension → Parent Dimension).</summary>
         [System.Runtime.Serialization.DataMember]
-        public bool IsSnowflake { get; set; } = false;      // True if Dimension->ParentDimension
-        /// <summary>0 = Direct, 1 = Snowflake, 2 = Double Snowflake.</summary>
+        public bool IsSnowflake { get; set; } = false;
+        /// <summary>Snowflake depth: 0 = Direct, 1 = Snowflake, 2 = Double Snowflake.</summary>
         [System.Runtime.Serialization.DataMember]
         public int SnowflakeLevel { get; set; } = 0;
+        /// <summary>True if the lookup field is required (not nullable), enabling referential integrity optimization in DirectQuery.</summary>
         [System.Runtime.Serialization.DataMember]
-        public bool AssumeReferentialIntegrity { get; set; } = false;  // True if lookup field is required
+        public bool AssumeReferentialIntegrity { get; set; } = false;
     }
 }

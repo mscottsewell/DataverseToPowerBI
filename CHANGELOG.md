@@ -6,6 +6,34 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [Unreleased] — Code Review Fixes
+
+### Fixed
+
+- **Description Preservation in TMDL** — `WriteTmdlFile` no longer strips `description:` properties from table and column TMDL files. The regex removal is now scoped to `relationships.tmdl` only, where Power BI Desktop (Feb 2026) rejects descriptions. User-authored descriptions on columns, tables, and measures now survive incremental regeneration.
+
+- **Null Safety in IsLookupType** — `IsLookupType()` and `IsPolymorphicLookupType()` now use `string.Equals()` static method instead of instance `.Equals()` on a nullable parameter, preventing potential `NullReferenceException`.
+
+### Changed
+
+- **FetchXML Debug Logs Opt-In** — FetchXML conversion debug files (`FetchXML_Debug/` folder) are no longer written to the output folder on every build. Debug logging is now gated behind an opt-in `enableFetchXmlDebugLogs` constructor parameter (default: `false`). This prevents sensitive view filter data from persisting to disk and reduces unnecessary I/O.
+
+- **Lineage Stability Across Display Name Renames** — Column lineage tags are now backed by a stable `DataverseToPowerBI_LogicalName` annotation. When a Dataverse display name changes, the lineage tag is preserved via the logical name fallback, preventing Power BI from treating renamed columns as new (which would break existing report visuals).
+
+- **ExtractEnvironmentName Deduplicated** — Consolidated the duplicated `ExtractEnvironmentName()` method (previously in both `PluginControl.cs` and `SemanticModelBuilder.cs`) into a shared `UrlHelper` static class.
+
+### Added
+
+- **FetchXmlToSqlConverter C# Tests** — Added 28 unit tests covering all operator categories: basic comparison, null, string, date (timezone-adjusted), list (in/not-in), filter logic (AND/OR/nested), user context operators (TDS vs FabricLink vs Import mode), link-entity subqueries, and edge cases (empty XML, invalid XML, custom alias).
+
+- **Incremental Update Integration Tests** — Added 12 integration tests for lineage preservation with logical name fallback, column metadata fallback, description survival, user measure preservation, and annotation preservation.
+
+### Removed
+
+- **PPTB (Power Platform Toolbox) Port** — Removed the experimental `DataverseToPowerBI.PPTB` TypeScript/React project. The port requires significant rework before it would be usable. Code is preserved in git history for potential future revival.
+
+---
+
 ## [1.2026.5.101] - 2026-02-21
 
 ### Added

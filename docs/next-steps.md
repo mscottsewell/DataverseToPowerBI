@@ -25,6 +25,7 @@ Create drill-down paths in your dimension tables:
 By default, this utility follows the best practice of hiding columns that end users don't need:
 - GUID/ID columns (like `accountid`)
 - They are kept in the model for relationships, but hidden from report view
+- For lookup fields, use sub-column controls (ID/Name/Type/Yomi) to keep only what report authors need
 - If you find that you have additional values that are only needed for formulas, you can hide them as well.
 
 ## 5. Create a Model Documentation Page
@@ -34,8 +35,8 @@ Add a report page that shows:
 - Data refresh information
 - Known limitations
 
-## 6. Consider Row-Level Security (for Import Mode)
-If using Import mode, implement RLS to control data access:
+## 6. Consider Row-Level Security (for Import or Dual Modes)
+If using Import, Dual (All), or Dual (Select) storage modes, implement RLS to control data access:
 1. Go to **Modeling** → **Manage roles**
 2. Create roles that filter data based on user context
 3. Assign users to roles in Power BI Service
@@ -51,7 +52,7 @@ Once you publish your report to Power BI Service:
 - Enables view filters based on current user context
 - See the [Publishing and Deployment](../README.md#-publishing-and-deployment) section for detailed steps
 
-### For Import or Dual Mode:
+### For Import or Dual (All/Select) Modes:
 - Configure scheduled refresh (up to 8 times per day)
 - Set up failure notifications
 - Consider implementing Power BI RLS if needed (see step 6)
@@ -62,3 +63,4 @@ Once you publish your report to Power BI Service:
 - [Create Hierarchies](https://learn.microsoft.com/en-us/power-bi/transform-model/desktop-create-and-manage-relationships)
 - [Row-Level Security in Power BI](https://learn.microsoft.com/en-us/power-bi/enterprise/service-admin-rls)
 - [Enable Single Sign-On for DirectQuery](https://learn.microsoft.com/power-bi/connect-data/service-azure-sql-database-with-direct-connect#single-sign-on)
+- [Latest DataverseToPowerBI release notes](../CHANGELOG.md)

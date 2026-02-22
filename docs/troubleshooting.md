@@ -24,12 +24,19 @@
 - Check that both source and target tables are in the model
 - Re-run the table selection and view the created tables
 
+> **[SCREENSHOT PLACEHOLDER: SS-06]** Relationship conflict/troubleshooting visual.
+> 
+> **Include in screenshot:** Relationship selector with Active vs Inactive state indicators and a conflict example (if available).
+>
+> ![SS-06 TODO: Relationship conflict troubleshooting visual](TODO_IMAGE_URL_SS06)
+> *SS-06: Relationship conflict troubleshooting view with Active/Inactive indicators.*
+
 ### "My report is slow—what can I do?"
 Try these optimizations:
 1. Reduce the number of columns (only include what you need)
 2. Remove long text fields such as text area fields.
 3. Use view more aggressive filters to limit rows to only those typically relevant to the user.
-4. Switch dimension tables to Dual mode
+4. Switch dimension tables to Dual mode (Dual (All) or Dual (Select))
 5. Simplify visuals (fewer visuals per page)
 6. Use aggregations for large fact tables
 7. For larger datasets, moving the fact table to Import Mode will make the interaction more responsive.
@@ -60,7 +67,9 @@ View filters using `eq-userid`, `ne-userid`, `eq-userteams`, or `ne-userteams` c
 **Solution:** Use DataverseTDS connection mode instead if you need row-level security based on current user context.
 
 ### "Multi-select choice labels missing or incorrect (FabricLink mode)"
-If multi-select choice labels don’t resolve correctly in FabricLink, update to v1.2026.5.57 or later. This release fixes multi-select metadata joins to split values on semicolons (`;`) and use the attribute logical name for `OptionSetName`.
+If multi-select choice labels don’t resolve correctly in FabricLink, update to the latest release and rebuild the model. Label resolution should split values on semicolons (`;`) and use the attribute logical name for `OptionSetName`.
+
+See [CHANGELOG.md](../CHANGELOG.md) for current release details.
 
 ### "Quick Select changed my filter from Selected to All"
 Quick Select now preserves your current attribute filter mode.
@@ -69,7 +78,9 @@ Quick Select now preserves your current attribute filter mode.
 - If you were in **All**, it remains **All**.
 - Newly selected attributes are refreshed immediately in the current view.
 
-If you still see mode switching, make sure you are on v1.2026.5.83 or later.
+If you still see mode switching, update to the latest release.
+
+See [CHANGELOG.md](../CHANGELOG.md) for current release details.
 
 ### "Quick-selected attributes are missing after reopening"
 Selected attributes are saved in the semantic model configuration (`PluginSettings.SelectedAttributes`) and should reload on open.
@@ -82,7 +93,9 @@ Note:
 - Attributes that no longer exist in Dataverse are removed during revalidation.
 - Required locked fields (primary key/name and relationship-required lookup keys) are always included.
 
-If selections appear to drop, update to v1.2026.5.83 or later, which includes a case-insensitive restore fix for saved selected attributes.
+If selections appear to drop, update to the latest release.
+
+See [CHANGELOG.md](../CHANGELOG.md) for current release details.
 
 ### "What does the Default checkmark mean for expanded child rows?"
 In View mode, expanded child rows in the **Default** column are now marked only when they come from the currently selected view's linked columns.

@@ -2,13 +2,14 @@
 
 **Date:** 2026-02-21
 **Reviewers:** GPT-5.1-Codex (Model A), Claude Opus 4.5 (Model B)
-**Scope:** Full codebase — C# (Core, XrmToolBox, Tests), TypeScript (PPTB), and all documentation
+**Scope:** Full codebase — C# (Core, XrmToolBox, Tests) and all documentation
+> *Note: The PPTB TypeScript port was reviewed at the time of writing but has since been removed from the repository. PPTB-specific findings are preserved for historical context but marked accordingly.*
 
 ---
 
 ## Executive Summary
 
-Two independent AI code reviews were conducted across the entire DataverseToPowerBI codebase. The reviews covered code quality, security, architecture, performance, maintainability, code documentation, user documentation, test coverage, and the PPTB TypeScript port.
+Two independent AI code reviews were conducted across the entire DataverseToPowerBI codebase. The reviews covered code quality, security, architecture, performance, maintainability, code documentation, user documentation, and test coverage.
 
 **No critical severity issues were found.** Both reviewers agree the codebase follows strong conventions — consistent XXE prevention, clean dependency direction, comprehensive user docs, and good XML doc coverage. The highest-priority items center on data integrity during incremental updates, an always-on debug logger writing sensitive data to disk, and the description-stripping behavior of `WriteTmdlFile`.
 
@@ -57,7 +58,7 @@ if (path.EndsWith("relationships.tmdl", StringComparison.OrdinalIgnoreCase))
 
 Both reviewers independently identified this file as excessively large with high cyclomatic complexity. Key methods like `GenerateTableTmdl` (~800 lines) and `AnalyzeTableChanges` (~150 lines) bundle SQL generation, lookup heuristics, column metadata preservation, measure synthesis, and file I/O into monolithic methods.
 
-**Impact:** Every change is high-risk due to interleaved concerns. The PPTB port reimplements the same logic, so every enhancement must be duplicated.
+**Impact:** Every change is high-risk due to interleaved concerns.
 
 **Recommendation:** Extract into focused service classes:
 - `TmdlTableGenerator` — table TMDL generation
@@ -92,9 +93,9 @@ Both reviewers noted these models have nearly identical structures (SourceTable,
 
 **File:** `DataverseToPowerBI.Tests/SemanticModelBuilderTests.cs`
 
-Both reviewers noted that while the PPTB port has 28 tests for `FetchXmlToSqlConverter`, the C# test project has zero tests for this critical service. All 38 existing C# tests focus on TMDL parsing/preservation.
+Both reviewers noted that the C# test project had zero tests for this critical service. All 38 existing C# tests focused on TMDL parsing/preservation. *(The PPTB TypeScript port had 28 equivalent tests that served as the porting reference.)*
 
-**Recommendation:** Port the PPTB `FetchXmlToSqlConverter.test.ts` scenarios to the C# test project:
+**Recommendation:** Port the FetchXmlToSqlConverter test scenarios to the C# test project:
 - Basic operators (eq, ne, gt, lt, etc.)
 - Null/not-null handling
 - Date relative operators
@@ -125,24 +126,9 @@ return string.Equals(attrType, "Lookup", StringComparison.OrdinalIgnoreCase) || 
 
 ---
 
-### AGREE-7 · Extensive `any` Type Usage in PPTB Port (Medium)
+### AGREE-7 · Extensive `any` Type Usage in PPTB Port (Medium) — *OBSOLETE*
 
-**Files:** Multiple TypeScript files (19+ instances)
-
-Both reviewers identified widespread use of `any` types in the PPTB TypeScript port, particularly in adapter classes and error handling.
-
-Key locations:
-| File | Line | Usage |
-|------|------|-------|
-| `DataverseAdapter.ts` | 37 | `private connection: any` |
-| `DataverseAdapter.ts` | 57 | `private get api(): any` |
-| `FileSystemAdapter.ts` | 59 | `private get api(): any` |
-| `SettingsAdapter.ts` | 66, 325 | `private get api(): any`, `getFileSystem(): any` |
-| `pptb.d.ts` | 14-15 | `toolboxAPI: any`, `dataverseAPI: any` |
-| `ErrorHandling.ts` | 16, 40, 50, 60, 70 | `details?: any` |
-| `Validation.ts` | 187 | `validateConfiguration(config: any)` |
-
-**Recommendation:** Replace with proper types from `@pptb/types` package (already installed). The `pptb.d.ts` placeholder types should be the first to convert since they cascade through all adapters.
+> **This finding is no longer applicable.** The PPTB TypeScript port was removed from the repository. The `any` types were fixed prior to removal, but the fix is moot since the code no longer ships. Preserved here for historical completeness.
 
 ---
 
@@ -273,8 +259,8 @@ Both reviewers explicitly praised these aspects of the codebase:
 | **User Documentation** | ✅ Comprehensive — README.md (1000+ lines), troubleshooting guide, star-schema guide, understanding-the-project guide |
 | **XML Doc Comments** | ✅ Good coverage — Public types and methods generally have XML doc comments |
 | **N+1 Query Avoidance** | ✅ Good — Uses `RetrieveAllEntitiesRequest` for bulk metadata rather than per-entity calls |
-| **PPTB Functional Parity** | ✅ TypeScript port faithfully reproduces C# logic for FetchXML conversion and TMDL generation |
-| **Test Fixture Quality** | ✅ Good — 38 C# tests + 82 PPTB tests with meaningful coverage of TMDL parsing, preservation, and round-trips |
+| **PPTB Functional Parity** | ✅ TypeScript port faithfully reproduced C# logic *(PPTB removed from repo — see CHANGELOG)* |
+| **Test Fixture Quality** | ✅ Good — 98 C# tests with meaningful coverage of TMDL parsing, preservation, FetchXML conversion, and incremental updates |
 
 ---
 
@@ -282,24 +268,24 @@ Both reviewers explicitly praised these aspects of the codebase:
 
 Items ranked by impact × effort. Higher rank = fix first.
 
-| Rank | ID | Severity | Title | Effort | Files Affected |
-|------|----|----------|-------|--------|----------------|
-| 1 | AGREE-1 | **High** | `WriteTmdlFile` strips ALL descriptions — restrict to relationships.tmdl only | Small | `SemanticModelBuilder.cs` |
-| 2 | CODEX-2 | **High** | FetchXML debug logs unconditionally written to disk — gate behind opt-in flag | Small | `FetchXmlToSqlConverter.cs`, `SemanticModelBuilder.cs` |
-| 3 | AGREE-6 | **Medium** | `IsLookupType` null dereference — add null safety | Trivial | `SemanticModelBuilder.cs` |
-| 4 | CODEX-1 | **High** | Lineage key fragility with display name aliases — key off logical names | Medium | `SemanticModelBuilder.cs` (multiple methods) |
-| 5 | AGREE-5 | **Medium** | No C# tests for FetchXmlToSqlConverter — port from PPTB test suite | Medium | New file: `FetchXmlToSqlConverterTests.cs` |
-| 6 | AGREE-3 | **Medium** | ExtractEnvironmentName duplicated — extract to shared utility | Small | `PluginControl.cs`, `SemanticModelBuilder.cs`, new utility class |
-| 7 | AGREE-4 | **Medium** | ExportRelationship vs RelationshipConfig duplication — consolidate | Medium | `SemanticModelDataModels.cs`, `DataModels.cs`, consumers |
-| 8 | OPUS-3 | **Low** | Magic strings for reserved table names — extract to constants | Small | `SemanticModelBuilder.cs` |
-| 9 | CODEX-3 | **Medium** | Missing incremental update integration tests | Large | New test file(s) |
-| 10 | AGREE-7 | **Medium** | 19+ `any` types in PPTB — replace with proper types | Medium | Multiple TS files |
-| 11 | AGREE-8 | **Low** | Repeated file I/O during analysis — cache file content | Small | `SemanticModelBuilder.cs` |
-| 12 | OPUS-4 | **Low** | Missing `<param>` XML doc tags on key public methods | Small | Multiple CS files |
-| 13 | OPUS-2 | **Low** | Inconsistent error messages / generic exceptions | Small | `SemanticModelManager.cs` |
-| 14 | OPUS-1 | **Low** | DebugLogger static constructor side effects — add fallback | Trivial | `DebugLogger.cs` |
-| 15 | OPUS-5 | **Low** | Verify Font/GDI disposal in PluginControl.Dispose | Trivial | `PluginControl.cs` / `PluginControl.Designer.cs` |
-| 16 | AGREE-2 | **Medium** | SemanticModelBuilder.cs too large — split into services | Large | Major refactor across multiple new files |
+| Rank | ID | Severity | Title | Effort | Status |
+|------|----|----------|-------|--------|--------|
+| 1 | AGREE-1 | **High** | `WriteTmdlFile` strips ALL descriptions — restrict to relationships.tmdl only | Small | ✅ Done |
+| 2 | CODEX-2 | **High** | FetchXML debug logs unconditionally written to disk — gate behind opt-in flag | Small | ✅ Done |
+| 3 | AGREE-6 | **Medium** | `IsLookupType` null dereference — add null safety | Trivial | ✅ Done |
+| 4 | CODEX-1 | **High** | Lineage key fragility with display name aliases — key off logical names | Medium | ✅ Done |
+| 5 | AGREE-5 | **Medium** | No C# tests for FetchXmlToSqlConverter — port from PPTB test suite | Medium | ✅ Done (28 tests) |
+| 6 | AGREE-3 | **Medium** | ExtractEnvironmentName duplicated — extract to shared utility | Small | ✅ Done |
+| 7 | AGREE-4 | **Medium** | ExportRelationship vs RelationshipConfig duplication — consolidate | Medium | ⏭️ Deferred (breaking change risk) |
+| 8 | OPUS-3 | **Low** | Magic strings for reserved table names — extract to constants | Small | — |
+| 9 | CODEX-3 | **Medium** | Missing incremental update integration tests | Large | ✅ Done (12 tests) |
+| 10 | AGREE-7 | **Medium** | 19+ `any` types in PPTB — replace with proper types | Medium | 🗑️ Moot (PPTB removed) |
+| 11 | AGREE-8 | **Low** | Repeated file I/O during analysis — cache file content | Small | — |
+| 12 | OPUS-4 | **Low** | Missing `<param>` XML doc tags on key public methods | Small | — |
+| 13 | OPUS-2 | **Low** | Inconsistent error messages / generic exceptions | Small | — |
+| 14 | OPUS-1 | **Low** | DebugLogger static constructor side effects — add fallback | Trivial | — |
+| 15 | OPUS-5 | **Low** | Verify Font/GDI disposal in PluginControl.Dispose | Trivial | — |
+| 16 | AGREE-2 | **Medium** | SemanticModelBuilder.cs too large — split into services | Large | ⏭️ Deferred (large refactor) |
 
 ---
 

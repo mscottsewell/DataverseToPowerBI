@@ -94,6 +94,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
         private readonly int _languageCode;
         private readonly bool _useDisplayNameAliasesInSql;
         private readonly string _storageMode;
+        private readonly bool _enableFetchXmlDebugLogs;
         private Dictionary<string, string> _tableStorageModeOverrides = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
@@ -101,9 +102,22 @@ namespace DataverseToPowerBI.XrmToolBox.Services
         /// </summary>
         private bool IsFabricLink => _connectionType == "FabricLink";
 
+        /// <summary>
+        /// Creates a new SemanticModelBuilder configured for the specified connection type and options.
+        /// </summary>
+        /// <param name="templatePath">Path to the PBIP default template folder containing base TMDL files.</param>
+        /// <param name="statusCallback">Optional callback for reporting progress messages to the UI.</param>
+        /// <param name="connectionType">"DataverseTDS" (default) or "FabricLink" — determines the Power Query M expression strategy.</param>
+        /// <param name="fabricLinkEndpoint">SQL endpoint URL for FabricLink mode (ignored for DataverseTDS).</param>
+        /// <param name="fabricLinkDatabase">Database/lakehouse name for FabricLink mode (ignored for DataverseTDS).</param>
+        /// <param name="languageCode">LCID for localized display names (default: 1033 for English).</param>
+        /// <param name="useDisplayNameAliasesInSql">When true, SQL column aliases use display names; when false, logical names.</param>
+        /// <param name="storageMode">"DirectQuery" (default), "Import", or "Dual" — sets the table storage mode.</param>
+        /// <param name="enableFetchXmlDebugLogs">When true, writes FetchXML conversion debug files to {outputFolder}/FetchXML_Debug/. Off by default to avoid persisting sensitive filter data to disk.</param>
         public SemanticModelBuilder(string templatePath, Action<string>? statusCallback = null,
             string connectionType = "DataverseTDS", string? fabricLinkEndpoint = null, string? fabricLinkDatabase = null,
-            int languageCode = 1033, bool useDisplayNameAliasesInSql = true, string storageMode = "DirectQuery")
+            int languageCode = 1033, bool useDisplayNameAliasesInSql = true, string storageMode = "DirectQuery",
+            bool enableFetchXmlDebugLogs = false)
         {
             if (string.IsNullOrWhiteSpace(templatePath))
             {
@@ -118,6 +132,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
             _languageCode = languageCode;
             _useDisplayNameAliasesInSql = useDisplayNameAliasesInSql;
             _storageMode = storageMode ?? "DirectQuery";
+            _enableFetchXmlDebugLogs = enableFetchXmlDebugLogs;
         }
 
         /// <summary>
@@ -137,6 +152,8 @@ namespace DataverseToPowerBI.XrmToolBox.Services
         /// For columns: key = "col:{sourceColumn}" → lineageTag
         /// For measures: key = "measure:{measureName}" → lineageTag
         /// For expressions: key = "expr:{expressionName}" → lineageTag
+        /// Also stores "logicalcol:{logicalName}" entries from DataverseToPowerBI_LogicalName
+        /// annotations to enable stable lineage preservation across display name renames.
         /// </summary>
         internal Dictionary<string, string> ParseExistingLineageTags(string tmdlPath)
         {
@@ -222,6 +239,34 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                         currentSourceColumn = null;
                     }
                 }
+
+                // Second pass: build logicalcol: fallback keys from DataverseToPowerBI_LogicalName annotations.
+                // This enables lineage stability when display-name aliases change.
+                string? lastSourceColumn = null;
+                for (int i = 0; i < lines.Length; i++)
+                {
+                    var trimmed = lines[i].TrimStart();
+                    if (trimmed.StartsWith("sourceColumn:"))
+                    {
+                        lastSourceColumn = trimmed.Substring("sourceColumn:".Length).Trim();
+                    }
+                    else if (trimmed.StartsWith("annotation DataverseToPowerBI_LogicalName"))
+                    {
+                        var eqIdx = trimmed.IndexOf('=');
+                        if (eqIdx > 0 && lastSourceColumn != null)
+                        {
+                            var logicalName = trimmed.Substring(eqIdx + 1).Trim();
+                            if (tags.TryGetValue($"col:{lastSourceColumn}", out var lineageTag))
+                            {
+                                tags[$"logicalcol:{logicalName}"] = lineageTag;
+                            }
+                        }
+                    }
+                    else if (trimmed.StartsWith("column ") || trimmed.StartsWith("measure ") || trimmed.StartsWith("partition "))
+                    {
+                        lastSourceColumn = null;
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -281,6 +326,15 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                     }
 
                     columns[sourceColumn] = info;
+
+                    // Also key by logical name for fallback when display names change
+                    if (info.Annotations.TryGetValue("DataverseToPowerBI_LogicalName", out var logicalName))
+                    {
+                        if (!columns.ContainsKey(logicalName))
+                        {
+                            columns[$"logicalcol:{logicalName}"] = info;
+                        }
+                    }
                 }
             }
             catch (Exception ex)
@@ -826,11 +880,22 @@ namespace DataverseToPowerBI.XrmToolBox.Services
 
         /// <summary>
         /// Gets a lineageTag from the existing tags dictionary, or generates a new one.
+        /// Supports an optional fallback key for stable lineage preservation when the
+        /// primary key (sourceColumn) may change due to display name renames.
         /// </summary>
-        internal string GetOrNewLineageTag(Dictionary<string, string>? existingTags, string key)
+        /// <param name="existingTags">Dictionary of existing lineage tags.</param>
+        /// <param name="key">Primary lookup key (e.g., "col:{sourceColumn}").</param>
+        /// <param name="fallbackKey">Optional fallback key (e.g., "logicalcol:{logicalName}") used when
+        /// primary key doesn't match due to display name changes.</param>
+        internal string GetOrNewLineageTag(Dictionary<string, string>? existingTags, string key, string? fallbackKey = null)
         {
-            if (existingTags != null && existingTags.TryGetValue(key, out var tag))
-                return tag;
+            if (existingTags != null)
+            {
+                if (existingTags.TryGetValue(key, out var tag))
+                    return tag;
+                if (fallbackKey != null && existingTags.TryGetValue(fallbackKey, out var fallbackTag))
+                    return fallbackTag;
+            }
             return Guid.NewGuid().ToString();
         }
 
@@ -887,15 +952,15 @@ namespace DataverseToPowerBI.XrmToolBox.Services
 
         private static bool IsLookupType(string? attrType)
         {
-            return attrType.Equals("Lookup", StringComparison.OrdinalIgnoreCase) ||
-                   attrType.Equals("Owner", StringComparison.OrdinalIgnoreCase) ||
-                   attrType.Equals("Customer", StringComparison.OrdinalIgnoreCase);
+            return string.Equals(attrType, "Lookup", StringComparison.OrdinalIgnoreCase) ||
+                   string.Equals(attrType, "Owner", StringComparison.OrdinalIgnoreCase) ||
+                   string.Equals(attrType, "Customer", StringComparison.OrdinalIgnoreCase);
         }
 
         private static bool IsPolymorphicLookupType(string? attrType)
         {
-            return attrType.Equals("Owner", StringComparison.OrdinalIgnoreCase) ||
-                   attrType.Equals("Customer", StringComparison.OrdinalIgnoreCase);
+            return string.Equals(attrType, "Owner", StringComparison.OrdinalIgnoreCase) ||
+                   string.Equals(attrType, "Customer", StringComparison.OrdinalIgnoreCase);
         }
 
         private static bool IsOwningLookupLogicalName(string logicalName)
@@ -993,32 +1058,24 @@ namespace DataverseToPowerBI.XrmToolBox.Services
         /// Extracts the environment name from a Dataverse URL
         /// Example: "portfolioshapingdev.crm.dynamics.com" returns "portfolioshapingdev"
         /// </summary>
-        private static string ExtractEnvironmentName(string dataverseUrl)
-        {
-            if (string.IsNullOrEmpty(dataverseUrl))
-                return "default";
-            
-            // Remove protocol if present
-            var url = dataverseUrl.Replace("https://", "").Replace("http://", "");
-            
-            // Get first segment before dot
-            var firstDot = url.IndexOf('.');
-            if (firstDot > 0)
-                return url.Substring(0, firstDot);
-            
-            return url;
-        }
+        /// <summary>
+        /// Extracts the environment name from a Dataverse URL.
+        /// Delegates to the shared <see cref="DataverseToPowerBI.XrmToolBox.UrlHelper.ExtractEnvironmentName"/> utility.
+        /// </summary>
+        private static string ExtractEnvironmentName(string dataverseUrl) =>
+            DataverseToPowerBI.XrmToolBox.UrlHelper.ExtractEnvironmentName(dataverseUrl);
 
         /// <summary>
         /// Writes text to a file using UTF-8 without BOM encoding and CRLF line endings
         /// </summary>
         private static void WriteTmdlFile(string path, string content)
         {
-            // Compatibility sanitization for TMDL files:
-            // Power BI Desktop (Feb 2026) rejects 'description' in certain object contexts
-            // (for example relationships). Strip description properties at write-time to
-            // prevent schema-load failures from generated or preserved metadata.
-            if (path.EndsWith(".tmdl", StringComparison.OrdinalIgnoreCase))
+            // Compatibility sanitization: Power BI Desktop (Feb 2026) rejects 'description'
+            // in relationship contexts. Strip description properties ONLY from relationships.tmdl
+            // to prevent schema-load failures while preserving user-authored descriptions on
+            // tables, columns, and measures in other TMDL files.
+            var fileName = Path.GetFileName(path);
+            if (string.Equals(fileName, "relationships.tmdl", StringComparison.OrdinalIgnoreCase))
             {
                 // Remove single-line description properties.
                 content = Regex.Replace(
@@ -3870,8 +3927,8 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                     
                     viewFilterComment = filterCommentBuilder.ToString();
                     
-                    // Log debug information
-                    if (outputFolder != null)
+                    // Log debug information (opt-in via enableFetchXmlDebugLogs)
+                    if (outputFolder != null && _enableFetchXmlDebugLogs)
                     {
                         FetchXmlToSqlConverter.LogConversionDebug(
                             table.View.ViewName,
@@ -4465,7 +4522,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
             // Known tool-generated annotations (these will always be regenerated)
             var toolAnnotations = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
-                "SummarizationSetBy", "UnderlyingDateTimeDataType"
+                "SummarizationSetBy", "UnderlyingDateTimeDataType", "DataverseToPowerBI_LogicalName"
             };
 
             foreach (var col in columns)
@@ -4477,7 +4534,14 @@ namespace DataverseToPowerBI.XrmToolBox.Services
 
                 // Check for existing column metadata to preserve user customizations
                 ExistingColumnInfo? existingCol = null;
-                existingColumnMetadata?.TryGetValue(col.SourceColumn, out existingCol);
+                if (existingColumnMetadata != null)
+                {
+                    // Try primary key (sourceColumn), then fallback to logical name
+                    if (!existingColumnMetadata.TryGetValue(col.SourceColumn, out existingCol))
+                    {
+                        existingColumnMetadata.TryGetValue($"logicalcol:{col.LogicalName}", out existingCol);
+                    }
+                }
 
                 // Preserve user formatting if data type hasn't changed
                 if (existingCol != null && existingCol.DataType == dataType)
@@ -4510,7 +4574,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                 {
                     sb.AppendLine($"\t\tisKey");
                 }
-                sb.AppendLine($"\t\tlineageTag: {GetOrNewLineageTag(existingLineageTags, $"col:{col.SourceColumn}")}");
+                sb.AppendLine($"\t\tlineageTag: {GetOrNewLineageTag(existingLineageTags, $"col:{col.SourceColumn}", $"logicalcol:{col.LogicalName}")}");
                 if (col.IsRowLabel)
                 {
                     sb.AppendLine($"\t\tisDefaultLabel");
@@ -4524,6 +4588,12 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                     sb.AppendLine();
                 }
                 sb.AppendLine($"\t\tannotation SummarizationSetBy = Automatic");
+                // Stable logical name annotation for lineage preservation across display name renames
+                if (!string.IsNullOrEmpty(col.LogicalName))
+                {
+                    sb.AppendLine();
+                    sb.AppendLine($"\t\tannotation DataverseToPowerBI_LogicalName = {col.LogicalName}");
+                }
                 if (isDateTime)
                 {
                     sb.AppendLine();

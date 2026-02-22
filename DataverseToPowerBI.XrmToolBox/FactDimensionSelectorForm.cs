@@ -530,37 +530,30 @@ namespace DataverseToPowerBI.XrmToolBox
                     LoadOneToManyRelationships();
                 }
 
-                // Restore snowflake relationships (level 1: dimension → parent)
+                // Restore snowflake relationships using stored SnowflakeLevel
                 var factLookupTargets = lookups
                     .Where(l => l.Targets != null)
                     .SelectMany(l => l.Targets)
                     .Distinct(StringComparer.OrdinalIgnoreCase)
                     .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-                var snowflakeRels = _currentRelationships
-                    .Where(r => r.IsSnowflake && factLookupTargets.Contains(r.SourceTable))
+                var allSnowflakeRels = _currentRelationships
+                    .Where(r => r.IsSnowflake)
+                    .OrderBy(r => r.SnowflakeLevel)
                     .ToList();
 
-                foreach (var snowflakeRel in snowflakeRels)
+                foreach (var snowflakeRel in allSnowflakeRels)
                 {
-                    AddSnowflakeRelationshipToList(snowflakeRel, 1);
+                    var level = snowflakeRel.SnowflakeLevel;
+                    if (level == 0)
+                    {
+                        // Legacy fallback: derive from topology
+                        level = factLookupTargets.Contains(snowflakeRel.SourceTable) ? 1 : 2;
+                    }
+                    AddSnowflakeRelationshipToList(snowflakeRel, level);
                 }
 
-                // Restore double-snowflake relationships (level 2: parent → grandparent)
-                var level1Targets = snowflakeRels
-                    .Select(r => r.TargetTable)
-                    .ToHashSet(StringComparer.OrdinalIgnoreCase);
-
-                var doubleSnowflakeRels = _currentRelationships
-                    .Where(r => r.IsSnowflake && level1Targets.Contains(r.SourceTable))
-                    .ToList();
-
-                foreach (var doubleSnowflakeRel in doubleSnowflakeRels)
-                {
-                    AddSnowflakeRelationshipToList(doubleSnowflakeRel, 2);
-                }
-
-                var totalSnowflake = snowflakeRels.Count + doubleSnowflakeRels.Count;
+                var totalSnowflake = allSnowflakeRels.Count;
                 var totalLookups = lookups.Count + totalSnowflake;
                 lblStatus.Text = totalSnowflake > 0
                     ? $"Found {lookups.Count} lookup fields on {SelectedFactTable.DisplayName} + {totalSnowflake} snowflake relationship(s)."
@@ -1128,7 +1121,7 @@ namespace DataverseToPowerBI.XrmToolBox
             // Update Type column with snowflake level indicators
             string baseType;
             if (config.SnowflakeLevel >= 2)
-                baseType = "\u2744\u2744 Snowflake";
+                baseType = "\u2744\u2744 Snowflake2";
             else if (config.SnowflakeLevel == 1)
                 baseType = "\u2744 Snowflake";
             else
@@ -1321,7 +1314,7 @@ namespace DataverseToPowerBI.XrmToolBox
 
             var relationshipDisplayName = rel.DisplayName ?? rel.SourceAttribute ?? "";
 
-            var snowflakeTypeText = snowflakeLevel >= 2 ? "\u2744\u2744 Snowflake" : "\u2744 Snowflake";
+            var snowflakeTypeText = snowflakeLevel >= 2 ? "\u2744\u2744 Snowflake2" : "\u2744 Snowflake";
             var sourceDisplayName = GetTableDisplayName(rel.SourceTable);
             var item = new ListViewItem("");
             item.Checked = true;

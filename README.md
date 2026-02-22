@@ -32,6 +32,7 @@ This tool eliminates all of that complexity:
 ## 📑 Table of Contents
 
 - [Key Features](#-key-features)
+- [Latest Changes](#-latest-changes)
 - [Understanding Star-Schema Design](docs/star-schema.md)
 - [Getting Started](#-getting-started)
 - [Storage Modes](#-storage-modes)
@@ -59,8 +60,10 @@ This tool eliminates all of that complexity:
 | ------- | ------------------- |
 | **Star-Schema Wizard** | Helps you designate fact and dimension tables for optimal performance |
 | **Dual Connection Support** | Choose between **Dataverse TDS** (direct to Dataverse) or **FabricLink** (via Fabric Lakehouse) — see [Connection Modes](#-connection-modes-tds-vs-fabriclink) |
-| **Storage Mode Control** | DirectQuery, Import, or Dual — set globally or per-table. See [Storage Modes](#-storage-modes) |
+| **Storage Mode Control** | DirectQuery, Import, Dual (All), or Dual (Select) — set globally or per-table. See [Storage Modes](#-storage-modes) |
 | **Smart Column Selection** | Uses your Dataverse forms and views to include only relevant fields |
+| **Lookup Sub-Column Controls** | Per-lookup Include/Hidden toggles for ID/Name and polymorphic Type/Yomi (Owner/Customer), with smart defaults tied to relationship usage |
+| **Collapsible Lookup Groups** | Lookup attributes render as expandable groups so sub-columns are easy to inspect without clutter |
 | **Friendly Field Names** | Automatically renames columns to their display names (no more "cai_accountid"!) |
 | **Display Name Customization** | Override display names per-attribute with inline double-click editing; automatic conflict detection prevents duplicate names |
 | **TMDL Preview** | See the exact TMDL code that will be generated before building, with copy/save capabilities for individual tables or entire model |
@@ -72,6 +75,12 @@ This tool eliminates all of that complexity:
 | **Change Preview** | TreeView-based change preview with impact analysis (Safe/Additive/Moderate/Destructive) before applying any changes |
 | **Expand Lookups** | Denormalize fields from related tables directly into a parent table's query — no extra dimension needed |
 | **Configuration Management** | Save, load, export, and import model configurations; CSV documentation export for review |
+
+---
+
+## 📌 Latest Changes
+
+For the most up-to-date release details, see [CHANGELOG.md](CHANGELOG.md).
 
 ---
 
@@ -113,12 +122,30 @@ This tool eliminates all of that complexity:
 #### Step 5: Choose your Dimension Tables
 
 - The tool will show all lookup relationships from your fact table
+- The selector includes a **Source Table** column so you can see where each relationship originates
+
+> **[SCREENSHOT PLACEHOLDER: SS-01]** Relationship selector showing the **Source Table** column and grouped relationships.
+> 
+> **Include in screenshot:** Source Table column visible, grouped relationship headers, and checked/unchecked examples.
+>
+> ![SS-01 TODO: Source Table and grouped relationships](TODO_IMAGE_URL_SS01)
+> *SS-01: Relationship selector with Source Table context and grouped relationships.*
+
 - Check which dimensions to include
 - **Multiple relationships to the same dimension** are automatically grouped together with a visual header for easy identification
 - **Only one relationship can be active** between the Fact and each Dimension—when you check or double-click a relationship, all others to that dimension automatically become "Inactive"
 - Inactive relationships can still be used in DAX with the `USERELATIONSHIP()` function
 - Use the **"Solution tables only"** checkbox (enabled by default) to focus on tables in your solution
 - Use the **Search box** to filter relationships by field or table names
+- If the same target dimension is reachable through multiple active chains, the tool flags **cross-chain ambiguity** and prompts you to resolve it before finishing
+
+> **[SCREENSHOT PLACEHOLDER: SS-02]** Cross-chain ambiguity warning/highlight in the relationship selector.
+> 
+> **Include in screenshot:** Amber/orange ambiguity highlight and the warning prompt shown before finishing.
+>
+> ![SS-02 TODO: Cross-chain ambiguity warning](TODO_IMAGE_URL_SS02)
+> *SS-02: Cross-chain ambiguity highlight and finish-time warning prompt.*
+
 - Optionally add "snowflake" parent dimensions if needed
 - **Tip:** Start with only a few tables to optimize performance.
 - **Finish Selection** when you're done.
@@ -131,6 +158,16 @@ This tool eliminates all of that complexity:
 - The **form** determines which columns are selected by default to appear in your model
 - The **view** determines which rows are included (filtering data to current data helps improve performance.)
 - Check/Uncheck Attributes in the right column to include/exclude fields from the query.
+- Lookup attributes can be expanded into sub-columns with per-sub-column **Include**/**Hidden** toggles.
+- Owner/Customer lookups support additional **Type** and **Yomi** sub-columns.
+
+> **[SCREENSHOT PLACEHOLDER: SS-03]** Expanded lookup sub-column controls in the attributes grid.
+> 
+> **Include in screenshot:** Lookup group expanded with ID/Name/Type/Yomi rows and Include/Hidden toggle states.
+>
+> ![SS-03 TODO: Expanded lookup sub-column controls](TODO_IMAGE_URL_SS03)
+> *SS-03: Expanded lookup sub-column controls (ID/Name/Type/Yomi) with Include/Hidden states.*
+
 - **Double-click any Display Name** to override it with a custom alias (e.g., rename "Name" to "Account Name" to avoid conflicts)
 - Overridden names show an asterisk (*) suffix; duplicates are highlighted in red and must be fixed before building
 - **Tip:** Start with only the needed columns to optimize performance.
@@ -185,13 +222,14 @@ This tool eliminates all of that complexity:
 
 ## ⚡ Storage Modes
 
-The tool supports three storage modes that control how Power BI accesses your Dataverse data. You can set the mode globally or override it per-table.
+The tool supports four storage modes that control how Power BI accesses your Dataverse data. You can set the mode globally or override it per-table.
 
 | Mode | Description | Best For |
 |------|-------------|----------|
 | **DirectQuery** (default) | All queries go live to Dataverse — always up-to-date, no refresh needed | Real-time dashboards, smaller datasets, row-level security |
 | **Import** | Data is cached locally in Power BI — fast performance but requires scheduled refresh | Large lookup tables, offline analysis, complex calculations |
-| **Dual** | Tables available in both DirectQuery and Import — Power BI chooses the best mode per query | Dimension tables that benefit from caching while fact tables stay live |
+| **Dual (All)** | Fact tables stay DirectQuery; all dimensions use Dual mode | Fast dimension slicing while preserving live fact-table querying |
+| **Dual (Select)** | Fact tables stay DirectQuery; selected dimensions use Dual mode | Fine-grained optimization for only the dimensions that benefit from caching |
 
 ### Per-Table Storage Mode
 
@@ -199,6 +237,13 @@ When using **Dual** mode, you can configure individual dimension tables with dif
 
 - **Dual (All)** — All dimension tables use Dual mode, fact tables stay DirectQuery
 - **Dual (Select)** — Choose which dimension tables use Dual mode; unselected dimensions stay DirectQuery
+
+> **[SCREENSHOT PLACEHOLDER: SS-04]** Storage mode configuration showing **Dual (All)** vs **Dual (Select)**.
+> 
+> **Include in screenshot:** Semantic model list/details with storage mode values and one example of per-table mode differences.
+>
+> ![SS-04 TODO: Dual All vs Dual Select storage modes](TODO_IMAGE_URL_SS04)
+> *SS-04: Storage mode configuration with Dual (All) and Dual (Select) examples.*
 
 This is ideal when you have some large dimension tables (like Product or Account) that benefit from Import caching, while smaller or frequently-changing dimensions should stay DirectQuery.
 
@@ -272,11 +317,13 @@ All relationships are correctly configured as Many-to-One from fact to dimension
 When multiple lookup fields point to the same dimension table (e.g., "Primary Contact," "Secondary Contact," and "Responsible Contact" all referencing the Contact table), the tool helps you manage them intelligently:
 
 - **Visual Grouping**: Relationships are grouped under headers like "Contact (Multiple Relationships)" for easy identification
+- **Source Context**: A dedicated **Source Table** column makes relationship origin clear when snowflake paths introduce multiple sources
 - **Smart Selection**: Checking any relationship automatically marks ALL other relationships to that dimension as "Inactive"
 - **Active by Default**: All relationships start as "Active" for clarity—you choose which one to keep active
 - **Double-Click Toggle**: Double-click any relationship to toggle its Active/Inactive status
 - **Automatic Conflict Prevention**: When you activate one relationship, all others to that dimension become inactive automatically (even unchecked ones)
 - **Conflict Detection**: Red highlighting appears if multiple ACTIVE relationships exist to the same dimension—you must resolve these before building
+- **Cross-Chain Ambiguity Detection**: Amber/orange warnings highlight dimensions reachable through multiple active paths from different sources, with a finish-time prompt to resolve ambiguity
 - **Visual Clarity**: Inactive relationships show "(Inactive)" in the Type column with white background; active conflicts show red background
 
 This ensures your model always has exactly one active relationship per dimension pair, while preserving inactive relationships for use with the DAX `USERELATIONSHIP()` function.
@@ -329,7 +376,7 @@ Uses **Microsoft Fabric Link for Dataverse** — data is synced to a Fabric Lake
 
 > **FabricLink queries** automatically JOIN to `OptionsetMetadata` / `GlobalOptionsetMetadata` and `StatusMetadata` tables for human-readable choice labels and status values. TDS mode uses virtual "name" attributes for the same purpose.
 >
-> **Multi-select choice fix (v1.2026.5.57):** FabricLink multi-select label resolution now splits values on semicolons (`;`) and uses the attribute logical name for `OptionSetName` in metadata joins.
+> **Multi-select choices in FabricLink:** Label resolution splits values on semicolons (`;`) and uses the attribute logical name for `OptionSetName` in metadata joins.
 
 ---
 
@@ -496,6 +543,13 @@ Before applying any changes, the tool shows a detailed preview of exactly what w
 - **Filter toggles** — Show/hide Warnings, New, Updated, or Preserved items
 - **Detail pane** — Click any change to see expanded context, before/after values, and guidance
 
+> **[SCREENSHOT PLACEHOLDER: SS-05]** Change Preview dialog with TreeView and detail pane.
+> 
+> **Include in screenshot:** Impact badges, grouped TreeView nodes, and right-side detail text for a selected change.
+>
+> ![SS-05 TODO: Change Preview TreeView and detail pane](TODO_IMAGE_URL_SS05)
+> *SS-05: Change Preview with grouped TreeView, impact badges, and detail pane.*
+
 ### Impact Levels
 
 | Level | Meaning | Examples |
@@ -580,7 +634,7 @@ When you rebuild an existing model, the tool performs an **incremental update** 
 
 ### Q: Multi-select choice labels look wrong in FabricLink mode. What should I check?
 
-**A:** First, update to **v1.2026.5.57** or later. That release fixes FabricLink multi-select label joins to split values on semicolons (`;`) and use the attribute logical name for `OptionSetName` in metadata joins.
+**A:** Verify your tool is up to date and rebuild the model. FabricLink multi-select label joins should split values on semicolons (`;`) and use the attribute logical name for `OptionSetName` in metadata joins.
 
 ### Q: How do I handle many-to-many relationships?
 
