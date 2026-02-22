@@ -1192,7 +1192,6 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                 {
                     var editorSettings = @"{
   ""$schema"": ""https://developer.microsoft.com/json-schemas/fabric/item/semanticModel/editorSettings/1.0.0/schema.json"",
-  ""version"": ""1.0"",
   ""autodetectRelationships"": false,
   ""relationshipImportEnabled"": false,
   ""parallelQueryLoading"": true,
