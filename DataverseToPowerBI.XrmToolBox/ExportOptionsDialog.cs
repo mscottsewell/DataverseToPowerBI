@@ -300,6 +300,7 @@ namespace DataverseToPowerBI.XrmToolBox
         /// <summary>
         /// Exports the model configuration as CSV files in the specified folder.
         /// Creates: Tables.csv, Attributes.csv, Relationships.csv, and optionally ExpandedLookups.csv.
+        /// Writes to temporary files first, then atomically moves them to the final paths.
         /// </summary>
         public static void ExportAsCsv(SemanticModelConfig model, string folderPath)
         {
@@ -309,83 +310,131 @@ namespace DataverseToPowerBI.XrmToolBox
 
             Directory.CreateDirectory(folderPath);
 
-            // Tables.csv
-            var sb = new StringBuilder();
-            sb.AppendLine("Logical Name,Display Name,Schema Name,Role,Storage Mode,Form ID,View ID");
-            foreach (var tableName in settings.SelectedTableNames.OrderBy(t => t))
+            var tempFiles = new List<string>();
+            try
             {
-                var info = displayInfo.ContainsKey(tableName) ? displayInfo[tableName] : null;
-                var role = tableName.Equals(settings.FactTable, StringComparison.OrdinalIgnoreCase) ? "Fact" : "Dimension";
-                var storageMode = settings.TableStorageModes != null && settings.TableStorageModes.ContainsKey(tableName)
-                    ? settings.TableStorageModes[tableName] : "";
-                var formId = settings.SelectedFormIds.ContainsKey(tableName) ? settings.SelectedFormIds[tableName] : "";
-                var viewId = settings.SelectedViewIds.ContainsKey(tableName) ? settings.SelectedViewIds[tableName] : "";
-
-                sb.AppendLine($"{CsvEscape(tableName)},{CsvEscape(info?.DisplayName ?? "")},{CsvEscape(info?.SchemaName ?? "")},{role},{CsvEscape(storageMode)},{CsvEscape(formId)},{CsvEscape(viewId)}");
-            }
-            File.WriteAllText(Path.Combine(folderPath, "Tables.csv"), sb.ToString(), Encoding.UTF8);
-
-            // Attributes.csv
-            sb.Clear();
-            sb.AppendLine("Table,Attribute Logical Name,Display Name Override,Attribute Type");
-            foreach (var tableName in settings.SelectedTableNames.OrderBy(t => t))
-            {
-                var attrs = settings.SelectedAttributes.ContainsKey(tableName)
-                    ? settings.SelectedAttributes[tableName] : new List<string>();
-                var tableOverrides = overrides.ContainsKey(tableName) ? overrides[tableName] : new Dictionary<string, string>();
-
-                foreach (var attr in attrs.OrderBy(a => a))
+                // Tables.csv
+                var sb = new StringBuilder();
+                sb.AppendLine("Logical Name,Display Name,Schema Name,Role,Storage Mode,Form ID,View ID");
+                foreach (var tableName in settings.SelectedTableNames.OrderBy(t => t))
                 {
-                    var overrideName = tableOverrides.ContainsKey(attr) ? tableOverrides[attr] : "";
-                    sb.AppendLine($"{CsvEscape(tableName)},{CsvEscape(attr)},{CsvEscape(overrideName)},");
+                    var info = displayInfo.ContainsKey(tableName) ? displayInfo[tableName] : null;
+                    var role = tableName.Equals(settings.FactTable, StringComparison.OrdinalIgnoreCase) ? "Fact" : "Dimension";
+                    var storageMode = settings.TableStorageModes != null && settings.TableStorageModes.ContainsKey(tableName)
+                        ? settings.TableStorageModes[tableName] : "";
+                    var formId = settings.SelectedFormIds.ContainsKey(tableName) ? settings.SelectedFormIds[tableName] : "";
+                    var viewId = settings.SelectedViewIds.ContainsKey(tableName) ? settings.SelectedViewIds[tableName] : "";
+
+                    sb.AppendLine($"{CsvEscape(tableName)},{CsvEscape(info?.DisplayName ?? "")},{CsvEscape(info?.SchemaName ?? "")},{role},{CsvEscape(storageMode)},{CsvEscape(formId)},{CsvEscape(viewId)}");
                 }
-            }
-            File.WriteAllText(Path.Combine(folderPath, "Attributes.csv"), sb.ToString(), Encoding.UTF8);
+                WriteToTempThenMove(Path.Combine(folderPath, "Tables.csv"), sb.ToString(), tempFiles);
 
-            // Relationships.csv
-            sb.Clear();
-            sb.AppendLine("Source Table,Source Attribute,Target Table,Active,Snowflake,Snowflake Level,Referential Integrity");
-            foreach (var rel in settings.Relationships.OrderBy(r => r.SourceTable).ThenBy(r => r.SourceAttribute))
-            {
-                sb.AppendLine($"{CsvEscape(rel.SourceTable ?? "")},{CsvEscape(rel.SourceAttribute ?? "")},{CsvEscape(rel.TargetTable ?? "")},{rel.IsActive},{rel.IsSnowflake},{rel.SnowflakeLevel},{rel.AssumeReferentialIntegrity}");
-            }
-            File.WriteAllText(Path.Combine(folderPath, "Relationships.csv"), sb.ToString(), Encoding.UTF8);
-
-            // ExpandedLookups.csv (only if any exist)
-            if (settings.ExpandedLookups != null && settings.ExpandedLookups.Count > 0)
-            {
+                // Attributes.csv
                 sb.Clear();
-                sb.AppendLine("Source Table,Lookup Attribute,Target Table,Target Display Name,Expanded Attribute,Attribute Display Name,Attribute Type");
-                foreach (var kvp in settings.ExpandedLookups.OrderBy(kv => kv.Key))
+                sb.AppendLine("Table,Attribute Logical Name,Display Name Override,Attribute Type");
+                foreach (var tableName in settings.SelectedTableNames.OrderBy(t => t))
                 {
-                    foreach (var expand in kvp.Value)
+                    var attrs = settings.SelectedAttributes.ContainsKey(tableName)
+                        ? settings.SelectedAttributes[tableName] : new List<string>();
+                    var tableOverrides = overrides.ContainsKey(tableName) ? overrides[tableName] : new Dictionary<string, string>();
+
+                    foreach (var attr in attrs.OrderBy(a => a))
                     {
-                        foreach (var attr in expand.Attributes.OrderBy(a => a.LogicalName))
-                        {
-                            sb.AppendLine($"{CsvEscape(kvp.Key)},{CsvEscape(expand.LookupAttributeName)},{CsvEscape(expand.TargetTableLogicalName)},{CsvEscape(expand.TargetTableDisplayName ?? "")},{CsvEscape(attr.LogicalName)},{CsvEscape(attr.DisplayName ?? "")},{CsvEscape(attr.AttributeType ?? "")}");
-                        }
+                        var overrideName = tableOverrides.ContainsKey(attr) ? tableOverrides[attr] : "";
+                        sb.AppendLine($"{CsvEscape(tableName)},{CsvEscape(attr)},{CsvEscape(overrideName)},");
                     }
                 }
-                File.WriteAllText(Path.Combine(folderPath, "ExpandedLookups.csv"), sb.ToString(), Encoding.UTF8);
-            }
+                WriteToTempThenMove(Path.Combine(folderPath, "Attributes.csv"), sb.ToString(), tempFiles);
 
-            // Summary.csv - model-level metadata
-            sb.Clear();
-            sb.AppendLine("Property,Value");
-            sb.AppendLine($"Model Name,{CsvEscape(model.Name)}");
-            sb.AppendLine($"Environment URL,{CsvEscape(model.DataverseUrl)}");
-            sb.AppendLine($"Connection Type,{CsvEscape(model.ConnectionType)}");
-            sb.AppendLine($"Storage Mode,{CsvEscape(model.StorageMode)}");
-            sb.AppendLine($"Use Display Name Aliases,{model.UseDisplayNameAliasesInSql}");
-            sb.AppendLine($"Language Code,{settings.LanguageCode}");
-            sb.AppendLine($"Total Tables,{settings.SelectedTableNames.Count}");
-            sb.AppendLine($"Total Relationships,{settings.Relationships.Count}");
-            if (!string.IsNullOrEmpty(model.FabricLinkSQLEndpoint))
-                sb.AppendLine($"Fabric SQL Endpoint,{CsvEscape(model.FabricLinkSQLEndpoint)}");
-            if (!string.IsNullOrEmpty(model.FabricLinkSQLDatabase))
-                sb.AppendLine($"Fabric SQL Database,{CsvEscape(model.FabricLinkSQLDatabase)}");
-            sb.AppendLine($"Exported,{DateTime.Now:yyyy-MM-dd HH:mm:ss}");
-            File.WriteAllText(Path.Combine(folderPath, "Summary.csv"), sb.ToString(), Encoding.UTF8);
+                // Relationships.csv
+                sb.Clear();
+                sb.AppendLine("Source Table,Source Attribute,Target Table,Active,Snowflake,Snowflake Level,Referential Integrity");
+                foreach (var rel in settings.Relationships.OrderBy(r => r.SourceTable).ThenBy(r => r.SourceAttribute))
+                {
+                    sb.AppendLine($"{CsvEscape(rel.SourceTable ?? "")},{CsvEscape(rel.SourceAttribute ?? "")},{CsvEscape(rel.TargetTable ?? "")},{rel.IsActive},{rel.IsSnowflake},{rel.SnowflakeLevel},{rel.AssumeReferentialIntegrity}");
+                }
+                WriteToTempThenMove(Path.Combine(folderPath, "Relationships.csv"), sb.ToString(), tempFiles);
+
+                // ExpandedLookups.csv (only if any exist)
+                if (settings.ExpandedLookups != null && settings.ExpandedLookups.Count > 0)
+                {
+                    sb.Clear();
+                    sb.AppendLine("Source Table,Lookup Attribute,Target Table,Target Display Name,Expanded Attribute,Attribute Display Name,Attribute Type");
+                    foreach (var kvp in settings.ExpandedLookups.OrderBy(kv => kv.Key))
+                    {
+                        foreach (var expand in kvp.Value)
+                        {
+                            foreach (var attr in expand.Attributes.OrderBy(a => a.LogicalName))
+                            {
+                                sb.AppendLine($"{CsvEscape(kvp.Key)},{CsvEscape(expand.LookupAttributeName)},{CsvEscape(expand.TargetTableLogicalName)},{CsvEscape(expand.TargetTableDisplayName ?? "")},{CsvEscape(attr.LogicalName)},{CsvEscape(attr.DisplayName ?? "")},{CsvEscape(attr.AttributeType ?? "")}");
+                            }
+                        }
+                    }
+                    WriteToTempThenMove(Path.Combine(folderPath, "ExpandedLookups.csv"), sb.ToString(), tempFiles);
+                }
+
+                // Summary.csv - model-level metadata
+                sb.Clear();
+                sb.AppendLine("Property,Value");
+                sb.AppendLine($"Model Name,{CsvEscape(model.Name)}");
+                sb.AppendLine($"Environment URL,{CsvEscape(model.DataverseUrl)}");
+                sb.AppendLine($"Connection Type,{CsvEscape(model.ConnectionType)}");
+                sb.AppendLine($"Storage Mode,{CsvEscape(model.StorageMode)}");
+                sb.AppendLine($"Use Display Name Aliases,{model.UseDisplayNameAliasesInSql}");
+                sb.AppendLine($"Language Code,{settings.LanguageCode}");
+                sb.AppendLine($"Total Tables,{settings.SelectedTableNames.Count}");
+                sb.AppendLine($"Total Relationships,{settings.Relationships.Count}");
+                if (!string.IsNullOrEmpty(model.FabricLinkSQLEndpoint))
+                    sb.AppendLine($"Fabric SQL Endpoint,{CsvEscape(model.FabricLinkSQLEndpoint)}");
+                if (!string.IsNullOrEmpty(model.FabricLinkSQLDatabase))
+                    sb.AppendLine($"Fabric SQL Database,{CsvEscape(model.FabricLinkSQLDatabase)}");
+                sb.AppendLine($"Exported,{DateTime.Now:yyyy-MM-dd HH:mm:ss}");
+                WriteToTempThenMove(Path.Combine(folderPath, "Summary.csv"), sb.ToString(), tempFiles);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                CleanupTempFiles(tempFiles);
+                throw new IOException(
+                    $"CSV export failed: access denied writing to '{folderPath}'. " +
+                    $"Check that the folder is not read-only and you have write permissions. Details: {ex.Message}", ex);
+            }
+            catch (IOException ex)
+            {
+                CleanupTempFiles(tempFiles);
+                throw new IOException(
+                    $"CSV export failed: a disk error occurred writing to '{folderPath}'. " +
+                    $"Check available disk space and that no files are locked. Details: {ex.Message}", ex);
+            }
+        }
+
+        /// <summary>
+        /// Writes content to a temporary file, then atomically moves it to the target path.
+        /// Tracks the temp file path for cleanup on failure.
+        /// </summary>
+        private static void WriteToTempThenMove(string targetPath, string content, List<string> tempFiles)
+        {
+            var tempPath = targetPath + ".tmp";
+            tempFiles.Add(tempPath);
+
+            File.WriteAllText(tempPath, content, Encoding.UTF8);
+
+            if (File.Exists(targetPath))
+                File.Delete(targetPath);
+
+            File.Move(tempPath, targetPath);
+            tempFiles.Remove(tempPath);
+        }
+
+        /// <summary>
+        /// Removes any leftover temporary files after a failed export.
+        /// </summary>
+        private static void CleanupTempFiles(List<string> tempFiles)
+        {
+            foreach (var tempFile in tempFiles)
+            {
+                try { if (File.Exists(tempFile)) File.Delete(tempFile); }
+                catch { /* Best-effort cleanup */ }
+            }
         }
 
         /// <summary>

@@ -53,6 +53,7 @@ namespace DataverseToPowerBI.XrmToolBox
         private Label lblFactTable = null!;
         
         private List<TableInfo> _allTables;
+        private List<ListViewItem> _allListViewItems = new List<ListViewItem>();
         
         public List<TableInfo> SelectedTables { get; private set; } = new List<TableInfo>();
         public string FactTable { get; private set; }
@@ -160,31 +161,47 @@ namespace DataverseToPowerBI.XrmToolBox
             
             if (cboFactTable.SelectedIndex < 0)
                 cboFactTable.SelectedIndex = 0;
+            
+            _allListViewItems = listViewTables.Items.Cast<ListViewItem>().ToList();
         }
         
+        /// <summary>
+        /// Filters the ListView to show only tables matching the search text.
+        /// Rebuilds the Items collection from the cached full list.
+        /// </summary>
         private void FilterTables()
         {
             var search = txtSearch.Text.ToLower();
             listViewTables.BeginUpdate();
             
-            foreach (ListViewItem item in listViewTables.Items)
+            try
             {
-                var table = item.Tag as TableInfo;
-                if (table == null) continue;
+                listViewTables.Items.Clear();
                 
-                var matches = string.IsNullOrEmpty(search) ||
-                    (table.DisplayName?.ToLower().Contains(search) == true) ||
-                    table.LogicalName.ToLower().Contains(search);
-                
-                // Note: ListView doesn't support hiding items, so we use Groups or just skip filtering for simplicity
+                foreach (var item in _allListViewItems)
+                {
+                    var table = item.Tag as TableInfo;
+                    if (table == null) continue;
+                    
+                    var matches = string.IsNullOrEmpty(search) ||
+                        (table.DisplayName?.ToLower().Contains(search) == true) ||
+                        table.LogicalName.ToLower().Contains(search);
+                    
+                    if (matches)
+                    {
+                        listViewTables.Items.Add(item);
+                    }
+                }
             }
-            
-            listViewTables.EndUpdate();
+            finally
+            {
+                listViewTables.EndUpdate();
+            }
         }
         
         private void BtnOk_Click(object sender, EventArgs e)
         {
-            SelectedTables = listViewTables.Items.Cast<ListViewItem>()
+            SelectedTables = _allListViewItems
                 .Where(i => i.Checked)
                 .Select(i => i.Tag as TableInfo)
                 .Where(t => t != null)

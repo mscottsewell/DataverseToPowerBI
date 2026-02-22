@@ -141,6 +141,8 @@ namespace DataverseToPowerBI.XrmToolBox
         private List<TableInfo> _solutionTables = new List<TableInfo>();
         
         private bool _isLoading = false;
+        private int _operationVersion = 0;
+        private bool _isLoadingMetadata = false;
         
         public PluginControl()
         {
@@ -311,6 +313,11 @@ namespace DataverseToPowerBI.XrmToolBox
             
             var detail = ConnectionDetail;
             var environmentUrl = detail.WebApplicationUrl ?? detail.OrganizationServiceUrl;
+            if (string.IsNullOrEmpty(environmentUrl))
+            {
+                SetWorkingMessage("Unable to determine environment URL from connection details.");
+                return;
+            }
             _currentEnvironmentUrl = NormalizeUrl(environmentUrl);
             _xrmAdapter = new XrmServiceAdapterImpl(Service, environmentUrl);
 
@@ -343,6 +350,7 @@ namespace DataverseToPowerBI.XrmToolBox
         public override void UpdateConnection(IOrganizationService newService, ConnectionDetail detail, string actionName, object parameter)
         {
             base.UpdateConnection(newService, detail, actionName, parameter);
+            _operationVersion++;
 
             if (newService != null && detail != null)
             {
@@ -604,6 +612,7 @@ namespace DataverseToPowerBI.XrmToolBox
         
         private void LoadSemanticModel(SemanticModelConfig model)
         {
+            _operationVersion++;
             _currentModel = model;
             _modelManager.SetCurrentModel(model.Name);
             
@@ -1182,6 +1191,8 @@ namespace DataverseToPowerBI.XrmToolBox
             if (_xrmAdapter == null || _selectedTables.Count == 0) return;
 
             var tablesToLoad = _selectedTables.Keys.ToList();
+            var capturedVersion = _operationVersion;
+            _isLoadingMetadata = true;
             
             WorkAsync(new WorkAsyncInfo
             {
@@ -1263,6 +1274,9 @@ namespace DataverseToPowerBI.XrmToolBox
                 },
                 PostWorkCallBack = (args) =>
                 {
+                    _isLoadingMetadata = false;
+                    if (capturedVersion != _operationVersion) return; // stale callback
+                    
                     if (args.Error != null)
                     {
                         MessageBox.Show($"Error: {args.Error.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1456,6 +1470,8 @@ namespace DataverseToPowerBI.XrmToolBox
             if (_xrmAdapter == null || _selectedTables.Count == 0) return;
 
             var tablesToLoad = _selectedTables.Keys.ToList();
+            var capturedVersion = _operationVersion;
+            _isLoadingMetadata = true;
             
             WorkAsync(new WorkAsyncInfo
             {
@@ -1496,6 +1512,9 @@ namespace DataverseToPowerBI.XrmToolBox
                 },
                 PostWorkCallBack = (args) =>
                 {
+                    _isLoadingMetadata = false;
+                    if (capturedVersion != _operationVersion) return; // stale callback
+                    
                     if (args.Error != null)
                     {
                         MessageBox.Show($"Error: {args.Error.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -4034,6 +4053,13 @@ namespace DataverseToPowerBI.XrmToolBox
         
         private void BtnBuildSemanticModel_Click(object sender, EventArgs e)
         {
+            if (_isLoadingMetadata)
+            {
+                MessageBox.Show("Please wait for metadata loading to complete before building.",
+                    "Loading In Progress", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+            
             if (_selectedTables.Count == 0)
             {
                 MessageBox.Show("Please select tables first.", "No Tables", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -4289,8 +4315,11 @@ namespace DataverseToPowerBI.XrmToolBox
                 return table;
             }).ToList();
             
-            // Build export relationships
-            var exportRelationships = _relationships.Select(r => new ExportRelationship
+            // Build export relationships (filter out stale entries referencing deselected tables)
+            var validRelationships = _relationships
+                .Where(r => _selectedTables.ContainsKey(r.SourceTable) && _selectedTables.ContainsKey(r.TargetTable))
+                .ToList();
+            var exportRelationships = validRelationships.Select(r => new ExportRelationship
             {
                 SourceTable = r.SourceTable,
                 SourceAttribute = r.SourceAttribute,
@@ -4600,6 +4629,13 @@ namespace DataverseToPowerBI.XrmToolBox
 
         private void BtnPreviewTmdl_Click(object sender, EventArgs e)
         {
+            if (_isLoadingMetadata)
+            {
+                MessageBox.Show("Please wait for metadata loading to complete before building.",
+                    "Loading In Progress", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+            
             if (_selectedTables.Count == 0)
             {
                 MessageBox.Show("Please select tables first.", "No Tables", MessageBoxButtons.OK, MessageBoxIcon.Warning);

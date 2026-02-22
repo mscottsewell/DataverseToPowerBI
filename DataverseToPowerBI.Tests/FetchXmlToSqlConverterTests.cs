@@ -20,7 +20,7 @@ namespace DataverseToPowerBI.Tests
         {
             var xml = @"<fetch><entity name=""account""><filter><condition attribute=""name"" operator=""eq"" value=""test"" /></filter></entity></fetch>";
             var result = new FetchXmlToSqlConverter().ConvertToWhereClause(xml);
-            Assert.Contains("Base.name = 'test'", result.SqlWhereClause);
+            Assert.Contains("[Base].[name] = 'test'", result.SqlWhereClause);
             Assert.True(result.IsFullySupported);
         }
 
@@ -29,7 +29,7 @@ namespace DataverseToPowerBI.Tests
         {
             var xml = @"<fetch><entity name=""account""><filter><condition attribute=""name"" operator=""ne"" value=""test"" /></filter></entity></fetch>";
             var result = new FetchXmlToSqlConverter().ConvertToWhereClause(xml);
-            Assert.Contains("Base.name <> 'test'", result.SqlWhereClause);
+            Assert.Contains("[Base].[name] <> 'test'", result.SqlWhereClause);
         }
 
         [Fact]
@@ -37,7 +37,7 @@ namespace DataverseToPowerBI.Tests
         {
             var xml = @"<fetch><entity name=""account""><filter><condition attribute=""revenue"" operator=""gt"" value=""1000"" /></filter></entity></fetch>";
             var result = new FetchXmlToSqlConverter().ConvertToWhereClause(xml);
-            Assert.Contains("Base.revenue > 1000", result.SqlWhereClause);
+            Assert.Contains("[Base].[revenue] > 1000", result.SqlWhereClause);
         }
 
         [Fact]
@@ -45,7 +45,7 @@ namespace DataverseToPowerBI.Tests
         {
             var xml = @"<fetch><entity name=""account""><filter><condition attribute=""statecode"" operator=""eq"" value=""0"" /></filter></entity></fetch>";
             var result = new FetchXmlToSqlConverter().ConvertToWhereClause(xml);
-            Assert.Contains("Base.statecode = 0", result.SqlWhereClause);
+            Assert.Contains("[Base].[statecode] = 0", result.SqlWhereClause);
         }
 
         [Fact]
@@ -53,7 +53,7 @@ namespace DataverseToPowerBI.Tests
         {
             var xml = @"<fetch><entity name=""account""><filter><condition attribute=""accountid"" operator=""eq"" value=""12345678-1234-1234-1234-123456789012"" /></filter></entity></fetch>";
             var result = new FetchXmlToSqlConverter().ConvertToWhereClause(xml);
-            Assert.Contains("Base.accountid = '12345678-1234-1234-1234-123456789012'", result.SqlWhereClause);
+            Assert.Contains("[Base].[accountid] = '12345678-1234-1234-1234-123456789012'", result.SqlWhereClause);
         }
 
         #endregion
@@ -65,7 +65,7 @@ namespace DataverseToPowerBI.Tests
         {
             var xml = @"<fetch><entity name=""account""><filter><condition attribute=""name"" operator=""null"" /></filter></entity></fetch>";
             var result = new FetchXmlToSqlConverter().ConvertToWhereClause(xml);
-            Assert.Contains("Base.name IS NULL", result.SqlWhereClause);
+            Assert.Contains("[Base].[name] IS NULL", result.SqlWhereClause);
         }
 
         [Fact]
@@ -73,7 +73,7 @@ namespace DataverseToPowerBI.Tests
         {
             var xml = @"<fetch><entity name=""account""><filter><condition attribute=""name"" operator=""not-null"" /></filter></entity></fetch>";
             var result = new FetchXmlToSqlConverter().ConvertToWhereClause(xml);
-            Assert.Contains("Base.name IS NOT NULL", result.SqlWhereClause);
+            Assert.Contains("[Base].[name] IS NOT NULL", result.SqlWhereClause);
         }
 
         #endregion
@@ -85,7 +85,7 @@ namespace DataverseToPowerBI.Tests
         {
             var xml = @"<fetch><entity name=""account""><filter><condition attribute=""name"" operator=""begins-with"" value=""Contoso"" /></filter></entity></fetch>";
             var result = new FetchXmlToSqlConverter().ConvertToWhereClause(xml);
-            Assert.Contains("Base.name LIKE 'Contoso%'", result.SqlWhereClause);
+            Assert.Contains("[Base].[name] LIKE 'Contoso%'", result.SqlWhereClause);
         }
 
         [Fact]
@@ -93,7 +93,7 @@ namespace DataverseToPowerBI.Tests
         {
             var xml = @"<fetch><entity name=""account""><filter><condition attribute=""name"" operator=""ends-with"" value=""Inc"" /></filter></entity></fetch>";
             var result = new FetchXmlToSqlConverter().ConvertToWhereClause(xml);
-            Assert.Contains("Base.name LIKE '%Inc'", result.SqlWhereClause);
+            Assert.Contains("[Base].[name] LIKE '%Inc'", result.SqlWhereClause);
         }
 
         [Fact]
@@ -153,7 +153,7 @@ namespace DataverseToPowerBI.Tests
         {
             var xml = @"<fetch><entity name=""account""><filter><condition attribute=""statecode"" operator=""in""><value>0</value><value>1</value></condition></filter></entity></fetch>";
             var result = new FetchXmlToSqlConverter().ConvertToWhereClause(xml);
-            Assert.Contains("Base.statecode IN (0, 1)", result.SqlWhereClause);
+            Assert.Contains("[Base].[statecode] IN (0, 1)", result.SqlWhereClause);
         }
 
         [Fact]
@@ -161,7 +161,7 @@ namespace DataverseToPowerBI.Tests
         {
             var xml = @"<fetch><entity name=""account""><filter><condition attribute=""statecode"" operator=""not-in""><value>2</value><value>3</value></condition></filter></entity></fetch>";
             var result = new FetchXmlToSqlConverter().ConvertToWhereClause(xml);
-            Assert.Contains("Base.statecode NOT IN (2, 3)", result.SqlWhereClause);
+            Assert.Contains("[Base].[statecode] NOT IN (2, 3)", result.SqlWhereClause);
         }
 
         #endregion
@@ -238,8 +238,57 @@ namespace DataverseToPowerBI.Tests
             </entity></fetch>";
             var result = new FetchXmlToSqlConverter().ConvertToWhereClause(xml);
             Assert.Contains("EXISTS", result.SqlWhereClause);
-            Assert.Contains("SELECT 1 FROM contact", result.SqlWhereClause);
-            Assert.Contains("c.firstname = 'John'", result.SqlWhereClause);
+            Assert.Contains("SELECT 1 FROM [contact]", result.SqlWhereClause);
+            Assert.Contains("[c].[firstname] = 'John'", result.SqlWhereClause);
+        }
+
+        #endregion
+
+        #region SQL Injection Prevention
+
+        [Fact]
+        public void ConvertToWhereClause_AttributeNameWithCloseBracket_EscapesCorrectly()
+        {
+            // Attribute name containing ] should be escaped as ]] via EscapeSqlIdentifier
+            var xml = @"<fetch><entity name=""account""><filter><condition attribute=""test]col"" operator=""eq"" value=""foo"" /></filter></entity></fetch>";
+            var result = new FetchXmlToSqlConverter().ConvertToWhereClause(xml);
+            // The raw ] should not appear unescaped in a column reference
+            Assert.DoesNotContain("[test]col]", result.SqlWhereClause);
+            Assert.Contains("[test]]col]", result.SqlWhereClause);
+        }
+
+        [Fact]
+        public void ConvertToWhereClause_ValueWithSqlInjection_EscapesSingleQuotes()
+        {
+            // Value attempting SQL injection via single-quote breakout
+            var xml = @"<fetch><entity name=""account""><filter><condition attribute=""name"" operator=""eq"" value=""'; DROP TABLE account; --"" /></filter></entity></fetch>";
+            var result = new FetchXmlToSqlConverter().ConvertToWhereClause(xml);
+            // The single quote must be doubled so the injection payload stays inside the string literal
+            Assert.Contains("''", result.SqlWhereClause);
+            // The value must be fully enclosed in quotes — no unescaped single quote should break out
+            Assert.DoesNotContain("= '';", result.SqlWhereClause);
+        }
+
+        #endregion
+
+        #region FabricLink Mode
+
+        [Fact]
+        public void ConvertToWhereClause_FabricLink_SkipsUserContextOperators()
+        {
+            var xml = @"<fetch><entity name=""account""><filter><condition attribute=""ownerid"" operator=""eq-userid"" /></filter></entity></fetch>";
+            var result = new FetchXmlToSqlConverter(utcOffsetHours: 0, isFabricLink: true).ConvertToWhereClause(xml);
+            Assert.False(result.IsFullySupported);
+            Assert.Contains(result.UnsupportedFeatures, f => f.Contains("eq-userid"));
+        }
+
+        [Fact]
+        public void ConvertToWhereClause_FabricLink_BasicFilter_Works()
+        {
+            var xml = @"<fetch><entity name=""account""><filter><condition attribute=""statecode"" operator=""eq"" value=""0"" /></filter></entity></fetch>";
+            var result = new FetchXmlToSqlConverter(utcOffsetHours: 0, isFabricLink: true).ConvertToWhereClause(xml);
+            Assert.True(result.IsFullySupported);
+            Assert.NotEmpty(result.SqlWhereClause);
         }
 
         #endregion
@@ -282,7 +331,7 @@ namespace DataverseToPowerBI.Tests
         {
             var xml = @"<fetch><entity name=""account""><filter><condition attribute=""name"" operator=""eq"" value=""test"" /></filter></entity></fetch>";
             var result = new FetchXmlToSqlConverter().ConvertToWhereClause(xml, "T1");
-            Assert.Contains("T1.name = 'test'", result.SqlWhereClause);
+            Assert.Contains("[T1].[name] = 'test'", result.SqlWhereClause);
         }
 
         #endregion

@@ -88,6 +88,9 @@ namespace DataverseToPowerBI.XrmToolBox
         private WinLabel lblStatus = null!;
         private ProgressBar progressBar = null!;
         
+        // Cached fonts to avoid GDI handle leaks (WinForms does not dispose replaced Fonts)
+        private Font? _boldFont;
+
         // Search and filter state
         private List<ListViewItem> _allRelationshipItems = new List<ListViewItem>();
         private bool _filterSolutionTablesOnly = true;
@@ -126,6 +129,8 @@ namespace DataverseToPowerBI.XrmToolBox
             // Load all entity display names for resolving target tables outside of the solution
             _allEntityDisplayNames = adapter.GetAllEntityDisplayNamesSync(service);
             
+            _boldFont = new Font(this.Font, FontStyle.Bold);
+
             InitializeComponent();
             LoadSolutionDropdown();
             LoadFactTableDropdown();
@@ -178,7 +183,7 @@ namespace DataverseToPowerBI.XrmToolBox
                 Text = "Fact Table:",
                 Location = new Point(10, 50),
                 AutoSize = true,
-                Font = new Font(this.Font, FontStyle.Bold)
+                Font = _boldFont
             };
             this.Controls.Add(lblFactTable);
 
@@ -206,7 +211,7 @@ namespace DataverseToPowerBI.XrmToolBox
                 Text = "Dimension Relationships:",
                 Location = new Point(10, 85),
                 AutoSize = true,
-                Font = new Font(this.Font, FontStyle.Bold)
+                Font = _boldFont
             };
             this.Controls.Add(lblDimensions);
 
@@ -1633,6 +1638,16 @@ namespace DataverseToPowerBI.XrmToolBox
             this.Close();
         }
 
+        /// <inheritdoc />
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _boldFont?.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
         // Internal class for tag data
         private class RelationshipTag
         {
@@ -1664,6 +1679,9 @@ namespace DataverseToPowerBI.XrmToolBox
         private Button btnOK = null!;
         private Button btnCancel = null!;
         
+        // Cached font to avoid GDI handle leaks
+        private Font? _boldFont;
+
         private bool _suppressItemCheckedEvent = false;
 
         public List<ExportRelationship> SelectedRelationships { get; private set; } = new List<ExportRelationship>();
@@ -1678,6 +1696,7 @@ namespace DataverseToPowerBI.XrmToolBox
             _lookups = lookups;
             _allTables = allTables;
             _existingRelationships = existingRelationships;
+            _boldFont = new Font(this.Font, FontStyle.Bold);
             InitializeComponent();
             PopulateList();
         }
@@ -1697,7 +1716,7 @@ namespace DataverseToPowerBI.XrmToolBox
                 Text = $"Dimension: {_dimensionTable.DisplayName} ({_dimensionTable.LogicalName})",
                 Location = new Point(10, 15),
                 AutoSize = true,
-                Font = new Font(this.Font, FontStyle.Bold),
+                Font = _boldFont,
                 ForeColor = Color.DarkBlue
             };
             this.Controls.Add(lblHeader);
@@ -2106,6 +2125,16 @@ namespace DataverseToPowerBI.XrmToolBox
                 IsSnowflake = true,
                 AssumeReferentialIntegrity = c.AssumeReferentialIntegrity
             }).ToList();
+        }
+
+        /// <inheritdoc />
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _boldFont?.Dispose();
+            }
+            base.Dispose(disposing);
         }
 
         private class SnowflakeTag

@@ -310,9 +310,12 @@ namespace DataverseToPowerBI.XrmToolBox
             treeViewChanges.BeginUpdate();
             treeViewChanges.Nodes.Clear();
 
+            // Snapshot to avoid InvalidOperationException if _changes is mutated externally
+            var changesSnapshot = _changes.ToList();
+
             // Count stats from ALL changes (not filtered)
             int warnCount = 0, newCount = 0, updateCount = 0, preserveCount = 0;
-            foreach (var c in _changes)
+            foreach (var c in changesSnapshot)
             {
                 switch (c.ChangeType)
                 {
@@ -335,7 +338,7 @@ namespace DataverseToPowerBI.XrmToolBox
             if (chkShowUpdates.Checked) visibleTypes.Add(ChangeType.Update);
             if (chkShowPreserved.Checked) { visibleTypes.Add(ChangeType.Preserve); visibleTypes.Add(ChangeType.Info); }
 
-            var filtered = _changes.Where(c => visibleTypes.Contains(c.ChangeType)).ToList();
+            var filtered = changesSnapshot.Where(c => visibleTypes.Contains(c.ChangeType)).ToList();
 
             // Group into categories
             var categories = new (string Name, string[] ObjectTypes, int SortOrder)[]

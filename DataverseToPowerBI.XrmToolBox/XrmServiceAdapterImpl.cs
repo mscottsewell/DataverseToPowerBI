@@ -56,6 +56,7 @@ namespace DataverseToPowerBI.XrmToolBox
         private readonly IOrganizationService _service;
         private readonly string _environmentUrl;
         private bool _isConnected;
+        private const int MAX_XML_SIZE_BYTES = 5 * 1024 * 1024; // 5MB
 
         public bool IsConnected => _isConnected;
 
@@ -505,13 +506,18 @@ namespace DataverseToPowerBI.XrmToolBox
                             }
                         }
                         
-                        // If we still haven't found a virtual attribute, fall back to the standard pattern
-                        // This ensures backward compatibility even if the virtual attribute doesn't exist
+                        // If we still haven't found a virtual attribute, only use the standard
+                        // pattern if it actually exists in metadata to avoid referencing non-existent columns
                         if (virtualAttributeName == null)
                         {
-                            virtualAttributeName = standardVirtualName;
-                            // Log when falling back to standard pattern for debugging
-                            System.Diagnostics.Debug.WriteLine($"VirtualAttribute: {logicalName} -> {standardVirtualName} (fallback - virtual attr not found)");
+                            if (allAttributes.ContainsKey(standardVirtualName))
+                            {
+                                virtualAttributeName = standardVirtualName;
+                            }
+                            else
+                            {
+                                Services.DebugLogger.Log($"WARNING: Virtual attribute '{standardVirtualName}' for '{logicalName}' not found in metadata. Skipping virtual attribute.");
+                            }
                         }
                         else if (virtualAttributeName != standardVirtualName)
                         {
@@ -702,10 +708,10 @@ namespace DataverseToPowerBI.XrmToolBox
                     };
                 }));
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex.GetType().Name.Contains("Fault"))
             {
-                // Personal views may not be accessible - log and continue with system views only
-                Services.DebugLogger.Log($"Unable to retrieve personal views: {ex.Message}");
+                // Personal views may not be accessible due to permissions - log and continue with system views only
+                Services.DebugLogger.Log($"Expected error retrieving personal views: {ex}");
             }
 
             return views;
@@ -724,6 +730,12 @@ namespace DataverseToPowerBI.XrmToolBox
             {
                 if (string.IsNullOrWhiteSpace(formXml))
                 {
+                    return fields.ToList();
+                }
+
+                if (formXml!.Length > MAX_XML_SIZE_BYTES)
+                {
+                    Services.DebugLogger.Log($"WARNING: FormXML exceeds {MAX_XML_SIZE_BYTES} bytes ({formXml.Length} bytes). Skipping parse.");
                     return fields.ToList();
                 }
 
@@ -766,6 +778,12 @@ namespace DataverseToPowerBI.XrmToolBox
             {
                 if (string.IsNullOrWhiteSpace(fetchXml))
                 {
+                    return (columns, linkedColumns);
+                }
+
+                if (fetchXml!.Length > MAX_XML_SIZE_BYTES)
+                {
+                    Services.DebugLogger.Log($"WARNING: FetchXML exceeds {MAX_XML_SIZE_BYTES} bytes ({fetchXml.Length} bytes). Skipping parse.");
                     return (columns, linkedColumns);
                 }
 
@@ -868,9 +886,9 @@ namespace DataverseToPowerBI.XrmToolBox
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex.GetType().Name.Contains("Fault"))
             {
-                Services.DebugLogger.Log($"Error getting one-to-many relationships for {tableName}: {ex.Message}");
+                Services.DebugLogger.Log($"Expected error getting one-to-many relationships for {tableName}: {ex}");
             }
 
             return relationships.OrderBy(r => r.ReferencingEntity).ToList();
@@ -907,9 +925,9 @@ namespace DataverseToPowerBI.XrmToolBox
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex.GetType().Name.Contains("Fault"))
             {
-                Services.DebugLogger.Log($"Error getting all entity display names: {ex.Message}");
+                Services.DebugLogger.Log($"Expected error getting all entity display names: {ex}");
             }
 
             return displayNames;
@@ -936,9 +954,9 @@ namespace DataverseToPowerBI.XrmToolBox
                     return results.Entities[0].GetAttributeValue<int>("languagecode");
                 }
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex.GetType().Name.Contains("Fault"))
             {
-                Services.DebugLogger.Log($"Error getting base language code: {ex.Message}");
+                Services.DebugLogger.Log($"Expected error getting base language code: {ex}");
             }
             return 1033; // Default to US English
         }

@@ -45,6 +45,8 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
 using System.Text;
+using System.Windows.Forms;
+using DataverseToPowerBI.XrmToolBox.Services;
 
 namespace DataverseToPowerBI.XrmToolBox
 {
@@ -87,9 +89,28 @@ namespace DataverseToPowerBI.XrmToolBox
                         _modelsFile = (SemanticModelsFile)serializer.ReadObject(ms) ?? new SemanticModelsFile();
                     }
                 }
-                catch
+                catch (SerializationException ex)
                 {
-                    // If loading fails, start with empty file
+                    DebugLogger.Log($"Configuration file corrupt: {ex.Message}\n{ex.StackTrace}");
+
+                    // Backup the corrupt file so the user doesn't lose data permanently
+                    try
+                    {
+                        var backupPath = _modelsFilePath + ".bak";
+                        File.Copy(_modelsFilePath, backupPath, overwrite: true);
+                    }
+                    catch (Exception backupEx)
+                    {
+                        DebugLogger.Log($"Failed to create backup of corrupt config: {backupEx.Message}");
+                    }
+
+                    MessageBox.Show(
+                        "Configuration file could not be loaded and may be corrupt. " +
+                        "A backup has been created. Settings have been reset to defaults.",
+                        "DataverseToPowerBI",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
+
                     _modelsFile = new SemanticModelsFile();
                 }
             }

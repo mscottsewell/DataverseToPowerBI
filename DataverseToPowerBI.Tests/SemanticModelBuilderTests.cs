@@ -1134,5 +1134,34 @@ namespace DataverseToPowerBI.Tests
         }
 
         #endregion
+
+        #region Path Traversal Guard Tests
+
+        [Fact]
+        public void CopyDirectory_ProjectNameWithPathTraversal_ThrowsInvalidOperation()
+        {
+            // CopyDirectory is private, so invoke it via reflection to test the guard directly
+            var method = typeof(SemanticModelBuilder).GetMethod("CopyDirectory",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            Assert.NotNull(method);
+
+            // Create a minimal source directory with one file containing the template name
+            var sourceDir = Path.Combine(_tempDir, "src");
+            var targetDir = Path.Combine(_tempDir, "target");
+            Directory.CreateDirectory(sourceDir);
+            File.WriteAllText(Path.Combine(sourceDir, "Template.txt"), "placeholder");
+
+            // A project name containing ".." causes path traversal when replacing template name
+            var projectName = @"..\..\..\malicious";
+            var templateName = "Template";
+
+            var ex = Assert.Throws<System.Reflection.TargetInvocationException>(() =>
+                method!.Invoke(_builder, new object[] { sourceDir, targetDir, projectName, templateName }));
+
+            Assert.IsType<InvalidOperationException>(ex.InnerException);
+            Assert.Contains("Path traversal", ex.InnerException!.Message);
+        }
+
+        #endregion
     }
 }

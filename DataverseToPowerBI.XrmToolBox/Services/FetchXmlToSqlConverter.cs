@@ -81,6 +81,11 @@ namespace DataverseToPowerBI.XrmToolBox.Services
             return XDocument.Load(reader);
         }
 
+        /// <summary>
+        /// Bracket-escapes a SQL identifier to prevent injection via FetchXML attribute/entity names.
+        /// </summary>
+        private static string EscapeSqlIdentifier(string? name) => "[" + (name ?? "").Replace("]", "]]") + "]";
+
         public class ConversionResult
         {
             public string SqlWhereClause { get; set; } = "";
@@ -223,7 +228,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
 
             _debugLog.Add($"  Condition: {attribute} {operatorValue} {value ?? "(no value)"}");
 
-            var columnRef = $"{tableAlias}.{attribute}";
+            var columnRef = $"{EscapeSqlIdentifier(tableAlias)}.{EscapeSqlIdentifier(attribute)}";
             var safeValue = value ?? "";
             var operatorKey = operatorValue!;
 
@@ -497,28 +502,36 @@ namespace DataverseToPowerBI.XrmToolBox.Services
             _debugLog.Add($"  Link-entity: {linkEntityName} (alias: {alias}, type: {linkType})");
             _debugLog.Add($"    Join: {baseTableAlias}.{toAttr} = {alias}.{fromAttr}");
             
+            // Guard: from/to attributes are required for a valid join predicate
+            if (string.IsNullOrEmpty(fromAttr) || string.IsNullOrEmpty(toAttr))
+            {
+                _debugLog.Add($"    WARNING: Missing from/to attributes on link-entity '{linkEntityName}' — skipping");
+                _hasUnsupportedFeatures = true;
+                _unsupportedFeatures.Add($"link-entity '{linkEntityName}' missing from/to attributes");
+                return clauses;
+            }
+            
+            // Collect all inner conditions (filters + nested link-entity EXISTS clauses)
+            var innerConditions = new List<string>();
+            
             // Process filters within this link-entity
             var linkFilters = linkEntity.Elements("filter").ToList();
             if (linkFilters.Any())
             {
                 _debugLog.Add($"    Processing {linkFilters.Count} filter(s) in link-entity");
                 
-                // For link-entity filters, we need to express them as subquery EXISTS conditions
-                // since DirectQuery SQL doesn't support JOINs in the partition query
                 foreach (var filter in linkFilters)
                 {
                     var filterClause = ProcessFilter(filter, alias);
                     if (!string.IsNullOrWhiteSpace(filterClause))
                     {
-                        // Create an EXISTS subquery for the link-entity filter
-                        var existsClause = $"EXISTS (SELECT 1 FROM {linkEntityName} AS {alias} WHERE {alias}.{fromAttr} = {baseTableAlias}.{toAttr} AND ({filterClause}))";
-                        clauses.Add(existsClause);
-                        _debugLog.Add($"    Generated EXISTS clause: {existsClause}");
+                        innerConditions.Add($"({filterClause})");
                     }
                 }
             }
             
-            // Process nested link-entities recursively
+            // Process nested link-entities recursively — these become conditions INSIDE this
+            // EXISTS so that the parent alias is in scope for the nested JOIN predicate
             var nestedLinkEntities = linkEntity.Elements("link-entity").ToList();
             if (nestedLinkEntities.Any())
             {
@@ -526,8 +539,19 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                 foreach (var nested in nestedLinkEntities)
                 {
                     var nestedClauses = ProcessLinkEntityFilters(nested, alias);
-                    clauses.AddRange(nestedClauses);
+                    innerConditions.AddRange(nestedClauses);
                 }
+            }
+            
+            // Wrap all conditions in a single EXISTS subquery for this link-entity
+            // FetchXML: from = column on the linked (inner) table, to = column on the parent (outer) table
+            if (innerConditions.Any())
+            {
+                var joinPredicate = $"{EscapeSqlIdentifier(alias)}.{EscapeSqlIdentifier(fromAttr)} = {EscapeSqlIdentifier(baseTableAlias)}.{EscapeSqlIdentifier(toAttr)}";
+                var allConditions = string.Join(" AND ", new[] { joinPredicate }.Concat(innerConditions));
+                var existsClause = $"EXISTS (SELECT 1 FROM {EscapeSqlIdentifier(linkEntityName)} AS {EscapeSqlIdentifier(alias)} WHERE {allConditions})";
+                clauses.Add(existsClause);
+                _debugLog.Add($"    Generated EXISTS clause: {existsClause}");
             }
             
             return clauses;

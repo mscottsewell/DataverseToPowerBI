@@ -34,24 +34,34 @@ namespace DataverseToPowerBI.XrmToolBox.Services
 {
     public static class DebugLogger
     {
-        private static readonly string LogPath;
+        private static readonly string LogPath = string.Empty;
         private static readonly object _lock = new object();
+        private static readonly bool _initFailed;
 
         static DebugLogger()
         {
-            var appFolder = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                "DataverseToPowerBI"
-            );
-            Directory.CreateDirectory(appFolder);
-            LogPath = Path.Combine(appFolder, "debug_log.txt");
-            
-            // Clear log on startup
-            File.WriteAllText(LogPath, $"=== Debug Log Started: {DateTime.Now:yyyy-MM-dd HH:mm:ss} ===\n\n");
+            try
+            {
+                var appFolder = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                    "DataverseToPowerBI"
+                );
+                Directory.CreateDirectory(appFolder);
+                LogPath = Path.Combine(appFolder, "debug_log.txt");
+
+                // Clear log on startup
+                File.WriteAllText(LogPath, $"=== Debug Log Started: {DateTime.Now:yyyy-MM-dd HH:mm:ss} ===\n\n");
+            }
+            catch
+            {
+                _initFailed = true;
+            }
         }
 
         public static void Log(string message)
         {
+            if (_initFailed) return;
+
             lock (_lock)
             {
                 try
@@ -68,6 +78,8 @@ namespace DataverseToPowerBI.XrmToolBox.Services
 
         public static void LogSection(string title, string content)
         {
+            if (_initFailed) return;
+
             lock (_lock)
             {
                 try
