@@ -41,6 +41,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
         private const double ROW_HEIGHT_PER_COLUMN = 20;
         private const double MIN_TABLE_HEIGHT = 150;
         private const double MAX_TABLE_HEIGHT = 600;
+        private const double COLLAPSED_TABLE_HEIGHT = 50;
 
         private const double STAR_RADIUS = 520;
         private const double SNOWFLAKE_PUSH = 320;
@@ -116,14 +117,24 @@ namespace DataverseToPowerBI.XrmToolBox.Services
             BuildAdjacency(relationships, tables, factTables, dimTables,
                 out var factToDims, out var snowflake, out var orphanDims);
 
-            // Compute node sizes
+            // Compute node sizes (dimensions use collapsed height for layout spacing)
             var nodeSizes = new Dictionary<string, double[]>(StringComparer.OrdinalIgnoreCase);
             foreach (var name in tableNames)
             {
                 int cols;
                 if (!columnCounts.TryGetValue(name, out cols))
                     cols = 5;
-                nodeSizes[name] = new[] { DEFAULT_TABLE_WIDTH, EstimateCardHeight(cols) };
+
+                string role;
+                if (!tableRoles.TryGetValue(name, out role))
+                    role = "Dimension";
+
+                // Dimensions will be collapsed — use collapsed height for layout spacing
+                bool isDimension = role.Equals("Dimension", StringComparison.OrdinalIgnoreCase);
+                double layoutHeight = isDimension ? COLLAPSED_TABLE_HEIGHT : EstimateCardHeight(cols);
+                double fullHeight = EstimateCardHeight(cols);
+                // Store: [width, layoutHeight, fullHeight]
+                nodeSizes[name] = new[] { DEFAULT_TABLE_WIDTH, layoutHeight, fullHeight };
             }
 
             // Compute positions
@@ -136,7 +147,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
             NormalizePositions(positions);
 
             // Build JSON
-            return BuildLayoutJson(tableNames, positions, nodeSizes);
+            return BuildLayoutJson(tableNames, positions, nodeSizes, tableRoles);
         }
 
         #endregion
@@ -491,11 +502,13 @@ namespace DataverseToPowerBI.XrmToolBox.Services
 
         /// <summary>
         /// Builds the diagramLayout.json structure.
+        /// Dimension tables are collapsed; pinKeyFieldsToTop is enabled.
         /// </summary>
         private static string BuildLayoutJson(
             List<string> tableNames,
             Dictionary<string, double[]> positions,
-            Dictionary<string, double[]> nodeSizes)
+            Dictionary<string, double[]> nodeSizes,
+            Dictionary<string, string> tableRoles)
         {
             var nodes = new JArray();
             int zIndex = 0;
@@ -506,8 +519,15 @@ namespace DataverseToPowerBI.XrmToolBox.Services
 
                 var pos = positions[name];
                 var size = GetNodeSize(nodeSizes, name);
+                // size[0]=width, size[1]=layoutHeight, size[2]=fullHeight (if present)
+                double fullHeight = size.Length > 2 ? size[2] : size[1];
 
-                nodes.Add(new JObject
+                string role;
+                if (!tableRoles.TryGetValue(name, out role))
+                    role = "Dimension";
+                bool isDimension = role.Equals("Dimension", StringComparison.OrdinalIgnoreCase);
+
+                var node = new JObject
                 {
                     ["location"] = new JObject
                     {
@@ -517,11 +537,19 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                     ["nodeIndex"] = name,
                     ["size"] = new JObject
                     {
-                        ["height"] = Math.Round(size[1], 1),
+                        ["height"] = Math.Round(fullHeight, 1),
                         ["width"] = Math.Round(size[0], 1)
                     },
                     ["zIndex"] = zIndex++
-                });
+                };
+
+                // Collapse dimension tables for a cleaner Model View
+                if (isDimension)
+                {
+                    node["isCollapsed"] = true;
+                }
+
+                nodes.Add(node);
             }
 
             var layout = new JObject
@@ -536,7 +564,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                         ["nodes"] = nodes,
                         ["name"] = "All tables",
                         ["zoomValue"] = 100,
-                        ["pinKeyFieldsToTop"] = false,
+                        ["pinKeyFieldsToTop"] = true,
                         ["showExtraHeaderInfo"] = false,
                         ["hideKeyFieldsWhenCollapsed"] = false,
                         ["tablesLocked"] = false
