@@ -43,10 +43,10 @@ namespace DataverseToPowerBI.XrmToolBox.Services
         private const double MAX_TABLE_HEIGHT = 600;
         private const double COLLAPSED_TABLE_HEIGHT = 50;
 
-        private const double STAR_RADIUS = 520;
-        private const double SNOWFLAKE_PUSH = 320;
-        private const double COLUMN_GAP = 60;
-        private const double ROW_GAP = 40;
+        private const double STAR_RADIUS = 350;
+        private const double SNOWFLAKE_PUSH = 280;
+        private const double COLUMN_GAP = 40;
+        private const double ROW_GAP = 30;
         private const double MARGIN = 50;
 
         #endregion
@@ -346,14 +346,18 @@ namespace DataverseToPowerBI.XrmToolBox.Services
             var unplaced = dimTables.Where(d => !positions.ContainsKey(d)).ToList();
             if (unplaced.Count > 0)
             {
-                double maxY = positions.Values.Any()
-                    ? positions.Values.Max(p => p[1]) + MAX_TABLE_HEIGHT
-                    : 0;
+                double maxBottom = 0;
+                foreach (var kv in positions)
+                {
+                    var ns = GetNodeSize(nodeSizes, kv.Key);
+                    double bottom = kv.Value[1] + ns[1];
+                    if (bottom > maxBottom) maxBottom = bottom;
+                }
                 double xCursor = -((unplaced.Count - 1) * (DEFAULT_TABLE_WIDTH + COLUMN_GAP)) / 2;
                 foreach (var dim in unplaced)
                 {
                     var size = GetNodeSize(nodeSizes, dim);
-                    positions[dim] = new[] { xCursor, maxY + ROW_GAP };
+                    positions[dim] = new[] { xCursor, maxBottom + ROW_GAP };
                     xCursor += size[0] + COLUMN_GAP;
                 }
             }
@@ -464,15 +468,19 @@ namespace DataverseToPowerBI.XrmToolBox.Services
             var unplaced = otherTables.Where(t => !positions.ContainsKey(t)).ToList();
             if (unplaced.Count == 0) return;
 
-            // Place below everything else
-            double maxY = positions.Values.Any()
-                ? positions.Values.Max(p => p[1]) + MAX_TABLE_HEIGHT
-                : 0;
+            // Place below everything else, using actual node heights for gap calculation
+            double maxBottom = 0;
+            foreach (var kv in positions)
+            {
+                var nodeSize = GetNodeSize(nodeSizes, kv.Key);
+                double bottom = kv.Value[1] + nodeSize[1];
+                if (bottom > maxBottom) maxBottom = bottom;
+            }
 
             double xCursor = 0;
             foreach (var name in unplaced)
             {
-                positions[name] = new[] { xCursor, maxY + ROW_GAP };
+                positions[name] = new[] { xCursor, maxBottom + ROW_GAP };
                 xCursor += GetNodeSize(nodeSizes, name)[0] + COLUMN_GAP;
             }
         }
