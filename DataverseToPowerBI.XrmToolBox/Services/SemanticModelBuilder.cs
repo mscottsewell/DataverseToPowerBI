@@ -105,7 +105,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
 
         /// <summary>Column definition pattern for <see cref="ParseExistingColumns"/>.</summary>
         private static readonly Regex ColumnDefinitionRegex = new Regex(
-            @"(?:///\s*([^\r\n]+)\r?\n)?\s*column\s+(?:'([^']+)'""|""([^""]+)""|([^\r\n]+))\r?\n((?:\t[^\r\n]+\r?\n)+)",
+            @"(?:///\s*([^\r\n]+)\r?\n)?\s*column\s+(?:'([^']+)'|""([^""]+)""|([^\r\n]+))\r?\n((?:\t[^\r\n]+\r?\n)+)",
             RegexOptions.Multiline | RegexOptions.Compiled, RegexTimeout);
 
         /// <summary>Measure block pattern for <see cref="ExtractUserMeasuresSection"/>.</summary>
