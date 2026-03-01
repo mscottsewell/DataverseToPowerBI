@@ -499,7 +499,7 @@ namespace DataverseToPowerBI.XrmToolBox
 
             var allModelTableNames = new HashSet<string>(_alreadySelectedTableNames, StringComparer.OrdinalIgnoreCase);
             // Include other checked additional tables as valid relationship partners too
-            var checkedNames = checkedAdditional
+            var checkedAdditionalTableNames = checkedAdditional
                 .Select(t => t.LogicalName)
                 .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
@@ -521,7 +521,7 @@ namespace DataverseToPowerBI.XrmToolBox
                         {
                             foreach (var target in lookup.Targets!)
                             {
-                                if (!allModelTableNames.Contains(target) && !checkedNames.Contains(target))
+                                if (!allModelTableNames.Contains(target) && !checkedAdditionalTableNames.Contains(target))
                                     continue;
                                 if (target.Equals(table.LogicalName, StringComparison.OrdinalIgnoreCase))
                                     continue;
@@ -543,7 +543,7 @@ namespace DataverseToPowerBI.XrmToolBox
                         foreach (var rel in oneToMany)
                         {
                             if (!allModelTableNames.Contains(rel.ReferencingEntity) &&
-                                !checkedNames.Contains(rel.ReferencingEntity))
+                                !checkedAdditionalTableNames.Contains(rel.ReferencingEntity))
                                 continue;
 
                             discovered.Add(new DiscoveredRelationshipItem
@@ -573,8 +573,7 @@ namespace DataverseToPowerBI.XrmToolBox
             var deduped = new List<DiscoveredRelationshipItem>(discovered.Count);
             foreach (var d in discovered)
             {
-                var key = (d.SourceTable.ToLowerInvariant(), d.SourceAttribute.ToLowerInvariant(), d.TargetTable.ToLowerInvariant());
-                if (seenKeys.Add(key))
+                if (seenKeys.Add(d.GetNormalizedKey()))
                     deduped.Add(d);
             }
             discovered = deduped;
@@ -588,8 +587,7 @@ namespace DataverseToPowerBI.XrmToolBox
             }
 
             discovered = discovered
-                .Where(d => !existingKeys.Contains(
-                    (d.SourceTable.ToLowerInvariant(), d.SourceAttribute.ToLowerInvariant(), d.TargetTable.ToLowerInvariant())))
+                .Where(d => !existingKeys.Contains(d.GetNormalizedKey()))
                 .ToList();
 
             if (!discovered.Any())
@@ -687,6 +685,10 @@ namespace DataverseToPowerBI.XrmToolBox
             public string LookupDisplayName { get; set; } = "";
             public string TargetTable { get; set; } = "";
             public string TargetTableDisplayName { get; set; } = "";
+
+            /// <summary>Returns a lowercased tuple for case-insensitive deduplication and filtering.</summary>
+            public (string, string, string) GetNormalizedKey() =>
+                (SourceTable.ToLowerInvariant(), SourceAttribute.ToLowerInvariant(), TargetTable.ToLowerInvariant());
         }
 
         #endregion
@@ -816,9 +818,13 @@ namespace DataverseToPowerBI.XrmToolBox
 
             private void BtnToggleActive_Click(object sender, EventArgs e)
             {
-                var targets = listViewDiscovered.CheckedItems.Count > 0
-                    ? listViewDiscovered.CheckedItems.Cast<ListViewItem>().ToList()
-                    : listViewDiscovered.Items.Cast<ListViewItem>().ToList();
+                var targets = listViewDiscovered.CheckedItems.Cast<ListViewItem>().ToList();
+                if (!targets.Any())
+                {
+                    MessageBox.Show("Check at least one relationship to toggle its active state.", "Nothing Checked",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
                 ToggleActiveForItems(targets);
             }
 
