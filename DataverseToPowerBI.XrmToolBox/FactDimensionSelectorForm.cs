@@ -1454,7 +1454,9 @@ namespace DataverseToPowerBI.XrmToolBox
                 allKnownTables,
                 starSchemaTableNames,
                 _additionalTables,
-                _additionalRelationships))
+                _additionalRelationships,
+                _adapter,
+                _service))
             {
                 if (dialog.ShowDialog(this) == DialogResult.OK)
                 {
