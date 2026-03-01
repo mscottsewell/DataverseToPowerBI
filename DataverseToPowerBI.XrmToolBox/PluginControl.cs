@@ -91,6 +91,10 @@ namespace DataverseToPowerBI.XrmToolBox
         private string? _factTable = null;
         private List<ExportRelationship> _relationships = new List<ExportRelationship>();
         
+        // Additional tables / relationships added via the advanced "Add Tables to Model" dialog
+        private List<TableInfo> _additionalTables = new List<TableInfo>();
+        private List<ExportRelationship> _additionalRelationships = new List<ExportRelationship>();
+        
         // Display name override state
         private Dictionary<string, Dictionary<string, string>> _attributeDisplayNameOverrides = new Dictionary<string, Dictionary<string, string>>();
         
@@ -720,6 +724,46 @@ namespace DataverseToPowerBI.XrmToolBox
                 }
             }
 
+            // Restore additional tables (those added via the advanced "Add Tables to Model" dialog)
+            _additionalTables.Clear();
+            if (settings.AdditionalTableNames != null)
+            {
+                foreach (var tableName in settings.AdditionalTableNames)
+                {
+                    var displayInfo = settings.TableDisplayInfo?.ContainsKey(tableName) == true
+                        ? settings.TableDisplayInfo[tableName]
+                        : null;
+
+                    _additionalTables.Add(new TableInfo
+                    {
+                        LogicalName = tableName,
+                        DisplayName = displayInfo?.DisplayName ?? tableName,
+                        SchemaName = displayInfo?.SchemaName ?? tableName,
+                        PrimaryIdAttribute = displayInfo?.PrimaryIdAttribute,
+                        PrimaryNameAttribute = displayInfo?.PrimaryNameAttribute
+                    });
+                }
+            }
+
+            // Restore additional (manually-defined) relationships
+            _additionalRelationships.Clear();
+            if (settings.AdditionalRelationships != null)
+            {
+                foreach (var r in settings.AdditionalRelationships)
+                {
+                    _additionalRelationships.Add(new ExportRelationship
+                    {
+                        SourceTable = r.SourceTable ?? "",
+                        SourceAttribute = r.SourceAttribute ?? "",
+                        TargetTable = r.TargetTable ?? "",
+                        IsActive = r.IsActive,
+                        IsSnowflake = r.IsSnowflake,
+                        SnowflakeLevel = r.SnowflakeLevel,
+                        AssumeReferentialIntegrity = r.AssumeReferentialIntegrity
+                    });
+                }
+            }
+
             // Migration: re-derive SnowflakeLevel for old settings that lack it
             if (_relationships.Any(r => r.IsSnowflake && r.SnowflakeLevel == 0))
             {
@@ -822,6 +866,19 @@ namespace DataverseToPowerBI.XrmToolBox
                 
                 // Convert relationships to serialized form
                 settings.Relationships = _relationships.Select(r => new SerializedRelationship
+                {
+                    SourceTable = r.SourceTable,
+                    SourceAttribute = r.SourceAttribute,
+                    TargetTable = r.TargetTable,
+                    IsActive = r.IsActive,
+                    IsSnowflake = r.IsSnowflake,
+                    SnowflakeLevel = r.SnowflakeLevel,
+                    AssumeReferentialIntegrity = r.AssumeReferentialIntegrity
+                }).ToList();
+
+                // Save additional tables and their manually-defined relationships
+                settings.AdditionalTableNames = _additionalTables.Select(t => t.LogicalName).ToList();
+                settings.AdditionalRelationships = _additionalRelationships.Select(r => new SerializedRelationship
                 {
                     SourceTable = r.SourceTable,
                     SourceAttribute = r.SourceAttribute,
@@ -1102,7 +1159,9 @@ namespace DataverseToPowerBI.XrmToolBox
                 _factTable,
                 _relationships,
                 allSolutions,
-                _currentSolutionId))
+                _currentSolutionId,
+                _additionalTables,
+                _additionalRelationships))
             {
                 // Set up callback for when solution changes in the dialog
                 dialog.OnSolutionChangeRequested = (solutionId, solutionName, callback) =>
@@ -1159,6 +1218,10 @@ namespace DataverseToPowerBI.XrmToolBox
                     _factTable = dialog.SelectedFactTable?.LogicalName;
                     _relationships = dialog.SelectedRelationships;
 
+                    // Store additional tables and relationships returned by the dialog
+                    _additionalTables = dialog.AdditionalTables;
+                    _additionalRelationships = dialog.AdditionalRelationships;
+
                     // Clear stale explicit lookup sub-column configs for lookups now
                     // in a relationship, so smart defaults (ID=Include+Hidden) apply
                     foreach (var rel in _relationships)
@@ -1183,7 +1246,7 @@ namespace DataverseToPowerBI.XrmToolBox
                             SyncTableMeasureOptionsWithSelectedTables();
 
                     // Ensure relationship-required lookup columns are selected
-                    foreach (var rel in _relationships)
+                    foreach (var rel in _relationships.Concat(_additionalRelationships))
                     {
                         if (_selectedAttributes.ContainsKey(rel.SourceTable) &&
                             _selectedTables.ContainsKey(rel.TargetTable))
@@ -1596,7 +1659,7 @@ namespace DataverseToPowerBI.XrmToolBox
         private HashSet<string> GetRelationshipRequiredColumns(string tableLogicalName)
         {
             var result = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            foreach (var rel in _relationships)
+            foreach (var rel in _relationships.Concat(_additionalRelationships))
             {
                 if (rel.SourceTable.Equals(tableLogicalName, StringComparison.OrdinalIgnoreCase) &&
                     _selectedTables.ContainsKey(rel.TargetTable))
@@ -5193,7 +5256,13 @@ namespace DataverseToPowerBI.XrmToolBox
             var validRelationships = _relationships
                 .Where(r => _selectedTables.ContainsKey(r.SourceTable) && _selectedTables.ContainsKey(r.TargetTable))
                 .ToList();
-            var exportRelationships = validRelationships.Select(r => new ExportRelationship
+
+            // Also include manually-defined additional relationships (from the "Add Tables" dialog)
+            var validAdditionalRelationships = _additionalRelationships
+                .Where(r => _selectedTables.ContainsKey(r.SourceTable) && _selectedTables.ContainsKey(r.TargetTable))
+                .ToList();
+
+            var exportRelationships = validRelationships.Concat(validAdditionalRelationships).Select(r => new ExportRelationship
             {
                 SourceTable = r.SourceTable,
                 SourceAttribute = r.SourceAttribute,
@@ -5725,6 +5794,18 @@ namespace DataverseToPowerBI.XrmToolBox
         public Dictionary<string, bool> TableIncludeCountMeasures { get; set; } = new Dictionary<string, bool>();
         [System.Runtime.Serialization.DataMember]
         public Dictionary<string, bool> TableIncludeRecordLinkMeasures { get; set; } = new Dictionary<string, bool>();
+        /// <summary>
+        /// Logical names of tables added via the advanced "Add Tables to Model" dialog.
+        /// These are in addition to the tables auto-discovered by the star-schema wizard.
+        /// </summary>
+        [System.Runtime.Serialization.DataMember]
+        public List<string> AdditionalTableNames { get; set; } = new List<string>();
+        /// <summary>
+        /// Manually-defined relationships added via the advanced "Add Tables to Model" dialog.
+        /// Stored alongside auto-discovered relationships for TMDL generation.
+        /// </summary>
+        [System.Runtime.Serialization.DataMember]
+        public List<SerializedRelationship> AdditionalRelationships { get; set; } = new List<SerializedRelationship>();
     }
     
     [System.Runtime.Serialization.DataContract]

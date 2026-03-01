@@ -69,6 +69,10 @@ namespace DataverseToPowerBI.XrmToolBox
         private string _currentFactTable = null!;
         private List<ExportRelationship> _currentRelationships;
 
+        // Additional tables / relationships (managed via the "Add Tables to Model" dialog)
+        private List<TableInfo> _additionalTables = new List<TableInfo>();
+        private List<ExportRelationship> _additionalRelationships = new List<ExportRelationship>();
+
         // UI Controls
         private WinLabel lblSolution = null!;
         private ComboBox cmbSolution = null!;
@@ -83,6 +87,8 @@ namespace DataverseToPowerBI.XrmToolBox
         private CheckBox chkIncludeOneToMany = null!;
         private ListView listViewRelationships = null!;
         private Button btnAddSnowflake = null!;
+        private Button btnAddExtraTables = null!;
+        private WinLabel lblAdditionalTablesCount = null!;
         private Button btnUnselectAllRelationships = null!;
         private Button btnSelectRequiredRelationships = null!;
         private Button btnFinish = null!;
@@ -104,6 +110,10 @@ namespace DataverseToPowerBI.XrmToolBox
         public TableInfo SelectedFactTable { get; private set; } = null!;
         public List<ExportRelationship> SelectedRelationships { get; private set; } = new List<ExportRelationship>();
         public List<TableInfo> AllSelectedTables { get; private set; } = new List<TableInfo>();
+        /// <summary>Additional tables selected via the advanced "Add Tables to Model" dialog.</summary>
+        public List<TableInfo> AdditionalTables { get; private set; } = new List<TableInfo>();
+        /// <summary>Manually-defined relationships created via the advanced "Add Tables to Model" dialog.</summary>
+        public List<ExportRelationship> AdditionalRelationships { get; private set; } = new List<ExportRelationship>();
 
         // Callback for when solution changes and tables need to be reloaded
         public Action<string, string, Action<List<TableInfo>>>? OnSolutionChangeRequested;
@@ -116,7 +126,9 @@ namespace DataverseToPowerBI.XrmToolBox
             string? currentFactTable = null,
             List<ExportRelationship>? currentRelationships = null,
             List<DataverseSolution>? allSolutions = null,
-            string? currentSolutionId = null)
+            string? currentSolutionId = null,
+            List<TableInfo>? additionalTables = null,
+            List<ExportRelationship>? additionalRelationships = null)
         {
             _adapter = adapter;
             _service = service;
@@ -127,6 +139,8 @@ namespace DataverseToPowerBI.XrmToolBox
             _currentRelationships = currentRelationships ?? new List<ExportRelationship>();
             _allSolutions = allSolutions;
             _currentSolutionId = currentSolutionId;
+            _additionalTables = additionalTables ?? new List<TableInfo>();
+            _additionalRelationships = additionalRelationships ?? new List<ExportRelationship>();
             
             // Load all entity display names for resolving target tables outside of the solution
             _allEntityDisplayNames = adapter.GetAllEntityDisplayNamesSync(service);
@@ -136,6 +150,7 @@ namespace DataverseToPowerBI.XrmToolBox
             InitializeComponent();
             LoadSolutionDropdown();
             LoadFactTableDropdown();
+            UpdateAdditionalTablesCountLabel();
             
             // Set focus to solution dropdown when form loads
             this.Shown += (s, e) => cmbSolution.Focus();
@@ -291,6 +306,26 @@ namespace DataverseToPowerBI.XrmToolBox
             };
             btnAddSnowflake.Click += BtnAddSnowflake_Click;
             this.Controls.Add(btnAddSnowflake);
+
+            // Advanced: add extra tables not in the star schema
+            btnAddExtraTables = new Button
+            {
+                Text = "Add Tables to Model...",
+                Location = new Point(300, 565),
+                Width = 160,
+                Height = 30
+            };
+            btnAddExtraTables.Click += BtnAddExtraTables_Click;
+            this.Controls.Add(btnAddExtraTables);
+
+            lblAdditionalTablesCount = new WinLabel
+            {
+                Text = "",
+                Location = new Point(470, 572),
+                Width = 185,
+                ForeColor = Color.DarkGreen
+            };
+            this.Controls.Add(lblAdditionalTablesCount);
 
             btnUnselectAllRelationships = new Button
             {
@@ -1396,8 +1431,56 @@ namespace DataverseToPowerBI.XrmToolBox
             }
         }
 
-        private void AddSnowflakeRelationshipToList(ExportRelationship rel, int snowflakeLevel = 1)
+        private void BtnAddExtraTables_Click(object sender, EventArgs e)
         {
+            // Determine which tables are already covered by the star-schema selection so they are
+            // excluded from the "pick extra tables" list.
+            var starSchemaTableNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            if (SelectedFactTable != null)
+                starSchemaTableNames.Add(SelectedFactTable.LogicalName);
+
+            foreach (var item in _allRelationshipItems.Where(i => i?.Tag is RelationshipTag rt && rt.IsChecked))
+            {
+                var tag = (RelationshipTag)item.Tag;
+                starSchemaTableNames.Add(tag.TargetTable);
+                if (tag.IsSnowflake) starSchemaTableNames.Add(tag.SourceTable);
+                if (tag.IsOneToMany) starSchemaTableNames.Add(tag.SourceTable);
+            }
+
+            var allKnownTables = _tables.Concat(_snowflakeAddedTables).ToList();
+
+            using (var dialog = new AdditionalTableSelectorForm(
+                _allEntityDisplayNames,
+                allKnownTables,
+                starSchemaTableNames,
+                _additionalTables,
+                _additionalRelationships))
+            {
+                if (dialog.ShowDialog(this) == DialogResult.OK)
+                {
+                    _additionalTables = dialog.SelectedAdditionalTables;
+                    _additionalRelationships = dialog.SelectedAdditionalRelationships;
+                    UpdateAdditionalTablesCountLabel();
+                }
+            }
+        }
+
+        private void UpdateAdditionalTablesCountLabel()
+        {
+            if (_additionalTables.Count == 0)
+            {
+                lblAdditionalTablesCount.Text = "";
+            }
+            else
+            {
+                var relCount = _additionalRelationships.Count;
+                lblAdditionalTablesCount.Text = relCount > 0
+                    ? $"+{_additionalTables.Count} table(s), {relCount} rel(s)"
+                    : $"+{_additionalTables.Count} additional table(s)";
+            }
+        }
+
+        private void AddSnowflakeRelationshipToList(ExportRelationship rel, int snowflakeLevel = 1)        {
             // Check if already exists (must match SourceTable to distinguish direct vs snowflake relationships,
             // since different tables can have lookup fields with the same logical name targeting the same table)
             if (_allRelationshipItems.Cast<ListViewItem>()
@@ -1742,6 +1825,20 @@ namespace DataverseToPowerBI.XrmToolBox
                 }
                 
                 AllSelectedTables.Add(table);
+            }
+
+            // Merge additional tables (from the "Add Tables to Model" dialog)
+            AdditionalTables = _additionalTables;
+            AdditionalRelationships = _additionalRelationships;
+
+            foreach (var additionalTable in _additionalTables)
+            {
+                if (AllSelectedTables.Any(t => t.LogicalName.Equals(additionalTable.LogicalName, StringComparison.OrdinalIgnoreCase)))
+                    continue;
+
+                // Try to get a richer TableInfo from known sources
+                var enriched = FindTableByLogicalName(additionalTable.LogicalName);
+                AllSelectedTables.Add(enriched ?? additionalTable);
             }
 
             this.DialogResult = DialogResult.OK;
