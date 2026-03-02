@@ -2,7 +2,7 @@
 <package>
 	<metadata>
     <id>DataverseToPowerBI.XrmToolBox</id>
-    <version>1.2026.5.147</version>
+    <version>1.2026.5.154</version>
     <title>Dataverse to Power BI Semantic Model</title>
     <authors>Scott Sewell</authors>
     <owners>mScottSewell</owners>
@@ -11,22 +11,22 @@
     <description>Extract Dataverse metadata and generate Power BI TMDL/PBIP semantic models with automatic table relationships, calendar tables, and incremental change detection.</description>
     <summary>XrmToolBox plugin for generating Power BI semantic models from Dataverse metadata</summary>
     <releaseNotes>
-v1.2026.5.146 - Power Query display-name renaming release
+v1.2026.5.154 - Advanced table selection release
 
-Highlights since the previous notes:
-- Display-name renaming now executes in Power Query via Table.RenameColumns instead of SQL AS [Display Name] aliases.
-- SQL projections remain stable technical/logical names for improved query consistency.
-- Internal setting/property naming updated to UseDisplayNameRenamesInPowerQuery.
-- Backward compatibility preserved for existing semantic-model JSON via legacy key mapping (UseDisplayNameAliasesInSql).
-- Semantic model dialogs updated to Power Query rename terminology.
-- Export summary label updated to match Power Query behavior.
-- Added serialization compatibility tests for default/migrated setting behavior.
-- Updated integration tests to assert Table.RenameColumns generation and no SQL display alias emission.
-- Updated the select/unselect behavior to be more intuitive and less prone to accidental deselection when interacting with the attribute rows.
+New in this release:
+- Add Tables to Model dialog: include any Dataverse table in the Power BI semantic model, even if it is not reachable through the standard lookup-chain discovery.
+  - Full-environment table browser filtered to show only tables not already in the star schema.
+  - Instant search/filter by display name or logical name.
+  - Manual relationship builder lets you define column-level joins between any two tables (source table/column → target table/column, active/inactive, referential integrity).
+  - Edit support: re-opening the wizard restores previously configured additional tables and relationships.
+  - Live count badge in the wizard shows the number of additional tables and relationships pending.
+- Additional tables and manually-defined relationships are persisted to the semantic model configuration and fully restored on reload.
+- Lookup columns required by manually-defined relationships are automatically included in the model (same enforcement as auto-discovered relationships).
 
-Additional model-management fixes included:
-- Save/copy flows now persist rename setting, storage mode, and choice numeric defaults consistently.
-- Legacy model deserialization continues to default rename behavior to enabled when the setting is omitted.
+Previous highlights (v1.2026.5.146):
+- Display-name renaming executes in Power Query via Table.RenameColumns instead of SQL AS aliases.
+- SQL projections remain stable technical/logical names.
+- Semantic model save/copy flows persist rename setting, storage mode, and choice numeric defaults consistently.
 
 Full details: CHANGELOG.md
     </releaseNotes>

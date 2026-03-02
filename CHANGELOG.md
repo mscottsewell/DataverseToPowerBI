@@ -12,6 +12,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.2026.5.154] - 2026-03-02
+
+### Added
+
+- **Advanced Table Selection ("Add Tables to Model")** — A new **"Add Tables to Model…"** button in the star-schema wizard lets users include any Dataverse table that is not reachable through the standard lookup-chain discovery. Use cases include tables that share data via non-lookup relationships, cross-entity joins, or tables that simply live outside the selected solution.
+
+  - **Full-environment table browser** — Lists every table known to the environment (solution tables with rich metadata unioned with all entity display names), filtered to exclude tables already in the star-schema.
+  - **Search / filter** — Instant text search by display name or logical name.
+  - **Manual relationship builder** — Define many-to-one joins between any two tables at the column level. Each relationship can include table/column/target/active configuration identical to auto-discovered relationships.
+  - **Edit support** — Re-opening the wizard restores previously configured additional tables and relationships for modification.
+  - **Counter badge** — The wizard shows a live count label (e.g., `+3 table(s), 2 rel(s)`) so users can see the pending selection at a glance.
+
+- **Additional Table & Relationship Persistence** — Additional tables (logical names) and their manually-defined relationships are saved to the semantic model configuration (`AdditionalTableNames` / `AdditionalRelationships`) and fully restored on reload.
+
+- **Relationship-Required Column Enforcement** — Lookup columns required by manually-defined additional relationships are automatically included (same enforcement already applied to auto-discovered relationships).
+
+---
+
 ## [1.2026.5.146] - 2026-02-28
 
 ### Changed
