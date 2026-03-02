@@ -5,7 +5,7 @@
 // PURPOSE:
 // This dialog allows advanced users to include tables in the Power BI semantic
 // model that are not auto-discovered through the standard star-schema wizard.
-// Users can also discover and select relationships between these tables and the
+// Users can also define manual relationships between these tables and the
 // existing tables already in the model.
 //
 // USE CASE:
@@ -13,18 +13,16 @@
 // by following lookup fields from the chosen fact table. This dialog addresses
 // scenarios where users need additional tables that:
 //   1. Are not reachable via the fact table's lookups
-//   2. Require relationship columns to connect to the existing star schema
+//   2. Require manually-specified relationship columns (e.g., cross-entity joins)
 //
 // WORKFLOW:
 //   1. User checks tables from the full list (tables already in the model are excluded)
-//   2. Clicks "Discover Relationships..." to auto-detect relationships between
-//      the selected tables and model tables, then picks which ones to include
-//   3. Optionally clicks "Add Manually..." to define a custom relationship by hand
-//   4. Clicks OK - the selected tables and relationships are returned to the caller
+//   2. Optionally clicks "Add Relationship..." to define manual many-to-one joins
+//   3. Clicks OK - the selected tables and relationships are returned to the caller
 //
 // OUTPUT:
 //   - SelectedAdditionalTables: List<TableInfo> of newly selected tables
-//   - SelectedAdditionalRelationships: List<ExportRelationship> of selected/defined relationships
+//   - SelectedAdditionalRelationships: List<ExportRelationship> of manually-defined relationships
 //
 // ===================================================================================
 
@@ -33,8 +31,10 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
-using Microsoft.Xrm.Sdk;
 using DataverseToPowerBI.Core.Models;
+using Microsoft.Xrm.Sdk;
+using CoreAttributeMetadata = DataverseToPowerBI.Core.Models.AttributeMetadata;
+using WinLabel = System.Windows.Forms.Label;
 
 namespace DataverseToPowerBI.XrmToolBox
 {
@@ -50,7 +50,7 @@ namespace DataverseToPowerBI.XrmToolBox
         private readonly List<TableInfo> _solutionTables;
         private readonly HashSet<string> _alreadySelectedTableNames;
 
-        // Optional adapter for relationship discovery
+        // Dataverse adapter for relationship auto-discovery (optional; null = manual mode)
         private readonly XrmServiceAdapterImpl? _adapter;
         private readonly IOrganizationService? _service;
 
@@ -58,17 +58,33 @@ namespace DataverseToPowerBI.XrmToolBox
         private List<TableInfo> _availableTables = new List<TableInfo>();
         private List<ListViewItem> _allTableItems = new List<ListViewItem>();
 
+        // Authoritative backing set for which additional tables are currently checked.
+        // Used instead of item.Checked on _allTableItems to avoid ArgumentOutOfRangeException
+        // when items have been filtered out of the ListView (Index == -1).
+        private readonly HashSet<string> _checkedAdditionalTableNames =
+            new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        // Backing store for ALL relationship items (visible list is a filtered subset)
+        private List<ListViewItem> _allRelationshipItems = new List<ListViewItem>();
+
+        // Attribute/relationship caches to avoid re-querying Dataverse on re-check
+        private Dictionary<string, List<CoreAttributeMetadata>> _attributeCache
+            = new Dictionary<string, List<CoreAttributeMetadata>>(StringComparer.OrdinalIgnoreCase);
+        private Dictionary<string, List<OneToManyRelationshipInfo>> _oneToManyCache
+            = new Dictionary<string, List<OneToManyRelationshipInfo>>(StringComparer.OrdinalIgnoreCase);
+
         // UI – table selection
-        private Label lblTablesHeader = null!;
-        private Label lblTablesHint = null!;
+        private WinLabel lblTablesHeader = null!;
+        private WinLabel lblTablesHint = null!;
         private TextBox txtTableSearch = null!;
+        private CheckBox _chkSelectedOnly = null!;
+        private Button btnPasteNames = null!;
         private ListView listViewTables = null!;
 
         // UI – relationship definitions
-        private Label lblRelHeader = null!;
-        private Label lblRelHint = null!;
+        private WinLabel lblRelHeader = null!;
+        private WinLabel lblRelHint = null!;
         private ListView listViewRelationships = null!;
-        private Button btnDiscoverRelationships = null!;
         private Button btnAddRelationship = null!;
         private Button btnRemoveRelationship = null!;
 
@@ -103,8 +119,8 @@ namespace DataverseToPowerBI.XrmToolBox
         /// <param name="alreadySelectedTableNames">Logical names of tables already in the star-schema model (fact + dimensions + snowflakes).</param>
         /// <param name="currentAdditionalTables">Previously selected additional tables (for edit scenarios).</param>
         /// <param name="currentAdditionalRelationships">Previously defined relationships (for edit scenarios).</param>
-        /// <param name="adapter">Optional adapter for auto-discovering relationships from Dataverse metadata.</param>
-        /// <param name="service">Optional organization service required when <paramref name="adapter"/> is provided.</param>
+        /// <param name="adapter">Dataverse adapter used for auto-discovering relationships.</param>
+        /// <param name="service">Organization service used with <paramref name="adapter"/>.</param>
         public AdditionalTableSelectorForm(
             Dictionary<string, string> allEntityDisplayNames,
             List<TableInfo> solutionTables,
@@ -127,7 +143,11 @@ namespace DataverseToPowerBI.XrmToolBox
 
             InitializeComponent();
             PopulateTableList(currentAdditionalTables ?? new List<TableInfo>());
+            // Restore previously saved relationships first (tagged DiscoveredForTable=null so they survive unchecks)
             PopulateRelationshipList(currentAdditionalRelationships ?? new List<ExportRelationship>());
+            // Auto-discover for any pre-checked tables (edit re-open); skips duplicates already restored above
+            LoadDiscoveredRelationshipsForPreCheckedTables();
+            UpdateRelationshipFilter();
         }
 
         #endregion
@@ -179,13 +199,13 @@ namespace DataverseToPowerBI.XrmToolBox
         {
             this.Text = "Add Tables to Model";
             this.Width = 870;
-            this.Height = 700;
+            this.Height = 660;
             this.StartPosition = FormStartPosition.CenterParent;
             this.FormBorderStyle = FormBorderStyle.Sizable;
             this.MinimumSize = new Size(700, 550);
 
             // ── Table-selection section ─────────────────────────────────────────
-            lblTablesHeader = new Label
+            lblTablesHeader = new WinLabel
             {
                 Text = "Additional Tables:",
                 Font = _boldFont,
@@ -194,7 +214,7 @@ namespace DataverseToPowerBI.XrmToolBox
             };
             this.Controls.Add(lblTablesHeader);
 
-            lblTablesHint = new Label
+            lblTablesHint = new WinLabel
             {
                 Text = "Select tables to add to the model. " +
                        "Tables already included via the star-schema wizard are excluded.",
@@ -204,7 +224,7 @@ namespace DataverseToPowerBI.XrmToolBox
             };
             this.Controls.Add(lblTablesHint);
 
-            var lblSearch = new Label
+            var lblSearch = new WinLabel
             {
                 Text = "Search:",
                 Location = new Point(10, 58),
@@ -220,6 +240,25 @@ namespace DataverseToPowerBI.XrmToolBox
             txtTableSearch.TextChanged += (s, e) => FilterTableList();
             this.Controls.Add(txtTableSearch);
 
+            _chkSelectedOnly = new CheckBox
+            {
+                Text = "Selected only",
+                Location = new Point(350, 57),
+                AutoSize = true
+            };
+            _chkSelectedOnly.CheckedChanged += (s, e) => FilterTableList();
+            this.Controls.Add(_chkSelectedOnly);
+
+            btnPasteNames = new Button
+            {
+                Text = "Paste Names...",
+                Location = new Point(730, 53),
+                Size = new Size(110, 24),
+                Anchor = AnchorStyles.Right | AnchorStyles.Top
+            };
+            btnPasteNames.Click += BtnPasteNames_Click;
+            this.Controls.Add(btnPasteNames);
+
             listViewTables = new ListView
             {
                 Location = new Point(10, 85),
@@ -234,33 +273,39 @@ namespace DataverseToPowerBI.XrmToolBox
             listViewTables.Columns.Add("Logical Name", 240);
             listViewTables.Columns.Add("Schema Name", 230);
             listViewTables.ItemChecked += ListViewTables_ItemChecked;
+            listViewTables.SelectedIndexChanged += (s, e) => UpdateRelationshipFilter();
             this.Controls.Add(listViewTables);
 
             // ── Relationship-definition section ────────────────────────────────
-            lblRelHeader = new Label
+            lblRelHeader = new WinLabel
             {
-                Text = "Relationships (optional):",
+                Text = "Relationships:",
                 Font = _boldFont,
                 Location = new Point(10, 312),
                 AutoSize = true
             };
             this.Controls.Add(lblRelHeader);
 
-            lblRelHint = new Label
+            var relHintText = _adapter != null
+                ? "Select a table above to see its potential relationships. Check to include in the model; " +
+                  "double-click to toggle Active/Inactive. When no table is selected, only included relationships are shown."
+                : "Define many-to-one relationships between selected tables and existing model tables. " +
+                  "Enter the lookup attribute logical name (e.g. _accountid_value).";
+            lblRelHint = new WinLabel
             {
-                Text = "Click 'Discover Relationships...' to auto-detect relationships between selected and model tables, " +
-                       "or 'Add Manually...' to define a custom relationship.",
+                Text = relHintText,
                 Location = new Point(10, 332),
-                Size = new Size(840, 18),
+                Size = new Size(840, 30),
                 ForeColor = Color.DimGray
             };
             this.Controls.Add(lblRelHint);
 
             listViewRelationships = new ListView
             {
-                Location = new Point(10, 358),
-                Size = new Size(840, 215),
+                Location = new Point(10, 370),
+                Size = new Size(840, 200),
                 View = View.Details,
+                CheckBoxes = true,
                 FullRowSelect = true,
                 GridLines = true,
                 Anchor = AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Top | AnchorStyles.Bottom
@@ -269,23 +314,14 @@ namespace DataverseToPowerBI.XrmToolBox
             listViewRelationships.Columns.Add("Lookup Attribute", 200);
             listViewRelationships.Columns.Add("Target Table (one side)", 230);
             listViewRelationships.Columns.Add("Active", 60);
+            listViewRelationships.DoubleClick += ListViewRelationships_DoubleClick;
             this.Controls.Add(listViewRelationships);
-
-            btnDiscoverRelationships = new Button
-            {
-                Text = "Discover Relationships...",
-                Location = new Point(10, 583),
-                Size = new Size(185, 28),
-                Enabled = _adapter != null && _service != null
-            };
-            btnDiscoverRelationships.Click += BtnDiscoverRelationships_Click;
-            this.Controls.Add(btnDiscoverRelationships);
 
             btnAddRelationship = new Button
             {
-                Text = "Add Manually...",
-                Location = new Point(202, 583),
-                Size = new Size(128, 28)
+                Text = "Add Relationship...",
+                Location = new Point(10, 580),
+                Size = new Size(148, 28)
             };
             btnAddRelationship.Click += BtnAddRelationship_Click;
             this.Controls.Add(btnAddRelationship);
@@ -293,8 +329,8 @@ namespace DataverseToPowerBI.XrmToolBox
             btnRemoveRelationship = new Button
             {
                 Text = "Remove Selected",
-                Location = new Point(337, 583),
-                Size = new Size(128, 28)
+                Location = new Point(165, 580),
+                Size = new Size(130, 28)
             };
             btnRemoveRelationship.Click += BtnRemoveRelationship_Click;
             this.Controls.Add(btnRemoveRelationship);
@@ -303,9 +339,8 @@ namespace DataverseToPowerBI.XrmToolBox
             btnOK = new Button
             {
                 Text = "OK",
-                Location = new Point(708, 622),
-                Size = new Size(70, 28),
-                Anchor = AnchorStyles.Right | AnchorStyles.Bottom
+                Location = new Point(490, 580),
+                Size = new Size(70, 28)
             };
             btnOK.Click += BtnOK_Click;
             this.Controls.Add(btnOK);
@@ -313,9 +348,8 @@ namespace DataverseToPowerBI.XrmToolBox
             btnCancel = new Button
             {
                 Text = "Cancel",
-                Location = new Point(785, 622),
+                Location = new Point(570, 580),
                 Size = new Size(70, 28),
-                Anchor = AnchorStyles.Right | AnchorStyles.Bottom,
                 DialogResult = DialogResult.Cancel
             };
             this.Controls.Add(btnCancel);
@@ -334,6 +368,7 @@ namespace DataverseToPowerBI.XrmToolBox
             listViewTables.BeginUpdate();
             listViewTables.Items.Clear();
             _allTableItems.Clear();
+            _checkedAdditionalTableNames.Clear();
 
             var preChecked = new HashSet<string>(
                 currentAdditionalTables.Select(t => t.LogicalName),
@@ -347,6 +382,9 @@ namespace DataverseToPowerBI.XrmToolBox
                 item.Tag = table;
                 item.Checked = preChecked.Contains(table.LogicalName);
 
+                if (preChecked.Contains(table.LogicalName))
+                    _checkedAdditionalTableNames.Add(table.LogicalName);
+
                 listViewTables.Items.Add(item);
                 _allTableItems.Add(item);
             }
@@ -358,12 +396,22 @@ namespace DataverseToPowerBI.XrmToolBox
         private void FilterTableList()
         {
             var search = txtTableSearch.Text.Trim().ToLowerInvariant();
+            // "Selected only" is bypassed when the search box is in use so searching
+            // always shows the full (filtered) set.
+            var selectedOnly = _chkSelectedOnly.Checked && string.IsNullOrEmpty(search);
 
             listViewTables.BeginUpdate();
             listViewTables.Items.Clear();
 
             foreach (var item in _allTableItems)
             {
+                if (selectedOnly)
+                {
+                    if (item.Tag is TableInfo tbl && _checkedAdditionalTableNames.Contains(tbl.LogicalName))
+                        listViewTables.Items.Add(item);
+                    continue;
+                }
+
                 if (string.IsNullOrEmpty(search))
                 {
                     listViewTables.Items.Add(item);
@@ -384,10 +432,83 @@ namespace DataverseToPowerBI.XrmToolBox
             listViewTables.EndUpdate();
         }
 
+        private void BtnPasteNames_Click(object sender, EventArgs e)
+        {
+            using (var dlg = new PasteTableNamesDialog())
+            {
+                if (dlg.ShowDialog(this) != DialogResult.OK) return;
+
+                var names = dlg.ParsedNames;
+                if (!names.Any()) return;
+
+                var notFound = new List<string>();
+                var newlyChecked = new List<TableInfo>();
+
+                _suppressItemCheckedEvent = true;
+                try
+                {
+                    foreach (var name in names)
+                    {
+                        var item = _allTableItems.FirstOrDefault(i =>
+                            i.Tag is TableInfo t &&
+                            (string.Equals(t.DisplayName, name, StringComparison.OrdinalIgnoreCase) ||
+                             string.Equals(t.LogicalName, name, StringComparison.OrdinalIgnoreCase)));
+
+                        if (item?.Tag is TableInfo table)
+                        {
+                            if (!_checkedAdditionalTableNames.Contains(table.LogicalName))
+                            {
+                                _checkedAdditionalTableNames.Add(table.LogicalName);
+                                item.Checked = true;
+                                newlyChecked.Add(table);
+                            }
+                        }
+                        else
+                        {
+                            notFound.Add(name);
+                        }
+                    }
+                }
+                finally
+                {
+                    _suppressItemCheckedEvent = false;
+                }
+
+                foreach (var table in newlyChecked)
+                    DiscoverRelationshipsForTable(table);
+
+                FilterTableList();
+                UpdateRelationshipFilter();
+
+                if (notFound.Any())
+                {
+                    MessageBox.Show(
+                        $"The following names were not recognised and could not be selected:\n\n" +
+                        string.Join("\n", notFound.Select(n => "  " + n)),
+                        "Unrecognised Table Names",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+        }
+
         private void ListViewTables_ItemChecked(object sender, ItemCheckedEventArgs e)
         {
             if (_suppressItemCheckedEvent) return;
-            // No special action needed here – selection is read in BtnOK_Click.
+            var table = e.Item.Tag as TableInfo;
+            if (table == null) return;
+
+            if (e.Item.Checked)
+            {
+                _checkedAdditionalTableNames.Add(table.LogicalName);
+                DiscoverRelationshipsForTable(table);
+            }
+            else
+            {
+                _checkedAdditionalTableNames.Remove(table.LogicalName);
+                RemoveDiscoveredRelationshipsForTable(table.LogicalName);
+            }
+
+            UpdateRelationshipFilter();
         }
 
         #endregion
@@ -396,13 +517,19 @@ namespace DataverseToPowerBI.XrmToolBox
 
         private void PopulateRelationshipList(List<ExportRelationship> currentRelationships)
         {
+            _allRelationshipItems.Clear();
             listViewRelationships.Items.Clear();
 
+            // Pre-existing saved relationships are tagged DiscoveredForTable=null so they survive table unchecks.
             foreach (var rel in currentRelationships)
-                AddRelationshipRow(rel);
+                AddRelationshipRow(rel, discoveredForTable: null, isChecked: true);
         }
 
-        private void AddRelationshipRow(ExportRelationship rel)
+        /// <summary>
+        /// Adds a relationship row to the backing store. <see cref="UpdateRelationshipFilter"/> must be
+        /// called afterward to update the visible ListView.
+        /// </summary>
+        private void AddRelationshipRow(ExportRelationship rel, string? discoveredForTable, bool isChecked)
         {
             var sourceDisplay = ResolveDisplayName(rel.SourceTable);
             var targetDisplay = ResolveDisplayName(rel.TargetTable);
@@ -411,8 +538,9 @@ namespace DataverseToPowerBI.XrmToolBox
             item.SubItems.Add(rel.SourceAttribute);
             item.SubItems.Add(targetDisplay);
             item.SubItems.Add(rel.IsActive ? "Yes" : "No");
-            item.Tag = rel;
-            listViewRelationships.Items.Add(item);
+            item.Checked = isChecked;
+            item.Tag = new RelationshipRowTag { Relationship = rel, DiscoveredForTable = discoveredForTable };
+            _allRelationshipItems.Add(item);
         }
 
         private string ResolveDisplayName(string logicalName)
@@ -436,7 +564,7 @@ namespace DataverseToPowerBI.XrmToolBox
         {
             // Source/target tables = already-in-model tables + currently-checked additional tables
             var checkedAdditional = _allTableItems
-                .Where(i => i.Checked && i.Tag is TableInfo)
+                .Where(i => i.Tag is TableInfo t && _checkedAdditionalTableNames.Contains(t.LogicalName))
                 .Select(i => (TableInfo)i.Tag)
                 .ToList();
 
@@ -467,7 +595,22 @@ namespace DataverseToPowerBI.XrmToolBox
             using (var dlg = new AddRelationshipDialog(allTablesForRel))
             {
                 if (dlg.ShowDialog(this) == DialogResult.OK && dlg.Result != null)
-                    AddRelationshipRow(dlg.Result);
+                {
+                    AddRelationshipRow(dlg.Result, discoveredForTable: null, isChecked: true);
+                    UpdateRelationshipFilter();
+                }
+            }
+        }
+
+        private void ListViewRelationships_DoubleClick(object sender, EventArgs e)
+        {
+            if (listViewRelationships.SelectedItems.Count == 0) return;
+            var item = listViewRelationships.SelectedItems[0];
+            if (item.Tag is RelationshipRowTag tag)
+            {
+                tag.Relationship.IsActive = !tag.Relationship.IsActive;
+                if (item.SubItems.Count >= 4)
+                    item.SubItems[3].Text = tag.Relationship.IsActive ? "Yes" : "No";
             }
         }
 
@@ -476,137 +619,9 @@ namespace DataverseToPowerBI.XrmToolBox
             if (listViewRelationships.SelectedItems.Count == 0) return;
 
             foreach (ListViewItem item in listViewRelationships.SelectedItems.Cast<ListViewItem>().ToList())
+            {
                 listViewRelationships.Items.Remove(item);
-        }
-
-        private void BtnDiscoverRelationships_Click(object sender, EventArgs e)
-        {
-            if (_adapter == null || _service == null) return;
-
-            var checkedAdditional = _allTableItems
-                .Where(i => i.Checked && i.Tag is TableInfo)
-                .Select(i => (TableInfo)i.Tag)
-                .ToList();
-
-            if (!checkedAdditional.Any())
-            {
-                MessageBox.Show(
-                    "Select at least one additional table above before discovering relationships.",
-                    "No Tables Selected",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
-
-            var allModelTableNames = new HashSet<string>(_alreadySelectedTableNames, StringComparer.OrdinalIgnoreCase);
-            // Include other checked additional tables as valid relationship partners too
-            var checkedAdditionalTableNames = checkedAdditional
-                .Select(t => t.LogicalName)
-                .ToHashSet(StringComparer.OrdinalIgnoreCase);
-
-            var discovered = new List<DiscoveredRelationshipItem>();
-            var originalCursor = this.Cursor;
-            this.Cursor = Cursors.WaitCursor;
-            try
-            {
-                foreach (var table in checkedAdditional)
-                {
-                    try
-                    {
-                        // ManyToOne: additional table → model/other-selected tables (lookup fields on this table)
-                        var attrs = _adapter.GetAttributesSync(_service, table.LogicalName);
-                        var lookups = attrs
-                            .Where(a => a.AttributeType == "Lookup" && a.Targets != null && a.Targets.Any());
-
-                        foreach (var lookup in lookups)
-                        {
-                            foreach (var target in lookup.Targets!)
-                            {
-                                if (!allModelTableNames.Contains(target) && !checkedAdditionalTableNames.Contains(target))
-                                    continue;
-                                if (target.Equals(table.LogicalName, StringComparison.OrdinalIgnoreCase))
-                                    continue;
-
-                                discovered.Add(new DiscoveredRelationshipItem
-                                {
-                                    SourceTable = table.LogicalName,
-                                    SourceTableDisplayName = table.DisplayName ?? table.LogicalName,
-                                    SourceAttribute = lookup.LogicalName,
-                                    LookupDisplayName = lookup.DisplayName ?? lookup.LogicalName,
-                                    TargetTable = target,
-                                    TargetTableDisplayName = ResolveDisplayName(target)
-                                });
-                            }
-                        }
-
-                        // OneToMany: model/other-selected tables → additional table (lookup on the model table side)
-                        var oneToMany = _adapter.GetOneToManyRelationshipsSync(_service, table.LogicalName);
-                        foreach (var rel in oneToMany)
-                        {
-                            if (!allModelTableNames.Contains(rel.ReferencingEntity) &&
-                                !checkedAdditionalTableNames.Contains(rel.ReferencingEntity))
-                                continue;
-
-                            discovered.Add(new DiscoveredRelationshipItem
-                            {
-                                SourceTable = rel.ReferencingEntity,
-                                SourceTableDisplayName = ResolveDisplayName(rel.ReferencingEntity),
-                                SourceAttribute = rel.ReferencingAttribute,
-                                LookupDisplayName = rel.LookupDisplayName ?? rel.ReferencingAttribute,
-                                TargetTable = table.LogicalName,
-                                TargetTableDisplayName = table.DisplayName ?? table.LogicalName
-                            });
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Services.DebugLogger.Log($"Error discovering relationships for {table.LogicalName}: {ex.Message}");
-                    }
-                }
-            }
-            finally
-            {
-                this.Cursor = originalCursor;
-            }
-
-            // Deduplicate (normalize keys once per item)
-            var seenKeys = new HashSet<(string, string, string)>();
-            var deduped = new List<DiscoveredRelationshipItem>(discovered.Count);
-            foreach (var d in discovered)
-            {
-                if (seenKeys.Add(d.GetNormalizedKey()))
-                    deduped.Add(d);
-            }
-            discovered = deduped;
-
-            // Remove relationships already present in the list (build key set once)
-            var existingKeys = new HashSet<(string, string, string)>();
-            foreach (ListViewItem lvi in listViewRelationships.Items)
-            {
-                if (lvi.Tag is ExportRelationship r)
-                    existingKeys.Add((r.SourceTable.ToLowerInvariant(), r.SourceAttribute.ToLowerInvariant(), r.TargetTable.ToLowerInvariant()));
-            }
-
-            discovered = discovered
-                .Where(d => !existingKeys.Contains(d.GetNormalizedKey()))
-                .ToList();
-
-            if (!discovered.Any())
-            {
-                MessageBox.Show(
-                    "No new relationships were found between the selected tables and the model tables.\n\n" +
-                    "Use 'Add Manually...' to define a custom relationship.",
-                    "No Relationships Found",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
-
-            using (var dlg = new DiscoverRelationshipsDialog(discovered))
-            {
-                if (dlg.ShowDialog(this) == DialogResult.OK)
-                {
-                    foreach (var rel in dlg.SelectedRelationships)
-                        AddRelationshipRow(rel);
-                }
+                _allRelationshipItems.Remove(item);
             }
         }
 
@@ -614,15 +629,14 @@ namespace DataverseToPowerBI.XrmToolBox
         {
             // Collect checked tables
             SelectedAdditionalTables = _allTableItems
-                .Where(i => i.Checked && i.Tag is TableInfo)
+                .Where(i => i.Tag is TableInfo t && _checkedAdditionalTableNames.Contains(t.LogicalName))
                 .Select(i => (TableInfo)i.Tag)
                 .ToList();
 
-            // Collect defined relationships
-            SelectedAdditionalRelationships = listViewRelationships.Items
-                .Cast<ListViewItem>()
-                .Where(i => i.Tag is ExportRelationship)
-                .Select(i => (ExportRelationship)i.Tag)
+            // Collect checked relationships from the full backing store (not just what's visible)
+            var checkedRels = _allRelationshipItems
+                .Where(i => i.Checked && i.Tag is RelationshipRowTag)
+                .Select(i => ((RelationshipRowTag)i.Tag).Relationship)
                 .ToList();
 
             // Validate – orphaned relationships reference tables not in the combined selection
@@ -630,7 +644,7 @@ namespace DataverseToPowerBI.XrmToolBox
                 _alreadySelectedTableNames.Concat(SelectedAdditionalTables.Select(t => t.LogicalName)),
                 StringComparer.OrdinalIgnoreCase);
 
-            var orphaned = SelectedAdditionalRelationships
+            var orphaned = checkedRels
                 .Where(r => !allNames.Contains(r.SourceTable) || !allNames.Contains(r.TargetTable))
                 .ToList();
 
@@ -648,13 +662,179 @@ namespace DataverseToPowerBI.XrmToolBox
                 if (answer != DialogResult.Yes)
                     return;
 
-                SelectedAdditionalRelationships = SelectedAdditionalRelationships
-                    .Except(orphaned)
-                    .ToList();
+                checkedRels = checkedRels.Except(orphaned).ToList();
             }
 
+            SelectedAdditionalRelationships = checkedRels;
             DialogResult = DialogResult.OK;
             Close();
+        }
+
+        #endregion
+
+        #region Relationship discovery and filtering
+
+        /// <summary>
+        /// Returns the combined set of star-schema tables plus all currently-checked additional tables.
+        /// This is the full context within which we look for potential relationships.
+        /// </summary>
+        private HashSet<string> GetAllSelectedTableNames()
+        {
+            var all = new HashSet<string>(_alreadySelectedTableNames, StringComparer.OrdinalIgnoreCase);
+            all.UnionWith(_checkedAdditionalTableNames);
+            return all;
+        }
+
+        /// <summary>
+        /// Queries Dataverse for relationships between <paramref name="table"/> and all currently-selected
+        /// tables (star-schema + other checked additionals). M:1 rows are checked by default; 1:M rows are
+        /// unchecked so the user can opt in. Duplicate relationships are skipped.
+        /// </summary>
+        private void DiscoverRelationshipsForTable(TableInfo table)
+        {
+            if (_adapter == null || _service == null) return;
+
+            var allSelected = GetAllSelectedTableNames();
+            allSelected.Remove(table.LogicalName); // don’t relate a table to itself
+
+            var prev = this.Cursor;
+            this.Cursor = Cursors.WaitCursor;
+            try
+            {
+                // ─ M:1 — table has a lookup pointing TO another selected table ────────────────────
+                if (!_attributeCache.TryGetValue(table.LogicalName, out var attrs))
+                {
+                    attrs = _adapter.GetAttributesSync(_service, table.LogicalName);
+                    _attributeCache[table.LogicalName] = attrs;
+                }
+
+                foreach (var lookup in attrs.Where(a =>
+                    a.AttributeType == "Lookup" && a.Targets != null && a.Targets.Any()))
+                {
+                    foreach (var target in lookup.Targets.Where(t => allSelected.Contains(t)))
+                    {
+                        var rel = new ExportRelationship
+                        {
+                            SourceTable = table.LogicalName,
+                            SourceAttribute = lookup.LogicalName,
+                            TargetTable = target,
+                            DisplayName = lookup.DisplayName ?? lookup.LogicalName,
+                            IsActive = true,
+                            AssumeReferentialIntegrity = lookup.IsRequired
+                        };
+                        if (!IsDuplicateRelationship(rel))
+                            AddRelationshipRow(rel, discoveredForTable: table.LogicalName, isChecked: true);
+                    }
+                }
+
+                // ─ 1:M — another selected table has a lookup pointing TO this table ─────────────
+                if (!_oneToManyCache.TryGetValue(table.LogicalName, out var o2mRels))
+                {
+                    o2mRels = _adapter.GetOneToManyRelationshipsSync(_service, table.LogicalName);
+                    _oneToManyCache[table.LogicalName] = o2mRels;
+                }
+
+                foreach (var o2m in o2mRels.Where(r => allSelected.Contains(r.ReferencingEntity)))
+                {
+                    var rel = new ExportRelationship
+                    {
+                        SourceTable = o2m.ReferencingEntity,
+                        SourceAttribute = o2m.ReferencingAttribute,
+                        TargetTable = table.LogicalName,
+                        DisplayName = o2m.LookupDisplayName ?? o2m.ReferencingAttribute,
+                        IsActive = true
+                    };
+                    if (!IsDuplicateRelationship(rel))
+                        AddRelationshipRow(rel, discoveredForTable: table.LogicalName, isChecked: false);
+                }
+            }
+            finally
+            {
+                this.Cursor = prev;
+            }
+        }
+
+        /// <summary>
+        /// Removes all relationship rows that were discovered in the context of <paramref name="logicalName"/>.
+        /// Rows with <c>DiscoveredForTable = null</c> (manually-added or pre-existing) are preserved.
+        /// </summary>
+        private void RemoveDiscoveredRelationshipsForTable(string logicalName)
+        {
+            _allRelationshipItems.RemoveAll(item =>
+                item.Tag is RelationshipRowTag tag &&
+                string.Equals(tag.DiscoveredForTable, logicalName, StringComparison.OrdinalIgnoreCase));
+        }
+
+        /// <summary>
+        /// Repopulates the visible relationship ListView based on the currently-highlighted table.
+        /// When a table is selected, shows all relationships involving that table (checked + unchecked).
+        /// When nothing is selected, shows only the included (checked) relationships.
+        /// </summary>
+        private void UpdateRelationshipFilter()
+        {
+            var selectedTable = listViewTables.SelectedItems.Count > 0
+                ? listViewTables.SelectedItems[0].Tag as TableInfo
+                : null;
+
+            listViewRelationships.BeginUpdate();
+            listViewRelationships.Items.Clear();
+
+            foreach (var item in _allRelationshipItems)
+            {
+                bool show;
+                if (selectedTable != null)
+                {
+                    if (item.Tag is RelationshipRowTag tag)
+                    {
+                        var r = tag.Relationship;
+                        show = r.SourceTable.Equals(selectedTable.LogicalName, StringComparison.OrdinalIgnoreCase)
+                            || r.TargetTable.Equals(selectedTable.LogicalName, StringComparison.OrdinalIgnoreCase);
+                    }
+                    else show = false;
+                }
+                else
+                {
+                    show = item.Checked;
+                }
+
+                if (show)
+                    listViewRelationships.Items.Add(item);
+            }
+
+            listViewRelationships.EndUpdate();
+        }
+
+        /// <summary>Returns true if an identical SourceTable/SourceAttribute/TargetTable row already exists.</summary>
+        private bool IsDuplicateRelationship(ExportRelationship rel)
+        {
+            return _allRelationshipItems.Any(item =>
+            {
+                if (item.Tag is RelationshipRowTag tag)
+                {
+                    var r = tag.Relationship;
+                    return string.Equals(r.SourceTable, rel.SourceTable, StringComparison.OrdinalIgnoreCase)
+                        && string.Equals(r.SourceAttribute, rel.SourceAttribute, StringComparison.OrdinalIgnoreCase)
+                        && string.Equals(r.TargetTable, rel.TargetTable, StringComparison.OrdinalIgnoreCase);
+                }
+                return false;
+            });
+        }
+
+        /// <summary>
+        /// On dialog re-open: runs discovery for all pre-checked tables. Leverages caches and the
+        /// duplicate check so rows already loaded from <c>currentAdditionalRelationships</c> are not doubled.
+        /// </summary>
+        private void LoadDiscoveredRelationshipsForPreCheckedTables()
+        {
+            if (_adapter == null || _service == null) return;
+
+            var preChecked = _allTableItems
+                .Where(i => i.Tag is TableInfo t && _checkedAdditionalTableNames.Contains(t.LogicalName))
+                .Select(i => (TableInfo)i.Tag)
+                .ToList();
+
+            foreach (var table in preChecked)
+                DiscoverRelationshipsForTable(table);
         }
 
         #endregion
@@ -672,215 +852,101 @@ namespace DataverseToPowerBI.XrmToolBox
 
         #endregion
 
-        #region Nested: DiscoveredRelationshipItem
+        #region Nested: RelationshipRowTag
 
-        /// <summary>
-        /// Represents a relationship discovered from Dataverse metadata.
-        /// </summary>
-        private class DiscoveredRelationshipItem
+        /// <summary>Tag stored on each relationship <see cref="ListViewItem"/>.</summary>
+        private class RelationshipRowTag
         {
-            public string SourceTable { get; set; } = "";
-            public string SourceTableDisplayName { get; set; } = "";
-            public string SourceAttribute { get; set; } = "";
-            public string LookupDisplayName { get; set; } = "";
-            public string TargetTable { get; set; } = "";
-            public string TargetTableDisplayName { get; set; } = "";
+            /// <summary>The relationship this row represents.</summary>
+            public ExportRelationship Relationship { get; set; } = null!;
 
-            /// <summary>Returns a lowercased tuple for case-insensitive deduplication and filtering.</summary>
-            public (string, string, string) GetNormalizedKey() =>
-                (SourceTable.ToLowerInvariant(), SourceAttribute.ToLowerInvariant(), TargetTable.ToLowerInvariant());
+            /// <summary>
+            /// Logical name of the additional table whose check triggered this row's discovery,
+            /// or <c>null</c> for manually-added or pre-existing relationships.
+            /// </summary>
+            public string? DiscoveredForTable { get; set; }
         }
 
         #endregion
 
-        #region Nested: DiscoverRelationshipsDialog
+        #region Nested: PasteTableNamesDialog
 
         /// <summary>
-        /// Dialog showing auto-discovered relationships from Dataverse metadata.
-        /// Users check the relationships they want to include and optionally toggle Active/Inactive.
+        /// Minimal dialog for pasting a list of display names or logical names to bulk-select tables.
         /// </summary>
-        private class DiscoverRelationshipsDialog : Form
+        private class PasteTableNamesDialog : Form
         {
-            private ListView listViewDiscovered = null!;
-            private Button btnSelectAll = null!;
-            private Button btnClearAll = null!;
-            private Button btnToggleActive = null!;
-            private Button btnAdd = null!;
+            private TextBox txtNames = null!;
+            private Button btnSelect = null!;
             private Button btnCancel = null!;
 
-            /// <summary>Relationships the user chose to include.</summary>
-            public List<ExportRelationship> SelectedRelationships { get; private set; } = new List<ExportRelationship>();
+            /// <summary>The parsed names entered by the user (display names or logical names).</summary>
+            public List<string> ParsedNames { get; private set; } = new List<string>();
 
-            public DiscoverRelationshipsDialog(List<DiscoveredRelationshipItem> items)
+            public PasteTableNamesDialog()
             {
                 InitializeComponent();
-                PopulateList(items);
             }
 
             private void InitializeComponent()
             {
-                this.Text = "Discovered Relationships";
-                this.ClientSize = new Size(780, 480);
+                this.Text = "Quick Select Tables";
+                this.ClientSize = new Size(480, 350);
                 this.StartPosition = FormStartPosition.CenterParent;
-                this.FormBorderStyle = FormBorderStyle.Sizable;
-                this.MinimumSize = new Size(600, 400);
+                this.FormBorderStyle = FormBorderStyle.FixedDialog;
                 this.MaximizeBox = false;
+                this.MinimizeBox = false;
 
-                var lblHint = new Label
+                var lbl = new WinLabel
                 {
-                    Text = "The following relationships were found between the selected tables and existing model tables.\r\n" +
-                           "Check the ones you want to include. Double-click a row to toggle Active/Inactive.",
-                    Location = new Point(10, 10),
-                    Size = new Size(760, 36),
-                    ForeColor = Color.DimGray
+                    Text = "Paste display names or logical names below, separated by commas or one per line.\n" +
+                           "Matching tables will be selected. Existing selections are not cleared.",
+                    Location = new Point(15, 15),
+                    Size = new Size(445, 44),
+                    AutoSize = false
                 };
-                this.Controls.Add(lblHint);
+                this.Controls.Add(lbl);
 
-                listViewDiscovered = new ListView
+                txtNames = new TextBox
                 {
-                    Location = new Point(10, 55),
-                    Size = new Size(760, 340),
-                    View = View.Details,
-                    CheckBoxes = true,
-                    FullRowSelect = true,
-                    GridLines = true,
-                    Anchor = AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Top | AnchorStyles.Bottom
+                    Location = new Point(15, 68),
+                    Size = new Size(445, 218),
+                    Multiline = true,
+                    ScrollBars = ScrollBars.Vertical,
+                    AcceptsReturn = true,
+                    Font = new Font("Consolas", 9f)
                 };
-                listViewDiscovered.Columns.Add("Source Table (many side)", 210);
-                listViewDiscovered.Columns.Add("Lookup Field", 200);
-                listViewDiscovered.Columns.Add("Target Table (one side)", 210);
-                listViewDiscovered.Columns.Add("Active?", 70);
-                listViewDiscovered.DoubleClick += ListViewDiscovered_DoubleClick;
-                this.Controls.Add(listViewDiscovered);
+                this.Controls.Add(txtNames);
 
-                int btnY = 407;
-
-                btnSelectAll = new Button { Text = "Select All", Location = new Point(10, btnY), Size = new Size(90, 28), Anchor = AnchorStyles.Left | AnchorStyles.Bottom };
-                btnSelectAll.Click += (s, e) => { foreach (ListViewItem i in listViewDiscovered.Items) i.Checked = true; };
-                this.Controls.Add(btnSelectAll);
-
-                btnClearAll = new Button { Text = "Clear All", Location = new Point(107, btnY), Size = new Size(90, 28), Anchor = AnchorStyles.Left | AnchorStyles.Bottom };
-                btnClearAll.Click += (s, e) => { foreach (ListViewItem i in listViewDiscovered.Items) i.Checked = false; };
-                this.Controls.Add(btnClearAll);
-
-                btnToggleActive = new Button { Text = "Toggle Active", Location = new Point(204, btnY), Size = new Size(110, 28), Anchor = AnchorStyles.Left | AnchorStyles.Bottom };
-                btnToggleActive.Click += BtnToggleActive_Click;
-                this.Controls.Add(btnToggleActive);
-
-                btnAdd = new Button
+                btnSelect = new Button
                 {
-                    Text = "Add Selected",
-                    Location = new Point(588, btnY),
-                    Size = new Size(90, 28),
-                    Anchor = AnchorStyles.Right | AnchorStyles.Bottom
+                    Text = "Select",
+                    Location = new Point(290, 296),
+                    Size = new Size(75, 28),
+                    DialogResult = DialogResult.OK
                 };
-                btnAdd.Click += BtnAdd_Click;
-                this.Controls.Add(btnAdd);
+                btnSelect.Click += (s, ev) =>
+                {
+                    ParsedNames = txtNames.Text
+                        .Split(new[] { ',', '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
+                        .Select(n => n.Trim())
+                        .Where(n => n.Length > 0)
+                        .Distinct(StringComparer.OrdinalIgnoreCase)
+                        .ToList();
+                };
+                this.Controls.Add(btnSelect);
 
                 btnCancel = new Button
                 {
                     Text = "Cancel",
-                    Location = new Point(685, btnY),
+                    Location = new Point(375, 296),
                     Size = new Size(75, 28),
-                    DialogResult = DialogResult.Cancel,
-                    Anchor = AnchorStyles.Right | AnchorStyles.Bottom
+                    DialogResult = DialogResult.Cancel
                 };
                 this.Controls.Add(btnCancel);
 
-                this.AcceptButton = btnAdd;
+                this.AcceptButton = btnSelect;
                 this.CancelButton = btnCancel;
-            }
-
-            private void PopulateList(List<DiscoveredRelationshipItem> items)
-            {
-                listViewDiscovered.BeginUpdate();
-                foreach (var item in items)
-                {
-                    var lvi = new ListViewItem(item.SourceTableDisplayName);
-                    lvi.SubItems.Add(string.IsNullOrEmpty(item.LookupDisplayName) || item.LookupDisplayName == item.SourceAttribute
-                        ? item.SourceAttribute
-                        : $"{item.LookupDisplayName} ({item.SourceAttribute})");
-                    lvi.SubItems.Add(item.TargetTableDisplayName);
-                    lvi.SubItems.Add("Active");
-                    // Tag stores the source item + mutable active flag together
-                    lvi.Tag = new RelItemState(item, isActive: true);
-                    lvi.Checked = true;
-                    listViewDiscovered.Items.Add(lvi);
-                }
-                listViewDiscovered.EndUpdate();
-            }
-
-            private void ListViewDiscovered_DoubleClick(object sender, EventArgs e)
-            {
-                if (listViewDiscovered.SelectedItems.Count == 0) return;
-                ToggleActiveForItems(listViewDiscovered.SelectedItems.Cast<ListViewItem>().ToList());
-            }
-
-            private void BtnToggleActive_Click(object sender, EventArgs e)
-            {
-                var targets = listViewDiscovered.CheckedItems.Cast<ListViewItem>().ToList();
-                if (!targets.Any())
-                {
-                    MessageBox.Show("Check at least one relationship to toggle its active state.", "Nothing Checked",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    return;
-                }
-                ToggleActiveForItems(targets);
-            }
-
-            private void ToggleActiveForItems(List<ListViewItem> items)
-            {
-                foreach (var lvi in items)
-                {
-                    if (lvi.Tag is RelItemState state)
-                    {
-                        state.IsActive = !state.IsActive;
-                        lvi.SubItems[3].Text = state.IsActive ? "Active" : "Inactive";
-                    }
-                }
-            }
-
-            private void BtnAdd_Click(object sender, EventArgs e)
-            {
-                var selected = listViewDiscovered.CheckedItems.Cast<ListViewItem>().ToList();
-                if (!selected.Any())
-                {
-                    MessageBox.Show("Check at least one relationship to add.", "Nothing Selected",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    return;
-                }
-
-                SelectedRelationships = new List<ExportRelationship>();
-                foreach (var lvi in selected)
-                {
-                    if (lvi.Tag is RelItemState state)
-                    {
-                        SelectedRelationships.Add(new ExportRelationship
-                        {
-                            SourceTable = state.Item.SourceTable,
-                            SourceAttribute = state.Item.SourceAttribute,
-                            TargetTable = state.Item.TargetTable,
-                            DisplayName = $"{state.Item.SourceTableDisplayName} → {state.Item.TargetTableDisplayName}",
-                            IsActive = state.IsActive
-                        });
-                    }
-                }
-
-                DialogResult = DialogResult.OK;
-                Close();
-            }
-
-            /// <summary>Holds a discovered relationship item and its mutable active state for use as a ListView tag.</summary>
-            private class RelItemState
-            {
-                public DiscoveredRelationshipItem Item { get; }
-                public bool IsActive { get; set; }
-
-                public RelItemState(DiscoveredRelationshipItem item, bool isActive)
-                {
-                    Item = item;
-                    IsActive = isActive;
-                }
             }
         }
 
@@ -927,7 +993,7 @@ namespace DataverseToPowerBI.XrmToolBox
                 const int comboW = 280;
                 const int rowH = 38;
 
-                this.Controls.Add(new Label { Text = "Source Table (many side):", Location = new Point(10, y + 4), Width = labelW });
+                this.Controls.Add(new WinLabel { Text = "Source Table (many side):", Location = new Point(10, y + 4), Width = labelW });
                 cmbSourceTable = new ComboBox
                 {
                     Location = new Point(comboX, y),
@@ -937,7 +1003,7 @@ namespace DataverseToPowerBI.XrmToolBox
                 this.Controls.Add(cmbSourceTable);
                 y += rowH;
 
-                this.Controls.Add(new Label
+                this.Controls.Add(new WinLabel
                 {
                     Text = "Lookup Attribute:",
                     Location = new Point(10, y + 4),
@@ -951,7 +1017,7 @@ namespace DataverseToPowerBI.XrmToolBox
                 this.Controls.Add(txtLookupAttribute);
 
                 // Hint label below attribute field
-                this.Controls.Add(new Label
+                this.Controls.Add(new WinLabel
                 {
                     Text = "e.g. _accountid_value",
                     Location = new Point(comboX, y + 24),
@@ -960,7 +1026,7 @@ namespace DataverseToPowerBI.XrmToolBox
                 });
                 y += rowH + 16;
 
-                this.Controls.Add(new Label { Text = "Target Table (one side):", Location = new Point(10, y + 4), Width = labelW });
+                this.Controls.Add(new WinLabel { Text = "Target Table (one side):", Location = new Point(10, y + 4), Width = labelW });
                 cmbTargetTable = new ComboBox
                 {
                     Location = new Point(comboX, y),

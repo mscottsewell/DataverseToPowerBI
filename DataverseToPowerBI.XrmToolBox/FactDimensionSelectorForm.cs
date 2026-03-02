@@ -300,7 +300,7 @@ namespace DataverseToPowerBI.XrmToolBox
             {
                 Text = "Add Parent Tables to Selected Dimension...",
                 Location = new Point(10, 565),
-                Width = 280,
+                Width = 245,
                 Height = 30,
                 Enabled = false
             };
@@ -310,9 +310,9 @@ namespace DataverseToPowerBI.XrmToolBox
             // Advanced: add extra tables not in the star schema
             btnAddExtraTables = new Button
             {
-                Text = "Add Tables to Model...",
-                Location = new Point(300, 565),
-                Width = 160,
+                Text = "Advanced: Additional Table Selection",
+                Location = new Point(265, 565),
+                Width = 230,
                 Height = 30
             };
             btnAddExtraTables.Click += BtnAddExtraTables_Click;
@@ -321,8 +321,8 @@ namespace DataverseToPowerBI.XrmToolBox
             lblAdditionalTablesCount = new WinLabel
             {
                 Text = "",
-                Location = new Point(470, 572),
-                Width = 185,
+                Location = new Point(505, 572),
+                Width = 145,
                 ForeColor = Color.DarkGreen
             };
             this.Controls.Add(lblAdditionalTablesCount);
@@ -1120,16 +1120,41 @@ namespace DataverseToPowerBI.XrmToolBox
             if (tag.SnowflakeLevel == 1)
                 return tag.SourceTable;
 
-            // L2: find L1 parent whose TargetTable == this item's SourceTable
-            var l1Parent = _allRelationshipItems
+            if (tag.SnowflakeLevel == 2)
+            {
+                // L2: find L1 parent whose TargetTable == this item's SourceTable
+                var l1Parent = _allRelationshipItems
+                    .Where(i => i.Tag is RelationshipTag rt
+                                 && rt.IsSnowflake
+                                 && rt.SnowflakeLevel == 1
+                                 && string.Equals(rt.TargetTable, tag.SourceTable, StringComparison.OrdinalIgnoreCase))
+                    .Select(i => (RelationshipTag)i.Tag)
+                    .FirstOrDefault();
+                return l1Parent?.SourceTable ?? tag.SourceTable;
+            }
+
+            // L3: find L2 parent, then walk up to L1 to anchor the chain group
+            var l2Parent = _allRelationshipItems
                 .Where(i => i.Tag is RelationshipTag rt
                              && rt.IsSnowflake
-                             && rt.SnowflakeLevel == 1
+                             && rt.SnowflakeLevel == 2
                              && string.Equals(rt.TargetTable, tag.SourceTable, StringComparison.OrdinalIgnoreCase))
                 .Select(i => (RelationshipTag)i.Tag)
                 .FirstOrDefault();
 
-            return l1Parent?.SourceTable ?? tag.SourceTable;
+            if (l2Parent != null)
+            {
+                var l1AncestorOfL2 = _allRelationshipItems
+                    .Where(i => i.Tag is RelationshipTag rt
+                                 && rt.IsSnowflake
+                                 && rt.SnowflakeLevel == 1
+                                 && string.Equals(rt.TargetTable, l2Parent.SourceTable, StringComparison.OrdinalIgnoreCase))
+                    .Select(i => (RelationshipTag)i.Tag)
+                    .FirstOrDefault();
+                return l1AncestorOfL2?.SourceTable ?? l2Parent.SourceTable;
+            }
+
+            return tag.SourceTable;
         }
 
         private void UpdateItemStatus(ListViewItem item, RelationshipTag config)
@@ -1182,7 +1207,9 @@ namespace DataverseToPowerBI.XrmToolBox
 
             // Update Type column with snowflake level indicators
             string baseType;
-            if (config.SnowflakeLevel >= 2)
+            if (config.SnowflakeLevel >= 3)
+                baseType = "\u2744\u2744\u2744 Snowflake3";
+            else if (config.SnowflakeLevel == 2)
                 baseType = "\u2744\u2744 Snowflake2";
             else if (config.SnowflakeLevel == 1)
                 baseType = "\u2744 Snowflake";
@@ -1202,7 +1229,11 @@ namespace DataverseToPowerBI.XrmToolBox
                 // Multiple active relationships to same target from same source - CONFLICT!
                 item.BackColor = Color.FromArgb(255, 200, 200); // Light red/salmon
             }
-            else if (config.SnowflakeLevel >= 2)
+            else if (config.SnowflakeLevel >= 3)
+            {
+                item.BackColor = Color.FromArgb(160, 200, 255); // Deepest blue for triple snowflake
+            }
+            else if (config.SnowflakeLevel == 2)
             {
                 item.BackColor = Color.FromArgb(200, 225, 255); // Deeper blue for double snowflake
             }
@@ -1219,6 +1250,34 @@ namespace DataverseToPowerBI.XrmToolBox
         private void UpdateFinishButtonState()
         {
             btnFinish.Enabled = SelectedFactTable != null;
+            if (SelectedFactTable != null)
+                UpdateSelectionSummaryStatus();
+        }
+
+        /// <summary>Updates the status label with a summary of currently-selected Fact/Dim/Addl tables and relationships.</summary>
+        private void UpdateSelectionSummaryStatus()
+        {
+            if (SelectedFactTable == null) return;
+
+            var checkedTags = _allRelationshipItems
+                .Where(i => i?.Tag is RelationshipTag rt && rt.IsChecked)
+                .Select(i => (RelationshipTag)i.Tag)
+                .ToList();
+
+            var dimTables = checkedTags
+                .Select(tag => tag.IsOneToMany ? tag.SourceTable : tag.TargetTable)
+                .Where(t => !t.Equals(SelectedFactTable.LogicalName, StringComparison.OrdinalIgnoreCase))
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+            var relCount = checkedTags.Count;
+            var addlCount = _additionalTables.Count;
+
+            var parts = new System.Text.StringBuilder();
+            parts.Append($"1 Fact | {dimTables.Count} Dim");
+            if (addlCount > 0) parts.Append($" | {addlCount} Addl");
+            parts.Append($" | {relCount} rel(s) selected");
+
+            lblStatus.Text = parts.ToString();
         }
 
         private void BtnUnselectAllRelationships_Click(object sender, EventArgs e)
@@ -1336,7 +1395,7 @@ namespace DataverseToPowerBI.XrmToolBox
             var config = (RelationshipTag)item.Tag;
 
             var targetExists = FindTableByLogicalName(config.TargetTable) != null;
-            btnAddSnowflake.Enabled = config.IsChecked && !config.IsOneToMany && config.SnowflakeLevel < 2 && targetExists;
+            btnAddSnowflake.Enabled = config.IsChecked && !config.IsOneToMany && config.SnowflakeLevel < 3 && targetExists;
         }
 
         private void BtnAddSnowflake_Click(object sender, EventArgs e)
@@ -1433,6 +1492,20 @@ namespace DataverseToPowerBI.XrmToolBox
 
         private void BtnAddExtraTables_Click(object sender, EventArgs e)
         {
+            // Show an advisory message the first time (no additional tables selected yet)
+            if (_additionalTables.Count == 0)
+            {
+                var result = MessageBox.Show(
+                    "Selecting tables in relationship to the fact table on the main dimension page is the best " +
+                    "practice as it ensures a clean star schema.\n\n" +
+                    "When additional tables are needed for special purposes, they can be added here.\n\n" +
+                    "Continue to the Additional Table Selection dialog?",
+                    "Advanced: Additional Table Selection",
+                    MessageBoxButtons.OKCancel,
+                    MessageBoxIcon.Information);
+                if (result != DialogResult.OK) return;
+            }
+
             // Determine which tables are already covered by the star-schema selection so they are
             // excluded from the "pick extra tables" list.
             var starSchemaTableNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -1480,6 +1553,7 @@ namespace DataverseToPowerBI.XrmToolBox
                     ? $"+{_additionalTables.Count} table(s), {relCount} rel(s)"
                     : $"+{_additionalTables.Count} additional table(s)";
             }
+            UpdateSelectionSummaryStatus();
         }
 
         private void AddSnowflakeRelationshipToList(ExportRelationship rel, int snowflakeLevel = 1)        {
@@ -1514,7 +1588,9 @@ namespace DataverseToPowerBI.XrmToolBox
 
             var relationshipDisplayName = rel.DisplayName ?? rel.SourceAttribute ?? "";
 
-            var snowflakeTypeText = snowflakeLevel >= 2 ? "\u2744\u2744 Snowflake2" : "\u2744 Snowflake";
+            var snowflakeTypeText = snowflakeLevel >= 3 ? "\u2744\u2744\u2744 Snowflake3"
+                : snowflakeLevel == 2 ? "\u2744\u2744 Snowflake2"
+                : "\u2744 Snowflake";
             var sourceDisplayName = GetTableDisplayName(rel.SourceTable);
             var item = new ListViewItem("");
             item.Checked = true;
@@ -1538,7 +1614,9 @@ namespace DataverseToPowerBI.XrmToolBox
                 IsChecked = true,
                 SnowflakeLevel = snowflakeLevel
             };
-            item.BackColor = snowflakeLevel >= 2 ? Color.FromArgb(200, 225, 255) : Color.LightCyan;
+            item.BackColor = snowflakeLevel >= 3 ? Color.FromArgb(160, 200, 255)
+                : snowflakeLevel == 2 ? Color.FromArgb(200, 225, 255)
+                : Color.LightCyan;
 
             _allRelationshipItems.Add(item);
 

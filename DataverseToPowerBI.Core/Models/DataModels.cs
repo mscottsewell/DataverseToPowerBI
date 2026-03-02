@@ -1085,7 +1085,7 @@ namespace DataverseToPowerBI.Core.Models
         public bool IsSnowflake { get; set; } = false;
 
         /// <summary>
-        /// Snowflake depth level: 0 = Direct, 1 = Snowflake, 2 = Double Snowflake.
+        /// Snowflake depth level: 0 = Direct, 1 = Snowflake, 2 = Double Snowflake, 3 = Triple Snowflake.
         /// </summary>
         public int SnowflakeLevel { get; set; } = 0;
 
