@@ -41,6 +41,7 @@ This tool eliminates all of that complexity:
 - [Connection Modes: TDS vs FabricLink](#-connection-modes-tds-vs-fabriclink)
 - [Direct Query vs. Import Mode](docs/direct-query-vs-import.md)
 - [Expand Lookups (Denormalization)](#-expand-lookups-denormalization)
+- [Add Tables to Model](#-add-tables-to-model)
 - [Model Configuration Management](#-model-configuration-management)
 - [Change Preview & Impact Analysis](#-change-preview--impact-analysis)
 - [Incremental Updates: What's Preserved](#-incremental-updates-whats-preserved)
@@ -60,6 +61,7 @@ This tool eliminates all of that complexity:
 | Feature | What It Does For You |
 | ------- | ------------------- |
 | **Star-Schema Wizard** | Helps you designate fact and dimension tables for optimal performance |
+| **Advanced Table Selection** | Add any Dataverse table to the model — not just those auto-discovered via lookups — and define manual column-level relationships between them; see [Add Tables to Model](#-add-tables-to-model) |
 | **Dual Connection Support** | Choose between **Dataverse TDS** (direct to Dataverse) or **FabricLink** (via Fabric Lakehouse) — see [Connection Modes](#-connection-modes-tds-vs-fabriclink) |
 | **Storage Mode Control** | DirectQuery, Import, Dual (All), or Dual (Select) — set globally or per-table. See [Storage Modes](#-storage-modes) |
 | **Smart Column Selection** | Uses your Dataverse forms and views to include only relevant fields |
@@ -474,6 +476,48 @@ Expanded attributes use the naming convention `"{TargetTable} : {AttributeDispla
 
 ---
 
+## ➕ Add Tables to Model
+
+The star-schema wizard auto-discovers dimension tables by following lookup fields from your chosen fact table. **Add Tables to Model** is an advanced escape hatch for situations where the table you need is *not* reachable through that chain.
+
+### When to Use It
+
+- A table is related to your fact table through an indirect or non-lookup join (e.g., a bridging table or a shared reference table)
+- The table lives outside your current Dataverse solution but is still useful for reporting
+- You want to join two tables via a column that is not a standard Dataverse lookup (e.g., a custom key column)
+
+### How to Open It
+
+1. In the **Star-Schema Wizard** (Select Tables), configure your fact and dimension tables as usual.
+2. Click **Add Tables to Model…** near the bottom of the wizard.
+
+### Selecting Additional Tables
+
+- The dialog lists every table the tool knows about — solution tables (with rich metadata) plus all entity display names from the environment.
+- Tables already in your star-schema are excluded automatically.
+- Use the **Search** box to filter by display name or logical name.
+- Check one or more tables to include them.
+
+### Defining Manual Relationships
+
+After selecting tables you can optionally wire them into the model:
+
+1. Click **Add Relationship…** to open the relationship builder.
+2. Choose the **source table** and **source column** (the FK-side).
+3. Choose the **target table** and **target column** (the PK-side).
+4. Configure **Active / Inactive** status and optionally enable **Assume Referential Integrity**.
+5. Click **OK** — the relationship appears in the list and will be included in the generated TMDL.
+
+Relationships can be removed at any time by selecting them in the list and clicking **Remove**.
+
+### Persistence
+
+Your additional tables and all manually-defined relationships are saved to the model configuration and restored automatically the next time you open the wizard. The wizard displays a count badge (e.g., `+3 table(s), 2 rel(s)`) so you always know what's pending.
+
+> **Tip:** Additional tables follow all the same column-selection and display-name-override rules as auto-discovered tables. After finishing the wizard, their attributes appear in the main attribute grid just like any other table.
+
+---
+
 ## 📦 Model Configuration Management
 
 The tool saves your complete model configuration — tables, columns, relationships, forms, views, storage mode, and display name overrides — so you can pick up right where you left off.
@@ -602,6 +646,10 @@ When you rebuild an existing model, the tool performs an **incremental update** 
 ### Q: Can I add more tables after the initial build?
 
 **A:** Yes! Run the tool again, select additional tables, and rebuild. Your existing customizations (user measures, descriptions, formatting, relationships) are automatically preserved. See [Incremental Updates: What's Preserved](#-incremental-updates-whats-preserved) for full details.
+
+### Q: What if I need a table that isn't connected to my fact table by a lookup?
+
+**A:** Use the **Add Tables to Model** button in the star-schema wizard. It lets you browse the full list of Dataverse tables, select any table, and optionally define a manual column-level join to connect it to your existing tables. See [Add Tables to Model](#-add-tables-to-model) for full details.
 
 ### Q: What happens if our Dataverse schema changes?
 

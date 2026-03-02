@@ -68,7 +68,7 @@ namespace DataverseToPowerBI.XrmToolBox.Models
         /// <summary>True if this is a snowflake relationship (Dimension → Parent Dimension).</summary>
         [System.Runtime.Serialization.DataMember]
         public bool IsSnowflake { get; set; } = false;
-        /// <summary>Snowflake depth: 0 = Direct, 1 = Snowflake, 2 = Double Snowflake.</summary>
+        /// <summary>Snowflake depth: 0 = Direct, 1 = Snowflake, 2 = Double Snowflake, 3 = Triple Snowflake.</summary>
         [System.Runtime.Serialization.DataMember]
         public int SnowflakeLevel { get; set; } = 0;
         /// <summary>True if the lookup field is required (not nullable), enabling referential integrity optimization in DirectQuery.</summary>

@@ -94,6 +94,9 @@ namespace DataverseToPowerBI.XrmToolBox
         // Additional tables / relationships added via the advanced "Add Tables to Model" dialog
         private List<TableInfo> _additionalTables = new List<TableInfo>();
         private List<ExportRelationship> _additionalRelationships = new List<ExportRelationship>();
+
+        // Logical name of the table currently selected in the tables list (drives relationship filtering; null = show all)
+        private string? _relationshipFilterTable = null;
         
         // Display name override state
         private Dictionary<string, Dictionary<string, string>> _attributeDisplayNameOverrides = new Dictionary<string, Dictionary<string, string>>();
@@ -1818,9 +1821,11 @@ namespace DataverseToPowerBI.XrmToolBox
             UpdateModeColumnVisibility();
             listViewSelectedTables.Items.Clear();
             
-            // Sort: Fact first, then by display name
+            // Sort: Fact first, then star-schema dims, then additional tables, then by display name
+            var additionalNames = new HashSet<string>(_additionalTables.Select(t => t.LogicalName), StringComparer.OrdinalIgnoreCase);
             var sortedTables = _selectedTables.Values
                 .OrderByDescending(t => t.LogicalName == _factTable)
+                .ThenBy(t => additionalNames.Contains(t.LogicalName) ? 1 : 0)
                 .ThenBy(t => t.DisplayName ?? t.LogicalName)
                 .ToList();
             
@@ -1837,15 +1842,20 @@ namespace DataverseToPowerBI.XrmToolBox
         {
             var logicalName = table.LogicalName;
             var isFact = logicalName == _factTable;
-            
-            var isSnowflake = !isFact && _relationships.Any(r =>
+            var isAdditional = !isFact && _additionalTables.Any(t =>
+                t.LogicalName.Equals(logicalName, StringComparison.OrdinalIgnoreCase));
+
+            var isSnowflake = !isFact && !isAdditional && _relationships.Any(r =>
                 r.TargetTable == logicalName &&
                 r.IsSnowflake);
-            var isSnowflake2 = isSnowflake && _relationships.Any(r =>
+            var isSnowflake3 = isSnowflake && _relationships.Any(r =>
                 r.TargetTable == logicalName &&
-                r.SnowflakeLevel >= 2);
+                r.SnowflakeLevel >= 3);
+            var isSnowflake2 = !isSnowflake3 && isSnowflake && _relationships.Any(r =>
+                r.TargetTable == logicalName &&
+                r.SnowflakeLevel == 2);
 
-            var roleText = isFact ? "⭐ Fact" : (isSnowflake2 ? "Dim ❄️❄️" : (isSnowflake ? "Dim ❄️" : "Dim"));
+            var roleText = isFact ? "⭐ Fact" : (isAdditional ? "Addl" : (isSnowflake3 ? "Dim ❄️❄️❄️" : (isSnowflake2 ? "Dim ❄️❄️" : (isSnowflake ? "Dim ❄️" : "Dim"))));
             var formText = GetFormDisplayText(logicalName);
             var viewText = GetViewDisplayText(logicalName);
             var countMeasureText = GetMeasureToggleDisplayText(IsCountMeasureEnabledForTable(logicalName, isFact));
@@ -1876,6 +1886,10 @@ namespace DataverseToPowerBI.XrmToolBox
                 _boldTableFont ??= new Font(listViewSelectedTables.Font, FontStyle.Bold);
                 item.Font = _boldTableFont;
             }
+            else if (isAdditional)
+            {
+                item.ForeColor = Color.DarkBlue;
+            }
 
             listViewSelectedTables.Items.Add(item);
         }
@@ -1888,14 +1902,19 @@ namespace DataverseToPowerBI.XrmToolBox
             if (item != null)
             {
                 var isFact = logicalName == _factTable;
-                var isSnowflake = !isFact && _relationships.Any(r =>
+                var isAdditional = !isFact && _additionalTables.Any(t =>
+                    t.LogicalName.Equals(logicalName, StringComparison.OrdinalIgnoreCase));
+                var isSnowflake = !isFact && !isAdditional && _relationships.Any(r =>
                     r.TargetTable == logicalName &&
                     r.IsSnowflake);
-                var isSnowflake2 = isSnowflake && _relationships.Any(r =>
+                var isSnowflake3 = isSnowflake && _relationships.Any(r =>
                     r.TargetTable == logicalName &&
-                    r.SnowflakeLevel >= 2);
+                    r.SnowflakeLevel >= 3);
+                var isSnowflake2 = !isSnowflake3 && isSnowflake && _relationships.Any(r =>
+                    r.TargetTable == logicalName &&
+                    r.SnowflakeLevel == 2);
 
-                item.SubItems[1].Text = isFact ? "⭐ Fact" : (isSnowflake2 ? "Dim ❄️❄️" : (isSnowflake ? "Dim ❄️" : "Dim"));
+                item.SubItems[1].Text = isFact ? "⭐ Fact" : (isAdditional ? "Addl" : (isSnowflake3 ? "Dim ❄️❄️❄️" : (isSnowflake2 ? "Dim ❄️❄️" : (isSnowflake ? "Dim ❄️" : "Dim"))));
                 item.SubItems[3].Text = GetTableModeDisplayText(logicalName, isFact);
                 item.SubItems[4].Text = GetFormDisplayText(logicalName);
                 item.SubItems[5].Text = GetViewDisplayText(logicalName);
@@ -1912,12 +1931,20 @@ namespace DataverseToPowerBI.XrmToolBox
                 if (isFact)
                 {
                     item.BackColor = Color.LightYellow;
+                    item.ForeColor = listViewSelectedTables.ForeColor;
                     _boldTableFont ??= new Font(listViewSelectedTables.Font, FontStyle.Bold);
                     item.Font = _boldTableFont;
+                }
+                else if (isAdditional)
+                {
+                    item.BackColor = Color.White;
+                    item.ForeColor = Color.DarkBlue;
+                    item.Font = listViewSelectedTables.Font;
                 }
                 else
                 {
                     item.BackColor = Color.White;
+                    item.ForeColor = listViewSelectedTables.ForeColor;
                     item.Font = listViewSelectedTables.Font;
                 }
             }
@@ -2106,7 +2133,7 @@ namespace DataverseToPowerBI.XrmToolBox
 
         private void UpdateModeColumnVisibility()
         {
-            colMode.Width = 90;
+            colMode.Width = 60;
         }
         
         private void AddDateTableToDisplay()
@@ -2173,49 +2200,50 @@ namespace DataverseToPowerBI.XrmToolBox
         private void UpdateRelationshipsDisplay()
         {
             listViewRelationships.Items.Clear();
-            
+
+            var filter = _relationshipFilterTable;
+            var filterDisplayName = filter != null && _selectedTables.ContainsKey(filter)
+                ? _selectedTables[filter].DisplayName ?? filter
+                : filter;
+            groupBoxRelationships.Text = filter == null
+                ? "Relationships"
+                : $"Relationships — {filterDisplayName}";
+
             // Display relationship to date table first if configured
             if (_currentModel?.PluginSettings?.DateTableConfig != null)
             {
                 var dateConfig = _currentModel.PluginSettings.DateTableConfig;
                 if (!string.IsNullOrEmpty(dateConfig.PrimaryDateTable))
                 {
-                    var dateSourceTable = _selectedTables.ContainsKey(dateConfig.PrimaryDateTable)
-                        ? _selectedTables[dateConfig.PrimaryDateTable].DisplayName ?? dateConfig.PrimaryDateTable
-                        : dateConfig.PrimaryDateTable;
-                    
-                    var item = new ListViewItem($"{dateSourceTable}.{dateConfig.PrimaryDateField}");
-                    item.SubItems.Add("Date Table 📅");
-                    item.SubItems.Add("Active (Date)");
-                    item.ForeColor = System.Drawing.Color.DarkGreen;
-                    
-                    listViewRelationships.Items.Add(item);
+                    var matchesFilter = filter == null ||
+                        dateConfig.PrimaryDateTable.Equals(filter, StringComparison.OrdinalIgnoreCase);
+                    if (matchesFilter)
+                    {
+                        var dateSourceTable = _selectedTables.ContainsKey(dateConfig.PrimaryDateTable)
+                            ? _selectedTables[dateConfig.PrimaryDateTable].DisplayName ?? dateConfig.PrimaryDateTable
+                            : dateConfig.PrimaryDateTable;
+
+                        var item = new ListViewItem($"{dateSourceTable}.{dateConfig.PrimaryDateField}");
+                        item.SubItems.Add("Date Table 📅");
+                        item.SubItems.Add("Active (Date)");
+                        item.ForeColor = System.Drawing.Color.DarkGreen;
+
+                        listViewRelationships.Items.Add(item);
+                    }
                 }
             }
-            
-            if (!_relationships.Any())
+
+            if (!_relationships.Any() && !_additionalRelationships.Any())
                 return;
-            
+
             // Display regular relationships
             foreach (var rel in _relationships.Where(r => !r.IsSnowflake))
             {
-                var fromTable = _selectedTables.ContainsKey(rel.SourceTable) 
-                    ? _selectedTables[rel.SourceTable].DisplayName ?? rel.SourceTable 
-                    : rel.SourceTable;
-                var toTable = _selectedTables.ContainsKey(rel.TargetTable) 
-                    ? _selectedTables[rel.TargetTable].DisplayName ?? rel.TargetTable 
-                    : rel.TargetTable;
-                
-                var item = new ListViewItem($"{fromTable}.{rel.SourceAttribute}");
-                item.SubItems.Add(toTable);
-                item.SubItems.Add(rel.IsActive ? "Active" : "Inactive");
-                
-                listViewRelationships.Items.Add(item);
-            }
-            
-            // Display snowflake relationships
-            foreach (var rel in _relationships.Where(r => r.IsSnowflake))
-            {
+                if (filter != null &&
+                    !rel.SourceTable.Equals(filter, StringComparison.OrdinalIgnoreCase) &&
+                    !rel.TargetTable.Equals(filter, StringComparison.OrdinalIgnoreCase))
+                    continue;
+
                 var fromTable = _selectedTables.ContainsKey(rel.SourceTable)
                     ? _selectedTables[rel.SourceTable].DisplayName ?? rel.SourceTable
                     : rel.SourceTable;
@@ -2223,11 +2251,56 @@ namespace DataverseToPowerBI.XrmToolBox
                     ? _selectedTables[rel.TargetTable].DisplayName ?? rel.TargetTable
                     : rel.TargetTable;
 
-                var snowflakeIcon = rel.SnowflakeLevel >= 2 ? " ❄️❄️" : " ❄️";
-                var snowflakeType = rel.SnowflakeLevel >= 2 ? "Snowflake2" : "Snowflake";
+                var item = new ListViewItem($"{fromTable}.{rel.SourceAttribute}");
+                item.SubItems.Add(toTable);
+                item.SubItems.Add(rel.IsActive ? "Active" : "Inactive");
+
+                listViewRelationships.Items.Add(item);
+            }
+
+            // Display snowflake relationships
+            foreach (var rel in _relationships.Where(r => r.IsSnowflake))
+            {
+                if (filter != null &&
+                    !rel.SourceTable.Equals(filter, StringComparison.OrdinalIgnoreCase) &&
+                    !rel.TargetTable.Equals(filter, StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                var fromTable = _selectedTables.ContainsKey(rel.SourceTable)
+                    ? _selectedTables[rel.SourceTable].DisplayName ?? rel.SourceTable
+                    : rel.SourceTable;
+                var toTable = _selectedTables.ContainsKey(rel.TargetTable)
+                    ? _selectedTables[rel.TargetTable].DisplayName ?? rel.TargetTable
+                    : rel.TargetTable;
+
+                var snowflakeIcon = rel.SnowflakeLevel >= 3 ? " ❄️❄️❄️" : (rel.SnowflakeLevel == 2 ? " ❄️❄️" : " ❄️");
+                var snowflakeType = rel.SnowflakeLevel >= 3 ? "Snowflake3" : (rel.SnowflakeLevel == 2 ? "Snowflake2" : "Snowflake");
                 var item = new ListViewItem($"{fromTable}.{rel.SourceAttribute}");
                 item.SubItems.Add($"{toTable}{snowflakeIcon}");
                 item.SubItems.Add(rel.IsActive ? $"{snowflakeType} (Active)" : $"{snowflakeType} (Inactive)");
+
+                listViewRelationships.Items.Add(item);
+            }
+
+            // Display additional (extra-table) relationships
+            foreach (var rel in _additionalRelationships)
+            {
+                if (filter != null &&
+                    !rel.SourceTable.Equals(filter, StringComparison.OrdinalIgnoreCase) &&
+                    !rel.TargetTable.Equals(filter, StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                var fromTable = _selectedTables.ContainsKey(rel.SourceTable)
+                    ? _selectedTables[rel.SourceTable].DisplayName ?? rel.SourceTable
+                    : rel.SourceTable;
+                var toTable = _selectedTables.ContainsKey(rel.TargetTable)
+                    ? _selectedTables[rel.TargetTable].DisplayName ?? rel.TargetTable
+                    : rel.TargetTable;
+
+                var item = new ListViewItem($"{fromTable}.{rel.SourceAttribute}");
+                item.SubItems.Add(toTable);
+                item.SubItems.Add(rel.IsActive ? "Active" : "Inactive");
+                item.ForeColor = System.Drawing.Color.DarkBlue;
 
                 listViewRelationships.Items.Add(item);
             }
@@ -2244,6 +2317,8 @@ namespace DataverseToPowerBI.XrmToolBox
                 listViewAttributes.Items.Clear();
                 groupBoxAttributes.Text = "Attributes";
                 UpdateViewWarningPanel(null);
+                _relationshipFilterTable = null;
+                UpdateRelationshipsDisplay();
                 return;
             }
 
@@ -2251,6 +2326,8 @@ namespace DataverseToPowerBI.XrmToolBox
             _collapsedLookupGroups.Clear();
             UpdateViewWarningPanel(logicalName);
             UpdateAttributesDisplay(logicalName);
+            _relationshipFilterTable = logicalName;
+            UpdateRelationshipsDisplay();
         }
 
         private static bool IsLookupType(string? attrType)
@@ -4190,20 +4267,20 @@ namespace DataverseToPowerBI.XrmToolBox
             
             // Fixed-width columns
             const int editWidth = 30;
-            const int roleWidth = 55;
-            const int countMeasureWidth = 52;
-            const int linkMeasureWidth = 52;
-            const int attrsWidth = 50;
+            const int roleWidth = 40;
+            const int countMeasureWidth = 40;
+            const int linkMeasureWidth = 40;
+            const int attrsWidth = 40;
             const int scrollBarWidth = 20;
             
-            var modeWidth = colMode.Width; // 0 when hidden, 90 when visible
+            var modeWidth = colMode.Width > 0 ? 60 : 0; // 0 when hidden, 60 when visible
             
             var availableWidth = listViewSelectedTables.Width - editWidth - roleWidth - modeWidth - countMeasureWidth - linkMeasureWidth - attrsWidth - scrollBarWidth;
             if (availableWidth <= 0) return;
             
-            // Distribute remaining: Table (20%), Default Fields (40%), Filter (40%)
-            var tableWidth = (int)(availableWidth * 0.20);
-            var formWidth = (int)(availableWidth * 0.40);
+            // Distribute remaining: Table (35%), Default Fields (25%), Filter (40%)
+            var tableWidth = (int)(availableWidth * 0.35);
+            var formWidth = (int)(availableWidth * 0.25);
             var filterWidth = availableWidth - tableWidth - formWidth;
             
             listViewSelectedTables.BeginUpdate();
