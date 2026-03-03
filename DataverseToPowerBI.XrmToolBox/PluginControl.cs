@@ -1767,48 +1767,52 @@ namespace DataverseToPowerBI.XrmToolBox
         }
         
         /// <summary>
-        /// Auto-creates display name overrides for primary name attributes to disambiguate
-        /// generic names like "Name" across tables (e.g., "Account Name", "Contact Name").
-        /// Only runs when UseDisplayNameRenamesInPowerQuery is enabled.
-        /// Skips if the display name already starts with the table display name.
+        /// Removes legacy auto-generated primary-name overrides that prefixed
+        /// the table display name (for example, "Account Name").
+        ///
+        /// Display names should remain metadata-driven unless the user explicitly
+        /// edits an override in the grid.
         /// </summary>
         private void AutoOverridePrimaryNameAttributes()
         {
-            if (_currentModel?.UseDisplayNameRenamesInPowerQuery != true)
-                return;
-            
+            var tablesToRemove = new List<string>();
+
             foreach (var kvp in _selectedTables)
             {
                 var tableName = kvp.Key;
                 var table = kvp.Value;
                 var primaryName = table.PrimaryNameAttribute;
-                
-                if (string.IsNullOrEmpty(primaryName) || !_tableAttributes.ContainsKey(tableName))
+
+                if (string.IsNullOrEmpty(primaryName) ||
+                    !_tableAttributes.ContainsKey(tableName) ||
+                    !_attributeDisplayNameOverrides.ContainsKey(tableName))
                     continue;
-                
-                // Skip if an override already exists for this attribute
-                if (_attributeDisplayNameOverrides.ContainsKey(tableName) &&
-                    _attributeDisplayNameOverrides[tableName].ContainsKey(primaryName))
-                    continue;
-                
+
                 var attr = _tableAttributes[tableName].FirstOrDefault(a =>
                     a.LogicalName.Equals(primaryName, StringComparison.OrdinalIgnoreCase));
-                if (attr == null) continue;
-                
+                if (attr == null)
+                    continue;
+
                 var tableDisplayName = table.DisplayName ?? tableName;
                 var attrDisplayName = attr.DisplayName ?? attr.SchemaName ?? attr.LogicalName;
-                
-                // Skip if display name already starts with the table name
-                if (attrDisplayName.StartsWith(tableDisplayName, StringComparison.OrdinalIgnoreCase))
+
+                var tableOverrides = _attributeDisplayNameOverrides[tableName];
+                if (!tableOverrides.TryGetValue(primaryName, out var existingOverride) ||
+                    string.IsNullOrWhiteSpace(existingOverride))
                     continue;
-                
-                // Create override: "{TableDisplayName} {OriginalDisplayName}"
-                var overrideName = $"{tableDisplayName} {attrDisplayName}";
-                
-                if (!_attributeDisplayNameOverrides.ContainsKey(tableName))
-                    _attributeDisplayNameOverrides[tableName] = new Dictionary<string, string>();
-                
-                _attributeDisplayNameOverrides[tableName][primaryName] = overrideName;
+
+                var legacyAutoOverride = $"{tableDisplayName} {attrDisplayName}";
+                if (existingOverride.Equals(legacyAutoOverride, StringComparison.OrdinalIgnoreCase))
+                {
+                    tableOverrides.Remove(primaryName);
+                    if (tableOverrides.Count == 0)
+                        tablesToRemove.Add(tableName);
+                }
+            }
+
+            foreach (var tableName in tablesToRemove)
+            {
+                _attributeDisplayNameOverrides.Remove(tableName);
             }
         }
         
@@ -2355,6 +2359,20 @@ namespace DataverseToPowerBI.XrmToolBox
                    attrType?.Equals("Customer", StringComparison.OrdinalIgnoreCase) == true;
         }
 
+        private static bool IsIdentityOrLookupDisplayType(string? attrType)
+        {
+            return attrType?.Equals("Uniqueidentifier", StringComparison.OrdinalIgnoreCase) == true ||
+                   IsLookupType(attrType);
+        }
+
+        private static string GetDefaultAttributeDisplayName(AttributeMetadata attr)
+        {
+            if (IsIdentityOrLookupDisplayType(attr.AttributeType))
+                return attr.LogicalName;
+
+            return attr.DisplayName ?? attr.LogicalName;
+        }
+
         private static bool IsOwningLookup(string logicalName)
         {
             return logicalName.Equals("owninguser", StringComparison.OrdinalIgnoreCase) ||
@@ -2800,7 +2818,7 @@ namespace DataverseToPowerBI.XrmToolBox
                     if (!selected.Contains(attr.LogicalName) && !requiredAttrs.Contains(attr.LogicalName)) continue;
                     var dn = overrides.ContainsKey(attr.LogicalName)
                         ? overrides[attr.LogicalName]
-                        : (attr.DisplayName ?? attr.LogicalName);
+                        : GetDefaultAttributeDisplayName(attr);
                     if (!displayNameCounts.ContainsKey(dn))
                         displayNameCounts[dn] = 0;
                     displayNameCounts[dn]++;
@@ -2852,7 +2870,10 @@ namespace DataverseToPowerBI.XrmToolBox
                     var collapsedKey = $"{logicalName}.{attr.LogicalName}";
                     var isCollapsed = !_collapsedLookupGroups.Contains(collapsedKey);
 
-                    var headerText = $"{(isCollapsed ? "▶" : "▼")} {attr.DisplayName ?? attr.LogicalName}";
+                    var lookupHeaderDisplayName = overrides.ContainsKey(attr.LogicalName)
+                        ? overrides[attr.LogicalName]
+                        : GetDefaultAttributeDisplayName(attr);
+                    var headerText = $"{(isCollapsed ? "▶" : "▼")} {lookupHeaderDisplayName}";
                     var headerItem = new ListViewItem
                     {
                         Text = "",
@@ -2889,7 +2910,7 @@ namespace DataverseToPowerBI.XrmToolBox
                     {
                         var nameDisplayValue = overrides.ContainsKey(attr.LogicalName)
                             ? overrides[attr.LogicalName]
-                            : (attr.DisplayName ?? attr.LogicalName);
+                            : GetDefaultAttributeDisplayName(attr);
                         var displayRows = new List<(string SubType, string LogicalName, string DisplayName, string Type, bool Include, bool Hidden)>
                         {
                             ("id", attr.LogicalName, attr.LogicalName, "GUID", includeId, resolved.IdFieldHidden ?? false)
@@ -2938,7 +2959,9 @@ namespace DataverseToPowerBI.XrmToolBox
 
                         if (hasExpand && expandConfig!.Attributes.Count > 0)
                         {
-                            var lookupDisplayBase = attr.DisplayName ?? attr.LogicalName;
+                            var lookupDisplayBase = overrides.ContainsKey(attr.LogicalName)
+                                ? overrides[attr.LogicalName]
+                                : GetDefaultAttributeDisplayName(attr);
                             foreach (var expAttr in expandConfig.Attributes.OrderBy(a => a.DisplayName ?? a.LogicalName))
                             {
                                 if (!string.IsNullOrEmpty(searchText))
@@ -3068,7 +3091,9 @@ namespace DataverseToPowerBI.XrmToolBox
                 if (showSelected && !isSelected && !isRequired) continue;
                 if (!string.IsNullOrEmpty(searchText))
                 {
-                    if (!(attr.DisplayName?.ToLower().Contains(searchText) == true ||
+                      var searchDisplayName = GetDefaultAttributeDisplayName(attr);
+                      if (!(searchDisplayName.ToLower().Contains(searchText) ||
+                          attr.DisplayName?.ToLower().Contains(searchText) == true ||
                           attr.LogicalName.ToLower().Contains(searchText)))
                         continue;
                 }
@@ -3076,7 +3101,7 @@ namespace DataverseToPowerBI.XrmToolBox
                 var hasOverride = overrides.ContainsKey(attr.LogicalName);
                 var effectiveDisplayName = hasOverride
                     ? overrides[attr.LogicalName]
-                    : (attr.DisplayName ?? attr.LogicalName);
+                    : GetDefaultAttributeDisplayName(attr);
                 var displayText = hasOverride ? $"{effectiveDisplayName} *" : effectiveDisplayName;
 
                 var item = new ListViewItem();
@@ -3795,7 +3820,7 @@ namespace DataverseToPowerBI.XrmToolBox
                 {
                     var attr = _tableAttributes[tableName].FirstOrDefault(a => 
                         a.LogicalName.Equals(attrLogicalName, StringComparison.OrdinalIgnoreCase));
-                    if (attr != null) originalDisplayName = attr.DisplayName ?? attr.LogicalName;
+                    if (attr != null) originalDisplayName = GetDefaultAttributeDisplayName(attr);
                 }
                 
                 if (!_attributeDisplayNameOverrides.ContainsKey(tableName))
