@@ -8,7 +8,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
-- _No unreleased changes yet._
+### Fixed
+
+- **Display Name Rename Option Restricted to Import Mode** — The "Rename columns to display names in Power Query" checkbox is now hidden and disabled when the storage mode is Direct Query or Dual. This option uses a `Table.RenameColumns` Power Query step that is only valid for Import mode; enabling it for DirectQuery or Dual previously caused Power Query errors. The checkbox is automatically shown when Import mode is selected and hidden otherwise.
+
+---
+
+## [1.2026.5.165] - 2026-03-04
+
+### Fixed
+
+- **Geography Data Category Preservation** — Power BI column data categories (e.g. City, Country/Region, Latitude, Longitude) manually assigned in Power BI Desktop are no longer wiped on a model rebuild. The builder now reads back any `dataCategory` property from the existing TMDL and re-emits it on the regenerated column, so geographic heat-maps and map visuals retain their field bindings across builds.
 
 ---
 

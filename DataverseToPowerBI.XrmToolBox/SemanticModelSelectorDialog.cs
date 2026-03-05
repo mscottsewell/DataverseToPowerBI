@@ -642,6 +642,7 @@ namespace DataverseToPowerBI.XrmToolBox
             txtTemplatePath.Text = model.TemplatePath ?? "";
             chkUseDisplayNameAliases.Checked = model.UseDisplayNameRenamesInPowerQuery;
             chkIncludeChoiceNumericValues.Checked = model.IncludeChoiceNumericValueAsHiddenAttributes;
+            UpdateDisplayNameRenameVisibility();
 
             // Indicate if model is from different environment
             bool isCurrentEnv = NormalizeUrl(model.DataverseUrl ?? "") == _currentEnvironmentUrl;
@@ -661,6 +662,7 @@ namespace DataverseToPowerBI.XrmToolBox
             txtTemplatePath.Text = "";
             chkUseDisplayNameAliases.Checked = true;
             chkIncludeChoiceNumericValues.Checked = false;
+            UpdateDisplayNameRenameVisibility();
         }
 
         private void CboConnectionType_SelectedIndexChanged(object sender, EventArgs e)
@@ -716,6 +718,7 @@ namespace DataverseToPowerBI.XrmToolBox
 
         private void CboStorageMode_SelectedIndexChanged(object sender, EventArgs e)
         {
+            UpdateDisplayNameRenameVisibility();
             if (_selectedModel != null)
             {
                 _selectedModel.StorageMode = cboStorageMode.SelectedIndex switch
@@ -737,6 +740,22 @@ namespace DataverseToPowerBI.XrmToolBox
             txtFabricEndpoint.Visible = isFabricLink;
             lblFabricDatabase.Visible = isFabricLink;
             txtFabricDatabase.Visible = isFabricLink;
+        }
+
+        /// <summary>
+        /// Hides and disables the "Rename columns to display names" checkbox
+        /// when the storage mode is not Import (Direct Query and Dual modes
+        /// do not support Power Query rename steps).
+        /// </summary>
+        private void UpdateDisplayNameRenameVisibility()
+        {
+            bool isImport = cboStorageMode.SelectedIndex == 3; // "Import"
+            chkUseDisplayNameAliases.Visible = isImport;
+            chkUseDisplayNameAliases.Enabled = isImport;
+            if (!isImport)
+            {
+                chkUseDisplayNameAliases.Checked = false;
+            }
         }
 
         private void ListViewModels_DoubleClick(object sender, EventArgs e)
@@ -1503,6 +1522,7 @@ namespace DataverseToPowerBI.XrmToolBox
             };
             cboStorageMode.Items.AddRange(new object[] { "Direct Query", "Dual - All Dimensions", "Dual - Select Tables", "Import" });
             cboStorageMode.SelectedIndex = 0;
+            cboStorageMode.SelectedIndexChanged += CboStorageMode_SelectedIndexChanged_New;
 
             // Fabric fields
             lblFabricEndpoint = new Label
@@ -1535,13 +1555,15 @@ namespace DataverseToPowerBI.XrmToolBox
                 Visible = false
             };
 
-            // Display Name Renaming checkbox
+            // Display Name Renaming checkbox — hidden by default (only valid for Import mode)
             chkUseDisplayNameAliases = new CheckBox
             {
                 Text = "Rename columns to display names in Power Query",
                 Location = new Point(20, 535),
                 Size = new Size(460, 20),
-                Checked = true
+                Checked = false,
+                Visible = false,
+                Enabled = false
             };
 
             chkIncludeChoiceNumericValues = new CheckBox
@@ -1605,6 +1627,17 @@ namespace DataverseToPowerBI.XrmToolBox
             txtFabricEndpoint.Visible = isFabricLink;
             lblFabricDatabase.Visible = isFabricLink;
             txtFabricDatabase.Visible = isFabricLink;
+        }
+
+        private void CboStorageMode_SelectedIndexChanged_New(object sender, EventArgs e)
+        {
+            bool isImport = cboStorageMode.SelectedIndex == 3;
+            chkUseDisplayNameAliases.Visible = isImport;
+            chkUseDisplayNameAliases.Enabled = isImport;
+            if (!isImport)
+            {
+                chkUseDisplayNameAliases.Checked = false;
+            }
         }
 
         private void TxtName_TextChanged(object sender, EventArgs e)

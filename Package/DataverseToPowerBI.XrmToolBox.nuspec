@@ -2,7 +2,7 @@
 <package>
 	<metadata>
     <id>DataverseToPowerBI.XrmToolBox</id>
-    <version>1.2026.5.163</version>
+    <version>1.2026.5.167</version>
     <title>Dataverse to Power BI Semantic Model</title>
     <authors>Scott Sewell</authors>
     <owners>mScottSewell</owners>
@@ -11,6 +11,9 @@
     <description>Extract Dataverse metadata and generate Power BI TMDL/PBIP semantic models with automatic table relationships, calendar tables, and incremental change detection.</description>
     <summary>XrmToolBox plugin for generating Power BI semantic models from Dataverse metadata</summary>
     <releaseNotes>
+      v1.2026.5.166 - The "Rename columns to display names in Power Query" option is now hidden and disabled when storage mode is Direct Query or Dual. This Power Query rename step is only valid for Import mode; using it with DirectQuery or Dual caused errors.
+      v1.2026.5.165 - Geography data categories (City, Country/Region, Latitude, Longitude, etc.) manually assigned in Power BI Desktop are now preserved across model rebuilds. The tool reads back any dataCategory value from the existing TMDL and re-emits it on the regenerated column.
+      v1.2026.5.163 - Ensured that optionset numeric values are correctly preserved when generating the TMDL as integers, preventing unintended conversion to display names in the Power BI model. This update addresses an issue where optionset values were being emitted as their localized labels instead of their underlying integer values, which could cause problems for measures and relationships relying on the numeric values. With this fix, optionset fields will now consistently output the correct integer values in the TMDL, while still allowing for display name overrides where appropriate.
       v1.2026.5.162 - Fixed a bug with display names of lookups and unique identifier fields where the display name would not update correctly after being edited inline in the attribute grid. This release ensures that any manual edits to display names are properly saved and reflected in the UI, and that reverting to default naming conventions works as expected without leaving stale overrides.
       v1.2026.5.157 - Identifier/lookup display-name stability update
 

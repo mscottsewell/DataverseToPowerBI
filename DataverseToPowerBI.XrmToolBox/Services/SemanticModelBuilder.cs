@@ -354,6 +354,9 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                     var dtMatch = Regex.Match(block, @"dataType:\s*(.+)$", RegexOptions.Multiline);
                     if (dtMatch.Success) info.DataType = dtMatch.Groups[1].Value.Trim();
 
+                    var dataCatMatch = Regex.Match(block, @"dataCategory:\s*(.+)$", RegexOptions.Multiline);
+                    if (dataCatMatch.Success) info.DataCategory = dataCatMatch.Groups[1].Value.Trim();
+
                     info.IsHidden = Regex.IsMatch(block, @"^\s*isHidden\s*$", RegexOptions.Multiline);
 
                     // Extract annotations (key = value pairs)
@@ -394,6 +397,8 @@ namespace DataverseToPowerBI.XrmToolBox.Services
             public string? SummarizeBy { get; set; }
             public string? DataType { get; set; }
             public bool IsHidden { get; set; }
+            /// <summary>User-assigned Power BI data category (e.g. City, Country/Region, Latitude, Longitude). Preserved across rebuilds.</summary>
+            public string? DataCategory { get; set; }
             public Dictionary<string, string> Annotations { get; set; } = new(StringComparer.OrdinalIgnoreCase);
         }
 
@@ -3318,6 +3323,46 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                 var existingRels = ParseExistingRelationships(existingContent);
                 var expectedRels = GenerateExpectedRelationships(newRelationships, tables, attributeDisplayInfo, dateTableConfig);
 
+                // Relationships that are user-added and still valid are preserved during incremental
+                // update and should not be reported as "removed" in the preview dialog.
+                var existingRelBlocks = ParseExistingRelationshipBlocks(relationshipsPath);
+                var toolRelKeys = BuildToolRelationshipKeys(tables, newRelationships, attributeDisplayInfo, dateTableConfig);
+                var tablesFolder = Path.Combine(pbipFolder, $"{projectName}.SemanticModel", "definition", "tables");
+                var validColumnReferences = BuildValidColumnReferenceSet(tablesFolder);
+                var preservedUserRelationships = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+                foreach (var kvp in existingRelBlocks)
+                {
+                    if (toolRelKeys.Contains(kvp.Key))
+                    {
+                        continue;
+                    }
+
+                    var arrowIndex = kvp.Key.IndexOf('→');
+                    if (arrowIndex <= 0 || arrowIndex >= kvp.Key.Length - 1)
+                    {
+                        continue;
+                    }
+
+                    var fromRef = kvp.Key.Substring(0, arrowIndex).Trim();
+                    var toRef = kvp.Key.Substring(arrowIndex + 1).Trim();
+                    var fromKey = NormalizeColumnReferenceKey(fromRef);
+                    var toKey = NormalizeColumnReferenceKey(toRef);
+
+                    if (string.IsNullOrEmpty(fromKey) || string.IsNullOrEmpty(toKey) ||
+                        !validColumnReferences.Contains(fromKey) || !validColumnReferences.Contains(toKey))
+                    {
+                        continue;
+                    }
+
+                    var fromParts = fromKey.Split('|');
+                    var toParts = toKey.Split('|');
+                    if (fromParts.Length == 2 && toParts.Length == 2)
+                    {
+                        preservedUserRelationships.Add($"{fromParts[0]}.{fromParts[1]}→{toParts[0]}.{toParts[1]}");
+                    }
+                }
+
                 // DEBUG: Log what we're comparing
                 DebugLogger.Log($"Relationship comparison:");
                 DebugLogger.Log($"  Existing ({existingRels.Count}): {string.Join(", ", existingRels.Take(3))}...");
@@ -3335,7 +3380,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
 
                 foreach (var existing in existingRels)
                 {
-                    if (!expectedRels.Contains(existing))
+                    if (!expectedRels.Contains(existing) && !preservedUserRelationships.Contains(existing))
                     {
                         analysis.RemovedRelationships.Add(existing);
                         DebugLogger.Log($"  REMOVED: {existing}");
@@ -5407,6 +5452,11 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                 }
                 sb.AppendLine($"\t\tsummarizeBy: {summarizeBy}");
                 sb.AppendLine($"\t\tsourceColumn: {col.SourceColumn}");
+                // Preserve user-assigned data category (e.g. City, Country/Region, Latitude, Longitude)
+                if (existingCol?.DataCategory != null)
+                {
+                    sb.AppendLine($"\t\tdataCategory: {existingCol.DataCategory}");
+                }
                 sb.AppendLine();
                 if (isDateTime)
                 {

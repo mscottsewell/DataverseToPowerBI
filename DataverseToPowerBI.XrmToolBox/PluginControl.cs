@@ -5621,7 +5621,11 @@ namespace DataverseToPowerBI.XrmToolBox
                     "Not Connected", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
-            
+
+            // Save current model state before showing the selector so that if the user
+            // switches away and then comes back, all selections (including views) are preserved.
+            SaveCurrentModel();
+
             ShowSemanticModelSelector();
         }
         

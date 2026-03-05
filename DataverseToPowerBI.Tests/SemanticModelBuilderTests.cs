@@ -130,6 +130,76 @@ namespace DataverseToPowerBI.Tests
         }
 
         [Fact]
+        public void ParseExistingColumnMetadata_ExtractsDataCategory()
+        {
+            var cols = _builder.ParseExistingColumnMetadata(FixturePath("SampleTable.tmdl"));
+            Assert.Equal("City", cols["address1_city"].DataCategory);
+            Assert.Null(cols["name"].DataCategory);
+        }
+
+        [Fact]
+        public void GenerateTableTmdl_PreservesDataCategoryOnRebuild()
+        {
+            // Use a builder with display-name renames disabled so SourceColumn == LogicalName
+            var localBuilder = new SemanticModelBuilder(_tempDir, UseDisplayNameRenamesInPowerQuery: false);
+
+            var table = new ExportTable
+            {
+                LogicalName = "account",
+                DisplayName = "Account",
+                SchemaName = "Account",
+                PrimaryIdAttribute = "accountid",
+                PrimaryNameAttribute = "name",
+                Attributes = new List<DataverseToPowerBI.Core.Models.AttributeMetadata>
+                {
+                    new DataverseToPowerBI.Core.Models.AttributeMetadata { LogicalName = "address1_city", DisplayName = "City", AttributeType = "String" }
+                }
+            };
+
+            var existingMetadata = new Dictionary<string, SemanticModelBuilder.ExistingColumnInfo>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["address1_city"] = new SemanticModelBuilder.ExistingColumnInfo
+                {
+                    SourceColumn = "address1_city",
+                    DataCategory = "City"
+                }
+            };
+
+            var tmdl = localBuilder.GenerateTableTmdl(
+                table,
+                new Dictionary<string, Dictionary<string, AttributeDisplayInfo>>(StringComparer.OrdinalIgnoreCase),
+                new HashSet<string>(StringComparer.OrdinalIgnoreCase),
+                existingColumnMetadata: existingMetadata);
+
+            Assert.Contains("dataCategory: City", tmdl);
+        }
+
+        [Fact]
+        public void GenerateTableTmdl_OmitsDataCategoryWhenNotPreviouslySet()
+        {
+            var table = new ExportTable
+            {
+                LogicalName = "account",
+                DisplayName = "Account",
+                SchemaName = "Account",
+                PrimaryIdAttribute = "accountid",
+                PrimaryNameAttribute = "name",
+                Attributes = new List<DataverseToPowerBI.Core.Models.AttributeMetadata>
+                {
+                    new DataverseToPowerBI.Core.Models.AttributeMetadata { LogicalName = "name", DisplayName = "Account Name", AttributeType = "String" }
+                }
+            };
+
+            var tmdl = _builder.GenerateTableTmdl(
+                table,
+                new Dictionary<string, Dictionary<string, AttributeDisplayInfo>>(StringComparer.OrdinalIgnoreCase),
+                new HashSet<string>(StringComparer.OrdinalIgnoreCase));
+
+            // No dataCategory should appear on a plain text column with no prior categorization
+            Assert.DoesNotContain("dataCategory: City", tmdl);
+        }
+
+        [Fact]
         public void ParseExistingColumnMetadata_ExtractsUserAnnotations()
         {
             var cols = _builder.ParseExistingColumnMetadata(FixturePath("SampleTable.tmdl"));
@@ -382,6 +452,64 @@ namespace DataverseToPowerBI.Tests
             Assert.Equal(1, removed);
             Assert.Contains("valid-guid", repaired);
             Assert.DoesNotContain("invalid-guid", repaired);
+        }
+
+        [Fact]
+        public void AnalyzeRelationshipChanges_DoesNotReportPreservedUserRelationshipsAsRemoved()
+        {
+            var projectName = "TestModel";
+            var pbipFolder = Path.Combine(_tempDir, "env", projectName);
+            var definitionFolder = Path.Combine(pbipFolder, $"{projectName}.SemanticModel", "definition");
+            var tablesFolder = Path.Combine(definitionFolder, "tables");
+            Directory.CreateDirectory(tablesFolder);
+
+            File.WriteAllText(Path.Combine(tablesFolder, "Opportunity.tmdl"),
+                "table Opportunity\r\n" +
+                "\tcolumn 'Actual Close Date'\r\n" +
+                "\tcolumn 'Est. close date'\r\n");
+
+            File.WriteAllText(Path.Combine(tablesFolder, "Date.tmdl"),
+                "table Date\r\n" +
+                "\tcolumn Date\r\n");
+
+            var relationshipsPath = Path.Combine(definitionFolder, "relationships.tmdl");
+            File.WriteAllText(relationshipsPath,
+                "relationship rel-guid-1\r\n" +
+                "\tfromColumn: Opportunity.'Actual Close Date'\r\n" +
+                "\ttoColumn: Date.Date\r\n\r\n" +
+                "relationship rel-guid-2\r\n" +
+                "\tfromColumn: Opportunity.'Est. close date'\r\n" +
+                "\ttoColumn: Date.Date\r\n");
+
+            var analyzeMethod = typeof(SemanticModelBuilder).GetMethod(
+                "AnalyzeRelationshipChanges",
+                BindingFlags.NonPublic | BindingFlags.Instance);
+
+            Assert.NotNull(analyzeMethod);
+
+            var tables = new List<ExportTable>
+            {
+                new ExportTable { LogicalName = "opportunity", DisplayName = "Opportunity", PrimaryIdAttribute = "opportunityid" },
+                new ExportTable { LogicalName = "date", DisplayName = "Date", PrimaryIdAttribute = "Date" }
+            };
+
+            var result = analyzeMethod!.Invoke(_builder, new object[]
+            {
+                pbipFolder,
+                projectName,
+                new List<DataverseToPowerBI.Core.Models.ExportRelationship>(),
+                tables,
+                new Dictionary<string, Dictionary<string, AttributeDisplayInfo>>(StringComparer.OrdinalIgnoreCase),
+                new DataverseToPowerBI.Core.Models.DateTableConfig()
+            });
+
+            Assert.NotNull(result);
+
+            var removedProp = result!.GetType().GetProperty("RemovedRelationships");
+            Assert.NotNull(removedProp);
+
+            var removed = Assert.IsAssignableFrom<IEnumerable<string>>(removedProp!.GetValue(result));
+            Assert.Empty(removed);
         }
 
         #endregion

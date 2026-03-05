@@ -51,6 +51,18 @@ table Account
 
 		annotation UnderlyingDateTimeDataType = Date
 
+	/// City | Source: account.address1_city
+	column City
+		dataType: string
+		lineageTag: 88888888-9999-aaaa-bbbb-cccccccccccc
+		summarizeBy: none
+		sourceColumn: address1_city
+		dataCategory: City
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation DataverseToPowerBI_LogicalName = address1_city
+
 	measure 'Custom Measure' = SUM(Account[Revenue]) * 2
 		formatString: $#,0.00
 		lineageTag: 55555555-6666-7777-8888-999999999999

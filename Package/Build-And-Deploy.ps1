@@ -171,8 +171,12 @@ if (-not $DeployOnly) {
     & $nugetExe pack $nuspecFile -OutputDirectory $packageRoot -BasePath $repoRoot -Version $fullVersion -NoPackageAnalysis
     if ($LASTEXITCODE -ne 0) { throw "NuGet pack failed" }
     
-    $nupkgFile = Get-ChildItem "$packageRoot\*.nupkg" | Select-Object -First 1
-    Write-Host "  ✓ Package created: $($nupkgFile.Name)" -ForegroundColor Green
+    $expectedNupkg = "DataverseToPowerBI.XrmToolBox.$fullVersion.nupkg"
+    $nupkgFile = Join-Path $packageRoot $expectedNupkg
+    if (-not (Test-Path $nupkgFile)) {
+        throw "Expected package not found: $expectedNupkg"
+    }
+    Write-Host "  ✓ Package created: $expectedNupkg" -ForegroundColor Green
     Write-Host ""
 }
 
