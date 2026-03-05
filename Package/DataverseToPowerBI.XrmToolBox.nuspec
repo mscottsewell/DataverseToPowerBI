@@ -2,7 +2,7 @@
 <package>
 	<metadata>
     <id>DataverseToPowerBI.XrmToolBox</id>
-    <version>1.2026.5.158</version>
+    <version>1.2026.5.163</version>
     <title>Dataverse to Power BI Semantic Model</title>
     <authors>Scott Sewell</authors>
     <owners>mScottSewell</owners>
@@ -11,7 +11,8 @@
     <description>Extract Dataverse metadata and generate Power BI TMDL/PBIP semantic models with automatic table relationships, calendar tables, and incremental change detection.</description>
     <summary>XrmToolBox plugin for generating Power BI semantic models from Dataverse metadata</summary>
     <releaseNotes>
-  v1.2026.5.157 - Identifier/lookup display-name stability update
+      v1.2026.5.162 - Fixed a bug with display names of lookups and unique identifier fields where the display name would not update correctly after being edited inline in the attribute grid. This release ensures that any manual edits to display names are properly saved and reflected in the UI, and that reverting to default naming conventions works as expected without leaving stale overrides.
+      v1.2026.5.157 - Identifier/lookup display-name stability update
 
   Fixed in this release:
   - Unique identifier and lookup-family fields now keep logical-name display by default in the attribute grid.

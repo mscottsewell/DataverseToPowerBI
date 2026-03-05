@@ -1373,7 +1373,7 @@ namespace DataverseToPowerBI.XrmToolBox
         private void InitializeComponent(string environmentUrl)
         {
             this.Text = "Create New Semantic Model";
-            this.Size = new Size(520, 635);
+            this.ClientSize = new Size(500, 650);
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;

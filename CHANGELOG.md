@@ -12,11 +12,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
-## [1.2026.5.157] - 2026-03-02
+## [1.2026.5.162] - 2026-03-03
 
 ### Fixed
 
-- **Identifier/Lookup Display Name Stability** — Unique identifier and lookup-family fields now keep their logical names by default in the attribute grid and no longer inherit table-prefixed display names unless the user explicitly sets an override.
+- **Identifier/Lookup Display Name Stability** — Fixed a bug where display names of lookup fields and unique identifier fields would not update correctly after being edited inline in the attribute grid. This release ensures that any manual edits to display names are properly saved and reflected in the UI, and that reverting to default naming conventions works as expected without leaving stale overrides.
+
+  - The issue was caused by a mismatch between the default naming logic used for display names and the inline edit behavior, which could result in stale override entries that prevented updates from being applied correctly. The fix involved aligning the default naming logic with the inline edit flow and ensuring that clearing an override properly reverts to the default naming convention.
 
 - **Legacy Auto-Override Cleanup** — Removed legacy auto-generated primary-name overrides of the form `{TableDisplayName} {PrimaryNameDisplayName}` during metadata load/revalidation, preventing old saved configurations from reintroducing table-name-prefixed labels.
 

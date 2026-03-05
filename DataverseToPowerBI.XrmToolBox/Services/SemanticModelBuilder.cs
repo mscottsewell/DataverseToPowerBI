@@ -538,15 +538,10 @@ namespace DataverseToPowerBI.XrmToolBox.Services
             {
                 if (!toolGeneratedKeys.Contains(kvp.Key))
                 {
-                    // Skip stale date table relationships (tool-generated in a previous config)
-                    if (kvp.Key.EndsWith("→Date.Date", StringComparison.OrdinalIgnoreCase))
-                    {
-                        DebugLogger.Log($"Removing stale date relationship: {kvp.Key}");
-                        continue;
-                    }
-
                     // Skip stale relationships that reference tables/columns no longer present
-                    // in the current model selection.
+                    // in the current model selection. This covers date table relationships too —
+                    // if the Date table no longer exists, Date|Date won't be in validColumnReferences
+                    // and the relationship will be pruned naturally.
                     if (validColumnReferences != null)
                     {
                         var arrowIndex = kvp.Key.IndexOf('→');
@@ -3165,11 +3160,12 @@ namespace DataverseToPowerBI.XrmToolBox.Services
 
             var selectList = string.Join(", ", sqlFields);
             
-            // Build WHERE clause - use view filter if present, otherwise default statecode filter
+            // Build WHERE clause from the view's filter only.
+            // No default statecode filter is added — if no view is selected, or the view has no
+            // filterable conditions, the query returns all rows.
             var whereClause = "";
             if (table.View != null && !string.IsNullOrWhiteSpace(table.View.FetchXml))
             {
-                // Convert FetchXML to SQL WHERE clause for comparison
                 var utcOffset = (int)(dateTableConfig?.UtcOffsetHours ?? -6);
                 var converter = new FetchXmlToSqlConverter(
                     utcOffset,
@@ -3182,14 +3178,6 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                 {
                     whereClause = $" WHERE {conversionResult.SqlWhereClause}";
                 }
-                else if (table.HasStateCode)
-                {
-                    whereClause = " WHERE Base.statecode=0";
-                }
-            }
-            else if (table.HasStateCode)
-            {
-                whereClause = " WHERE Base.statecode=0";
             }
             
             // Build JOIN clauses string for FabricLink (includes OUTER APPLY for multi-select fields)
@@ -5554,16 +5542,12 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                 sb.AppendLine($"\t\t\t\t    {joinClause}");
             }
             
-            // Build WHERE clause - use view filter if present, otherwise default statecode filter
+            // Build WHERE clause from the view's filter only.
+            // No default statecode filter is added — if no view is selected, or the view has no
+            // filterable conditions, the query returns all rows.
             if (!string.IsNullOrWhiteSpace(viewFilterClause))
             {
-                // View filter is present - use it (it likely already includes statecode condition)
                 sb.AppendLine($"\t\t\t\t    WHERE {viewFilterClause}");
-            }
-            else if (table.HasStateCode)
-            {
-                // No view filter - apply default active records filter
-                sb.AppendLine($"\t\t\t\t    WHERE Base.statecode = 0");
             }
 
             // Add a single trailing blank line after the final SQL line.
@@ -5874,8 +5858,11 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                     // GUID types
                     "lookup" or "owner" or "customer" or "uniqueidentifier" => ("string", null, "uniqueidentifier", "none"),
                     
+                    // Single-choice values are stored as numeric option codes.
+                    "picklist" or "state" or "status" => ("int64", "0", "int", "none"),
+
                     // Text types
-                    "string" or "memo" or "picklist" or "state" or "status" or "multiselectpicklist" => ("string", null, "nvarchar", "none"),
+                    "string" or "memo" or "multiselectpicklist" => ("string", null, "nvarchar", "none"),
                     
                     _ => ("string", null, "nvarchar", "none")
                 };
@@ -5902,8 +5889,11 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                 // GUID types (lookups are GUIDs in the database)
                 "lookup" or "owner" or "customer" or "uniqueidentifier" => ("string", null, "uniqueidentifier", "none"),
                 
+                // Single-choice values are stored as numeric option codes.
+                "picklist" or "state" or "status" => ("int64", "0", "int", "none"),
+
                 // Text types
-                "string" or "memo" or "picklist" or "state" or "status" or "multiselectpicklist" => ("string", null, "nvarchar", "none"),
+                "string" or "memo" or "multiselectpicklist" => ("string", null, "nvarchar", "none"),
                 
                 _ => ("string", null, "nvarchar", "none")
             };

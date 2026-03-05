@@ -588,9 +588,11 @@ namespace DataverseToPowerBI.Tests
         #region Date Relationship Dedup Tests
 
         [Fact]
-        public void ExtractUserRelationships_SkipsStaleDateRelationships()
+        public void ExtractUserRelationships_SkipsStaleDateRelationshipsWhenDateTableAbsent()
         {
-            // A relationship ending in →Date.Date that is NOT in toolKeys should be skipped (not preserved)
+            // A date relationship is stale when the Date table is no longer in the model.
+            // validColumnReferences will not contain Date|Date in this case, so the relationship
+            // should be dropped (missing reference check).
             var blocks = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             {
                 ["Account.createdon→Date.Date"] = "relationship some-guid\r\n\tfromColumn: createdon\r\n\ttoColumn: Date\r\n",
@@ -598,12 +600,45 @@ namespace DataverseToPowerBI.Tests
             };
             var toolKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase); // empty = nothing is tool-managed
 
-            var result = _builder.ExtractUserRelationships(blocks, toolKeys);
+            // validColumnReferences has A|customfield and B|id but NOT Date|Date (date table absent)
+            var validRefs = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Account|createdon",
+                "A|customfield",
+                "B|id"
+                // Date|Date intentionally absent
+            };
+
+            var result = _builder.ExtractUserRelationships(blocks, toolKeys, validRefs);
             Assert.NotNull(result);
-            // The date relationship should be skipped
-            Assert.DoesNotContain("createdon", result);
+            // The date relationship should be dropped (Date|Date not in valid refs)
+            Assert.DoesNotContain("some-guid", result);
             // The non-date relationship should be preserved
             Assert.Contains("customfield", result);
+        }
+
+        [Fact]
+        public void ExtractUserRelationships_PreservesUserInactiveDateRelationshipWhenDateTableExists()
+        {
+            // User manually added an inactive relationship (e.g. Task.Due Date → Date.Date).
+            // Both columns exist in the model, so it must be preserved even though it is not
+            // in toolKeys (the tool never generated it).
+            var taskDueDateKey = "'Task'.'Due Date'→Date.Date";
+            var blocks = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                [taskDueDateKey] = "relationship user-inactive-guid\r\n\tisActive: false\r\n\tfromColumn: 'Task'.'Due Date'\r\n\ttoColumn: Date.Date\r\n"
+            };
+            var toolKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase); // tool did not generate this
+
+            var validRefs = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Task|Due Date",
+                "Date|Date"   // Date table is present in the model
+            };
+
+            var result = _builder.ExtractUserRelationships(blocks, toolKeys, validRefs);
+            Assert.NotNull(result);
+            Assert.Contains("user-inactive-guid", result);
         }
 
         [Fact]
@@ -1527,6 +1562,9 @@ namespace DataverseToPowerBI.Tests
             AssertColumnUsesSummarizeByNone(tmdl, "statecode");
             AssertColumnUsesSummarizeByNone(tmdl, "statuscode");
             AssertColumnUsesSummarizeByNone(tmdl, "donotemail");
+            AssertColumnDataType(tmdl, "prioritycode", "int64");
+            AssertColumnDataType(tmdl, "statecode", "int64");
+            AssertColumnDataType(tmdl, "statuscode", "int64");
         }
 
         [Fact]
@@ -1597,6 +1635,26 @@ namespace DataverseToPowerBI.Tests
 
             var block = tmdl.Substring(start, end - start);
             Assert.Contains("summarizeBy: none", block);
+        }
+
+        private static void AssertColumnDataType(string tmdl, string columnName, string expectedDataType)
+        {
+            var marker = $"\tcolumn {columnName}";
+            var start = tmdl.IndexOf(marker, StringComparison.Ordinal);
+            Assert.True(start >= 0, $"Column '{columnName}' was not found in generated TMDL.");
+
+            var end = tmdl.IndexOf("\n\tcolumn ", start + marker.Length, StringComparison.Ordinal);
+            if (end < 0)
+            {
+                end = tmdl.IndexOf("\n\tpartition ", start + marker.Length, StringComparison.Ordinal);
+            }
+            if (end < 0)
+            {
+                end = tmdl.Length;
+            }
+
+            var block = tmdl.Substring(start, end - start);
+            Assert.Contains($"dataType: {expectedDataType}", block);
         }
 
         [Fact]

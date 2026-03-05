@@ -452,6 +452,43 @@ namespace DataverseToPowerBI.Tests
             Assert.Contains("WHERE", tableContent, StringComparison.OrdinalIgnoreCase);
         }
 
+        [Fact]
+        public void Build_TableWithViewNoFilter_DoesNotAddStatecodeFilter()
+        {
+            // View with no filter conditions — the table's SQL should have no WHERE clause at all.
+            var fetchXml = @"<fetch><entity name=""account""></entity></fetch>";
+
+            var scenario = new ScenarioBuilder()
+                .WithTable(new TableBuilder("account", "Account")
+                    .WithPrimaryName("name", "Account Name")
+                    .WithStatusFields()
+                    .WithView("All Accounts", fetchXml));
+
+            var builder = CreateBuilder();
+            builder.Build(scenario.SemanticModelName, _tempDir, scenario.DataverseUrl,
+                scenario.BuildTables(), scenario.BuildRelationships(), scenario.BuildAttributeDisplayInfo());
+
+            var tableContent = TmdlAssertions.ReadTableTmdl(_tempDir, "Account");
+            Assert.DoesNotContain("WHERE", tableContent, StringComparison.OrdinalIgnoreCase);
+        }
+
+        [Fact]
+        public void Build_TableWithNoView_DoesNotAddStatecodeFilter()
+        {
+            // Table with no view selected and HasStateCode=true — no WHERE clause should be added.
+            var scenario = new ScenarioBuilder()
+                .WithTable(new TableBuilder("account", "Account")
+                    .WithPrimaryName("name", "Account Name")
+                    .WithStatusFields());
+
+            var builder = CreateBuilder();
+            builder.Build(scenario.SemanticModelName, _tempDir, scenario.DataverseUrl,
+                scenario.BuildTables(), scenario.BuildRelationships(), scenario.BuildAttributeDisplayInfo());
+
+            var tableContent = TmdlAssertions.ReadTableTmdl(_tempDir, "Account");
+            Assert.DoesNotContain("WHERE", tableContent, StringComparison.OrdinalIgnoreCase);
+        }
+
         #endregion
 
         #region Multiple Table Types

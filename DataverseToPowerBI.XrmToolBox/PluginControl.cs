@@ -2373,6 +2373,11 @@ namespace DataverseToPowerBI.XrmToolBox
             return attr.DisplayName ?? attr.LogicalName;
         }
 
+        private static string GetLookupLabelDisplayName(AttributeMetadata attr)
+        {
+            return attr.DisplayName ?? attr.LogicalName;
+        }
+
         private static bool IsOwningLookup(string logicalName)
         {
             return logicalName.Equals("owninguser", StringComparison.OrdinalIgnoreCase) ||
@@ -2872,7 +2877,7 @@ namespace DataverseToPowerBI.XrmToolBox
 
                     var lookupHeaderDisplayName = overrides.ContainsKey(attr.LogicalName)
                         ? overrides[attr.LogicalName]
-                        : GetDefaultAttributeDisplayName(attr);
+                        : GetLookupLabelDisplayName(attr);
                     var headerText = $"{(isCollapsed ? "▶" : "▼")} {lookupHeaderDisplayName}";
                     var headerItem = new ListViewItem
                     {
@@ -2910,7 +2915,7 @@ namespace DataverseToPowerBI.XrmToolBox
                     {
                         var nameDisplayValue = overrides.ContainsKey(attr.LogicalName)
                             ? overrides[attr.LogicalName]
-                            : GetDefaultAttributeDisplayName(attr);
+                            : GetLookupLabelDisplayName(attr);
                         var displayRows = new List<(string SubType, string LogicalName, string DisplayName, string Type, bool Include, bool Hidden)>
                         {
                             ("id", attr.LogicalName, attr.LogicalName, "GUID", includeId, resolved.IdFieldHidden ?? false)
@@ -2961,7 +2966,7 @@ namespace DataverseToPowerBI.XrmToolBox
                         {
                             var lookupDisplayBase = overrides.ContainsKey(attr.LogicalName)
                                 ? overrides[attr.LogicalName]
-                                : GetDefaultAttributeDisplayName(attr);
+                                : GetLookupLabelDisplayName(attr);
                             foreach (var expAttr in expandConfig.Attributes.OrderBy(a => a.DisplayName ?? a.LogicalName))
                             {
                                 if (!string.IsNullOrEmpty(searchText))
