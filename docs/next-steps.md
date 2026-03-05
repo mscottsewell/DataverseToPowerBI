@@ -63,4 +63,4 @@ Once you publish your report to Power BI Service:
 - [Create Hierarchies](https://learn.microsoft.com/en-us/power-bi/transform-model/desktop-create-and-manage-relationships)
 - [Row-Level Security in Power BI](https://learn.microsoft.com/en-us/power-bi/enterprise/service-admin-rls)
 - [Enable Single Sign-On for DirectQuery](https://learn.microsoft.com/power-bi/connect-data/service-azure-sql-database-with-direct-connect#single-sign-on)
-- [Latest DataverseToPowerBI release notes](../CHANGELOG.md)
+- [Latest DataverseToPowerBI release notes](CHANGELOG.md)

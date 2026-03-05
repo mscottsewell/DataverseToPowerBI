@@ -365,7 +365,7 @@ Format: `Major.Year.Minor.Patch` (e.g., `1.2026.3.0`)
    $version = "1.3.39"
    ```
 
-2. Update `CHANGELOG.md` with release notes
+2. Update `docs/CHANGELOG.md` with release notes
 
 3. Build and test:
    ```powershell

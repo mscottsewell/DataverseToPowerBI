@@ -83,7 +83,7 @@ This tool eliminates all of that complexity:
 
 ## 📌 Latest Changes
 
-For the most up-to-date release details, see [CHANGELOG.md](CHANGELOG.md).
+For the most up-to-date release details, see [CHANGELOG.md](docs/CHANGELOG.md).
 
 ---
 
@@ -719,7 +719,7 @@ See [Managing Multiple Relationships](#-managing-multiple-relationships) for mor
 
 ## 👩‍💻 For Developers
 
-Want to contribute, extend, or build from source? See our [Developer Guide](CONTRIBUTING.md) for:
+Want to contribute, extend, or build from source? See our [Developer Guide](docs/CONTRIBUTING.md) for:
 
 - Repository structure
 - Build instructions

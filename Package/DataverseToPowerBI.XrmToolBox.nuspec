@@ -27,7 +27,7 @@
   - Add Tables to Model dialog with full-environment table browser, manual relationship builder, and persisted additional table/relationship configuration.
   - Relationship-required lookup columns are automatically included for manually defined relationships.
 
-  Full details: CHANGELOG.md
+  Full details: docs/CHANGELOG.md
     </releaseNotes>
     <tags>XrmToolBox PowerBI Dataverse TMDL PBIP SemanticModel</tags>
     <projectUrl>https://github.com/mscottsewell/DataverseToPowerBI</projectUrl>

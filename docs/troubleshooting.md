@@ -62,7 +62,7 @@ View filters using `eq-userid`, `ne-userid`, `eq-userteams`, or `ne-userteams` c
 ### "Multi-select choice labels missing or incorrect (FabricLink mode)"
 If multi-select choice labels don’t resolve correctly in FabricLink, update to the latest release and rebuild the model. Label resolution should split values on semicolons (`;`) and use the attribute logical name for `OptionSetName`.
 
-See [CHANGELOG.md](../CHANGELOG.md) for current release details.
+See [CHANGELOG.md](CHANGELOG.md) for current release details.
 
 ### "Quick Select changed my filter from Selected to All"
 Quick Select now preserves your current attribute filter mode.
@@ -73,7 +73,7 @@ Quick Select now preserves your current attribute filter mode.
 
 If you still see mode switching, update to the latest release.
 
-See [CHANGELOG.md](../CHANGELOG.md) for current release details.
+See [CHANGELOG.md](CHANGELOG.md) for current release details.
 
 ### "Quick-selected attributes are missing after reopening"
 Selected attributes are saved in the semantic model configuration (`PluginSettings.SelectedAttributes`) and should reload on open.
@@ -88,7 +88,7 @@ Note:
 
 If selections appear to drop, update to the latest release.
 
-See [CHANGELOG.md](../CHANGELOG.md) for current release details.
+See [CHANGELOG.md](CHANGELOG.md) for current release details.
 
 ### "What does the Default checkmark mean for expanded child rows?"
 In View mode, expanded child rows in the **Default** column are now marked only when they come from the currently selected view's linked columns.
