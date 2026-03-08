@@ -235,6 +235,21 @@ namespace DataverseToPowerBI.XrmToolBox
         }
 
         /// <summary>
+        /// Updates only the template path for a model and preserves LastUsed ordering.
+        /// </summary>
+        public void UpdateTemplatePath(string modelName, string templatePath)
+        {
+            var existing = _modelsFile.Models.FirstOrDefault(m => m.Name == modelName);
+            if (existing == null)
+            {
+                throw new Exception($"Semantic model '{modelName}' not found.");
+            }
+
+            existing.TemplatePath = templatePath;
+            SaveModelsFile();
+        }
+
+        /// <summary>
         /// Set a model as the current/active model
         /// </summary>
         public void SetCurrentModel(string name)

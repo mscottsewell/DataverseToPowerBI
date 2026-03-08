@@ -95,5 +95,10 @@ namespace DataverseToPowerBI.XrmToolBox
         /// Preview icon for TMDL Preview
         /// </summary>
         public static Image PreviewIcon => LoadIcon("TMDLPreviewIcon");
+
+        /// <summary>
+        /// GitHub-style icon used for opening online help.
+        /// </summary>
+        public static Image GitHubIcon => LoadIcon("GitHubIcon");
     }
 }

@@ -619,6 +619,11 @@ namespace DataverseToPowerBI.XrmToolBox
 
         private void DisplayDetails(SemanticModelConfig model)
         {
+            if (TryMigrateTemplatePathToEnvironmentDefault(model))
+            {
+                ConfigurationsChanged = true;
+            }
+
             txtName.Text = model.Name;
             txtEnvironmentUrl.Text = model.DataverseUrl ?? "";
             
@@ -845,6 +850,13 @@ namespace DataverseToPowerBI.XrmToolBox
                 ConfigurationsChanged = true;
             }
 
+            // If this model still uses the legacy AppData template location, migrate
+            // it to the per-environment template now that environment is confirmed.
+            if (TryMigrateTemplatePathToEnvironmentDefault(_selectedModel))
+            {
+                ConfigurationsChanged = true;
+            }
+
             this.DialogResult = DialogResult.OK;
             this.Close();
         }
@@ -852,7 +864,7 @@ namespace DataverseToPowerBI.XrmToolBox
         private void BtnNew_Click(object sender, EventArgs e)
         {
             var defaultFolder = GetDefaultWorkingFolder();
-            var defaultTemplate = GetDefaultTemplatePath();
+            var defaultTemplate = GetDefaultTemplatePath(defaultFolder, _currentEnvironmentUrl);
 
             using (var dialog = new NewSemanticModelDialogXrm(defaultFolder, _currentEnvironmentUrl, defaultTemplate))
             {
@@ -1290,6 +1302,13 @@ namespace DataverseToPowerBI.XrmToolBox
                 txtWorkingFolder.Text = selectedPath;
                 _selectedModel.WorkingFolder = selectedPath;
                 _modelManager.SaveModel(_selectedModel);
+
+                // Auto-migrate only legacy template paths to the new per-environment default.
+                if (TryMigrateTemplatePathToEnvironmentDefault(_selectedModel))
+                {
+                    txtTemplatePath.Text = _selectedModel.TemplatePath ?? "";
+                }
+
                 ConfigurationsChanged = true;
             }
         }
@@ -1325,8 +1344,17 @@ namespace DataverseToPowerBI.XrmToolBox
             return folder;
         }
 
-        private string GetDefaultTemplatePath()
+        private string GetDefaultTemplatePath(string? workingFolder = null, string? environmentUrl = null)
         {
+            if (!string.IsNullOrWhiteSpace(workingFolder) && !string.IsNullOrWhiteSpace(environmentUrl))
+            {
+                var envTemplatePath = EnsureEnvironmentTemplate(workingFolder, environmentUrl, null);
+                if (!string.IsNullOrEmpty(envTemplatePath))
+                {
+                    return envTemplatePath!;
+                }
+            }
+
             // First check settings folder for installed template
             var settingsFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
                 "MscrmTools", "XrmToolBox", "Settings", "DataverseToPowerBI", "PBIP_DefaultTemplate");
@@ -1347,6 +1375,179 @@ namespace DataverseToPowerBI.XrmToolBox
 
             // Fall back to plugin DLL folder
             return Path.Combine(pluginFolder ?? "", "PBIP_DefaultTemplate");
+        }
+
+        private bool TryMigrateTemplatePathToEnvironmentDefault(SemanticModelConfig model)
+        {
+            if (model == null)
+            {
+                return false;
+            }
+
+            var environmentTemplatePath = EnsureEnvironmentTemplate(
+                model.WorkingFolder,
+                model.DataverseUrl,
+                model.TemplatePath);
+
+            if (string.IsNullOrWhiteSpace(environmentTemplatePath))
+            {
+                return false;
+            }
+
+            var currentPath = NormalizePath(model.TemplatePath);
+            var environmentPath = NormalizePath(environmentTemplatePath);
+
+            if (string.Equals(currentPath, environmentPath, StringComparison.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+
+            // Only migrate legacy AppData defaults (or empty values).
+            // Custom user-selected template locations are preserved.
+            if (!string.IsNullOrWhiteSpace(currentPath) && !IsLegacyAppDataTemplatePath(currentPath))
+            {
+                return false;
+            }
+
+            model.TemplatePath = environmentTemplatePath;
+            _modelManager.UpdateTemplatePath(model.Name, environmentTemplatePath);
+            return true;
+        }
+
+        private string? EnsureEnvironmentTemplate(string workingFolder, string environmentUrl, string? preferredSourceTemplate)
+        {
+            if (string.IsNullOrWhiteSpace(workingFolder) || string.IsNullOrWhiteSpace(environmentUrl))
+            {
+                return null;
+            }
+
+            var environmentName = UrlHelper.ExtractEnvironmentName(environmentUrl);
+            if (string.IsNullOrWhiteSpace(environmentName))
+            {
+                return null;
+            }
+
+            var environmentTemplateFolder = Path.Combine(workingFolder, environmentName, "-PBIP_Template");
+
+            if (Directory.Exists(environmentTemplateFolder) && Directory.GetFiles(environmentTemplateFolder, "*.pbip").Length > 0)
+            {
+                return environmentTemplateFolder;
+            }
+
+            var sourceTemplatePath = ResolveTemplateSourcePath(preferredSourceTemplate, environmentTemplateFolder);
+            if (string.IsNullOrWhiteSpace(sourceTemplatePath) || !Directory.Exists(sourceTemplatePath))
+            {
+                return null;
+            }
+
+            try
+            {
+                CopyDirectory(sourceTemplatePath, environmentTemplateFolder);
+            }
+            catch
+            {
+                return null;
+            }
+
+            return Directory.GetFiles(environmentTemplateFolder, "*.pbip").Length > 0
+                ? environmentTemplateFolder
+                : null;
+        }
+
+        private string? ResolveTemplateSourcePath(string? preferredSourceTemplate, string environmentTemplateFolder)
+        {
+            var candidates = new List<string>();
+
+            if (!string.IsNullOrWhiteSpace(preferredSourceTemplate))
+            {
+                candidates.Add(preferredSourceTemplate);
+            }
+
+            var installedTemplate = _modelManager.GetInstalledTemplatePath();
+            if (!string.IsNullOrWhiteSpace(installedTemplate))
+            {
+                candidates.Add(installedTemplate);
+            }
+
+            candidates.Add(GetDefaultTemplatePath());
+
+            var normalizedEnvPath = NormalizePath(environmentTemplateFolder);
+
+            foreach (var candidate in candidates)
+            {
+                var normalizedCandidate = NormalizePath(candidate);
+                if (string.IsNullOrWhiteSpace(normalizedCandidate))
+                {
+                    continue;
+                }
+
+                if (string.Equals(normalizedCandidate, normalizedEnvPath, StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                if (Directory.Exists(normalizedCandidate) && Directory.GetFiles(normalizedCandidate, "*.pbip").Length > 0)
+                {
+                    return normalizedCandidate;
+                }
+            }
+
+            return null;
+        }
+
+        private bool IsLegacyAppDataTemplatePath(string path)
+        {
+            var normalized = NormalizePath(path);
+            if (string.IsNullOrWhiteSpace(normalized))
+            {
+                return false;
+            }
+
+            var appDataRoot = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+
+            var settingsTemplate = NormalizePath(Path.Combine(appDataRoot,
+                "MscrmTools", "XrmToolBox", "Settings", "DataverseToPowerBI", "PBIP_DefaultTemplate"));
+
+            var pluginsTemplate = NormalizePath(Path.Combine(appDataRoot,
+                "MscrmTools", "XrmToolBox", "Plugins", "DataverseToPowerBI", "PBIP_DefaultTemplate"));
+
+            return string.Equals(normalized, settingsTemplate, StringComparison.OrdinalIgnoreCase)
+                || string.Equals(normalized, pluginsTemplate, StringComparison.OrdinalIgnoreCase);
+        }
+
+        private string NormalizePath(string? path)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                return string.Empty;
+            }
+
+            try
+            {
+                var fullPath = Path.GetFullPath(path);
+                return fullPath.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+            }
+            catch
+            {
+                return path.Trim().TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+            }
+        }
+
+        private void CopyDirectory(string sourceDir, string destDir)
+        {
+            Directory.CreateDirectory(destDir);
+
+            foreach (var file in Directory.GetFiles(sourceDir))
+            {
+                var destFile = Path.Combine(destDir, Path.GetFileName(file));
+                File.Copy(file, destFile, true);
+            }
+
+            foreach (var dir in Directory.GetDirectories(sourceDir))
+            {
+                var destSubDir = Path.Combine(destDir, Path.GetFileName(dir));
+                CopyDirectory(dir, destSubDir);
+            }
         }
     }
 

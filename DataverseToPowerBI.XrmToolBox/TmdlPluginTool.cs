@@ -45,8 +45,13 @@ namespace DataverseToPowerBI.XrmToolBox
      ExportMetadata("BackgroundColor", "White"),
      ExportMetadata("PrimaryFontColor", "Indigo"),
      ExportMetadata("SecondaryFontColor", "Gray")]
-    public class TmdlPluginTool : PluginBase
+    public class TmdlPluginTool : PluginBase, IHelpPlugin
     {
+        /// <summary>
+        /// Gets the plugin help URL displayed by XrmToolBox in the plugin menu.
+        /// </summary>
+        public string HelpUrl => "https://github.com/mscottsewell/DataverseToPowerBI/blob/main/README.md";
+
         public override IXrmToolBoxPluginControl GetControl()
         {
             return new PluginControl();

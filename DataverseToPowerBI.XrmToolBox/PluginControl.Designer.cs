@@ -31,6 +31,7 @@ namespace DataverseToPowerBI.XrmToolBox
             this.btnSemanticModel = new System.Windows.Forms.ToolStripButton();
             this.btnChangeWorkingFolder = new System.Windows.Forms.ToolStripButton();
             this.btnSettingsFolder = new System.Windows.Forms.ToolStripButton();
+            this.btnHelp = new System.Windows.Forms.ToolStripButton();
 
             this.splitContainerMain = new System.Windows.Forms.SplitContainer();
             this.splitContainerLeft = new System.Windows.Forms.SplitContainer();
@@ -118,7 +119,8 @@ namespace DataverseToPowerBI.XrmToolBox
                 this.toolStripSeparator2,
                 this.btnSemanticModel,
                 this.btnChangeWorkingFolder,
-                this.btnSettingsFolder
+                this.btnSettingsFolder,
+                this.btnHelp
             });
             this.toolStripRibbon.Location = new System.Drawing.Point(0, 0);
             this.toolStripRibbon.Name = "toolStripRibbon";
@@ -208,6 +210,14 @@ namespace DataverseToPowerBI.XrmToolBox
             this.btnSettingsFolder.Text = "Settings Folder";
             this.btnSettingsFolder.ToolTipText = "Open the settings/configuration folder";
             this.btnSettingsFolder.Click += new System.EventHandler(this.BtnSettingsFolder_Click);
+
+            // btnHelp
+            this.btnHelp.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.ImageAndText;
+            this.btnHelp.Name = "btnHelp";
+            this.btnHelp.Size = new System.Drawing.Size(61, 25);
+            this.btnHelp.Text = "Help";
+            this.btnHelp.ToolTipText = "Open Help for DataverseToPowerBI on GitHub";
+            this.btnHelp.Click += new System.EventHandler(this.BtnHelp_Click);
 
             // splitContainerMain
             this.splitContainerMain.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -672,6 +682,7 @@ namespace DataverseToPowerBI.XrmToolBox
         private System.Windows.Forms.ToolStripButton btnSemanticModel;
         private System.Windows.Forms.ToolStripButton btnChangeWorkingFolder;
         private System.Windows.Forms.ToolStripButton btnSettingsFolder;
+        private System.Windows.Forms.ToolStripButton btnHelp;
 
         private System.Windows.Forms.SplitContainer splitContainerMain;
         private System.Windows.Forms.SplitContainer splitContainerLeft;

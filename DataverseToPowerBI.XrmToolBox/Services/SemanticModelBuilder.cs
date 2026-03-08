@@ -450,6 +450,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
             public Dictionary<string, ExistingColumnInfo> ColumnMetadata { get; set; } = new(StringComparer.OrdinalIgnoreCase);
             public string? UserMeasuresSection { get; set; }
             public string? UserHierarchiesSection { get; set; }
+            public string? QueryGroup { get; set; }
         }
 
         /// <summary>
@@ -484,7 +485,8 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                         LineageTags = ParseExistingLineageTags(tablePath),
                         ColumnMetadata = ParseExistingColumnMetadata(tablePath),
                         UserMeasuresSection = ExtractUserMeasuresSection(tablePath),
-                        UserHierarchiesSection = ExtractUserHierarchiesSection(tablePath)
+                        UserHierarchiesSection = ExtractUserHierarchiesSection(tablePath),
+                        QueryGroup = ParseExistingQueryGroup(tablePath)
                     };
                 }
                 catch (Exception ex)
@@ -494,6 +496,64 @@ namespace DataverseToPowerBI.XrmToolBox.Services
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// Reads the queryGroup property from a partition in an existing TMDL file.
+        /// Returns null if the file doesn't exist or has no queryGroup property.
+        /// </summary>
+        internal static string? ParseExistingQueryGroup(string tmdlPath)
+        {
+            if (!File.Exists(tmdlPath))
+                return null;
+
+            try
+            {
+                var content = File.ReadAllText(tmdlPath);
+                var match = Regex.Match(content, @"^\t\tqueryGroup:\s*(.+)$", RegexOptions.Multiline);
+                return match.Success ? match.Groups[1].Value.Trim() : null;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Reads queryGroup properties from an expressions.tmdl file.
+        /// Returns a dictionary keyed by expression name (e.g. "FabricSQLEndpoint").
+        /// </summary>
+        internal static Dictionary<string, string> ParseExistingExpressionQueryGroups(string expressionsPath)
+        {
+            var groups = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            if (!File.Exists(expressionsPath))
+                return groups;
+
+            try
+            {
+                var content = File.ReadAllText(expressionsPath);
+                // Split into expression blocks
+                var exprMatches = Regex.Matches(content, @"^expression\s+(\S+)\s*=", RegexOptions.Multiline);
+                for (int i = 0; i < exprMatches.Count; i++)
+                {
+                    var exprName = exprMatches[i].Groups[1].Value;
+                    var blockStart = exprMatches[i].Index;
+                    var blockEnd = i + 1 < exprMatches.Count ? exprMatches[i + 1].Index : content.Length;
+                    var block = content.Substring(blockStart, blockEnd - blockStart);
+
+                    var groupMatch = Regex.Match(block, @"^\tqueryGroup:\s*(.+)$", RegexOptions.Multiline);
+                    if (groupMatch.Success)
+                    {
+                        groups[exprName] = groupMatch.Groups[1].Value.Trim();
+                    }
+                }
+            }
+            catch
+            {
+                // Ignore parse errors — will default to "Parameters"
+            }
+
+            return groups;
         }
 
         /// <summary>
@@ -1497,7 +1557,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
         /// The table must have Enable Load checked (which is the default for tables) — without it,
         /// PBI Desktop throws KeyNotFoundException during Sql.Database refresh.
         /// </summary>
-        internal string GenerateDataverseUrlTableTmdl(string normalizedUrl, Dictionary<string, string>? existingTags = null)
+        internal string GenerateDataverseUrlTableTmdl(string normalizedUrl, Dictionary<string, string>? existingTags = null, string? existingQueryGroup = null)
         {
             var sb = new StringBuilder();
             sb.AppendLine("table DataverseURL");
@@ -1517,6 +1577,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
             sb.AppendLine();
             sb.AppendLine("\tpartition DataverseURL = m");
             sb.AppendLine("\t\tmode: import");
+            sb.AppendLine($"\t\tqueryGroup: {existingQueryGroup ?? "Parameters"}");
             sb.AppendLine($"\t\tsource = \"{normalizedUrl}\" meta [IsParameterQuery=true, Type=\"Text\", IsParameterQueryRequired=true]");
             sb.AppendLine();
             sb.AppendLine("\tchangedProperty = IsHidden");
@@ -1531,14 +1592,14 @@ namespace DataverseToPowerBI.XrmToolBox.Services
         /// <summary>
         /// Writes the DataverseURL parameter table TMDL file.
         /// </summary>
-        private void WriteDataverseUrlTable(string path, string normalizedUrl, Dictionary<string, string>? existingTags = null)
+        private void WriteDataverseUrlTable(string path, string normalizedUrl, Dictionary<string, string>? existingTags = null, string? existingQueryGroup = null)
         {
             // Ensure the parent directory exists (tables/ may not exist yet during initial build)
             var dir = Path.GetDirectoryName(path);
             if (!string.IsNullOrEmpty(dir))
                 Directory.CreateDirectory(dir);
 
-            WriteTmdlFile(path, GenerateDataverseUrlTableTmdl(normalizedUrl, existingTags));
+            WriteTmdlFile(path, GenerateDataverseUrlTableTmdl(normalizedUrl, existingTags, existingQueryGroup));
             DebugLogger.Log($"Generated DataverseURL parameter table: {normalizedUrl}");
         }
 
@@ -1548,7 +1609,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
         /// the organization unique name — the TDS endpoint database name.
         /// This value may differ from the URL subdomain.
         /// </summary>
-        internal string GenerateDataverseUniqueDBTableTmdl(string organizationUniqueName, Dictionary<string, string>? existingTags = null)
+        internal string GenerateDataverseUniqueDBTableTmdl(string organizationUniqueName, Dictionary<string, string>? existingTags = null, string? existingQueryGroup = null)
         {
             var sb = new StringBuilder();
             sb.AppendLine("table DataverseUniqueDB");
@@ -1568,6 +1629,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
             sb.AppendLine();
             sb.AppendLine("\tpartition DataverseUniqueDB = m");
             sb.AppendLine("\t\tmode: import");
+            sb.AppendLine($"\t\tqueryGroup: {existingQueryGroup ?? "Parameters"}");
             sb.AppendLine($"\t\tsource = \"{organizationUniqueName}\" meta [IsParameterQuery=true, Type=\"Text\", IsParameterQueryRequired=true]");
             sb.AppendLine();
             sb.AppendLine("\tchangedProperty = IsHidden");
@@ -1582,13 +1644,13 @@ namespace DataverseToPowerBI.XrmToolBox.Services
         /// <summary>
         /// Writes the DataverseUniqueDB parameter table TMDL file.
         /// </summary>
-        private void WriteDataverseUniqueDBTable(string path, string organizationUniqueName, Dictionary<string, string>? existingTags = null)
+        private void WriteDataverseUniqueDBTable(string path, string organizationUniqueName, Dictionary<string, string>? existingTags = null, string? existingQueryGroup = null)
         {
             var dir = Path.GetDirectoryName(path);
             if (!string.IsNullOrEmpty(dir))
                 Directory.CreateDirectory(dir);
 
-            WriteTmdlFile(path, GenerateDataverseUniqueDBTableTmdl(organizationUniqueName, existingTags));
+            WriteTmdlFile(path, GenerateDataverseUniqueDBTableTmdl(organizationUniqueName, existingTags, existingQueryGroup));
             DebugLogger.Log($"Generated DataverseUniqueDB parameter table: {organizationUniqueName}");
         }
 
@@ -1686,7 +1748,8 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                     dateTableConfig,
                     outputFolder,
                     preservationInfo?.LineageTags,
-                    preservationInfo?.ColumnMetadata);
+                    preservationInfo?.ColumnMetadata,
+                    preservationInfo?.QueryGroup);
 
                 if (!string.IsNullOrEmpty(preservationInfo?.UserHierarchiesSection))
                 {
@@ -4271,6 +4334,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                 var sourceFile = File.Exists(tablePath) ? tablePath : renamedFromPath;
                 var existingTags = sourceFile != null ? ParseExistingLineageTags(sourceFile) : new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
                 var existingColMeta = sourceFile != null ? ParseExistingColumnMetadata(sourceFile) : new Dictionary<string, SemanticModelBuilder.ExistingColumnInfo>(StringComparer.OrdinalIgnoreCase);
+                var existingQueryGroup = sourceFile != null ? ParseExistingQueryGroup(sourceFile) : null;
 
                 // Extract user measures if table exists (from current or renamed file)
                 string? userMeasuresSection = null;
@@ -4287,7 +4351,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                 }
 
                 // Generate new table TMDL with preserved lineage tags and column metadata
-                var tableTmdl = GenerateTableTmdl(table, attributeDisplayInfo, requiredLookupColumns, dateTableConfig, existingLineageTags: existingTags, existingColumnMetadata: existingColMeta);
+                var tableTmdl = GenerateTableTmdl(table, attributeDisplayInfo, requiredLookupColumns, dateTableConfig, existingLineageTags: existingTags, existingColumnMetadata: existingColMeta, existingQueryGroup: existingQueryGroup);
 
                 // Append user hierarchies if any
                 if (!string.IsNullOrEmpty(userHierarchiesSection))
@@ -4611,6 +4675,20 @@ namespace DataverseToPowerBI.XrmToolBox.Services
             sb.AppendLine("annotation __PBI_TimeIntelligenceEnabled = 0");
             sb.AppendLine();
 
+            // Define Power Query folder groups
+            sb.AppendLine("queryGroup Parameters");
+            sb.AppendLine();
+            sb.AppendLine("\tannotation PBI_QueryGroupOrder = 0");
+            sb.AppendLine();
+            sb.AppendLine("queryGroup Facts");
+            sb.AppendLine();
+            sb.AppendLine("\tannotation PBI_QueryGroupOrder = 1");
+            sb.AppendLine();
+            sb.AppendLine("queryGroup Dimensions");
+            sb.AppendLine();
+            sb.AppendLine("\tannotation PBI_QueryGroupOrder = 2");
+            sb.AppendLine();
+
             // Build PBI_QueryOrder annotation
             var tableNames = tables.Select(t => t.DisplayName ?? t.SchemaName ?? t.LogicalName).ToList();
             if (IsFabricLink)
@@ -4821,18 +4899,24 @@ namespace DataverseToPowerBI.XrmToolBox.Services
             var expressionsPath = Path.Combine(definitionFolder, "expressions.tmdl");
             var dataverseUrlTablePath = Path.Combine(definitionFolder, "tables", "DataverseURL.tmdl");
 
-            // Parse existing lineage tags if preserving
+            // Parse existing lineage tags and query groups if preserving
             Dictionary<string, string>? dvUrlTags = null;
             Dictionary<string, string>? exprTags = null;
             Dictionary<string, string>? dvDbTags = null;
+            string? dvUrlQueryGroup = null;
+            string? dvDbQueryGroup = null;
+            Dictionary<string, string>? exprQueryGroups = null;
             if (preserveIds)
             {
                 dvUrlTags = ParseExistingLineageTags(dataverseUrlTablePath);
+                dvUrlQueryGroup = ParseExistingQueryGroup(dataverseUrlTablePath);
                 exprTags = ParseExistingLineageTags(expressionsPath);
+                exprQueryGroups = ParseExistingExpressionQueryGroups(expressionsPath);
                 if (ShouldIncludeDataverseUniqueDbTable)
                 {
                     var dataverseUniqueDBTablePath = Path.Combine(definitionFolder, "tables", "DataverseUniqueDB.tmdl");
                     dvDbTags = ParseExistingLineageTags(dataverseUniqueDBTablePath);
+                    dvDbQueryGroup = ParseExistingQueryGroup(dataverseUniqueDBTablePath);
                 }
             }
 
@@ -4840,18 +4924,18 @@ namespace DataverseToPowerBI.XrmToolBox.Services
             {
                 // FabricLink: Create expressions for FabricSQLEndpoint and FabricLakehouse
                 var fabricExpressions = GenerateFabricLinkExpressions(
-                    _fabricLinkEndpoint ?? "", _fabricLinkDatabase ?? "", exprTags);
+                    _fabricLinkEndpoint ?? "", _fabricLinkDatabase ?? "", exprTags, exprQueryGroups);
                 WriteTmdlFile(expressionsPath, fabricExpressions);
                 
                 // FabricLink ALSO needs DataverseURL as a table (for DAX measure references)
-                WriteDataverseUrlTable(dataverseUrlTablePath, normalizedUrl, dvUrlTags);
+                WriteDataverseUrlTable(dataverseUrlTablePath, normalizedUrl, dvUrlTags, dvUrlQueryGroup);
 
                 RemoveDataverseUniqueDbTable(definitionFolder);
             }
             else
             {
                 // TDS: DataverseURL is a hidden parameter table with mode: import and Enable Load.
-                WriteDataverseUrlTable(dataverseUrlTablePath, normalizedUrl, dvUrlTags);
+                WriteDataverseUrlTable(dataverseUrlTablePath, normalizedUrl, dvUrlTags, dvUrlQueryGroup);
 
                 // Remove any stale expressions.tmdl from previous FabricLink or legacy builds
                 if (File.Exists(expressionsPath))
@@ -4878,7 +4962,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
             if (ShouldIncludeDataverseUniqueDbTable)
             {
                 var uniqueDbTablePath = Path.Combine(definitionFolder, "tables", "DataverseUniqueDB.tmdl");
-                WriteDataverseUniqueDBTable(uniqueDbTablePath, _organizationUniqueName!, dvDbTags);
+                WriteDataverseUniqueDBTable(uniqueDbTablePath, _organizationUniqueName!, dvDbTags, dvDbQueryGroup);
             }
             else
             {
@@ -4935,7 +5019,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
         /// <summary>
         /// Generates TMDL content for a table
         /// </summary>
-        internal string GenerateTableTmdl(ExportTable table, Dictionary<string, Dictionary<string, AttributeDisplayInfo>> attributeDisplayInfo, HashSet<string> requiredLookupColumns, DateTableConfig? dateTableConfig = null, string? outputFolder = null, Dictionary<string, string>? existingLineageTags = null, Dictionary<string, ExistingColumnInfo>? existingColumnMetadata = null)
+        internal string GenerateTableTmdl(ExportTable table, Dictionary<string, Dictionary<string, AttributeDisplayInfo>> attributeDisplayInfo, HashSet<string> requiredLookupColumns, DateTableConfig? dateTableConfig = null, string? outputFolder = null, Dictionary<string, string>? existingLineageTags = null, Dictionary<string, ExistingColumnInfo>? existingColumnMetadata = null, string? existingQueryGroup = null)
         {
             var sb = new StringBuilder();
             var displayName = table.DisplayName ?? table.SchemaName ?? table.LogicalName;
@@ -5821,6 +5905,9 @@ namespace DataverseToPowerBI.XrmToolBox.Services
 
             sb.AppendLine($"\tpartition {QuoteTmdlName(partitionName)} = m");
             sb.AppendLine($"\t\tmode: {GetPartitionMode(table.Role, table.LogicalName)}");
+            var queryGroup = existingQueryGroup
+                ?? (string.Equals(table.Role, "Fact", StringComparison.OrdinalIgnoreCase) ? "Facts" : "Dimensions");
+            sb.AppendLine($"\t\tqueryGroup: {queryGroup}");
             sb.AppendLine($"\t\tsource =");
             sb.AppendLine($"\t\t\t\tlet");
             if (IsFabricLink)
@@ -5903,18 +5990,27 @@ namespace DataverseToPowerBI.XrmToolBox.Services
         /// <summary>
         /// Generates FabricLink expressions TMDL (FabricSQLEndpoint, FabricLakehouse, and DataverseURL parameters)
         /// </summary>
-        internal string GenerateFabricLinkExpressions(string endpoint, string database, Dictionary<string, string>? existingTags = null)
+        internal string GenerateFabricLinkExpressions(string endpoint, string database, Dictionary<string, string>? existingTags = null, Dictionary<string, string>? existingQueryGroups = null)
         {
             var sb = new StringBuilder();
 
+            string sqlEndpointGroup = "Parameters";
+            string lakehouseGroup = "Parameters";
+            existingQueryGroups?.TryGetValue("FabricSQLEndpoint", out sqlEndpointGroup);
+            existingQueryGroups?.TryGetValue("FabricLakehouse", out lakehouseGroup);
+            sqlEndpointGroup ??= "Parameters";
+            lakehouseGroup ??= "Parameters";
+
             sb.AppendLine($"expression FabricSQLEndpoint = \"{endpoint}\" meta [IsParameterQuery=true, Type=\"Text\", IsParameterQueryRequired=true]");
             sb.AppendLine($"\tlineageTag: {GetOrNewLineageTag(existingTags, "expr:FabricSQLEndpoint")}");
+            sb.AppendLine($"\tqueryGroup: {sqlEndpointGroup}");
             sb.AppendLine();
             sb.AppendLine("\tannotation PBI_ResultType = Text");
             sb.AppendLine();
 
             sb.AppendLine($"expression FabricLakehouse = \"{database}\" meta [IsParameterQuery=true, Type=\"Text\", IsParameterQueryRequired=true]");
             sb.AppendLine($"\tlineageTag: {GetOrNewLineageTag(existingTags, "expr:FabricLakehouse")}");
+            sb.AppendLine($"\tqueryGroup: {lakehouseGroup}");
             sb.AppendLine();
             sb.AppendLine("\tannotation PBI_NavigationStepName = Navigation");
             sb.AppendLine();
@@ -5988,6 +6084,13 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                 content,
                 @"VAR _enddate\s*=\s*\r?\n\s*DATE\(\d+,\s*1,\s*1\)\s*-\s*1",
                 $"VAR _enddate =\r\n\t\t\t\t\tDATE({config.EndYear + 1},1,1)-1",
+                RegexOptions.Multiline);
+
+            // Add queryGroup to partition so the Date table appears in the Dimensions folder
+            content = Regex.Replace(
+                content,
+                @"(\tpartition Date = calculated\r?\n\t\tmode: import)",
+                "$1\r\n\t\tqueryGroup: Dimensions",
                 RegexOptions.Multiline);
 
             return content;

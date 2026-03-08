@@ -86,7 +86,31 @@ This tool eliminates all of that complexity:
 
 ## 📌 Latest Changes
 
-For the most up-to-date release details, see [CHANGELOG.md](docs/CHANGELOG.md).
+> **v1.2026.6.1** — Full details in [CHANGELOG.md](docs/CHANGELOG.md).
+
+### 🔌 New Connector Architecture (SQL Native Query)
+
+The biggest change in this release is a switch from the legacy `CommonDataService.Database` connector to the standard `Sql.Database` connector with `Value.NativeQuery`. If you've ever seen your reports suddenly break after a model refresh or Power BI Desktop update, this is the fix. The new connector is more stable, more consistent between TDS and FabricLink modes, and enables Power BI's query folding optimization.
+
+> **Already have a model?** Run the tool again — it'll show you a change preview before applying anything. The data source will switch to `Sql.Database`, but your SQL queries and customizations are preserved.
+
+### 🏭 Fabric Link Long Term Retention (LTR) Data
+
+If you're using Fabric Link, you can now control per-table which rows are included: **All** (live + retained), **Live only**, or **LTR (archived) only**. Great for keeping your fact table lean while still having access to historical records in separate archive dimensions.
+
+### 🎛️ Choice Sub-Column Controls
+
+You can now individually show or hide the numeric value and display label sub-columns for each choice field — the same Include/Hidden pattern that already exists for lookup sub-columns.
+
+### 📏 Per-Table Count & Record Link Measure Toggles
+
+Count and record-link measures can now be added to any table, not just the fact table. Each table has its own opt-in toggle, so you only generate the measures you actually need.
+
+### 🆕 Also in this release
+
+- **In-app Help links** — A new Help button on the ribbon and XrmToolBox's built-in Help surface both open the README on GitHub.
+- **Per-organization PBIP templates** — New models default to a template folder scoped to the current environment (`{WorkingFolder}/{EnvironmentName}/-PBIP_Template`). Models still pointing to the old global AppData template are automatically migrated; custom template paths are never touched.
+- **Duplicate name detection fix** — Eliminated a false-positive warning that sometimes incorrectly flagged primary key columns as having duplicate display names.
 
 ---
 

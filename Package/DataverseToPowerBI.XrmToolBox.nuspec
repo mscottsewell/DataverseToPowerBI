@@ -2,7 +2,7 @@
 <package>
 	<metadata>
     <id>DataverseToPowerBI.XrmToolBox</id>
-    <version>1.2026.5.180</version>
+    <version>1.2026.6.1</version>
     <title>Dataverse to Power BI Semantic Model</title>
     <authors>Scott Sewell</authors>
     <owners>mScottSewell</owners>
@@ -11,21 +11,19 @@
     <description>Extract Dataverse metadata and generate Power BI TMDL/PBIP semantic models with automatic table relationships, calendar tables, and incremental change detection.</description>
     <summary>XrmToolBox plugin for generating Power BI semantic models from Dataverse metadata</summary>
     <releaseNotes>
-      v1.2026.5.180 — **Major Update: SQL Native Query Connector** with enhanced features and stability improvements.
+      v1.2026.6.1 — **SQL Native Query release line with usability and template management enhancements.**
 
       Important: Moved from CommonDataService connector to Sql.Database + Value.NativeQuery for all connection modes. This resolves metadata management failures in recent Power BI Desktop releases that caused reports to break after any model update. Existing reports will need to be refreshed with this tool to migrate to the new connector.
 
-      NEW — DataverseUniqueDB Parameter: TDS-mode models now include a hidden DataverseUniqueDB parameter table storing the organization database name (required by Sql.Database). The tool automatically looks this up when you connect. If you manually move a report to a different environment, you must update both DataverseURL and DataverseUniqueDB. Find the database name via SSMS (SQL Server Management Studio) connected to the TDS endpoint, or see: https://learn.microsoft.com/power-platform/admin/determine-org-id-name
+      NEW — DataverseUniqueDB Parameter, Fabric LTR controls, Choice sub-column configuration, and per-table measure toggles remain included in this release line.
 
-      NEW — Fabric Link Long Term Retention (LTR): Per-table control over retained data in Fabric Link. Three modes: All (default, all rows), Live (active rows only), LTR (retained/archived rows only). Click the retention indicator in the table list to cycle modes. Only applies to FabricLink connections. See: https://learn.microsoft.com/power-apps/maker/data-platform/data-retention-overview
+      NEW — In-app Help links to GitHub README: added XrmToolBox Help integration (IHelpPlugin) and a ribbon Help button with a GitHub icon.
 
-      NEW — Choice Sub-Column Configuration: Per-choice-field Include/Hidden toggles for numeric value and display label sub-columns, matching the pattern used for lookup sub-columns.
+      CHANGED — PBIP templates now default to per-organization template folders under the working directory. Legacy AppData default template paths are auto-migrated; custom user template paths are preserved.
 
-      NEW — Per-Table Measure Toggles: Count and Record Link measures can now be enabled/disabled per table. Dimension tables can opt in; fact tables can opt out.
+      CHANGED — Display Name Rename option remains restricted to Import mode only (hidden for DirectQuery/Dual because it's incompatible with those modes).
 
-      CHANGED — Display Name Rename option now restricted to Import mode only (hidden for DirectQuery/Dual because it's incompatible with those modes).
-
-      FIXED — Geography data categories preserved across rebuilds. Identifier/lookup display name stability. Various UI and metadata fixes.
+      FIXED — Duplicate display-name detection now correctly handles primary key logical-name behavior; false-positive duplicate warnings are removed.
 
       Full details: docs/CHANGELOG.md | https://github.com/mscottsewell/DataverseToPowerBI
     </releaseNotes>

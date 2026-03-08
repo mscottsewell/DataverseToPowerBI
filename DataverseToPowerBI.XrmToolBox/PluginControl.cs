@@ -73,6 +73,7 @@ namespace DataverseToPowerBI.XrmToolBox
         private SemanticModelConfig? _currentModel;
         private string? _currentEnvironmentUrl;
         private string? _currentOrganizationUniqueName;
+        private const string HelpReadmeUrl = "https://github.com/mscottsewell/DataverseToPowerBI/blob/main/README.md";
         
         // State management - same as MainForm
         private Dictionary<string, TableInfo> _selectedTables = new Dictionary<string, TableInfo>();
@@ -280,6 +281,7 @@ namespace DataverseToPowerBI.XrmToolBox
             btnChangeWorkingFolder.Image = RibbonIcons.FolderIcon;
             btnSettingsFolder.Image = RibbonIcons.FolderIcon;
             btnPreviewTmdl.Image = RibbonIcons.PreviewIcon;
+            btnHelp.Image = RibbonIcons.GitHubIcon;
             
             // Add custom paint for semantic model button border
             btnSemanticModel.Paint += (s, pe) =>
@@ -5358,9 +5360,14 @@ namespace DataverseToPowerBI.XrmToolBox
                 {
                     if (!selected.Contains(attr.LogicalName) && !requiredAttrs.Contains(attr.LogicalName)) continue;
                     
-                    var effectiveName = overrides.ContainsKey(attr.LogicalName)
-                        ? overrides[attr.LogicalName]
-                        : (attr.DisplayName ?? attr.LogicalName);
+                    // Primary key columns always use their logical name in the builder output,
+                    // so use the same logic here to avoid false-positive duplicate warnings.
+                    var isPrimaryKey = attr.LogicalName.Equals(table.PrimaryIdAttribute, StringComparison.OrdinalIgnoreCase);
+                    var effectiveName = isPrimaryKey
+                        ? attr.LogicalName
+                        : (overrides.ContainsKey(attr.LogicalName)
+                            ? overrides[attr.LogicalName]
+                            : (attr.DisplayName ?? attr.LogicalName));
                     
                     if (!nameToAttrs.ContainsKey(effectiveName))
                         nameToAttrs[effectiveName] = new List<string>();
@@ -5578,8 +5585,15 @@ namespace DataverseToPowerBI.XrmToolBox
             // Prepare all data structures first
             var modelName = _currentModel?.Name ?? _currentSolutionName ?? "MySemanticModel";
             
-            // Use saved template path if it exists, otherwise use detected path
-            var templatePath = _currentModel?.TemplatePath;
+            var fullUrl = _currentEnvironmentUrl ?? "";
+
+            // Ensure per-environment template exists and prefer it over the global default
+            var envTemplatePath = EnsureEnvironmentTemplate(outputFolder, fullUrl);
+            var templatePath = envTemplatePath;
+            if (string.IsNullOrEmpty(templatePath) || !Directory.Exists(templatePath))
+            {
+                templatePath = _currentModel?.TemplatePath;
+            }
             if (string.IsNullOrEmpty(templatePath) || !Directory.Exists(templatePath))
             {
                 templatePath = _templatePath;
@@ -5590,8 +5604,6 @@ namespace DataverseToPowerBI.XrmToolBox
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            
-            var fullUrl = _currentEnvironmentUrl ?? "";
             
             var (exportTables, exportRelationships, attributeDisplayInfo) = PrepareExportData();
             
@@ -5761,6 +5773,47 @@ namespace DataverseToPowerBI.XrmToolBox
             }
         }
         
+        /// <summary>
+        /// Ensures a per-environment PBIP template exists at {workingFolder}/{environmentName}/-PBIP_Template.
+        /// If the folder doesn't exist, creates it by copying the global default template so users can
+        /// customize the base report template per environment.
+        /// </summary>
+        /// <returns>Path to the per-environment template, or null if it could not be resolved.</returns>
+        private string? EnsureEnvironmentTemplate(string workingFolder, string environmentUrl)
+        {
+            if (string.IsNullOrEmpty(workingFolder) || string.IsNullOrEmpty(environmentUrl))
+                return null;
+
+            var environmentName = ExtractEnvironmentName(environmentUrl);
+            if (string.IsNullOrEmpty(environmentName))
+                return null;
+
+            var envTemplateFolder = Path.Combine(workingFolder, environmentName, "-PBIP_Template");
+
+            if (!Directory.Exists(envTemplateFolder))
+            {
+                if (string.IsNullOrEmpty(_templatePath) || !Directory.Exists(_templatePath))
+                    return null;
+
+                try
+                {
+                    CopyDirectory(_templatePath, envTemplateFolder);
+                    DebugLogger.Log($"Created per-environment PBIP template at: {envTemplateFolder}");
+                }
+                catch (Exception ex)
+                {
+                    DebugLogger.Log($"Failed to create per-environment template: {ex.Message}");
+                    return null;
+                }
+            }
+
+            // Verify the template contains a .pbip file
+            if (Directory.Exists(envTemplateFolder) && Directory.GetFiles(envTemplateFolder, "*.pbip").Length > 0)
+                return envTemplateFolder;
+
+            return null;
+        }
+        
         private void BtnSemanticModel_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(_currentEnvironmentUrl))
@@ -5828,6 +5881,23 @@ namespace DataverseToPowerBI.XrmToolBox
                 "MscrmTools", "XrmToolBox", "Settings", "DataverseToPowerBI");
             Directory.CreateDirectory(folder);
             System.Diagnostics.Process.Start("explorer.exe", folder);
+        }
+
+        private void BtnHelp_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = HelpReadmeUrl,
+                    UseShellExecute = true
+                });
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to open help link:\n{ex.Message}",
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void BtnPreviewTmdl_Click(object sender, EventArgs e)

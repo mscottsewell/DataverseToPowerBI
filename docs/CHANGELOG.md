@@ -10,13 +10,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
-## [1.2026.5.180] - 2026-03-07
+## [1.2026.6.1] - 2026-03-08
 
 ### Added
 
-- **SQL Native Query Mode (Sql.Database + Value.NativeQuery)** — **Breaking change:** All generated Power Query expressions now use the standard `Sql.Database` connector with `Value.NativeQuery(...)` instead of the legacy `CommonDataService.Database` connector. This is a fundamental architecture change that affects both connection modes:
+- **SQL Native Query Mode (Sql.Database + Value.NativeQuery)** — **Significant Upgrade:** All generated Power Query expressions now use the standard `Sql.Database` connector with `Value.NativeQuery(...)` instead of the legacy `CommonDataService.Database` connector. This is a fundamental architecture change that affects both connection modes:
 
-  - **Why:** Recent Power BI Desktop releases introduced metadata management failures with the CommonDataService connector that caused reports to break after any model update or refresh. Moving to the standard SQL connector resolves these failures and provides a more stable foundation.
+  - **Why:** Recent Power BI Desktop releases exposed a metadata management failures with the CommonDataService connector that caused reports to break after any part of the SQL was edited. Moving to the standard SQL connector resolves these failures and provides a more stable foundation.
   - **How it works:** Each table partition now generates a Power Query `let...in` expression that connects via `Sql.Database` and passes the full SQL query through `Value.NativeQuery(Source, "<SQL>", null, [PreserveTypes = true, EnableFolding = true])`.
     - `PreserveTypes = true` ensures Power Query preserves SQL-returned data types without re-inference.
     - `EnableFolding = true` allows Power BI to fold additional query operations back into the native query for optimal performance.
@@ -58,6 +58,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - **Per-Table Count & Record Link Measure Toggles** — Individual tables can now opt in or out of the auto-generated `{TableName} Count` (COUNTROWS) and `Link to {TableName}` (Dataverse URL) measures. Previously, these were only generated on the fact table. Now dimension tables can opt in and any table can opt out. The fact table still defaults to having both measures enabled.
 
+- **In-App Help Entry Points (GitHub README)** — Added two built-in help access points so users can open project documentation directly from the plugin:
+
+  - **XrmToolBox Help integration:** Plugin now implements `IHelpPlugin` and exposes the GitHub README URL in the host's Help surface.
+  - **Ribbon Help button:** Added a new `Help` button on the plugin ribbon that opens `README.md` on GitHub.
+  - **GitHub icon support:** Added dedicated `GitHubIcon.png` usage in ribbon icon loading for the Help button.
+
 ### Changed
 
 - **Connection Architecture (TDS)** — TDS-mode partition expressions changed from `CommonDataService.Database(DataverseURL)` to `Sql.Database(DataverseURL, DataverseUniqueDB)` with `Value.NativeQuery`. This is the most significant internal change in this release. The old connector had progressively worsening metadata management issues in recent Power BI Desktop releases, causing `DataSource.Error` failures after model updates. The new architecture uses the same standard SQL connector for both TDS and FabricLink modes, providing a consistent and stable query generation path.
@@ -66,9 +72,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - **Display Name Rename Option Restricted to Import Mode** — The "Rename columns to display names in Power Query" checkbox is now hidden and disabled when the storage mode is Direct Query or Dual. This option uses a `Table.RenameColumns` Power Query step that is only valid for Import mode; enabling it for DirectQuery or Dual previously caused Power Query errors. The checkbox is automatically shown when Import mode is selected and hidden otherwise.
 
+- **PBIP Template Defaulting to Organization Scope** — Template selection now prefers a per-organization template folder under the working directory (`{WorkingFolder}/{EnvironmentName}/-PBIP_Template`) instead of always defaulting to the global AppData template path.
+
+- **Safe Template Path Migration Rules** — Existing model template paths now follow guarded migration behavior:
+
+  - If a model still points to the legacy AppData default template location, it is auto-migrated to the per-organization default.
+  - If a model points to a non-default/custom template location, the path is preserved and not overwritten.
+  - Per-template-path updates are persisted without forcing `LastUsed` churn.
+
 ### Fixed
 
 - **CommonDataService Connector Metadata Failures** — Resolved the root cause of `DataSource.Error` and metadata management failures that occurred with recent Power BI Desktop releases when using the CommonDataService connector. The new `Sql.Database` + `Value.NativeQuery` architecture eliminates these errors entirely.
+
+- **Duplicate Name Detection for Primary Keys** — Eliminated false-positive duplicate display-name warnings by aligning duplicate detection logic with generated output behavior for primary key columns (logical-name handling).
 
 ---
 
