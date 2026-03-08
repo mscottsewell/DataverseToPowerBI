@@ -39,6 +39,7 @@ This tool eliminates all of that complexity:
 - [Best Practices We Apply Automatically](#️-best-practices-we-apply-automatically)
 - [Understanding Your Generated Project](docs/understanding-the-project.md)
 - [Connection Modes: TDS vs FabricLink](#-connection-modes-tds-vs-fabriclink)
+- [Long Term Retention Data (FabricLink)](#long-term-retention-data-fabriclink-only)
 - [Direct Query vs. Import Mode](docs/direct-query-vs-import.md)
 - [Expand Lookups (Denormalization)](#-expand-lookups-denormalization)
 - [Add Tables to Model](#-add-tables-to-model)
@@ -62,10 +63,12 @@ This tool eliminates all of that complexity:
 | ------- | ------------------- |
 | **Star-Schema Wizard** | Helps you designate fact and dimension tables for optimal performance |
 | **Advanced Table Selection** | Add any Dataverse table to the model — not just those auto-discovered via lookups — and define manual column-level relationships between them; see [Add Tables to Model](#-add-tables-to-model) |
-| **Dual Connection Support** | Choose between **Dataverse TDS** (direct to Dataverse) or **FabricLink** (via Fabric Lakehouse) — see [Connection Modes](#-connection-modes-tds-vs-fabriclink) |
+| **Dual Connection Support** | Choose between **Dataverse TDS** (direct to Dataverse) or **FabricLink** (via Fabric Lakehouse) — both use the standard `Sql.Database` connector with `Value.NativeQuery` for stable, foldable native SQL queries. See [Connection Modes](#-connection-modes-tds-vs-fabriclink) |
+| **Long Term Retention (FabricLink)** | Per-table control over Fabric Link retained data: include All rows, Live only, or LTR (archived) only — see [Long Term Retention Data](#long-term-retention-data-fabriclink-only) |
 | **Storage Mode Control** | DirectQuery, Import, Dual (All), or Dual (Select) — set globally or per-table. See [Storage Modes](#-storage-modes) |
 | **Smart Column Selection** | Uses your Dataverse forms and views to include only relevant fields |
 | **Lookup Sub-Column Controls** | Per-lookup Include/Hidden toggles for ID/Name and polymorphic Type/Yomi (Owner/Customer), including expanded-child Include/Hidden controls |
+| **Choice Sub-Column Controls** | Per-choice-field Include/Hidden toggles for numeric value and display label sub-columns; model-level default for including numeric values as hidden |
 | **Collapsible Lookup Groups** | Lookup attributes render as expandable groups (collapsed by default), with persisted open/collapse state and bulk Open/Collapse actions |
 | **Friendly Field Names** | Automatically renames columns to their display names (no more "cai_accountid"!) |
 | **Display Name Customization** | Override display names per-attribute with inline double-click editing; automatic conflict detection prevents duplicate names |
@@ -334,22 +337,43 @@ For your fact table, the tool automatically creates two starter measures:
 
 These measures are regenerated on each build. Your own custom measures are always preserved.
 
+You can also enable or disable these measures **per table**. The fact table defaults to both enabled; dimension tables can opt in. Click the measure toggle in the table list to change whether Count and/or Record Link measures are generated for each table.
+
 ---
 
 ## 🔌 Connection Modes: TDS vs FabricLink
 
 This tool supports two different connection modes for accessing Dataverse data. Your choice affects how queries are generated and how the semantic model connects to your data.
 
-### Dataverse TDS (Default)
+Both modes use the standard **`Sql.Database`** Power Query connector with **`Value.NativeQuery`** to send native SQL queries. This architecture replaced the legacy `CommonDataService.Database` connector, which had progressive metadata management failures in recent Power BI Desktop releases that caused reports to break after any model update.
+
+The `Value.NativeQuery` call includes two important options:
+- **`PreserveTypes = true`** — Ensures Power Query preserves the data types returned by the SQL endpoint rather than re-inferring them
+- **`EnableFolding = true`** — Allows Power BI to fold additional query operations (filters, etc.) back into the native query for optimal performance
+
+### Dataverse TDS
 
 Uses the **Dataverse TDS Endpoint** — a SQL-compatible interface built directly into Dataverse.
 
 | Aspect | Detail |
 | ------ | ------ |
-| **Connector** | `CommonDataService.Database` |
-| **Query Style** | Native SQL via `Value.NativeQuery(...)` with `[EnableFolding=true]` |
+| **Connector** | `Sql.Database(DataverseURL, DataverseUniqueDB)` |
+| **Query Style** | Native SQL via `Value.NativeQuery(Source, "<SQL>", null, [PreserveTypes = true, EnableFolding = true])` |
+| **Parameters** | `DataverseURL` (environment URL) + `DataverseUniqueDB` (organization database name) |
 | **Best For** | Direct Dataverse access without Fabric infrastructure |
 | **Requirements** | TDS endpoint enabled in your Dataverse environment |
+
+#### DataverseUniqueDB Parameter
+
+The `Sql.Database` connector requires two arguments: the server (DataverseURL) and the database name (DataverseUniqueDB). The organization database name is the name assigned at environment provisioning and persists even when the environment URL is later renamed.
+
+- **Automatic lookup:** When you connect to Dataverse in XrmToolBox, the tool automatically queries the `organization` entity to retrieve this value and stores it in your model configuration.
+- **Manual migration:** If you copy or manually move a Power BI report to point at a different Dataverse environment, you must update **both** the `DataverseURL` **and** `DataverseUniqueDB` parameters in Power BI Desktop (Transform Data → Parameters).
+- **Finding the value:** Connect to the Dataverse TDS endpoint with **SQL Server Management Studio (SSMS)** — the database name is visible in the Object Explorer. Note: connecting via VS Code's SQL extension does **not** display the database name in the same way.
+
+📚 **References:**
+- [Use SQL to query data (Dataverse TDS endpoint)](https://learn.microsoft.com/power-apps/developer/data-platform/dataverse-sql-query)
+- [Find your organization name and unique name](https://learn.microsoft.com/power-platform/admin/determine-org-id-name#find-your-organization-name)
 
 ### FabricLink
 
@@ -358,15 +382,47 @@ Uses **Microsoft Fabric Link for Dataverse** — data is synced to a Fabric Lake
 | Aspect | Detail |
 | ------ | ------ |
 | **Connector** | `Sql.Database(FabricSQLEndpoint, FabricLakehouse)` |
-| **Query Style** | Standard SQL queries with metadata JOINs for display names |
-| **Best For** | Large datasets, advanced analytics, when Fabric is already in use |
+| **Query Style** | Native SQL via `Value.NativeQuery(Source, "<SQL>", null, [PreserveTypes = true, EnableFolding = true])` with metadata JOINs for display names |
+| **Parameters** | `FabricSQLEndpoint` (Fabric SQL analytics endpoint URL) + `FabricLakehouse` (lakehouse name) |
+| **Best For** | Large datasets, advanced analytics, historical/retained data, when Fabric is already in use |
 | **Requirements** | Fabric workspace with Dataverse Link configured |
 
 > **FabricLink queries** automatically JOIN to `OptionsetMetadata` / `GlobalOptionsetMetadata` and `StatusMetadata` tables for human-readable choice labels and status values. TDS mode uses virtual "name" attributes for the same purpose.
 >
-> **Display-name renaming option:** when enabled, the generated partition keeps technical SQL column names and applies friendly names in a Power Query `Table.RenameColumns` step.
+> **Display-name renaming option:** when enabled (Import mode only), the generated partition keeps technical SQL column names and applies friendly names in a Power Query `Table.RenameColumns` step.
 >
 > **Multi-select choices in FabricLink:** Label resolution splits values on semicolons (`;`) and uses the attribute logical name for `OptionSetName` in metadata joins.
+
+### Long Term Retention Data (FabricLink Only)
+
+When Dataverse data is synced to Fabric via Fabric Link, tables that have [long term data retention](https://learn.microsoft.com/power-apps/maker/data-platform/data-retention-overview) enabled will include both live and retained (archived/soft-deleted) rows in the Fabric Lakehouse. A system column `msft_datastate` indicates the state of each row.
+
+This tool provides **per-table control** over which rows are included:
+
+| Mode | Behavior | Use Case |
+|------|----------|----------|
+| **All** (default) | Returns all rows — both live and retained | Full dataset reporting including historical data |
+| **Live** | Only active/live rows (`msft_datastate = 2` or `NULL`) | Standard operational reporting — excludes archived data |
+| **LTR** | Only long-term retained rows (`msft_datastate = 1`) | Historical/archival reporting on retained data only |
+
+#### How to Configure
+
+Click the **retention mode indicator** in the table list to cycle through: All → Live → LTR → All. Each table can have its own mode — for example, set your fact table to "Live" for current operational data while using "LTR" on a historical archive dimension.
+
+#### How It's Implemented
+
+The retention mode adds a SQL `WHERE` predicate to the table's native query:
+- **All:** No predicate added (all rows returned)
+- **Live:** `WHERE (Base.msft_datastate = 2 OR Base.msft_datastate IS NULL)`
+- **LTR:** `WHERE (Base.msft_datastate = 1)`
+
+If the table also has a view filter, the retention predicate is ANDed with the existing filter clause.
+
+> **Note:** This setting only applies to FabricLink mode. It is ignored for DataverseTDS connections (the TDS endpoint does not expose the `msft_datastate` column). Retention mode settings are saved per-table in your model configuration.
+
+📚 **References:**
+- [Dataverse long term data retention overview](https://learn.microsoft.com/power-apps/maker/data-platform/data-retention-overview)
+- [Access retained data in Fabric](https://learn.microsoft.com/power-apps/maker/data-platform/data-retention-view)
 
 ---
 
@@ -698,13 +754,29 @@ See [Managing Multiple Relationships](#-managing-multiple-relationships) for mor
 
 **A:** Yes! Use the **Export** button in the Semantic Model Manager. Choose **JSON** to save the full configuration as a file that team members can **Import** on their machine. Choose **CSV** to generate human-readable documentation files for review in a spreadsheet. The JSON export includes all table selections, column choices, display name overrides, expanded lookups, relationship settings, and storage mode preferences.
 
+### Q: I moved my report to a new environment and it won't connect. What's wrong?
+
+**A:** For TDS-mode reports, you need to update **two** parameters in Power BI Desktop (Transform Data → Parameters): **DataverseURL** (the environment URL, e.g., `myorg.crm.dynamics.com`) **and** **DataverseUniqueDB** (the organization database name). The database name may differ from the URL subdomain — you can find it by connecting to the TDS endpoint with SQL Server Management Studio (SSMS) and looking at the database listed in Object Explorer, or by viewing the organization name in the [Power Platform admin center](https://learn.microsoft.com/power-platform/admin/determine-org-id-name#find-your-organization-name).
+
+### Q: What is the DataverseUniqueDB parameter and where do I find its value?
+
+**A:** `DataverseUniqueDB` is the organization database name required by the `Sql.Database` Power Query connector. When using the tool, this is automatically looked up from the connected environment's `organization` entity. The value is the name assigned when the environment was provisioned and does not change even if the environment URL is later renamed. To find it manually: connect to the TDS endpoint using **SQL Server Management Studio (SSMS)** where it appears as the database name in Object Explorer, or check the **Organization unique name** in the [Power Platform admin center](https://learn.microsoft.com/power-platform/admin/determine-org-id-name#find-your-organization-name). Note: VS Code's SQL extension does not display the database name in the same way as SSMS.
+
+### Q: What is Long Term Retention (LTR) data in FabricLink?
+
+**A:** When Dataverse tables have [long term data retention](https://learn.microsoft.com/power-apps/maker/data-platform/data-retention-overview) enabled, retained (archived/soft-deleted) rows are synced to Fabric alongside live data. A system column `msft_datastate` indicates whether each row is live or retained. This tool lets you control which rows to include per table: **All** (default — both live and retained), **Live** (active data only), or **LTR** (retained/archived only). This is configured per-table in the table list and only applies to FabricLink connections. See [Long Term Retention Data](#long-term-retention-data-fabriclink-only) for details.
+
+### Q: Why did my reports break after a Power BI Desktop update?
+
+**A:** If your reports used the legacy `CommonDataService.Database` connector, recent Power BI Desktop releases introduced metadata management failures that caused `DataSource.Error` on model refresh or update. The fix is to rebuild your model with the latest version of this tool, which now uses the standard `Sql.Database` connector with `Value.NativeQuery`. This is a one-time migration — after rebuilding, reports will use the stable SQL connector architecture.
+
 ### Q: What storage mode should I use?
 
 **A:** Start with **DirectQuery** (the default) for simplicity and real-time data. If you notice performance issues with large dimension tables, switch to **Dual** mode for those tables — Power BI will cache them locally while keeping fact tables live. Use **Import** only for very large static lookup tables or when you need offline access. See [Storage Modes](#-storage-modes) for details.
 
 ### Q: I see a security warning about "multiple data sources" when opening my project. Is this safe?
 > <img width="400" alt="Composite Model Security Warning" src="https://github.com/user-attachments/assets/3ddd7d1a-9e5c-43ed-9528-4368d64a9409" />
-**A:** Yes, this is expected and safe to proceed. The warning appears because the model is a composite model—it combines Dataverse tables (DirectQuery) with a parameter table used to store the DataverseURL. You can review all queries before opening by using the **Preview TMDL** feature or inspecting the `.tmdl` files in your project folder. Learn more about [composite models](https://learn.microsoft.com/power-bi/transform-model/desktop-composite-models).
+**A:** Yes, this is expected and safe to proceed. The warning appears because the model is a composite model—it combines Dataverse tables (DirectQuery) with hidden parameter tables used to store connection parameters (DataverseURL and DataverseUniqueDB for TDS, or FabricSQLEndpoint and FabricLakehouse for FabricLink). You can review all queries before opening by using the **Preview TMDL** feature or inspecting the `.tmdl` files in your project folder. Learn more about [composite models](https://learn.microsoft.com/power-bi/transform-model/desktop-composite-models).
 
 ---
 

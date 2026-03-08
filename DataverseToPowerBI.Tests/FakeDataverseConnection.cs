@@ -159,6 +159,9 @@ namespace DataverseToPowerBI.Tests
         public string GetEnvironmentUrl() => _environmentUrl;
 
         /// <inheritdoc/>
+        public string? GetOrganizationUniqueName() => null;
+
+        /// <inheritdoc/>
         public Task<List<DataverseSolution>> GetSolutionsAsync()
         {
             return Task.FromResult(new List<DataverseSolution>(_solutions));

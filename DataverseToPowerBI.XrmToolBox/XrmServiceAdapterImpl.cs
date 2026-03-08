@@ -55,6 +55,7 @@ namespace DataverseToPowerBI.XrmToolBox
     {
         private readonly IOrganizationService _service;
         private readonly string _environmentUrl;
+        private readonly string? _organizationUniqueName;
         private bool _isConnected;
         private const int MAX_XML_SIZE_BYTES = 5 * 1024 * 1024; // 5MB
 
@@ -77,14 +78,21 @@ namespace DataverseToPowerBI.XrmToolBox
         /// <summary>
         /// Creates adapter from IOrganizationService (provided by XrmToolBox)
         /// </summary>
-        public XrmServiceAdapterImpl(IOrganizationService service, string environmentUrl)
+        /// <param name="service">The IOrganizationService provided by XrmToolBox connection manager.</param>
+        /// <param name="environmentUrl">The Dataverse environment URL (e.g., "https://myorg.crm.dynamics.com").</param>
+        /// <param name="organizationUniqueName">The organization unique name (TDS database name), from ConnectionDetail.Organization. May differ from the URL subdomain.</param>
+        public XrmServiceAdapterImpl(IOrganizationService service, string environmentUrl, string? organizationUniqueName = null)
         {
             _service = service ?? throw new ArgumentNullException(nameof(service));
             _environmentUrl = environmentUrl?.TrimEnd('/') ?? throw new ArgumentNullException(nameof(environmentUrl));
+            _organizationUniqueName = organizationUniqueName;
             _isConnected = service != null;
         }
 
         public string GetEnvironmentUrl() => _environmentUrl;
+
+        /// <inheritdoc/>
+        public string? GetOrganizationUniqueName() => _organizationUniqueName;
 
         /// <summary>
         /// XrmToolBox handles authentication externally - this is a no-op

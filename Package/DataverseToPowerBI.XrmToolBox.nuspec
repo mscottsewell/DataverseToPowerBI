@@ -2,7 +2,7 @@
 <package>
 	<metadata>
     <id>DataverseToPowerBI.XrmToolBox</id>
-    <version>1.2026.5.167</version>
+    <version>1.2026.5.180</version>
     <title>Dataverse to Power BI Semantic Model</title>
     <authors>Scott Sewell</authors>
     <owners>mScottSewell</owners>
@@ -11,23 +11,23 @@
     <description>Extract Dataverse metadata and generate Power BI TMDL/PBIP semantic models with automatic table relationships, calendar tables, and incremental change detection.</description>
     <summary>XrmToolBox plugin for generating Power BI semantic models from Dataverse metadata</summary>
     <releaseNotes>
-      v1.2026.5.166 - The "Rename columns to display names in Power Query" option is now hidden and disabled when storage mode is Direct Query or Dual. This Power Query rename step is only valid for Import mode; using it with DirectQuery or Dual caused errors.
-      v1.2026.5.165 - Geography data categories (City, Country/Region, Latitude, Longitude, etc.) manually assigned in Power BI Desktop are now preserved across model rebuilds. The tool reads back any dataCategory value from the existing TMDL and re-emits it on the regenerated column.
-      v1.2026.5.163 - Ensured that optionset numeric values are correctly preserved when generating the TMDL as integers, preventing unintended conversion to display names in the Power BI model. This update addresses an issue where optionset values were being emitted as their localized labels instead of their underlying integer values, which could cause problems for measures and relationships relying on the numeric values. With this fix, optionset fields will now consistently output the correct integer values in the TMDL, while still allowing for display name overrides where appropriate.
-      v1.2026.5.162 - Fixed a bug with display names of lookups and unique identifier fields where the display name would not update correctly after being edited inline in the attribute grid. This release ensures that any manual edits to display names are properly saved and reflected in the UI, and that reverting to default naming conventions works as expected without leaving stale overrides.
-      v1.2026.5.157 - Identifier/lookup display-name stability update
+      v1.2026.5.180 — **Major Update: SQL Native Query Connector** with enhanced features and stability improvements.
 
-  Fixed in this release:
-  - Unique identifier and lookup-family fields now keep logical-name display by default in the attribute grid.
-  - Table-name-prefixed display labels are no longer auto-applied unless the user explicitly sets an override.
-  - Legacy auto-generated primary-name overrides are cleaned up on metadata load/revalidation.
-  - Inline display-name edit reset now consistently removes overrides when reverting to default naming behavior.
+      Important: Moved from CommonDataService connector to Sql.Database + Value.NativeQuery for all connection modes. This resolves metadata management failures in recent Power BI Desktop releases that caused reports to break after any model update. Existing reports will need to be rebuilt with this tool to migrate to the new connector.
 
-  Previous highlights (v1.2026.5.154):
-  - Add Tables to Model dialog with full-environment table browser, manual relationship builder, and persisted additional table/relationship configuration.
-  - Relationship-required lookup columns are automatically included for manually defined relationships.
+      NEW — DataverseUniqueDB Parameter: TDS-mode models now include a hidden DataverseUniqueDB parameter table storing the organization database name (required by Sql.Database). The tool automatically looks this up when you connect. If you manually move a report to a different environment, you must update both DataverseURL and DataverseUniqueDB. Find the database name via SSMS (SQL Server Management Studio) connected to the TDS endpoint, or see: https://learn.microsoft.com/power-platform/admin/determine-org-id-name
 
-  Full details: docs/CHANGELOG.md
+      NEW — Fabric Link Long Term Retention (LTR): Per-table control over retained data in Fabric Link. Three modes: All (default, all rows), Live (active rows only), LTR (retained/archived rows only). Click the retention indicator in the table list to cycle modes. Only applies to FabricLink connections. See: https://learn.microsoft.com/power-apps/maker/data-platform/data-retention-overview
+
+      NEW — Choice Sub-Column Configuration: Per-choice-field Include/Hidden toggles for numeric value and display label sub-columns, matching the pattern used for lookup sub-columns.
+
+      NEW — Per-Table Measure Toggles: Count and Record Link measures can now be enabled/disabled per table. Dimension tables can opt in; fact tables can opt out.
+
+      CHANGED — Display Name Rename option now restricted to Import mode only (hidden for DirectQuery/Dual because it's incompatible with those modes).
+
+      FIXED — Geography data categories preserved across rebuilds. Identifier/lookup display name stability. Various UI and metadata fixes.
+
+      Full details: docs/CHANGELOG.md | https://github.com/mscottsewell/DataverseToPowerBI
     </releaseNotes>
     <tags>XrmToolBox PowerBI Dataverse TMDL PBIP SemanticModel</tags>
     <projectUrl>https://github.com/mscottsewell/DataverseToPowerBI</projectUrl>

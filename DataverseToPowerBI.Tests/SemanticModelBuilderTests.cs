@@ -140,7 +140,7 @@ namespace DataverseToPowerBI.Tests
         [Fact]
         public void GenerateTableTmdl_PreservesDataCategoryOnRebuild()
         {
-            // Use a builder with display-name renames disabled so SourceColumn == LogicalName
+            // Display-name aliasing in SQL means sourceColumn = display name now
             var localBuilder = new SemanticModelBuilder(_tempDir, UseDisplayNameRenamesInPowerQuery: false);
 
             var table = new ExportTable
@@ -158,9 +158,10 @@ namespace DataverseToPowerBI.Tests
 
             var existingMetadata = new Dictionary<string, SemanticModelBuilder.ExistingColumnInfo>(StringComparer.OrdinalIgnoreCase)
             {
-                ["address1_city"] = new SemanticModelBuilder.ExistingColumnInfo
+                // Primary key: sourceColumn matches by display name
+                ["City"] = new SemanticModelBuilder.ExistingColumnInfo
                 {
-                    SourceColumn = "address1_city",
+                    SourceColumn = "City",
                     DataCategory = "City"
                 }
             };
@@ -681,6 +682,25 @@ namespace DataverseToPowerBI.Tests
             Assert.Contains("expression FabricLakehouse = \"database\" meta [IsParameterQuery=true, Type=\"Text\", IsParameterQueryRequired=true]", result);
         }
 
+        [Fact]
+        public void GenerateTmdlPreview_FabricLink_DoesNotIncludeDataverseUniqueDb()
+        {
+            var fabricBuilder = new SemanticModelBuilder(
+                _tempDir,
+                connectionType: "FabricLink",
+                fabricLinkEndpoint: "test-endpoint",
+                fabricLinkDatabase: "test-db",
+                organizationUniqueName: "contosoorg");
+
+            var preview = fabricBuilder.GenerateTmdlPreview(
+                "https://contoso.crm.dynamics.com",
+                new List<ExportTable>(),
+                new List<DataverseToPowerBI.Core.Models.ExportRelationship>(),
+                new Dictionary<string, Dictionary<string, AttributeDisplayInfo>>(StringComparer.OrdinalIgnoreCase));
+
+            Assert.DoesNotContain("DataverseUniqueDB", preview.Keys);
+        }
+
         #endregion
 
         #region Round-Trip Preservation Tests
@@ -1151,7 +1171,7 @@ namespace DataverseToPowerBI.Tests
                 new HashSet<string>(StringComparer.OrdinalIgnoreCase));
 
             Assert.Contains("JOIN [StateMetadata] incident_statecode", tmdl);
-            Assert.Contains("incident_statecode.[LocalizedLabel] statecodename", tmdl);
+            Assert.Contains("incident_statecode.[LocalizedLabel] [Status]", tmdl);
         }
 
         [Fact]
@@ -1919,15 +1939,18 @@ namespace DataverseToPowerBI.Tests
         #region InsertUserHierarchies Tests
 
         [Fact]
-        public void InsertUserHierarchies_InsertsBeforeMeasures()
+        public void InsertUserHierarchies_InsertsBeforePartition()
         {
-            var tmdl = "table Test\r\n\tcolumn Col1\r\n\tmeasure 'M' = 1\r\n\tpartition Test = m\r\n\t\tmode: directQuery\r\n";
+            // PBI Desktop order: measures → columns → hierarchies → partitions → annotations
+            var tmdl = "table Test\r\n\tmeasure 'M' = 1\r\n\tcolumn Col1\r\n\tpartition Test = m\r\n\t\tmode: directQuery\r\n";
             var hierarchies = "\thierarchy 'H'\r\n\t\tlevel 'L'\r\n\t\t\tcolumn: Col1\r\n\r\n";
 
             var result = _builder.InsertUserHierarchies(tmdl, hierarchies);
             var hierarchyIndex = result.IndexOf("hierarchy 'H'", StringComparison.Ordinal);
-            var measureIndex = result.IndexOf("measure 'M'", StringComparison.Ordinal);
-            Assert.True(hierarchyIndex < measureIndex, "Hierarchy should appear before measures");
+            var partitionIndex = result.IndexOf("partition Test", StringComparison.Ordinal);
+            var columnIndex = result.IndexOf("column Col1", StringComparison.Ordinal);
+            Assert.True(hierarchyIndex > columnIndex, "Hierarchy should appear after columns");
+            Assert.True(hierarchyIndex < partitionIndex, "Hierarchy should appear before partition");
         }
 
         [Fact]

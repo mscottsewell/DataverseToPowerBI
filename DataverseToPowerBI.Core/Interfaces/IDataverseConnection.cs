@@ -188,6 +188,16 @@ namespace DataverseToPowerBI.Core.Interfaces
         string GetEnvironmentUrl();
 
         /// <summary>
+        /// Gets the organization unique name (TDS database name) for the connected environment.
+        /// </summary>
+        /// <returns>
+        /// The organization unique name (e.g., "org1a2b3c4d"), which is the database name
+        /// used by the Dataverse TDS endpoint. This may differ from the URL subdomain.
+        /// Returns null if the value is not available.
+        /// </returns>
+        string? GetOrganizationUniqueName();
+
+        /// <summary>
         /// Gets a value indicating whether the connection is ready for use.
         /// </summary>
         /// <value>

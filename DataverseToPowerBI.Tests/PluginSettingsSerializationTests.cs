@@ -208,6 +208,29 @@ namespace DataverseToPowerBI.Tests
             Assert.True(roundTripped.TableIncludeRecordLinkMeasures["contact"]);
         }
 
+        [Fact]
+        public void PluginSettings_RoundTrip_PreservesFabricLinkRetentionModes()
+        {
+            var settings = new PluginSettings
+            {
+                TableFabricLinkRetentionModes = new Dictionary<string, string>
+                {
+                    ["account"] = "All",
+                    ["contact"] = "Live",
+                    ["incident"] = "LTR"
+                }
+            };
+
+            var roundTripped = RoundTrip(settings);
+
+            Assert.True(roundTripped.TableFabricLinkRetentionModes.ContainsKey("account"));
+            Assert.Equal("All", roundTripped.TableFabricLinkRetentionModes["account"]);
+            Assert.True(roundTripped.TableFabricLinkRetentionModes.ContainsKey("contact"));
+            Assert.Equal("Live", roundTripped.TableFabricLinkRetentionModes["contact"]);
+            Assert.True(roundTripped.TableFabricLinkRetentionModes.ContainsKey("incident"));
+            Assert.Equal("LTR", roundTripped.TableFabricLinkRetentionModes["incident"]);
+        }
+
         private static PluginSettings RoundTrip(PluginSettings source)
         {
             using (var ms = new MemoryStream())

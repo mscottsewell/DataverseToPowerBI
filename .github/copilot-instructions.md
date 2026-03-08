@@ -31,8 +31,8 @@ User dialogs → `PluginControl` (orchestrator) → `XrmServiceAdapterImpl` (Dat
 ### Dual Connection Modes
 
 The builder generates different TMDL output depending on connection mode:
-- **DataverseTDS** — Uses `CommonDataService.Database` connector with `Value.NativeQuery` and SQL via the TDS endpoint.
-- **FabricLink** — Uses `Sql.Database` connector against a Fabric Lakehouse SQL endpoint. Generates JOINs to `OptionsetMetadata`/`GlobalOptionsetMetadata` tables for display names.
+- **DataverseTDS** — Uses `Sql.Database` connector with `Value.NativeQuery` and SQL via the TDS endpoint.
+- **FabricLink** — Uses `Sql.Database` connector with `Value.NativeQuery` against a Fabric Lakehouse SQL endpoint. Generates JOINs to `OptionsetMetadata`/`GlobalOptionsetMetadata` tables for display names.
 
 ## Code Conventions
 

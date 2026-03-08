@@ -8,8 +8,8 @@
 // tables, columns, relationships, and expressions for DirectQuery access to Dataverse.
 //
 // SUPPORTED CONNECTION MODES:
-// - DataverseTDS: Uses CommonDataService.Database connector with native SQL queries
-// - FabricLink: Uses Sql.Database connector against Fabric Lakehouse SQL endpoint
+// - DataverseTDS: Uses Sql.Database connector with native SQL queries via TDS endpoint
+// - FabricLink: Uses Sql.Database connector with Value.NativeQuery against Fabric Lakehouse SQL endpoint
 //
 // OUTPUT STRUCTURE:
 // {WorkingFolder}/
@@ -128,8 +128,9 @@ namespace DataverseToPowerBI.XrmToolBox.Services
         private readonly string _connectionType;
         private readonly string? _fabricLinkEndpoint;
         private readonly string? _fabricLinkDatabase;
+        private readonly string? _organizationUniqueName;
         private readonly int _languageCode;
-        private readonly bool _useDisplayNameRenamesInPowerQuery;
+        private readonly bool _useDisplayNameRenamesInPowerQuery; // Legacy field, no longer drives behavior — SQL aliases handle display names directly
         private readonly string _storageMode;
         private readonly bool _enableFetchXmlDebugLogs;
         private Dictionary<string, string> _tableStorageModeOverrides = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -140,6 +141,12 @@ namespace DataverseToPowerBI.XrmToolBox.Services
         private bool IsFabricLink => _connectionType == "FabricLink";
 
         /// <summary>
+        /// Whether the TDS-only DataverseUniqueDB parameter table should be present in the model.
+        /// </summary>
+        private bool ShouldIncludeDataverseUniqueDbTable =>
+            !IsFabricLink && !string.IsNullOrEmpty(_organizationUniqueName);
+
+        /// <summary>
         /// Creates a new SemanticModelBuilder configured for the specified connection type and options.
         /// </summary>
         /// <param name="templatePath">Path to the PBIP default template folder containing base TMDL files.</param>
@@ -148,13 +155,14 @@ namespace DataverseToPowerBI.XrmToolBox.Services
         /// <param name="fabricLinkEndpoint">SQL endpoint URL for FabricLink mode (ignored for DataverseTDS).</param>
         /// <param name="fabricLinkDatabase">Database/lakehouse name for FabricLink mode (ignored for DataverseTDS).</param>
         /// <param name="languageCode">LCID for localized display names (default: 1033 for English).</param>
-        /// <param name="UseDisplayNameRenamesInPowerQuery">When true, generated Power Query adds a Table.RenameColumns step to map logical names to display names.</param>
+        /// <param name="UseDisplayNameRenamesInPowerQuery">Legacy parameter, retained for API compatibility. Display-name aliasing is now always applied in SQL.</param>
         /// <param name="storageMode">"DirectQuery" (default), "Import", or "Dual" — sets the table storage mode.</param>
         /// <param name="enableFetchXmlDebugLogs">When true, writes FetchXML conversion debug files to {outputFolder}/FetchXML_Debug/. Off by default to avoid persisting sensitive filter data to disk.</param>
+        /// <param name="organizationUniqueName">The organization unique name (TDS database name). May differ from the URL subdomain. Stored as the DataverseUniqueDB parameter.</param>
         public SemanticModelBuilder(string templatePath, Action<string>? statusCallback = null,
             string connectionType = "DataverseTDS", string? fabricLinkEndpoint = null, string? fabricLinkDatabase = null,
             int languageCode = 1033, bool UseDisplayNameRenamesInPowerQuery = true, string storageMode = "DirectQuery",
-            bool enableFetchXmlDebugLogs = false)
+            bool enableFetchXmlDebugLogs = false, string? organizationUniqueName = null)
         {
             if (string.IsNullOrWhiteSpace(templatePath))
             {
@@ -166,6 +174,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
             _connectionType = connectionType ?? "DataverseTDS";
             _fabricLinkEndpoint = fabricLinkEndpoint;
             _fabricLinkDatabase = fabricLinkDatabase;
+            _organizationUniqueName = organizationUniqueName;
             _languageCode = languageCode;
             _useDisplayNameRenamesInPowerQuery = UseDisplayNameRenamesInPowerQuery;
             _storageMode = storageMode ?? "DirectQuery";
@@ -181,6 +190,39 @@ namespace DataverseToPowerBI.XrmToolBox.Services
             _tableStorageModeOverrides = overrides != null
                 ? new Dictionary<string, string>(overrides, StringComparer.OrdinalIgnoreCase)
                 : new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        }
+
+        /// <summary>
+        /// Returns generated table names that are managed outside Dataverse table metadata.
+        /// </summary>
+        private HashSet<string> GetGeneratedTableNames()
+        {
+            var generatedTables = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Date",
+                "DateAutoTemplate",
+                "DataverseURL"
+            };
+
+            if (ShouldIncludeDataverseUniqueDbTable)
+            {
+                generatedTables.Add("DataverseUniqueDB");
+            }
+
+            return generatedTables;
+        }
+
+        /// <summary>
+        /// Removes the DataverseUniqueDB table file when it is not applicable to the current connection mode.
+        /// </summary>
+        private void RemoveDataverseUniqueDbTable(string definitionFolder)
+        {
+            var uniqueDbTablePath = Path.Combine(definitionFolder, "tables", "DataverseUniqueDB.tmdl");
+            if (File.Exists(uniqueDbTablePath))
+            {
+                DebugLogger.Log("Removing stale DataverseUniqueDB parameter table from non-TDS model");
+                File.Delete(uniqueDbTablePath);
+            }
         }
 
         /// <summary>
@@ -1215,18 +1257,22 @@ namespace DataverseToPowerBI.XrmToolBox.Services
         }
 
         /// <summary>
-        /// Ensures SQL projections use a stable technical output name (logical/virtual key) when needed.
-        /// Display-name aliasing is applied later in Power Query via Table.RenameColumns.
+        /// Aliases SQL projections so their output column name matches the TMDL sourceColumn value.
+        /// Hidden columns (primary keys, lookup IDs) are aliased to the logical name.
+        /// Visible columns are aliased to the display name so DirectQuery schema evaluation
+        /// can map them to model columns without a Power Query Table.RenameColumns step.
         /// </summary>
         private string ApplySqlAlias(string sqlExpression, string displayName, string logicalName, bool isHidden)
         {
-            if (string.IsNullOrWhiteSpace(logicalName))
+            var targetName = isHidden ? logicalName : displayName;
+
+            if (string.IsNullOrWhiteSpace(targetName))
                 return sqlExpression;
 
-            if (SqlExpressionYieldsColumnName(sqlExpression, logicalName))
+            if (SqlExpressionYieldsColumnName(sqlExpression, targetName))
                 return sqlExpression;
 
-            return $"{sqlExpression} {EscapeSqlIdentifier(logicalName)}";
+            return $"{sqlExpression} {EscapeSqlIdentifier(targetName)}";
         }
 
         private static bool SqlExpressionYieldsColumnName(string sqlExpression, string expectedName)
@@ -1238,6 +1284,10 @@ namespace DataverseToPowerBI.XrmToolBox.Services
 
         private static string EscapeMStringLiteral(string value) => value.Replace("\"", "\"\"");
 
+        /// <summary>
+        /// Legacy method — no longer called in production.  SQL aliases now handle display-name mapping
+        /// directly via <see cref="ApplySqlAlias"/>.  Retained for backwards compatibility and tests.
+        /// </summary>
         private static List<(string SourceName, string DisplayName)> BuildPowerQueryRenamePairs(
             IEnumerable<ColumnInfo> columns,
             bool UseDisplayNameRenamesInPowerQuery)
@@ -1372,14 +1422,15 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                 var pbiFolder = Path.Combine(semanticModelFolder, ".pbi");
                 Directory.CreateDirectory(pbiFolder);
 
-                // editorSettings.json — disable auto-relationship detection since we define relationships explicitly
+                // editorSettings.json — match PBI Desktop's native output format.
+                // NOTE: Do NOT add autodetectRelationships or relationshipImportEnabled here;
+                // non-standard extra properties can interfere with PBI Desktop's initial schema
+                // resolution for fresh TMDL projects.
                 var editorSettingsPath = Path.Combine(pbiFolder, "editorSettings.json");
                 if (!File.Exists(editorSettingsPath))
                 {
                     var editorSettings = @"{
   ""$schema"": ""https://developer.microsoft.com/json-schemas/fabric/item/semanticModel/editorSettings/1.0.0/schema.json"",
-  ""autodetectRelationships"": false,
-  ""relationshipImportEnabled"": false,
   ""parallelQueryLoading"": true,
   ""typeDetectionEnabled"": true
 }";
@@ -1387,13 +1438,17 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                     DebugLogger.Log("Created .pbi/editorSettings.json");
                 }
 
-                // localSettings.json — minimal file so PBI Desktop recognizes the project as initialized
+                // localSettings.json — pre-consent composite model so PBI Desktop doesn't block
+                // DirectQuery + Import mode (the DataverseURL parameter table is Import while
+                // data tables use DirectQuery), which requires explicit composite model consent.
                 var localSettingsPath = Path.Combine(pbiFolder, "localSettings.json");
                 if (!File.Exists(localSettingsPath))
                 {
                     var localSettings = @"{
   ""$schema"": ""https://developer.microsoft.com/json-schemas/fabric/item/semanticModel/localSettings/1.2.0/schema.json"",
-  ""userConsent"": {}
+  ""userConsent"": {
+    ""compositeModel"": true
+  }
 }";
                     File.WriteAllText(localSettingsPath, localSettings, Utf8WithoutBom);
                     DebugLogger.Log("Created .pbi/localSettings.json");
@@ -1406,10 +1461,41 @@ namespace DataverseToPowerBI.XrmToolBox.Services
         }
 
         /// <summary>
+        /// Creates the Report .pbi/localSettings.json file if it does not exist.
+        /// CopyDirectory intentionally skips .pbi folders (they contain machine-specific state),
+        /// but Power BI Desktop requires this file to exist so it can store credential bindings
+        /// (securityBindingsSignature) during the first authentication. Without it, PBI Desktop
+        /// cannot persist data source credentials, causing KeyNotFoundException during
+        /// Apply Changes in the Power Query editor.
+        /// </summary>
+        private void WriteReportLocalSettings(string pbipFolder, string projectName)
+        {
+            try
+            {
+                var reportPbiFolder = Path.Combine(pbipFolder, $"{projectName}.Report", ".pbi");
+                Directory.CreateDirectory(reportPbiFolder);
+
+                var localSettingsPath = Path.Combine(reportPbiFolder, "localSettings.json");
+                if (!File.Exists(localSettingsPath))
+                {
+                    var localSettings = @"{
+  ""$schema"": ""https://developer.microsoft.com/json-schemas/fabric/item/report/localSettings/1.0.0/schema.json""
+}";
+                    File.WriteAllText(localSettingsPath, localSettings, Utf8WithoutBom);
+                    DebugLogger.Log("Created Report .pbi/localSettings.json");
+                }
+            }
+            catch (Exception ex)
+            {
+                DebugLogger.Log($"Warning: Failed to write Report .pbi settings: {ex.Message}");
+            }
+        }
+
+        /// <summary>
         /// Writes the DataverseURL parameter table TMDL file.
         /// This is a hidden table with mode: import partition that acts as a Power Query parameter.
         /// The table must have Enable Load checked (which is the default for tables) — without it,
-        /// PBI Desktop throws KeyNotFoundException during CommonDataService.Database refresh.
+        /// PBI Desktop throws KeyNotFoundException during Sql.Database refresh.
         /// </summary>
         internal string GenerateDataverseUrlTableTmdl(string normalizedUrl, Dictionary<string, string>? existingTags = null)
         {
@@ -1454,6 +1540,56 @@ namespace DataverseToPowerBI.XrmToolBox.Services
 
             WriteTmdlFile(path, GenerateDataverseUrlTableTmdl(normalizedUrl, existingTags));
             DebugLogger.Log($"Generated DataverseURL parameter table: {normalizedUrl}");
+        }
+
+        /// <summary>
+        /// Generates the DataverseUniqueDB parameter table TMDL content.
+        /// This is a hidden parameter table (mode: import, IsParameterQuery=true) that stores
+        /// the organization unique name — the TDS endpoint database name.
+        /// This value may differ from the URL subdomain.
+        /// </summary>
+        internal string GenerateDataverseUniqueDBTableTmdl(string organizationUniqueName, Dictionary<string, string>? existingTags = null)
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine("table DataverseUniqueDB");
+            sb.AppendLine("\tisHidden");
+            sb.AppendLine("\tlineageTag: " + GetOrNewLineageTag(existingTags, "table"));
+            sb.AppendLine();
+            sb.AppendLine("\tcolumn DataverseUniqueDB");
+            sb.AppendLine("\t\tdataType: string");
+            sb.AppendLine("\t\tisHidden");
+            sb.AppendLine("\t\tlineageTag: " + GetOrNewLineageTag(existingTags, "col:DataverseUniqueDB"));
+            sb.AppendLine("\t\tsummarizeBy: none");
+            sb.AppendLine("\t\tsourceColumn: DataverseUniqueDB");
+            sb.AppendLine();
+            sb.AppendLine("\t\tchangedProperty = IsHidden");
+            sb.AppendLine();
+            sb.AppendLine("\t\tannotation SummarizationSetBy = Automatic");
+            sb.AppendLine();
+            sb.AppendLine("\tpartition DataverseUniqueDB = m");
+            sb.AppendLine("\t\tmode: import");
+            sb.AppendLine($"\t\tsource = \"{organizationUniqueName}\" meta [IsParameterQuery=true, Type=\"Text\", IsParameterQueryRequired=true]");
+            sb.AppendLine();
+            sb.AppendLine("\tchangedProperty = IsHidden");
+            sb.AppendLine();
+            sb.AppendLine("\tannotation PBI_NavigationStepName = Navigation");
+            sb.AppendLine();
+            sb.AppendLine("\tannotation PBI_ResultType = Text");
+            sb.AppendLine();
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// Writes the DataverseUniqueDB parameter table TMDL file.
+        /// </summary>
+        private void WriteDataverseUniqueDBTable(string path, string organizationUniqueName, Dictionary<string, string>? existingTags = null)
+        {
+            var dir = Path.GetDirectoryName(path);
+            if (!string.IsNullOrEmpty(dir))
+                Directory.CreateDirectory(dir);
+
+            WriteTmdlFile(path, GenerateDataverseUniqueDBTableTmdl(organizationUniqueName, existingTags));
+            DebugLogger.Log($"Generated DataverseUniqueDB parameter table: {organizationUniqueName}");
         }
 
         /// <summary>
@@ -1511,6 +1647,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
             if (Directory.Exists(tablesFolder))
             {
                 var existingDateTable = FindExistingDateTable(tablesFolder);
+                var generatedTables = GetGeneratedTableNames();
                 var filesToDelete = Directory.GetFiles(tablesFolder, "*.tmdl")
                     .Where(f => 
                     {
@@ -1518,8 +1655,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                         // Preserve Date table
                         if (existingDateTable != null && fileName.Equals(existingDateTable, StringComparison.OrdinalIgnoreCase))
                             return false;
-                        // Preserve DataverseURL parameter table (TDS)
-                        if (fileName.Equals("DataverseURL.tmdl", StringComparison.OrdinalIgnoreCase))
+                        if (generatedTables.Contains(Path.GetFileNameWithoutExtension(fileName)))
                             return false;
                         return true;
                     })
@@ -1640,6 +1776,9 @@ namespace DataverseToPowerBI.XrmToolBox.Services
             // This signals to Power BI Desktop that the project is initialized and prevents
             // unnecessary auto-relationship detection that could conflict with our definitions
             WriteEditorSettings(semanticModelFolder);
+
+            // Write Report .pbi/localSettings.json so PBI Desktop can persist credential bindings
+            WriteReportLocalSettings(pbipFolder, projectName);
 
             // Verify critical files exist
             VerifyPbipStructure(pbipFolder, projectName);
@@ -1941,7 +2080,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                     }
 
                     // Warn about orphaned tables (exclude generated tables like Date/DateAutoTemplate/DataverseURL)
-                    var generatedTables = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "Date", "DateAutoTemplate", "DataverseURL" };
+                    var generatedTables = GetGeneratedTableNames();
                     var orphanedTables = existingTables
                         .Except(metadataTables, StringComparer.OrdinalIgnoreCase)
                         .Where(t => !generatedTables.Contains(t))
@@ -2071,6 +2210,38 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                         Impact = ImpactLevel.Safe,
                         Description = "No changes detected"
                     });
+                }
+
+                // Check DataverseUniqueDB table (TDS database name)
+                if (ShouldIncludeDataverseUniqueDbTable)
+                {
+                    var uniqueDbTablePath = Path.Combine(pbipFolder, $"{projectName}.SemanticModel", "definition", "tables", "DataverseUniqueDB.tmdl");
+                    var currentDbName = ExtractParameterValue(uniqueDbTablePath);
+                    if (!string.Equals(currentDbName, _organizationUniqueName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        changes.Add(new SemanticModelChange
+                        {
+                            ChangeType = string.IsNullOrEmpty(currentDbName) ? ChangeType.New : ChangeType.Update,
+                            ObjectType = "DataverseUniqueDB",
+                            ObjectName = "Table",
+                            Impact = ImpactLevel.Moderate,
+                            Description = string.IsNullOrEmpty(currentDbName)
+                                ? $"New: {_organizationUniqueName}"
+                                : $"Update: {currentDbName} → {_organizationUniqueName}",
+                            DetailText = $"The DataverseUniqueDB parameter (TDS database name) will be {(string.IsNullOrEmpty(currentDbName) ? "created" : "updated")}.\nValue: {_organizationUniqueName}"
+                        });
+                    }
+                    else
+                    {
+                        changes.Add(new SemanticModelChange
+                        {
+                            ChangeType = ChangeType.Preserve,
+                            ObjectType = "DataverseUniqueDB",
+                            ObjectName = "Table",
+                            Impact = ImpactLevel.Safe,
+                            Description = "No changes detected"
+                        });
+                    }
                 }
             }
 
@@ -2450,7 +2621,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
 
                         if (includeName && !processedColumns.Contains(nameColumn) && !isOwningLookup)
                         {
-                            var lookupSourceCol = _useDisplayNameRenamesInPowerQuery ? effectiveName : nameColumn;
+                            var lookupSourceCol = effectiveName;
                             columns[effectiveName] = new ColumnDefinition
                             {
                                 DisplayName = effectiveName,
@@ -2523,7 +2694,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                             var nameColumn = attr.LogicalName + "name";
                             if (!processedColumns.Contains(nameColumn))
                             {
-                                var fabricChoiceSourceCol = _useDisplayNameRenamesInPowerQuery ? effectiveName : nameColumn;
+                                var fabricChoiceSourceCol = effectiveName;
                                 columns[effectiveName] = new ColumnDefinition
                                 {
                                     DisplayName = effectiveName,
@@ -2550,7 +2721,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                             
                             if (!processedColumns.Contains(nameColumn))
                             {
-                                var tdsChoiceSourceCol = _useDisplayNameRenamesInPowerQuery ? effectiveName : nameColumn;
+                                var tdsChoiceSourceCol = effectiveName;
                                 columns[effectiveName] = new ColumnDefinition
                                 {
                                     DisplayName = effectiveName,
@@ -2602,7 +2773,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                         
                         if (!processedColumns.Contains(nameColumn))
                         {
-                            var msSourceCol = _useDisplayNameRenamesInPowerQuery ? effectiveName : nameColumn;
+                            var msSourceCol = effectiveName;
                             columns[effectiveName] = new ColumnDefinition
                             {
                                 DisplayName = effectiveName,
@@ -2630,7 +2801,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                         
                         var isPrimaryKey = attr.LogicalName.Equals(table.PrimaryIdAttribute, StringComparison.OrdinalIgnoreCase);
                         var regularDisplayName = isPrimaryKey ? attr.LogicalName : effectiveName;
-                        var regularSourceCol = isPrimaryKey ? attr.LogicalName : (_useDisplayNameRenamesInPowerQuery ? effectiveName : attr.LogicalName);
+                        var regularSourceCol = isPrimaryKey ? attr.LogicalName : effectiveName;
                         
                         columns[regularDisplayName] = new ColumnDefinition
                         {
@@ -2664,7 +2835,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
 
                         var expandedHidden = expAttr.IsHidden ?? false;
                         var prefixedDisplayName = BuildExpandedLookupDisplayName(table, expand, expAttr, attrInfo);
-                        var sourceCol = _useDisplayNameRenamesInPowerQuery && !expandedHidden ? prefixedDisplayName : colKey;
+                        var sourceCol = expandedHidden ? colKey : prefixedDisplayName;
 
                         var expAttrType = expAttr.AttributeType ?? string.Empty;
                         var isExpLookup = expAttrType.Equals("Lookup", StringComparison.OrdinalIgnoreCase) ||
@@ -2762,15 +2933,8 @@ namespace DataverseToPowerBI.XrmToolBox.Services
         /// </summary>
         private string ExtractMQuery(string tmdlContent)
         {
-            // Extract the SQL from inside Value.NativeQuery(Dataverse,"...SQL...")
-            // The partition format spans multiple lines:
-            //   Source = Value.NativeQuery(Dataverse,"
-            //
-            //       SELECT ... FROM ... WHERE ...
-            //
-            //   " ,null ,[EnableFolding=true])
-            
-            // Match from Value.NativeQuery to the closing quote before " ,null" (TDS pattern)
+            // Both TDS and FabricLink now use Value.NativeQuery(Source, "...SQL...")
+            // Match from Value.NativeQuery to the closing quote
             var queryMatch = Regex.Match(tmdlContent, @"Value\.NativeQuery\([^,]+,\s*""(.*?)""", RegexOptions.Singleline);
             if (queryMatch.Success)
             {
@@ -2778,7 +2942,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                 return NormalizeQuery(sql);
             }
             
-            // Also try FabricLink pattern: [Query="..."]
+            // Legacy FabricLink pattern: [Query="..."]
             var fabricQueryMatch = Regex.Match(tmdlContent, @"\[Query\s*=\s*""(.*?)""", RegexOptions.Singleline);
             if (fabricQueryMatch.Success)
             {
@@ -2946,7 +3110,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                             }
                             if (!processedColumns.Contains(nameColumn))
                             {
-                                var fabricChoiceAlias = $"{joinAlias}.[LocalizedLabel] {nameColumn}";
+                                var fabricChoiceAlias = $"{joinAlias}.[LocalizedLabel] {EscapeSqlIdentifier(effectiveName)}";
                                 sqlFields.Add(fabricChoiceAlias);
                             }
                             processedColumns.Add(nameColumn);
@@ -3121,7 +3285,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                                     joinClauses.Add($"LEFT JOIN [{metadataTable}] {metadataJoinAlias} ON {metadataJoinAlias}.[OptionSetName]='{optionSetName}' AND {metadataJoinAlias}.[EntityName]='{expand.TargetTableLogicalName}' AND {metadataJoinAlias}.[LocalizedLabelLanguageCode]={_languageCode} AND {metadataJoinAlias}.[Option]={joinAlias}.{expAttr.LogicalName}");
                                 }
                                 
-                                var fabricAlias = $"{metadataJoinAlias}.[LocalizedLabel] {colKey}";
+                                var fabricAlias = $"{metadataJoinAlias}.[LocalizedLabel] {EscapeSqlIdentifier(prefixedDisplayName)}";
                                 sqlFields.Add(fabricAlias);
                             }
                             else
@@ -3165,10 +3329,9 @@ namespace DataverseToPowerBI.XrmToolBox.Services
 
             var selectList = string.Join(", ", sqlFields);
             
-            // Build WHERE clause from the view's filter only.
-            // No default statecode filter is added — if no view is selected, or the view has no
-            // filterable conditions, the query returns all rows.
-            var whereClause = "";
+            // Build WHERE clause from the view's filter and optional FabricLink data-state selection.
+            // No default statecode filter is added unless explicitly requested by retention mode.
+            var viewFilterClause = "";
             if (table.View != null && !string.IsNullOrWhiteSpace(table.View.FetchXml))
             {
                 var utcOffset = (int)(dateTableConfig?.UtcOffsetHours ?? -6);
@@ -3181,14 +3344,55 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                 
                 if (!string.IsNullOrWhiteSpace(conversionResult.SqlWhereClause))
                 {
-                    whereClause = $" WHERE {conversionResult.SqlWhereClause}";
+                    viewFilterClause = conversionResult.SqlWhereClause;
                 }
             }
+
+            var whereClause = BuildCombinedWhereClause(viewFilterClause, GetFabricLinkRetentionPredicate(table));
             
             // Build JOIN clauses string for FabricLink (includes OUTER APPLY for multi-select fields)
             var joinSection = joinClauses.Count > 0 ? " " + string.Join(" ", joinClauses) : "";
 
             return NormalizeQuery($"SELECT {selectList} FROM {fromTable} AS Base{joinSection}{whereClause}");
+        }
+
+        private static string NormalizeFabricLinkRetentionMode(string? mode)
+        {
+            if (string.Equals(mode, "Live", StringComparison.OrdinalIgnoreCase))
+                return "Live";
+            if (string.Equals(mode, "LTR", StringComparison.OrdinalIgnoreCase))
+                return "LTR";
+            return "All";
+        }
+
+        private string GetFabricLinkRetentionPredicate(ExportTable table)
+        {
+            if (!IsFabricLink)
+                return string.Empty;
+
+            var normalizedMode = NormalizeFabricLinkRetentionMode(table.FabricLinkRetentionMode);
+            if (normalizedMode == "Live")
+                return "(Base.msft_datastate = 2 OR Base.msft_datastate is null)";
+            if (normalizedMode == "LTR")
+                return "(Base.msft_datastate = 1)";
+
+            return string.Empty;
+        }
+
+        private static string BuildCombinedWhereClause(string? viewFilterClause, string? retentionPredicate)
+        {
+            var clauses = new List<string>();
+
+            if (!string.IsNullOrWhiteSpace(viewFilterClause))
+                clauses.Add($"({viewFilterClause})");
+
+            if (!string.IsNullOrWhiteSpace(retentionPredicate))
+                clauses.Add(retentionPredicate);
+
+            if (clauses.Count == 0)
+                return string.Empty;
+
+            return $" WHERE {string.Join(" AND ", clauses)}";
         }
 
         private static Dictionary<string, string> GetDateTimeBehaviorMap(
@@ -3563,6 +3767,28 @@ namespace DataverseToPowerBI.XrmToolBox.Services
         }
 
         /// <summary>
+        /// Extracts the parameter value from a parameter table TMDL file.
+        /// Matches: source = "value" meta [IsParameterQuery=true, ...]
+        /// Returns empty string if the file doesn't exist or can't be parsed.
+        /// </summary>
+        private static string ExtractParameterValue(string tmdlPath)
+        {
+            if (!File.Exists(tmdlPath))
+                return string.Empty;
+
+            try
+            {
+                var content = File.ReadAllText(tmdlPath);
+                var match = Regex.Match(content, @"source\s*=\s*""([^""]+)""\s*meta\s*\[IsParameterQuery\s*=\s*true");
+                if (match.Success)
+                    return match.Groups[1].Value;
+            }
+            catch { }
+
+            return string.Empty;
+        }
+
+        /// <summary>
         /// Extracts a named expression value from expressions.tmdl
         /// </summary>
         private string ExtractExpression(string pbipFolder, string projectName, string expressionName)
@@ -3682,6 +3908,11 @@ namespace DataverseToPowerBI.XrmToolBox.Services
             var reportFolder = Path.Combine(pbipFolder, $"{projectName}.Report");
             if (!Directory.Exists(reportFolder))
                 missing.Add($"{projectName}.Report/ (report folder)");
+
+            // Report .pbi/localSettings.json (required for credential binding storage)
+            var reportLocalSettings = Path.Combine(reportFolder, ".pbi", "localSettings.json");
+            if (Directory.Exists(reportFolder) && !File.Exists(reportLocalSettings))
+                missing.Add($"{projectName}.Report/.pbi/localSettings.json (credential bindings)");
 
             // DataverseURL table (both TDS and FabricLink)
             var dvUrlTable = Path.Combine(definitionFolder, "tables", "DataverseURL.tmdl");
@@ -3872,7 +4103,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
             {
                 SetStatus("Creating backup...");
                 var timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-            var backupFolder = Path.Combine(outputFolder, environmentName, semanticModelName, "Backup", $"PBIP_Backup_{timestamp}");
+                var backupFolder = Path.Combine(outputFolder, environmentName, $"{semanticModelName}_Backups", $"PBIP_Backup_{timestamp}");
                 
                 // Simple directory copy for backup (no template replacement needed)
                 CopyDirectorySimple(pbipFolder, backupFolder);
@@ -3903,9 +4134,11 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                 string dirName = Path.GetFileName(subDir);
                 
                 // Skip .pbi folders (contains user-specific Power BI Desktop settings that may be locked)
-                if (dirName.Equals(".pbi", StringComparison.OrdinalIgnoreCase))
+                // Skip Backup folders from prior versions that stored backups inside the PBIP folder
+                if (dirName.Equals(".pbi", StringComparison.OrdinalIgnoreCase) ||
+                    dirName.Equals("Backup", StringComparison.OrdinalIgnoreCase))
                 {
-                    DebugLogger.Log($"  Skipping .pbi folder during backup: {subDir}");
+                    DebugLogger.Log($"  Skipping {dirName} folder during backup: {subDir}");
                     continue;
                 }
                 
@@ -4090,7 +4323,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
             // Remove orphaned tables if requested
             if (removeOrphanedTables)
             {
-                var generatedTables = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "Date", "DateAutoTemplate", "DataverseURL" };
+                var generatedTables = GetGeneratedTableNames();
                 var metadataTables = tables.Select(t => SanitizeFileName(t.DisplayName ?? t.SchemaName ?? t.LogicalName))
                     .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
@@ -4213,6 +4446,9 @@ namespace DataverseToPowerBI.XrmToolBox.Services
             // Ensure .pbi editor settings exist
             WriteEditorSettings(incrementalSemanticModelFolder);
 
+            // Ensure Report .pbi/localSettings.json exists for credential bindings
+            WriteReportLocalSettings(pbipFolder, projectName);
+
             // Verify critical files exist
             VerifyPbipStructure(pbipFolder, projectName);
 
@@ -4272,7 +4508,15 @@ namespace DataverseToPowerBI.XrmToolBox.Services
         /// </summary>
         internal string InsertUserMeasures(string tableTmdl, string measuresSection)
         {
-            // Find the partition section and insert measures before it
+            // PBI Desktop serialization order: measures → columns → hierarchies → partitions → annotations.
+            // Insert user measures before the first column so they group with auto-generated measures.
+            var columnIndex = tableTmdl.IndexOf("\tcolumn ");
+            if (columnIndex > 0)
+            {
+                return tableTmdl.Insert(columnIndex, measuresSection);
+            }
+
+            // No columns — insert before partition
             var partitionIndex = tableTmdl.IndexOf("\tpartition");
             if (partitionIndex > 0)
             {
@@ -4325,14 +4569,8 @@ namespace DataverseToPowerBI.XrmToolBox.Services
         /// </summary>
         internal string InsertUserHierarchies(string tableTmdl, string hierarchiesSection)
         {
-            // Prefer inserting before first measure to keep measures grouped together.
-            var measureIndex = tableTmdl.IndexOf("\tmeasure ");
-            if (measureIndex > 0)
-            {
-                return tableTmdl.Insert(measureIndex, hierarchiesSection);
-            }
-
-            // Otherwise insert before partition.
+            // PBI Desktop serialization order: measures → columns → hierarchies → partitions → annotations.
+            // Insert hierarchies before partition (after columns).
             var partitionIndex = tableTmdl.IndexOf("\tpartition");
             if (partitionIndex > 0)
             {
@@ -4386,6 +4624,12 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                 // TDS: DataverseURL is a parameter table (must appear first in query order)
                 tableNames.Insert(0, "DataverseURL");
             }
+            // DataverseUniqueDB parameter table (TDS database name) — after DataverseURL
+            if (ShouldIncludeDataverseUniqueDbTable)
+            {
+                var dvUrlIndex = tableNames.IndexOf("DataverseURL");
+                tableNames.Insert(dvUrlIndex + 1, "DataverseUniqueDB");
+            }
             if (includeDateTable)
             {
                 tableNames.Add("Date"); // Date table at the end
@@ -4423,6 +4667,11 @@ namespace DataverseToPowerBI.XrmToolBox.Services
             {
                 sb.AppendLine("ref table DataverseURL");
             }
+            // Add DataverseUniqueDB parameter table reference (TDS only)
+            if (ShouldIncludeDataverseUniqueDbTable)
+            {
+                sb.AppendLine("ref table DataverseUniqueDB");
+            }
             sb.AppendLine();
 
             // Write ref expression entries (FabricLink only)
@@ -4433,8 +4682,8 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                 sb.AppendLine("ref expression FabricSQLEndpoint");
                 sb.AppendLine("ref expression FabricLakehouse");
                 sb.AppendLine("ref expression DataverseURL");
+                sb.AppendLine();
             }
-            sb.AppendLine();
 
             sb.AppendLine("ref cultureInfo en-US");
             sb.AppendLine();
@@ -4575,10 +4824,16 @@ namespace DataverseToPowerBI.XrmToolBox.Services
             // Parse existing lineage tags if preserving
             Dictionary<string, string>? dvUrlTags = null;
             Dictionary<string, string>? exprTags = null;
+            Dictionary<string, string>? dvDbTags = null;
             if (preserveIds)
             {
                 dvUrlTags = ParseExistingLineageTags(dataverseUrlTablePath);
                 exprTags = ParseExistingLineageTags(expressionsPath);
+                if (ShouldIncludeDataverseUniqueDbTable)
+                {
+                    var dataverseUniqueDBTablePath = Path.Combine(definitionFolder, "tables", "DataverseUniqueDB.tmdl");
+                    dvDbTags = ParseExistingLineageTags(dataverseUniqueDBTablePath);
+                }
             }
 
             if (IsFabricLink)
@@ -4590,6 +4845,8 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                 
                 // FabricLink ALSO needs DataverseURL as a table (for DAX measure references)
                 WriteDataverseUrlTable(dataverseUrlTablePath, normalizedUrl, dvUrlTags);
+
+                RemoveDataverseUniqueDbTable(definitionFolder);
             }
             else
             {
@@ -4615,6 +4872,17 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                         WriteTmdlFile(modelCleanupPath, content);
                     }
                 }
+            }
+
+            // Write DataverseUniqueDB parameter table (TDS database name) for TDS only
+            if (ShouldIncludeDataverseUniqueDbTable)
+            {
+                var uniqueDbTablePath = Path.Combine(definitionFolder, "tables", "DataverseUniqueDB.tmdl");
+                WriteDataverseUniqueDBTable(uniqueDbTablePath, _organizationUniqueName!, dvDbTags);
+            }
+            else
+            {
+                RemoveDataverseUniqueDbTable(definitionFolder);
             }
 
             // Update .platform file with display name (preserve logicalId during incremental updates)
@@ -4855,7 +5123,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
 
                     if (includeName && !processedColumns.Contains(nameColumn) && !isOwningLookup)
                     {
-                        var lookupSourceCol = _useDisplayNameRenamesInPowerQuery ? effectiveName : nameColumn;
+                        var lookupSourceCol = effectiveName;
                         columns.Add(new ColumnInfo
                         {
                             LogicalName = nameColumn,
@@ -4996,12 +5264,12 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                                 $"\t\t\t\t            AND {joinAlias}.[Option] = Base.{attr.LogicalName}");
                         }
 
-                        // SELECT the localized label aliased as {attributename}name
+                        // SELECT the localized label aliased as display name
                         // Check if already processed (user may have selected virtual name column)
                         if (!processedColumns.Contains(nameColumn))
                         {
-                            var fabricChoiceSourceCol = _useDisplayNameRenamesInPowerQuery ? effectiveName : nameColumn;
-                            var fabricChoiceAlias = $"{joinAlias}.[LocalizedLabel] {nameColumn}";
+                            var fabricChoiceSourceCol = effectiveName;
+                            var fabricChoiceAlias = $"{joinAlias}.[LocalizedLabel] {EscapeSqlIdentifier(effectiveName)}";
                             sqlFields.Add(fabricChoiceAlias);
 
                             // Column definition uses string type (the label text)
@@ -5050,7 +5318,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                     
                     if (!processedColumns.Contains(nameColumn))
                     {
-                        var tdsChoiceSourceCol = _useDisplayNameRenamesInPowerQuery ? effectiveName : nameColumn;
+                        var tdsChoiceSourceCol = effectiveName;
                         columns.Add(new ColumnInfo
                         {
                             LogicalName = nameColumn,
@@ -5141,7 +5409,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
 
                     if (!processedColumns.Contains(nameColumn))
                     {
-                        var msSourceCol = _useDisplayNameRenamesInPowerQuery ? effectiveName : nameColumn;
+                        var msSourceCol = effectiveName;
                         columns.Add(new ColumnInfo
                         {
                             LogicalName = nameColumn,
@@ -5168,7 +5436,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
 
                     // If wrapping datetime, change the data type to dateTime (date-only)
                     var effectiveAttrType = shouldWrapDateTime ? "dateonly" : attrType;
-                    var regularSourceCol = isPrimaryKey ? attr.LogicalName : (_useDisplayNameRenamesInPowerQuery ? effectiveName : attr.LogicalName);
+                    var regularSourceCol = isPrimaryKey ? attr.LogicalName : effectiveName;
 
                     columns.Add(new ColumnInfo
                     {
@@ -5241,7 +5509,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                         var isExpBoolean = expAttrType.Equals("Boolean", StringComparison.OrdinalIgnoreCase);
                         var isExpMultiSelect = expAttrType.Equals("MultiSelectPicklist", StringComparison.OrdinalIgnoreCase);
                         
-                        var sourceCol = _useDisplayNameRenamesInPowerQuery && !expandedHidden ? prefixedDisplayName : colKey;
+                        var sourceCol = expandedHidden ? colKey : prefixedDisplayName;
                         
                         if (isExpLookup)
                         {
@@ -5291,7 +5559,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                                         $"\t\t\t\t            AND {metadataJoinAlias}.[Option] = {joinAlias}.{expAttr.LogicalName}");
                                 }
                                 
-                                var fabricAlias = $"{metadataJoinAlias}.[LocalizedLabel] {colKey}";
+                                var fabricAlias = $"{metadataJoinAlias}.[LocalizedLabel] {EscapeSqlIdentifier(prefixedDisplayName)}";
                                 sqlFields.Add(fabricAlias);
                             }
                             else
@@ -5375,6 +5643,39 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                 }
             }
 
+            // Auto-generate measures based on per-table options (fact tables default to both enabled)
+            // PBI Desktop expects measures to appear before columns in TMDL serialization order.
+            var includeRecordLinkMeasure = table.IncludeRecordLinkMeasure ?? string.Equals(table.Role, "Fact", StringComparison.OrdinalIgnoreCase);
+            var includeCountMeasure = table.IncludeCountMeasure ?? string.Equals(table.Role, "Fact", StringComparison.OrdinalIgnoreCase);
+
+            if (includeRecordLinkMeasure || includeCountMeasure)
+            {
+                var entityLogicalName = table.LogicalName;
+                var factPrimaryKey = table.PrimaryIdAttribute ?? (table.LogicalName + "id");
+
+                if (includeRecordLinkMeasure)
+                {
+                    // Link measure: builds a URL to open the record in Dynamics 365
+                    sb.AppendLine($"\tmeasure 'Link to {displayName}' = ```");
+                    sb.AppendLine($"\t\t\t");
+                    sb.AppendLine($"\t\t\t\"https://\" & DataverseURL & \"/main.aspx?pagetype=entityrecord&etn={entityLogicalName}&id=\" ");
+                    sb.AppendLine($"\t\t\t\t& SELECTEDVALUE('{displayName}'[{factPrimaryKey}], BLANK())");
+                    sb.AppendLine($"\t\t\t```");
+                    sb.AppendLine($"\t\tlineageTag: {GetOrNewLineageTag(existingLineageTags, $"measure:Link to {displayName}")}");
+                    sb.AppendLine($"\t\tdataCategory: WebUrl");
+                    sb.AppendLine();
+                }
+
+                if (includeCountMeasure)
+                {
+                    // Count measure: counts rows in the table
+                    sb.AppendLine($"\tmeasure '{displayName} Count' = COUNTROWS('{displayName}')");
+                    sb.AppendLine($"\t\tformatString: 0");
+                    sb.AppendLine($"\t\tlineageTag: {GetOrNewLineageTag(existingLineageTags, $"measure:{displayName} Count")}");
+                    sb.AppendLine();
+                }
+            }
+
             // Write columns
             // Known tool-generated annotations (these will always be regenerated)
             var toolAnnotations = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
@@ -5426,10 +5727,6 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                 {
                     sb.AppendLine($"\t\tformatString: {formatString}");
                 }
-                if (sourceProviderType != null)
-                {
-                    sb.AppendLine($"\t\tsourceProviderType: {sourceProviderType}");
-                }
                 var preserveExistingHidden = !col.IsVisibilityUserConfigurable && (existingCol?.IsHidden ?? false);
                 if (col.IsHidden || preserveExistingHidden)
                 {
@@ -5438,6 +5735,10 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                 if (col.IsKey)
                 {
                     sb.AppendLine($"\t\tisKey");
+                }
+                if (sourceProviderType != null)
+                {
+                    sb.AppendLine($"\t\tsourceProviderType: {sourceProviderType}");
                 }
                 var lineageTag = GetUniqueColumnLineageTag(
                     existingLineageTags,
@@ -5511,42 +5812,12 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                 }
             }
 
-            var renamePairs = BuildPowerQueryRenamePairs(columns, _useDisplayNameRenamesInPowerQuery);
+            // SQL aliases now produce display-name output columns directly,
+            // so no Power Query Table.RenameColumns step is needed.
+            var renamePairs = new List<(string SourceName, string DisplayName)>();
 
             // Partition name matches table display name (PBI Desktop requires this for DirectQuery evaluation)
             var partitionName = displayName;
-
-            var includeRecordLinkMeasure = table.IncludeRecordLinkMeasure ?? string.Equals(table.Role, "Fact", StringComparison.OrdinalIgnoreCase);
-            var includeCountMeasure = table.IncludeCountMeasure ?? string.Equals(table.Role, "Fact", StringComparison.OrdinalIgnoreCase);
-
-            // Auto-generate measures based on per-table options (fact tables default to both enabled)
-            if (includeRecordLinkMeasure || includeCountMeasure)
-            {
-                var entityLogicalName = table.LogicalName;
-                var factPrimaryKey = table.PrimaryIdAttribute ?? (table.LogicalName + "id");
-
-                if (includeRecordLinkMeasure)
-                {
-                    // Link measure: builds a URL to open the record in Dynamics 365
-                    sb.AppendLine($"\tmeasure 'Link to {displayName}' = ```");
-                    sb.AppendLine($"\t\t\t");
-                    sb.AppendLine($"\t\t\t\"https://\" & DataverseURL & \"/main.aspx?pagetype=entityrecord&etn={entityLogicalName}&id=\" ");
-                    sb.AppendLine($"\t\t\t\t& SELECTEDVALUE('{displayName}'[{factPrimaryKey}], BLANK())");
-                    sb.AppendLine($"\t\t\t```");
-                    sb.AppendLine($"\t\tlineageTag: {GetOrNewLineageTag(existingLineageTags, $"measure:Link to {displayName}")}");
-                    sb.AppendLine($"\t\tdataCategory: WebUrl");
-                    sb.AppendLine();
-                }
-
-                if (includeCountMeasure)
-                {
-                    // Count measure: counts rows in the table
-                    sb.AppendLine($"\tmeasure '{displayName} Count' = COUNTROWS('{displayName}')");
-                    sb.AppendLine($"\t\tformatString: 0");
-                    sb.AppendLine($"\t\tlineageTag: {GetOrNewLineageTag(existingLineageTags, $"measure:{displayName} Count")}");
-                    sb.AppendLine();
-                }
-            }
 
             sb.AppendLine($"\tpartition {QuoteTmdlName(partitionName)} = m");
             sb.AppendLine($"\t\tmode: {GetPartitionMode(table.Role, table.LogicalName)}");
@@ -5554,18 +5825,15 @@ namespace DataverseToPowerBI.XrmToolBox.Services
             sb.AppendLine($"\t\t\t\tlet");
             if (IsFabricLink)
             {
-                // FabricLink: uses Sql.Database with inline Query parameter
-                sb.AppendLine($"\t\t\t\t    Source = Sql.Database(FabricSQLEndpoint, FabricLakehouse,");
-                sb.AppendLine($"\t\t\t\t    [Query=\"");
+                // FabricLink: Sql.Database with Fabric endpoint parameters, then Value.NativeQuery
+                sb.AppendLine($"\t\t\t\t    Source = Sql.Database(FabricSQLEndpoint, FabricLakehouse),");
             }
             else
             {
-                // TDS: reference the DataverseURL parameter table.
-                // DataverseURL must be a table with mode: import and IsParameterQuery=true
-                // ("Enable Load" checked) — otherwise PBI Desktop throws KeyNotFoundException.
-                sb.AppendLine($"\t\t\t\t    Dataverse = CommonDataService.Database(DataverseURL,[CreateNavigationProperties=false]),");
-                sb.AppendLine($"\t\t\t\t    Source = Value.NativeQuery(Dataverse,\"");
+                // TDS: Sql.Database with DataverseURL + DataverseUniqueDB parameters, then Value.NativeQuery
+                sb.AppendLine($"\t\t\t\t    Source = Sql.Database(DataverseURL, DataverseUniqueDB),");
             }
+            sb.AppendLine($"\t\t\t\t    Query = Value.NativeQuery(Source, \"");
             
             // Add blank line after query opening
             sb.AppendLine($"\t\t\t\t");
@@ -5592,32 +5860,26 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                 sb.AppendLine($"\t\t\t\t    {joinClause}");
             }
             
-            // Build WHERE clause from the view's filter only.
-            // No default statecode filter is added — if no view is selected, or the view has no
-            // filterable conditions, the query returns all rows.
-            if (!string.IsNullOrWhiteSpace(viewFilterClause))
+            // Build WHERE clause from the view's filter and optional FabricLink data-state selection.
+            // No default statecode filter is added unless explicitly requested by retention mode.
+            var combinedWhereClause = BuildCombinedWhereClause(viewFilterClause, GetFabricLinkRetentionPredicate(table));
+            if (!string.IsNullOrWhiteSpace(combinedWhereClause))
             {
-                sb.AppendLine($"\t\t\t\t    WHERE {viewFilterClause}");
+                sb.AppendLine($"\t\t\t\t    {combinedWhereClause.TrimStart()}");
             }
 
             // Add a single trailing blank line after the final SQL line.
             sb.AppendLine($"\t\t\t\t");
 
-            if (IsFabricLink)
-            {
-                sb.AppendLine($"\t\t\t\t        \"");
-                sb.AppendLine($"\t\t\t\t    , CreateNavigationProperties=false])");
-            }
-            else
-            {
-                sb.AppendLine($"\t\t\t\t    \" ,null ,[EnableFolding=true])");
-            }
+            // Both modes now use the same closing pattern with Value.NativeQuery
+            sb.AppendLine($"\t\t\t\t        \"");
+            sb.AppendLine($"\t\t\t\t    , null, [PreserveTypes = true, EnableFolding = true])");
 
             if (renamePairs.Count > 0)
             {
                 var renameList = string.Join(", ", renamePairs.Select(p =>
                     $"{{\"{EscapeMStringLiteral(p.SourceName)}\", \"{EscapeMStringLiteral(p.DisplayName)}\"}}"));
-                sb.AppendLine($"\t\t\t\t    ,#\"Renamed Columns\" = Table.RenameColumns(Source,{{{renameList}}})");
+                sb.AppendLine($"\t\t\t\t    ,#\"Renamed Columns\" = Table.RenameColumns(Query,{{{renameList}}})");
             }
 
             sb.AppendLine($"\t\t\t\tin");
@@ -5627,7 +5889,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
             }
             else
             {
-                sb.AppendLine($"\t\t\t\t    Source");
+                sb.AppendLine($"\t\t\t\t    Query");
             }
             sb.AppendLine();
             sb.AppendLine($"\tannotation PBI_NavigationStepName = Navigation");
@@ -6024,6 +6286,14 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                 }
             }
 
+            // Check for Report .pbi/localSettings.json (needed for credential binding storage)
+            var reportLocalSettings = Path.Combine(reportFolder, ".pbi", "localSettings.json");
+            if (!File.Exists(reportLocalSettings))
+            {
+                DebugLogger.Log($"Missing Report .pbi/localSettings.json, creating it");
+                WriteReportLocalSettings(pbipFolder, projectName);
+            }
+
             // Check for SemanticModel .platform file
             var platformFile = Path.Combine(pbipFolder, $"{projectName}.SemanticModel", ".platform");
             if (!File.Exists(platformFile))
@@ -6137,6 +6407,16 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                 Content = GenerateDataverseUrlTableTmdl(normalizedUrl),
                 EntryType = TmdlEntryType.Expression
             };
+
+            // DataverseUniqueDB parameter table (TDS database name)
+            if (ShouldIncludeDataverseUniqueDbTable)
+            {
+                result["DataverseUniqueDB"] = new TmdlPreviewEntry
+                {
+                    Content = GenerateDataverseUniqueDBTableTmdl(_organizationUniqueName!),
+                    EntryType = TmdlEntryType.Expression
+                };
+            }
 
             // Date table
             if (dateTableConfig != null)

@@ -82,6 +82,7 @@ namespace DataverseToPowerBI.XrmToolBox
 
         private readonly SemanticModelManager _modelManager;
         private readonly string _currentEnvironmentUrl;
+        private readonly string? _currentOrganizationUniqueName;
         private SemanticModelConfig? _selectedModel;
 
         public SemanticModelConfig? SelectedSemanticModel => _selectedModel;
@@ -89,10 +90,11 @@ namespace DataverseToPowerBI.XrmToolBox
         public bool UrlWasChanged { get; private set; } = false;
         public string NewlyCreatedConfiguration { get; private set; } = "";
 
-        public SemanticModelSelectorDialog(SemanticModelManager modelManager, string currentEnvironmentUrl)
+        public SemanticModelSelectorDialog(SemanticModelManager modelManager, string currentEnvironmentUrl, string? organizationUniqueName = null)
         {
             _modelManager = modelManager;
             _currentEnvironmentUrl = NormalizeUrl(currentEnvironmentUrl);
+            _currentOrganizationUniqueName = organizationUniqueName;
             InitializeComponent();
             LoadModels();
         }
@@ -341,14 +343,14 @@ namespace DataverseToPowerBI.XrmToolBox
             lblFabricEndpoint = new Label
             {
                 Text = "FabricLink SQL Endpoint:",
-                Location = new Point(15, 355),
+                Location = new Point(15, 365),
                 AutoSize = true,
                 Visible = false
             };
 
             txtFabricEndpoint = new TextBox
             {
-                Location = new Point(15, 375),
+                Location = new Point(15, 385),
                 Size = new Size(365, 23),
                 Visible = false
             };
@@ -357,14 +359,14 @@ namespace DataverseToPowerBI.XrmToolBox
             lblFabricDatabase = new Label
             {
                 Text = "FabricLink Lakehouse:",
-                Location = new Point(15, 405),
+                Location = new Point(15, 415),
                 AutoSize = true,
                 Visible = false
             };
 
             txtFabricDatabase = new TextBox
             {
-                Location = new Point(15, 425),
+                Location = new Point(15, 435),
                 Size = new Size(365, 23),
                 Visible = false
             };
@@ -374,7 +376,7 @@ namespace DataverseToPowerBI.XrmToolBox
             chkUseDisplayNameAliases = new CheckBox
             {
                 Text = "Rename columns to display names in Power Query",
-                Location = new Point(15, 455),
+                Location = new Point(15, 465),
                 Size = new Size(365, 20),
                 Checked = true
             };
@@ -383,7 +385,7 @@ namespace DataverseToPowerBI.XrmToolBox
             chkIncludeChoiceNumericValues = new CheckBox
             {
                 Text = "Include numeric value of selected options as hidden attributes",
-                Location = new Point(15, 475),
+                Location = new Point(15, 485),
                 Size = new Size(365, 20),
                 Checked = false
             };
@@ -871,6 +873,7 @@ namespace DataverseToPowerBI.XrmToolBox
                         {
                             Name = dialog.SemanticModelName,
                             DataverseUrl = _currentEnvironmentUrl,
+                            OrganizationUniqueName = _currentOrganizationUniqueName ?? "",
                             ConnectionType = dialog.ConnectionType,
                             StorageMode = dialog.StorageMode,
                             FabricLinkSQLEndpoint = dialog.FabricLinkSQLEndpoint,

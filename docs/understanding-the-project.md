@@ -40,7 +40,7 @@ YourModelName/
     └── (report definition files)
 ```
 
-> **Key difference:** In TDS mode, the Dataverse URL is stored as a hidden parameter *table* (`DataverseURL.tmdl`) — this is required for Power BI Desktop to properly resolve the `CommonDataService.Database` connector. In FabricLink mode, connection details are stored as *expressions* in `expressions.tmdl`.
+> **Key difference:** In TDS mode, the Dataverse URL is stored as a hidden parameter *table* (`DataverseURL.tmdl`) — this is required for Power BI Desktop to properly resolve the `Sql.Database` connector. In FabricLink mode, connection details are stored as *expressions* in `expressions.tmdl`.
 
 ## About PBIP Format
 

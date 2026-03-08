@@ -92,8 +92,8 @@ partition Position = m
     mode: directQuery
     source =
         let
-            Dataverse = CommonDataService.Database(DataverseURL,[CreateNavigationProperties=false]),
-            Source = Value.NativeQuery(Dataverse,"
+            Source = Sql.Database(DataverseURL, DataverseUniqueDB),
+            Query = Value.NativeQuery(Source, "
             
             -- View Filter: Active Positions
             -- Filter: ((Base.statecode = 0) AND ((DATEPART(year, Base.createdon) = DATEPART(year, GETDATE())) OR (DATEPART(year, Base.createdon) = DATEPART(year, DATEADD(year, -1, GETDATE())))))
@@ -105,9 +105,10 @@ partition Position = m
             FROM tov2_position as Base
             WHERE (Base.statecode = 0) AND ((Base.statecode = 0) AND ((DATEPART(year, Base.createdon) = DATEPART(year, GETDATE())) OR (DATEPART(year, Base.createdon) = DATEPART(year, DATEADD(year, -1, GETDATE())))))
             
-            " ,null ,[EnableFolding=true])
+                "
+            , null, [PreserveTypes = true, EnableFolding = true])
         in
-            Source
+            Query
 ```
 
 ## Debugging & Troubleshooting

@@ -8,9 +8,67 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
-### Fixed
+---
+
+## [1.2026.5.180] - 2026-03-07
+
+### Added
+
+- **SQL Native Query Mode (Sql.Database + Value.NativeQuery)** — **Breaking change:** All generated Power Query expressions now use the standard `Sql.Database` connector with `Value.NativeQuery(...)` instead of the legacy `CommonDataService.Database` connector. This is a fundamental architecture change that affects both connection modes:
+
+  - **Why:** Recent Power BI Desktop releases introduced metadata management failures with the CommonDataService connector that caused reports to break after any model update or refresh. Moving to the standard SQL connector resolves these failures and provides a more stable foundation.
+  - **How it works:** Each table partition now generates a Power Query `let...in` expression that connects via `Sql.Database` and passes the full SQL query through `Value.NativeQuery(Source, "<SQL>", null, [PreserveTypes = true, EnableFolding = true])`.
+    - `PreserveTypes = true` ensures Power Query preserves SQL-returned data types without re-inference.
+    - `EnableFolding = true` allows Power BI to fold additional query operations back into the native query for optimal performance.
+  - **TDS mode:** `Source = Sql.Database(DataverseURL, DataverseUniqueDB)` — connects to the Dataverse TDS endpoint using the environment URL and the organization database name.
+  - **FabricLink mode:** `Source = Sql.Database(FabricSQLEndpoint, FabricLakehouse)` — connects to the Fabric SQL endpoint with the lakehouse name.
+  - **Existing reports:** Reports built with the old `CommonDataService.Database` connector will need to be rebuilt with this tool to migrate to the new connector. The change preview will show the connection type change and all queries will be regenerated.
+
+- **DataverseUniqueDB Parameter** — A new hidden parameter table (`DataverseUniqueDB`) is generated for TDS-mode models. This stores the **organization unique name** — the TDS endpoint database name that the `Sql.Database` connector requires as its second argument.
+
+  - **Automatic lookup:** When you connect to a Dataverse environment in XrmToolBox, the tool automatically queries the `organization` entity to retrieve the database name. This value is persisted in the model configuration so it only needs to be looked up once.
+  - **Why it's needed:** The organization database name may differ from the environment URL subdomain (e.g., if the environment URL was renamed after provisioning, the database name retains the original provisioning name).
+  - **Manual transfer:** If you manually copy or migrate a Power BI report to point to a different environment, you must update **both** the `DataverseURL` and `DataverseUniqueDB` parameter values. The DataverseURL is the environment URL (e.g., `myorg.crm.dynamics.com`), and DataverseUniqueDB is the organization database name.
+  - **Finding the database name:** Connect to the TDS endpoint using SQL Server Management Studio (SSMS) — the database name is displayed in the Object Explorer. Note: connecting via VS Code's SQL extension does **not** show the database name in the same way.
+  - 📚 **Reference:** [Use SQL to query data (Dataverse TDS endpoint)](https://learn.microsoft.com/power-apps/developer/data-platform/dataverse-sql-query) | [View the Organization unique name](https://learn.microsoft.com/power-platform/admin/determine-org-id-name#find-your-organization-name)
+  - **FabricLink mode:** The `DataverseUniqueDB` table is not generated for FabricLink models — FabricLink uses `FabricSQLEndpoint` and `FabricLakehouse` expression parameters instead.
+
+- **Fabric Link Long Term Retention (LTR) Data Support** — Per-table control over which rows are included from Fabric Link tables that have Long Term Retention data. When Dataverse data is synced to Fabric via Fabric Link, retained (soft-deleted or archived) rows are stored alongside live data with a `msft_datastate` system column indicating their status.
+
+  - **Three modes per table:**
+    | Mode | SQL Predicate | Description |
+    |------|--------------|-------------|
+    | **All** (default) | *(none — all rows returned)* | Returns both live and retained rows. This is the default and matches the behavior of querying the Fabric Lakehouse directly. |
+    | **Live** | `WHERE (Base.msft_datastate = 2 OR Base.msft_datastate IS NULL)` | Only active/live rows. Filters out retained data. |
+    | **LTR** | `WHERE (Base.msft_datastate = 1)` | Only long-term retained rows. Useful for historical/archival reporting. |
+
+  - **Per-table configuration:** Each table can have its own retention mode. Click the retention mode indicator in the table list to cycle through All → Live → LTR. For example, you might set your fact table to "Live" (current data only) while setting an archive dimension to "LTR" (retained records only).
+  - **Combined with view filters:** The retention predicate is ANDed with any existing view filter WHERE clause. If you have both a view filter and a retention mode, both conditions apply.
+  - **FabricLink only:** This setting only applies to FabricLink connection mode. It is ignored for DataverseTDS connections (Dataverse TDS does not expose the `msft_datastate` column).
+  - **Persistence:** Retention mode settings are saved per-table in the model configuration and restored on reload.
+  - 📚 **Reference:** [Dataverse long term data retention overview](https://learn.microsoft.com/power-apps/maker/data-platform/data-retention-overview) | [Access retained data in Fabric](https://learn.microsoft.com/power-apps/maker/data-platform/data-retention-view)
+
+- **Choice Sub-Column Configuration** — Per-choice-field control over which generated sub-columns (numeric value and display label) are included or hidden in the semantic model:
+
+  - **Value field:** The raw integer/numeric value column (e.g., `statecode` = 0). Defaults to excluded unless the model-level "Include choice numeric values as hidden" toggle is enabled.
+  - **Label field:** The human-readable display name column (e.g., `statecode` = "Active"). Included by default.
+  - Per-choice Include/Hidden toggles appear in the attribute grid, matching the same pattern used for lookup sub-columns.
+  - Value field display names use PascalCase `SchemaName` when available (e.g., `StatusCode` instead of `statuscode`), falling back to `LogicalName`.
+  - Configurations persisted per semantic model and restored on load.
+
+- **Per-Table Count & Record Link Measure Toggles** — Individual tables can now opt in or out of the auto-generated `{TableName} Count` (COUNTROWS) and `Link to {TableName}` (Dataverse URL) measures. Previously, these were only generated on the fact table. Now dimension tables can opt in and any table can opt out. The fact table still defaults to having both measures enabled.
+
+### Changed
+
+- **Connection Architecture (TDS)** — TDS-mode partition expressions changed from `CommonDataService.Database(DataverseURL)` to `Sql.Database(DataverseURL, DataverseUniqueDB)` with `Value.NativeQuery`. This is the most significant internal change in this release. The old connector had progressively worsening metadata management issues in recent Power BI Desktop releases, causing `DataSource.Error` failures after model updates. The new architecture uses the same standard SQL connector for both TDS and FabricLink modes, providing a consistent and stable query generation path.
+
+- **Connection Architecture (FabricLink)** — FabricLink partition expressions now use `Value.NativeQuery(Source, "<SQL>", null, [PreserveTypes = true, EnableFolding = true])` wrapping the SQL query with explicit folding and type preservation options. Previously the SQL was passed as a `Query` record field to `Sql.Database`. The new pattern enables Power BI's query folding optimization.
 
 - **Display Name Rename Option Restricted to Import Mode** — The "Rename columns to display names in Power Query" checkbox is now hidden and disabled when the storage mode is Direct Query or Dual. This option uses a `Table.RenameColumns` Power Query step that is only valid for Import mode; enabling it for DirectQuery or Dual previously caused Power Query errors. The checkbox is automatically shown when Import mode is selected and hidden otherwise.
+
+### Fixed
+
+- **CommonDataService Connector Metadata Failures** — Resolved the root cause of `DataSource.Error` and metadata management failures that occurred with recent Power BI Desktop releases when using the CommonDataService connector. The new `Sql.Database` + `Value.NativeQuery` architecture eliminates these errors entirely.
 
 ---
 

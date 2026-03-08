@@ -43,6 +43,7 @@ namespace DataverseToPowerBI.XrmToolBox
             this.colMode = new System.Windows.Forms.ColumnHeader();
             this.colForm = new System.Windows.Forms.ColumnHeader();
             this.colView = new System.Windows.Forms.ColumnHeader();
+            this.colLiveLtr = new System.Windows.Forms.ColumnHeader();
             this.colCountMeasure = new System.Windows.Forms.ColumnHeader();
             this.colLinkMeasure = new System.Windows.Forms.ColumnHeader();
             this.colAttrs = new System.Windows.Forms.ColumnHeader();
@@ -257,6 +258,7 @@ namespace DataverseToPowerBI.XrmToolBox
                 this.colMode,
                 this.colForm,
                 this.colView,
+                this.colLiveLtr,
                 this.colCountMeasure,
                 this.colLinkMeasure,
                 this.colAttrs});
@@ -299,6 +301,10 @@ namespace DataverseToPowerBI.XrmToolBox
             // colView
             this.colView.Text = "Filter";
             this.colView.Width = 100;
+
+            // colLiveLtr
+            this.colLiveLtr.Text = "Live/LTR";
+            this.colLiveLtr.Width = 0;
 
             // colCountMeasure
             this.colCountMeasure.Text = "Count";
@@ -678,6 +684,7 @@ namespace DataverseToPowerBI.XrmToolBox
         private System.Windows.Forms.ColumnHeader colMode;
         private System.Windows.Forms.ColumnHeader colForm;
         private System.Windows.Forms.ColumnHeader colView;
+        private System.Windows.Forms.ColumnHeader colLiveLtr;
         private System.Windows.Forms.ColumnHeader colCountMeasure;
         private System.Windows.Forms.ColumnHeader colLinkMeasure;
         private System.Windows.Forms.ColumnHeader colAttrs;

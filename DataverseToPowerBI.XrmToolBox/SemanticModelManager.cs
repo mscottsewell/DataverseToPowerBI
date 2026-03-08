@@ -454,6 +454,8 @@ namespace DataverseToPowerBI.XrmToolBox
                 ShowAllAttributes = source.ShowAllAttributes,
                 TableStorageModes = source.TableStorageModes?.ToDictionary(k => k.Key, v => v.Value)
                     ?? new Dictionary<string, string>(),
+                TableFabricLinkRetentionModes = source.TableFabricLinkRetentionModes?.ToDictionary(k => k.Key, v => v.Value)
+                    ?? new Dictionary<string, string>(),
                 ExpandedLookups = source.ExpandedLookups?.ToDictionary(
                     k => k.Key,
                     v => v.Value?.Select(e => new SerializedExpandedLookup
@@ -540,6 +542,14 @@ namespace DataverseToPowerBI.XrmToolBox
 
         [DataMember]
         public string DataverseUrl { get; set; } = "";
+
+        /// <summary>
+        /// The organization unique name (TDS database name) for this environment.
+        /// May differ from the URL subdomain (e.g., URL is "pbicat.crm.dynamics.com"
+        /// but org unique name is "org1a2b3c4d").
+        /// </summary>
+        [DataMember]
+        public string OrganizationUniqueName { get; set; } = "";
 
         [DataMember]
         public string WorkingFolder { get; set; } = "";

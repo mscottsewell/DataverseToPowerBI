@@ -41,7 +41,8 @@ namespace DataverseToPowerBI.Tests
 
         private SemanticModelBuilder CreateBuilder(string connectionType = "DataverseTDS",
             string? fabricEndpoint = null, string? fabricDatabase = null,
-            bool useDisplayNameAliases = true, string storageMode = "DirectQuery")
+            bool useDisplayNameAliases = true, string storageMode = "DirectQuery",
+            string? organizationUniqueName = null)
         {
             return new SemanticModelBuilder(
                 _templatePath,
@@ -50,7 +51,8 @@ namespace DataverseToPowerBI.Tests
                 fabricLinkEndpoint: fabricEndpoint,
                 fabricLinkDatabase: fabricDatabase,
                 UseDisplayNameRenamesInPowerQuery: useDisplayNameAliases,
-                storageMode: storageMode);
+                storageMode: storageMode,
+                organizationUniqueName: organizationUniqueName);
         }
 
         #region Minimal Build Tests
@@ -244,11 +246,13 @@ namespace DataverseToPowerBI.Tests
                 scenario.BuildTables(), scenario.BuildRelationships(), scenario.BuildAttributeDisplayInfo());
 
             var tableContent = TmdlAssertions.ReadTableTmdl(_tempDir, "Account");
-            Assert.Contains("Sql.Database", tableContent);
+            Assert.Contains("Sql.Database(FabricSQLEndpoint, FabricLakehouse)", tableContent);
+            Assert.Contains("Value.NativeQuery(Source", tableContent);
+            Assert.Contains("PreserveTypes = true", tableContent);
         }
 
         [Fact]
-        public void Build_TDS_TablePartitionUsesCommonDataService()
+        public void Build_TDS_TablePartitionUsesSqlDatabase()
         {
             var scenario = new ScenarioBuilder()
                 .WithTable(new TableBuilder("account", "Account")
@@ -259,7 +263,156 @@ namespace DataverseToPowerBI.Tests
                 scenario.BuildTables(), scenario.BuildRelationships(), scenario.BuildAttributeDisplayInfo());
 
             var tableContent = TmdlAssertions.ReadTableTmdl(_tempDir, "Account");
-            Assert.Contains("CommonDataService.Database", tableContent);
+            Assert.Contains("Sql.Database(DataverseURL, DataverseUniqueDB)", tableContent);
+            Assert.Contains("Value.NativeQuery(Source", tableContent);
+            Assert.Contains("PreserveTypes = true", tableContent);
+        }
+
+        [Fact]
+        public void Build_TDS_WithOrganizationUniqueName_CreatesDataverseUniqueDbTable()
+        {
+            var scenario = new ScenarioBuilder()
+                .WithTable(new TableBuilder("account", "Account")
+                    .WithPrimaryName("name", "Account Name"));
+
+            var builder = CreateBuilder(organizationUniqueName: "contosoorg");
+
+            builder.Build(scenario.SemanticModelName, _tempDir, scenario.DataverseUrl,
+                scenario.BuildTables(), scenario.BuildRelationships(), scenario.BuildAttributeDisplayInfo());
+
+            TmdlAssertions.AssertTableFileExists(_tempDir, "DataverseUniqueDB");
+
+            var modelContent = TmdlAssertions.ReadModelTmdl(_tempDir);
+            var tableRefs = TmdlAssertions.ExtractModelTableRefs(modelContent);
+            Assert.Contains("DataverseUniqueDB", tableRefs);
+        }
+
+        [Fact]
+        public void Build_FabricLink_WithOrganizationUniqueName_DoesNotIncludeDataverseUniqueDbArtifacts()
+        {
+            var scenario = new ScenarioBuilder()
+                .WithTable(new TableBuilder("account", "Account")
+                    .WithPrimaryName("name", "Account Name"))
+                .UseFabricLink();
+
+            var builder = CreateBuilder(
+                connectionType: "FabricLink",
+                fabricEndpoint: scenario.FabricEndpoint,
+                fabricDatabase: scenario.FabricDatabase,
+                organizationUniqueName: "contosoorg");
+
+            builder.Build(scenario.SemanticModelName, _tempDir, scenario.DataverseUrl,
+                scenario.BuildTables(), scenario.BuildRelationships(), scenario.BuildAttributeDisplayInfo());
+
+            TmdlAssertions.AssertTableFileDoesNotExist(_tempDir, "DataverseUniqueDB");
+
+            var modelContent = TmdlAssertions.ReadModelTmdl(_tempDir);
+            var tableRefs = TmdlAssertions.ExtractModelTableRefs(modelContent);
+            Assert.DoesNotContain("DataverseUniqueDB", tableRefs);
+            Assert.DoesNotContain("DataverseUniqueDB", modelContent);
+        }
+
+        [Fact]
+        public void ApplyChanges_SwitchingFromTdsToFabricLink_RemovesDataverseUniqueDbTable()
+        {
+            var scenario = new ScenarioBuilder()
+                .WithTable(new TableBuilder("account", "Account")
+                    .WithPrimaryName("name", "Account Name"));
+
+            var tdsBuilder = CreateBuilder(organizationUniqueName: "contosoorg");
+            tdsBuilder.Build(scenario.SemanticModelName, _tempDir, scenario.DataverseUrl,
+                scenario.BuildTables(), scenario.BuildRelationships(), scenario.BuildAttributeDisplayInfo());
+
+            TmdlAssertions.AssertTableFileExists(_tempDir, "DataverseUniqueDB");
+
+            var fabricBuilder = CreateBuilder(
+                connectionType: "FabricLink",
+                fabricEndpoint: "test-endpoint.database.fabric.microsoft.com",
+                fabricDatabase: "TestLakehouse",
+                organizationUniqueName: "contosoorg");
+
+            var applied = fabricBuilder.ApplyChanges(
+                scenario.SemanticModelName,
+                _tempDir,
+                scenario.DataverseUrl,
+                scenario.BuildTables(),
+                scenario.BuildRelationships(),
+                scenario.BuildAttributeDisplayInfo(),
+                createBackup: false);
+
+            Assert.True(applied);
+            TmdlAssertions.AssertTableFileDoesNotExist(_tempDir, "DataverseUniqueDB");
+
+            var modelContent = TmdlAssertions.ReadModelTmdl(_tempDir);
+            var tableRefs = TmdlAssertions.ExtractModelTableRefs(modelContent);
+            Assert.DoesNotContain("DataverseUniqueDB", tableRefs);
+        }
+
+        [Fact]
+        public void Build_FabricLink_DefaultRetention_All_DoesNotAddDataStatePredicate()
+        {
+            var scenario = new ScenarioBuilder()
+                .WithTable(new TableBuilder("account", "Account")
+                    .WithPrimaryName("name", "Account Name"))
+                .UseFabricLink();
+
+            var tables = scenario.BuildTables();
+            var builder = CreateBuilder(
+                connectionType: "FabricLink",
+                fabricEndpoint: scenario.FabricEndpoint,
+                fabricDatabase: scenario.FabricDatabase);
+
+            builder.Build(scenario.SemanticModelName, _tempDir, scenario.DataverseUrl,
+                tables, scenario.BuildRelationships(), scenario.BuildAttributeDisplayInfo());
+
+            var tableContent = TmdlAssertions.ReadTableTmdl(_tempDir, "Account");
+            Assert.DoesNotContain("Base.msft_datastate", tableContent, StringComparison.OrdinalIgnoreCase);
+        }
+
+        [Fact]
+        public void Build_FabricLink_LiveRetention_AddsLiveDataStatePredicate()
+        {
+            var scenario = new ScenarioBuilder()
+                .WithTable(new TableBuilder("account", "Account")
+                    .WithPrimaryName("name", "Account Name"))
+                .UseFabricLink();
+
+            var tables = scenario.BuildTables();
+            tables[0].FabricLinkRetentionMode = "Live";
+
+            var builder = CreateBuilder(
+                connectionType: "FabricLink",
+                fabricEndpoint: scenario.FabricEndpoint,
+                fabricDatabase: scenario.FabricDatabase);
+
+            builder.Build(scenario.SemanticModelName, _tempDir, scenario.DataverseUrl,
+                tables, scenario.BuildRelationships(), scenario.BuildAttributeDisplayInfo());
+
+            var tableContent = TmdlAssertions.ReadTableTmdl(_tempDir, "Account");
+            Assert.Contains("(Base.msft_datastate = 2 OR Base.msft_datastate is null)", tableContent);
+        }
+
+        [Fact]
+        public void Build_FabricLink_LtrRetention_AddsLtrDataStatePredicate()
+        {
+            var scenario = new ScenarioBuilder()
+                .WithTable(new TableBuilder("account", "Account")
+                    .WithPrimaryName("name", "Account Name"))
+                .UseFabricLink();
+
+            var tables = scenario.BuildTables();
+            tables[0].FabricLinkRetentionMode = "LTR";
+
+            var builder = CreateBuilder(
+                connectionType: "FabricLink",
+                fabricEndpoint: scenario.FabricEndpoint,
+                fabricDatabase: scenario.FabricDatabase);
+
+            builder.Build(scenario.SemanticModelName, _tempDir, scenario.DataverseUrl,
+                tables, scenario.BuildRelationships(), scenario.BuildAttributeDisplayInfo());
+
+            var tableContent = TmdlAssertions.ReadTableTmdl(_tempDir, "Account");
+            Assert.Contains("(Base.msft_datastate = 1)", tableContent);
         }
 
         #endregion
@@ -603,10 +756,9 @@ namespace DataverseToPowerBI.Tests
                 scenario.BuildTables(), scenario.BuildRelationships(), scenario.BuildAttributeDisplayInfo());
 
             var tableContent = TmdlAssertions.ReadTableTmdl(_tempDir, "Account");
-            // Display-name aliasing should be applied in Power Query, not SQL SELECT aliases.
-            Assert.Contains("Table.RenameColumns", tableContent, StringComparison.OrdinalIgnoreCase);
-            Assert.Contains("#\"Renamed Columns\"", tableContent, StringComparison.OrdinalIgnoreCase);
-            Assert.DoesNotContain("AS [Annual Revenue]", tableContent, StringComparison.OrdinalIgnoreCase);
+            // Display-name aliasing is applied in SQL via AS [DisplayName], not via Power Query Table.RenameColumns.
+            Assert.DoesNotContain("Table.RenameColumns", tableContent, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("[Annual Revenue]", tableContent, StringComparison.OrdinalIgnoreCase);
         }
 
         [Fact]

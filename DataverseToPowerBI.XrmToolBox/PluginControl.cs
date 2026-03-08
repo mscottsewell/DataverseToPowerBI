@@ -39,6 +39,7 @@ using System.Windows.Forms;
 using XrmToolBox.Extensibility;
 using McTools.Xrm.Connection;
 using Microsoft.Xrm.Sdk;
+using Microsoft.Xrm.Sdk.Query;
 using DataverseToPowerBI.Core.Interfaces;
 using DataverseToPowerBI.Core.Models;
 using DataverseToPowerBI.XrmToolBox.Services;
@@ -71,6 +72,7 @@ namespace DataverseToPowerBI.XrmToolBox
         private SemanticModelManager _modelManager;
         private SemanticModelConfig? _currentModel;
         private string? _currentEnvironmentUrl;
+        private string? _currentOrganizationUniqueName;
         
         // State management - same as MainForm
         private Dictionary<string, TableInfo> _selectedTables = new Dictionary<string, TableInfo>();
@@ -83,9 +85,14 @@ namespace DataverseToPowerBI.XrmToolBox
         private Dictionary<string, string> _selectedFieldViewIds = new Dictionary<string, string>();
         private Dictionary<string, FieldSelectionMode> _fieldSelectionModes = new Dictionary<string, FieldSelectionMode>();
         private Dictionary<string, string> _tableStorageModes = new Dictionary<string, string>();
+        private Dictionary<string, string> _tableFabricLinkRetentionModes = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         private Dictionary<string, bool> _tableIncludeCountMeasures = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
         private Dictionary<string, bool> _tableIncludeRecordLinkMeasures = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
         private Dictionary<string, bool> _loadingStates = new Dictionary<string, bool>();
+
+        private const string FabricRetentionAll = "All";
+        private const string FabricRetentionLive = "Live";
+        private const string FabricRetentionLtr = "LTR";
         
         // Star-schema state
         private string? _factTable = null;
@@ -261,7 +268,8 @@ namespace DataverseToPowerBI.XrmToolBox
             _versionToolTip.SetToolTip(btnPasteAttributes, "Paste attribute names from clipboard");
             _versionToolTip.SetToolTip(
                 listViewSelectedTables,
-                "Tip: Click the Count or Link column for a dimension table to toggle auto-generated measures.");
+                "Tip: Click the Live/LTR column (FabricLink only) to cycle All, Live, and LTR records. " +
+                "Click the Count or Link column for a dimension table to toggle auto-generated measures.");
             
             // Initialize toolbar icons
             btnRefreshMetadata.Image = RibbonIcons.RefreshIcon;
@@ -340,7 +348,12 @@ namespace DataverseToPowerBI.XrmToolBox
                 return;
             }
             _currentEnvironmentUrl = NormalizeUrl(environmentUrl);
-            _xrmAdapter = new XrmServiceAdapterImpl(Service, environmentUrl);
+            _currentOrganizationUniqueName = RetrieveOrganizationName();
+            if (string.IsNullOrEmpty(_currentOrganizationUniqueName))
+            {
+                _currentOrganizationUniqueName = detail.Organization;
+            }
+            _xrmAdapter = new XrmServiceAdapterImpl(Service, environmentUrl, _currentOrganizationUniqueName);
 
             btnRefreshMetadata.Enabled = true;
             SetStatus($"Connected to {detail.OrganizationFriendlyName}");
@@ -377,7 +390,12 @@ namespace DataverseToPowerBI.XrmToolBox
             {
                 var environmentUrl = detail.WebApplicationUrl ?? detail.OrganizationServiceUrl;
                 _currentEnvironmentUrl = NormalizeUrl(environmentUrl);
-                _xrmAdapter = new XrmServiceAdapterImpl(newService, environmentUrl);
+                _currentOrganizationUniqueName = RetrieveOrganizationName();
+                if (string.IsNullOrEmpty(_currentOrganizationUniqueName))
+                {
+                    _currentOrganizationUniqueName = detail.Organization;
+                }
+                _xrmAdapter = new XrmServiceAdapterImpl(newService, environmentUrl, _currentOrganizationUniqueName);
 
                 btnRefreshMetadata.Enabled = true;
                 SetStatus($"Connected to {detail.OrganizationFriendlyName}");
@@ -411,6 +429,7 @@ namespace DataverseToPowerBI.XrmToolBox
                 
                 _xrmAdapter = null;
                 _currentEnvironmentUrl = null;
+                _currentOrganizationUniqueName = null;
                 btnRefreshMetadata.Enabled = false;
                 btnSelectTables.Enabled = false;
                 btnCalendarTable.Enabled = false;
@@ -427,7 +446,59 @@ namespace DataverseToPowerBI.XrmToolBox
                 url = url.Substring(0, url.Length - 1);
             return url;
         }
-        
+
+        /// <summary>
+        /// Queries the Dataverse organization entity to retrieve the organization name,
+        /// which is the TDS endpoint database name. This is the name set at provisioning
+        /// and persists even when the environment URL is renamed.
+        /// Falls back to ConnectionDetail.Organization if the API call fails.
+        /// </summary>
+        private string? RetrieveOrganizationName()
+        {
+            try
+            {
+                var query = new QueryExpression("organization")
+                {
+                    ColumnSet = new ColumnSet("name"),
+                    TopCount = 1
+                };
+                var results = Service.RetrieveMultiple(query);
+                if (results.Entities.Count > 0)
+                {
+                    var name = results.Entities[0].GetAttributeValue<string>("name");
+                    DebugLogger.Log($"Retrieved organization name (TDS database): {name}");
+                    return name;
+                }
+            }
+            catch (Exception ex)
+            {
+                DebugLogger.Log($"Failed to retrieve organization name: {ex.Message}");
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Resolves the organization unique name for builder construction.
+        /// Uses the model's stored value, falling back to the current connection's value.
+        /// Also stamps the resolved value back on the model for future use.
+        /// </summary>
+        private string? ResolveOrganizationUniqueName()
+        {
+            var orgName = _currentModel?.OrganizationUniqueName;
+            if (string.IsNullOrEmpty(orgName))
+            {
+                orgName = _currentOrganizationUniqueName;
+            }
+            // Stamp the resolved value back on the model so it persists
+            if (!string.IsNullOrEmpty(orgName) && _currentModel != null &&
+                string.IsNullOrEmpty(_currentModel.OrganizationUniqueName))
+            {
+                _currentModel.OrganizationUniqueName = orgName;
+                _modelManager.SaveModel(_currentModel);
+            }
+            return orgName;
+        }
+
         /// <summary>
         /// Starts the table selection workflow - loads solutions and opens the selector
         /// </summary>
@@ -545,6 +616,7 @@ namespace DataverseToPowerBI.XrmToolBox
             _lookupSubColumnConfigs.Clear();
             _choiceSubColumnConfigs.Clear();
             _collapsedLookupGroups.Clear();
+            _tableFabricLinkRetentionModes.Clear();
             _tableIncludeCountMeasures.Clear();
             _tableIncludeRecordLinkMeasures.Clear();
             _currentSolutionName = null;
@@ -564,6 +636,13 @@ namespace DataverseToPowerBI.XrmToolBox
             _operationVersion++;
             _currentModel = model;
             _modelManager.SetCurrentModel(model.Name);
+            
+            // Stamp the organization unique name from the current connection if available
+            if (!string.IsNullOrEmpty(_currentOrganizationUniqueName) &&
+                NormalizeUrl(model.DataverseUrl) == _currentEnvironmentUrl)
+            {
+                model.OrganizationUniqueName = _currentOrganizationUniqueName;
+            }
             
             // Load plugin settings from the model
             var settings = model.PluginSettings ?? new PluginSettings();
@@ -591,6 +670,9 @@ namespace DataverseToPowerBI.XrmToolBox
             _selectedViewIds = settings.SelectedViewIds ?? new Dictionary<string, string>();
             _selectedFieldViewIds = settings.SelectedFieldViewIds ?? new Dictionary<string, string>();
             _tableStorageModes = settings.TableStorageModes ?? new Dictionary<string, string>();
+            _tableFabricLinkRetentionModes = settings.TableFabricLinkRetentionModes != null
+                ? new Dictionary<string, string>(settings.TableFabricLinkRetentionModes, StringComparer.OrdinalIgnoreCase)
+                : new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             _tableIncludeCountMeasures = settings.TableIncludeCountMeasures != null
                 ? new Dictionary<string, bool>(settings.TableIncludeCountMeasures, StringComparer.OrdinalIgnoreCase)
                 : new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
@@ -915,6 +997,7 @@ namespace DataverseToPowerBI.XrmToolBox
 
                 // Save per-table storage mode overrides
                 settings.TableStorageModes = new Dictionary<string, string>(_tableStorageModes);
+                settings.TableFabricLinkRetentionModes = new Dictionary<string, string>(_tableFabricLinkRetentionModes, StringComparer.OrdinalIgnoreCase);
 
                 settings.TableIncludeCountMeasures = new Dictionary<string, bool>(_tableIncludeCountMeasures, StringComparer.OrdinalIgnoreCase);
                 settings.TableIncludeRecordLinkMeasures = new Dictionary<string, bool>(_tableIncludeRecordLinkMeasures, StringComparer.OrdinalIgnoreCase);
@@ -1005,7 +1088,7 @@ namespace DataverseToPowerBI.XrmToolBox
         
         private void ShowSemanticModelSelector()
         {
-            using (var dialog = new SemanticModelSelectorDialog(_modelManager, _currentEnvironmentUrl ?? ""))
+            using (var dialog = new SemanticModelSelectorDialog(_modelManager, _currentEnvironmentUrl ?? "", _currentOrganizationUniqueName))
             {
                 if (dialog.ShowDialog(this) == DialogResult.OK && dialog.SelectedSemanticModel != null)
                 {
@@ -1862,6 +1945,7 @@ namespace DataverseToPowerBI.XrmToolBox
             var roleText = isFact ? "⭐ Fact" : (isAdditional ? "Addl" : (isSnowflake3 ? "Dim ❄️❄️❄️" : (isSnowflake2 ? "Dim ❄️❄️" : (isSnowflake ? "Dim ❄️" : "Dim"))));
             var formText = GetFormDisplayText(logicalName);
             var viewText = GetViewDisplayText(logicalName);
+            var liveLtrText = GetFabricLinkRetentionModeDisplayText(logicalName);
             var countMeasureText = GetMeasureToggleDisplayText(IsCountMeasureEnabledForTable(logicalName, isFact));
             var linkMeasureText = GetMeasureToggleDisplayText(IsRecordLinkMeasureEnabledForTable(logicalName, isFact));
             var attrCount = _selectedAttributes.ContainsKey(logicalName)
@@ -1876,6 +1960,7 @@ namespace DataverseToPowerBI.XrmToolBox
             item.SubItems.Add(GetTableModeDisplayText(logicalName, isFact));
             item.SubItems.Add(formText);
             item.SubItems.Add(viewText);
+            item.SubItems.Add(liveLtrText);
             item.SubItems.Add(countMeasureText);
             item.SubItems.Add(linkMeasureText);
             item.SubItems.Add(attrCount);
@@ -1922,9 +2007,10 @@ namespace DataverseToPowerBI.XrmToolBox
                 item.SubItems[3].Text = GetTableModeDisplayText(logicalName, isFact);
                 item.SubItems[4].Text = GetFormDisplayText(logicalName);
                 item.SubItems[5].Text = GetViewDisplayText(logicalName);
-                item.SubItems[6].Text = GetMeasureToggleDisplayText(IsCountMeasureEnabledForTable(logicalName, isFact));
-                item.SubItems[7].Text = GetMeasureToggleDisplayText(IsRecordLinkMeasureEnabledForTable(logicalName, isFact));
-                item.SubItems[8].Text = _selectedAttributes.ContainsKey(logicalName)
+                item.SubItems[6].Text = GetFabricLinkRetentionModeDisplayText(logicalName);
+                item.SubItems[7].Text = GetMeasureToggleDisplayText(IsCountMeasureEnabledForTable(logicalName, isFact));
+                item.SubItems[8].Text = GetMeasureToggleDisplayText(IsRecordLinkMeasureEnabledForTable(logicalName, isFact));
+                item.SubItems[9].Text = _selectedAttributes.ContainsKey(logicalName)
                     ? _selectedAttributes[logicalName].Count.ToString()
                     : "0";
 
@@ -2103,6 +2189,44 @@ namespace DataverseToPowerBI.XrmToolBox
             }
         }
 
+        private bool IsFabricLinkConnection()
+        {
+            return string.Equals(_currentModel?.ConnectionType, "FabricLink", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static string NormalizeFabricLinkRetentionMode(string? mode)
+        {
+            if (string.Equals(mode, FabricRetentionLive, StringComparison.OrdinalIgnoreCase))
+                return FabricRetentionLive;
+            if (string.Equals(mode, FabricRetentionLtr, StringComparison.OrdinalIgnoreCase))
+                return FabricRetentionLtr;
+            return FabricRetentionAll;
+        }
+
+        private string GetFabricLinkRetentionModeDisplayText(string logicalName)
+        {
+            if (!IsFabricLinkConnection())
+                return string.Empty;
+
+            if (_tableFabricLinkRetentionModes.TryGetValue(logicalName, out var savedMode))
+                return NormalizeFabricLinkRetentionMode(savedMode);
+
+            return FabricRetentionAll;
+        }
+
+        private void CycleFabricLinkRetentionMode(string logicalName)
+        {
+            var current = GetFabricLinkRetentionModeDisplayText(logicalName);
+            var next = current switch
+            {
+                FabricRetentionAll => FabricRetentionLive,
+                FabricRetentionLive => FabricRetentionLtr,
+                _ => FabricRetentionAll
+            };
+
+            _tableFabricLinkRetentionModes[logicalName] = next;
+        }
+
         private bool IsCountMeasureEnabledForTable(string logicalName, bool isFact)
         {
             if (isFact) return true;
@@ -2124,6 +2248,11 @@ namespace DataverseToPowerBI.XrmToolBox
         {
             var selectedNames = new HashSet<string>(_selectedTables.Keys, StringComparer.OrdinalIgnoreCase);
 
+            foreach (var stale in _tableFabricLinkRetentionModes.Keys.Where(k => !selectedNames.Contains(k)).ToList())
+            {
+                _tableFabricLinkRetentionModes.Remove(stale);
+            }
+
             foreach (var stale in _tableIncludeCountMeasures.Keys.Where(k => !selectedNames.Contains(k)).ToList())
             {
                 _tableIncludeCountMeasures.Remove(stale);
@@ -2138,6 +2267,8 @@ namespace DataverseToPowerBI.XrmToolBox
         private void UpdateModeColumnVisibility()
         {
             colMode.Width = 60;
+            colLiveLtr.Width = IsFabricLinkConnection() ? 60 : 0;
+            ResizeTableColumns();
         }
         
         private void AddDateTableToDisplay()
@@ -2164,6 +2295,7 @@ namespace DataverseToPowerBI.XrmToolBox
                     dateItem.SubItems.Add("");
                     dateItem.SubItems.Add("Calendar");
                     dateItem.SubItems.Add(yearRange);
+                    dateItem.SubItems.Add("");
                     dateItem.SubItems.Add("");
                     dateItem.SubItems.Add("");
                     dateItem.SubItems.Add("365+");
@@ -4298,14 +4430,16 @@ namespace DataverseToPowerBI.XrmToolBox
             // Fixed-width columns
             const int editWidth = 30;
             const int roleWidth = 40;
+            const int liveLtrWidth = 60;
             const int countMeasureWidth = 40;
             const int linkMeasureWidth = 40;
             const int attrsWidth = 40;
             const int scrollBarWidth = 20;
             
             var modeWidth = colMode.Width > 0 ? 60 : 0; // 0 when hidden, 60 when visible
+            var retentionWidth = colLiveLtr.Width > 0 ? liveLtrWidth : 0;
             
-            var availableWidth = listViewSelectedTables.Width - editWidth - roleWidth - modeWidth - countMeasureWidth - linkMeasureWidth - attrsWidth - scrollBarWidth;
+            var availableWidth = listViewSelectedTables.Width - editWidth - roleWidth - modeWidth - retentionWidth - countMeasureWidth - linkMeasureWidth - attrsWidth - scrollBarWidth;
             if (availableWidth <= 0) return;
             
             // Distribute remaining: Table (35%), Default Fields (25%), Filter (40%)
@@ -4322,6 +4456,7 @@ namespace DataverseToPowerBI.XrmToolBox
                 colMode.Width = modeWidth;
                 colForm.Width = formWidth;
                 colView.Width = filterWidth;
+                colLiveLtr.Width = retentionWidth;
                 colCountMeasure.Width = countMeasureWidth;
                 colLinkMeasure.Width = linkMeasureWidth;
                 colAttrs.Width = attrsWidth;
@@ -4419,7 +4554,18 @@ namespace DataverseToPowerBI.XrmToolBox
                         SaveSettings();
                     }
                 }
-                else if (colIndex == 6 || colIndex == 7)
+                else if (colIndex == 6)
+                {
+                    if (!IsFabricLinkConnection()) return;
+
+                    var logicalName = info.Item.Name;
+                    if (logicalName == "__DateTable") return;
+
+                    CycleFabricLinkRetentionMode(logicalName);
+                    UpdateSelectedTableRow(logicalName);
+                    SaveSettings();
+                }
+                else if (colIndex == 7 || colIndex == 8)
                 {
                     var logicalName = info.Item.Name;
                     if (logicalName == "__DateTable") return;
@@ -4427,7 +4573,7 @@ namespace DataverseToPowerBI.XrmToolBox
                     var isFact = logicalName == _factTable;
                     if (isFact) return;
 
-                    if (colIndex == 6)
+                    if (colIndex == 7)
                     {
                         var current = _tableIncludeCountMeasures.TryGetValue(logicalName, out var enabled) && enabled;
                         _tableIncludeCountMeasures[logicalName] = !current;
@@ -5259,6 +5405,7 @@ namespace DataverseToPowerBI.XrmToolBox
                     PrimaryNameAttribute = t.PrimaryNameAttribute ?? "",
                     ObjectTypeCode = t.ObjectTypeCode,
                     Role = (t.LogicalName == _factTable) ? "Fact" : "Dimension",
+                    FabricLinkRetentionMode = GetFabricLinkRetentionModeDisplayText(t.LogicalName),
                     IncludeCountMeasure = IsCountMeasureEnabledForTable(t.LogicalName, t.LogicalName == _factTable),
                     IncludeRecordLinkMeasure = IsRecordLinkMeasureEnabledForTable(t.LogicalName, t.LogicalName == _factTable),
                     Attributes = new List<AttributeMetadata>()
@@ -5465,7 +5612,8 @@ namespace DataverseToPowerBI.XrmToolBox
                     _currentModel?.FabricLinkSQLDatabase,
                     _currentModel?.PluginSettings?.LanguageCode ?? 1033,
                     _currentModel?.UseDisplayNameRenamesInPowerQuery ?? true,
-                    _currentModel?.StorageMode ?? "DirectQuery");
+                    _currentModel?.StorageMode ?? "DirectQuery",
+                    organizationUniqueName: ResolveOrganizationUniqueName());
                     
                     if ((_currentModel?.StorageMode ?? "DirectQuery") == "DualSelect")
                         builder.SetTableStorageModeOverrides(_currentModel?.PluginSettings?.TableStorageModes);
@@ -5744,7 +5892,8 @@ namespace DataverseToPowerBI.XrmToolBox
                     _currentModel?.FabricLinkSQLDatabase,
                     _currentModel?.PluginSettings?.LanguageCode ?? 1033,
                     _currentModel?.UseDisplayNameRenamesInPowerQuery ?? true,
-                    _currentModel?.StorageMode ?? "DirectQuery");
+                    _currentModel?.StorageMode ?? "DirectQuery",
+                    organizationUniqueName: ResolveOrganizationUniqueName());
 
                 if ((_currentModel?.StorageMode ?? "DirectQuery") == "DualSelect")
                     builder.SetTableStorageModeOverrides(_currentModel?.PluginSettings?.TableStorageModes);
@@ -5879,6 +6028,12 @@ namespace DataverseToPowerBI.XrmToolBox
         /// </summary>
         [System.Runtime.Serialization.DataMember]
         public Dictionary<string, string> TableStorageModes { get; set; } = new Dictionary<string, string>();
+        /// <summary>
+        /// FabricLink-only per-table retention mode.
+        /// Key = table logical name, Value = "All", "Live", or "LTR".
+        /// </summary>
+        [System.Runtime.Serialization.DataMember]
+        public Dictionary<string, string> TableFabricLinkRetentionModes { get; set; } = new Dictionary<string, string>();
         /// <summary>
         /// Per-table expanded lookup configurations.
         /// Key = source table logical name, Value = list of expanded lookup configs.
@@ -6069,6 +6224,8 @@ namespace DataverseToPowerBI.XrmToolBox
         public int ObjectTypeCode { get; set; }
         [System.Runtime.Serialization.DataMember]
         public string Role { get; set; } = "Dimension";  // "Fact" or "Dimension"
+        [System.Runtime.Serialization.DataMember]
+        public string? FabricLinkRetentionMode { get; set; } = "All";
         [System.Runtime.Serialization.DataMember]
         public bool? IncludeCountMeasure { get; set; }
         [System.Runtime.Serialization.DataMember]

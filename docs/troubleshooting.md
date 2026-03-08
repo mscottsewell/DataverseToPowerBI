@@ -2,6 +2,28 @@
 
 ## Common Issues and Solutions
 
+### "DataSource.Error after Power BI Desktop update" or "CommonDataService connector metadata failure"
+**Cause:** Your model was built with the legacy `CommonDataService.Database` connector, which has progressive metadata management failures in recent Power BI Desktop releases.
+
+**Solution:** Rebuild your model with the latest version of this tool (v1.2026.5.177+). The tool now uses the standard `Sql.Database` connector with `Value.NativeQuery`, which resolves these errors. This is a one-time migration — the change preview will show all queries being regenerated.
+
+### "Report won't connect after moving to a different environment"
+**Cause:** For TDS-mode reports, the `Sql.Database` connector requires both a server URL and a database name. If you manually moved the report, you likely only updated the URL.
+
+**Solution:** In Power BI Desktop, go to **Transform Data → Parameters** and update **both**:
+1. **DataverseURL** — the environment URL (e.g., `myorg.crm.dynamics.com`)
+2. **DataverseUniqueDB** — the organization database name
+
+The database name may differ from the URL subdomain (e.g., if the environment was renamed after provisioning). To find it:
+- Connect to the TDS endpoint with **SQL Server Management Studio (SSMS)** — the database name appears in Object Explorer
+- Check the **Organization unique name** in the [Power Platform admin center](https://learn.microsoft.com/power-platform/admin/determine-org-id-name#find-your-organization-name)
+
+> **Note:** VS Code's SQL extension does not display the database name in the same way as SSMS.
+
+📚 **References:**
+- [Use SQL to query data (Dataverse TDS endpoint)](https://learn.microsoft.com/power-apps/developer/data-platform/dataverse-sql-query)
+- [Find your organization name](https://learn.microsoft.com/power-platform/admin/determine-org-id-name#find-your-organization-name)
+
 ### "Cannot connect to Dataverse"
 - Verify your XrmToolBox connection is active
 - Check that you have read permissions in Dataverse
@@ -63,7 +85,15 @@ View filters using `eq-userid`, `ne-userid`, `eq-userteams`, or `ne-userteams` c
 If multi-select choice labels don’t resolve correctly in FabricLink, update to the latest release and rebuild the model. Label resolution should split values on semicolons (`;`) and use the attribute logical name for `OptionSetName`.
 
 See [CHANGELOG.md](CHANGELOG.md) for current release details.
+### "Retained/archived rows appearing in FabricLink reports"
+**Cause:** The default Long Term Retention mode is "All", which includes both live and retained rows.
 
+**Solution:** Set the retention mode to **Live** for tables where you only want active data. Click the retention mode indicator in the table list to cycle through All → Live → LTR. This adds a `WHERE (Base.msft_datastate = 2 OR Base.msft_datastate IS NULL)` predicate to filter out retained rows.
+
+This only applies to FabricLink mode with tables that have [long term data retention](https://learn.microsoft.com/power-apps/maker/data-platform/data-retention-overview) enabled.
+
+### "I only want to report on archived/retained data"
+Set the retention mode to **LTR** for tables where you want only retained rows. This filters to `WHERE (Base.msft_datastate = 1)`. Useful for historical or compliance reporting on archived data.
 ### "Quick Select changed my filter from Selected to All"
 Quick Select now preserves your current attribute filter mode.
 

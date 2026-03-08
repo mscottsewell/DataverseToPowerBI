@@ -274,6 +274,10 @@ namespace DataverseToPowerBI.XrmToolBox
                         ?.Where(kv => tables.Contains(kv.Key))
                         .ToDictionary(kv => kv.Key, kv => kv.Value)
                         ?? new Dictionary<string, string>(),
+                    TableFabricLinkRetentionModes = settings.TableFabricLinkRetentionModes
+                        ?.Where(kv => tables.Contains(kv.Key))
+                        .ToDictionary(kv => kv.Key, kv => kv.Value)
+                        ?? new Dictionary<string, string>(),
                     ExpandedLookups = settings.ExpandedLookups
                         .Where(kv => tables.Contains(kv.Key))
                         .ToDictionary(kv => kv.Key, kv => kv.Value.Select(e => new SerializedExpandedLookup
