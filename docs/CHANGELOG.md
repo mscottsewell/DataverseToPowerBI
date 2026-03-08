@@ -22,7 +22,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
     - `EnableFolding = true` allows Power BI to fold additional query operations back into the native query for optimal performance.
   - **TDS mode:** `Source = Sql.Database(DataverseURL, DataverseUniqueDB)` — connects to the Dataverse TDS endpoint using the environment URL and the organization database name.
   - **FabricLink mode:** `Source = Sql.Database(FabricSQLEndpoint, FabricLakehouse)` — connects to the Fabric SQL endpoint with the lakehouse name.
-  - **Existing reports:** Reports built with the old `CommonDataService.Database` connector will need to be rebuilt with this tool to migrate to the new connector. The change preview will show the connection type change and all queries will be regenerated.
+  - **Existing reports:** Reports built with the old `CommonDataService.Database` connector will need to be refreshed with this tool to migrate to the new connector. The change preview will show the connection type change and all queries will be regenerated. After applying, the data source will switch to `Sql.Database` with the appropriate parameters. The underlying SQL queries will be preserved, but the connection architecture will be updated to the new pattern.
 
 - **DataverseUniqueDB Parameter** — A new hidden parameter table (`DataverseUniqueDB`) is generated for TDS-mode models. This stores the **organization unique name** — the TDS endpoint database name that the `Sql.Database` connector requires as its second argument.
 
