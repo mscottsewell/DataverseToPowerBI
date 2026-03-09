@@ -8,6 +8,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added
+
+- **Changes Dialog: Copy to Clipboard** — The "Review Semantic Model Changes" dialog now has a **"Copy to Clipboard"** button in the bottom-left corner. Clicking it copies a plain-text summary of all changes (grouped by Warnings, New, Updated, and Preserved sections) to the clipboard. The button briefly shows "Copied!" as visual confirmation before resetting.
+- **Expanded Lookup Related Record Link Option** — The Expanded attributes dialog now includes an option to generate a Dataverse URL measure for the related record using the current row's lookup value. This supports report scenarios where the source table has the relationship in Dataverse but the semantic model does not have a clean table relationship.
+- **Expanded Lookup Output Name Overrides** — Expanded child attributes can now have an explicit output display name override. This allows renamed expanded columns such as "Customer Name" instead of always using the default `Lookup : Attribute` pattern, and the override is persisted with the semantic model configuration.
+
+### Changed
+
+- **PBIP Diagram Layout Preservation on Update** — Incremental update/merge builds no longer regenerate `diagramLayout.json` when updating an existing PBIP. This preserves any existing Model View table arrangement in Power BI Desktop. Fresh builds from scratch still generate the initial auto-layout.
+- **Expanded Lookup Dialog UX** — The expanded attribute picker now supports column sorting, improved status text, and clearer warning behavior. It also supports link-only configurations where no expanded attributes are selected but the related-record link measure is still generated.
+- **Default PBIP Theme URL Rendering** — The bundled PBIP report theme now marks generated web URL fields for URL icon rendering in Power BI visuals.
+
+### Fixed
+
+- **Expanded Lookup Link Measure Preservation** — Incremental update logic now recognizes expanded-lookup related-record link measures as tool-generated measures, preventing them from being preserved as if they were user-authored custom measures.
+- **Lookup ID Enforcement for Related Record Links** — When a related-record link measure is enabled for an expanded lookup, the source lookup ID column is now forced into the model as a hidden column so the generated DAX measure always has the required identifier value available.
+
 ---
 
 ## [1.2026.6.3] - 2026-03-09

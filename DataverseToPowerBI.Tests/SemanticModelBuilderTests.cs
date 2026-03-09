@@ -572,6 +572,59 @@ namespace DataverseToPowerBI.Tests
         }
 
         [Fact]
+        public void ExtractUserMeasuresSection_ExcludesExpandedLookupLinkMeasures()
+        {
+            var table = new ExportTable
+            {
+                LogicalName = "opportunity",
+                DisplayName = "Opportunity",
+                Attributes = new List<DataverseToPowerBI.Core.Models.AttributeMetadata>
+                {
+                    new DataverseToPowerBI.Core.Models.AttributeMetadata
+                    {
+                        LogicalName = "parentaccountid",
+                        DisplayName = "Parent Account",
+                        SchemaName = "ParentAccountId",
+                        AttributeType = "Lookup"
+                    }
+                },
+                ExpandedLookups = new List<DataverseToPowerBI.Core.Models.ExpandedLookupConfig>
+                {
+                    new DataverseToPowerBI.Core.Models.ExpandedLookupConfig
+                    {
+                        LookupAttributeName = "parentaccountid",
+                        LookupDisplayName = "Parent Account",
+                        IncludeRelatedRecordLink = true,
+                        TargetTableLogicalName = "account",
+                        TargetTablePrimaryKey = "accountid"
+                    }
+                }
+            };
+
+            var tmdlPath = Path.Combine(_tempDir, "ExpandedLookupLinkMeasure.tmdl");
+            File.WriteAllText(
+                tmdlPath,
+                "table Opportunity\r\n" +
+                "\tmeasure 'Link to Opportunity:Parent Account' = ```\r\n" +
+                "\t\t\t\"auto\"\r\n" +
+                "\t\t\t```\r\n" +
+                "\t\tlineageTag: auto\r\n" +
+                "\t\tdataCategory: WebUrl\r\n" +
+                "\r\n" +
+                "\tmeasure 'Custom Measure' = 1\r\n" +
+                "\t\tformatString: 0\r\n" +
+                "\t\tlineageTag: user\r\n" +
+                "\r\n" +
+                "\tcolumn opportunityid\r\n" +
+                "\t\tdataType: string\r\n");
+
+            var result = _builder.ExtractUserMeasuresSection(tmdlPath, table);
+
+            Assert.DoesNotContain("Link to Opportunity:Parent Account", result ?? "");
+            Assert.Contains("Custom Measure", result);
+        }
+
+        [Fact]
         public void ExtractUserMeasuresSection_ReturnsNullForMissingFile()
         {
             var result = _builder.ExtractUserMeasuresSection(Path.Combine(_tempDir, "nonexistent.tmdl"));
@@ -1335,6 +1388,247 @@ namespace DataverseToPowerBI.Tests
             Assert.DoesNotContain("LEFT OUTER JOIN Account Display Name exp_customerid", tmdl);
             Assert.Contains("Customer : Name", tmdl);
             Assert.DoesNotContain("Account Display Name : Name", tmdl);
+        }
+
+        [Fact]
+        public void GenerateTableTmdl_ExpandedLookupJoin_UsesExplicitOutputDisplayNameOverride()
+        {
+            var table = new ExportTable
+            {
+                LogicalName = "incident",
+                DisplayName = "Incident",
+                PrimaryIdAttribute = "incidentid",
+                PrimaryNameAttribute = "title",
+                Attributes = new List<DataverseToPowerBI.Core.Models.AttributeMetadata>
+                {
+                    new DataverseToPowerBI.Core.Models.AttributeMetadata
+                    {
+                        LogicalName = "customerid",
+                        DisplayName = "Customer",
+                        SchemaName = "customerid",
+                        AttributeType = "Lookup"
+                    }
+                },
+                ExpandedLookups = new List<DataverseToPowerBI.Core.Models.ExpandedLookupConfig>
+                {
+                    new DataverseToPowerBI.Core.Models.ExpandedLookupConfig
+                    {
+                        LookupAttributeName = "customerid",
+                        TargetTableLogicalName = "account",
+                        TargetTableDisplayName = "Account",
+                        TargetTablePrimaryKey = "accountid",
+                        Attributes = new List<DataverseToPowerBI.Core.Models.ExpandedLookupAttribute>
+                        {
+                            new DataverseToPowerBI.Core.Models.ExpandedLookupAttribute
+                            {
+                                LogicalName = "name",
+                                DisplayName = "Name",
+                                OutputDisplayNameOverride = "Customer Name",
+                                AttributeType = "String"
+                            }
+                        }
+                    }
+                }
+            };
+
+            var attributeDisplayInfo = new Dictionary<string, Dictionary<string, AttributeDisplayInfo>>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["incident"] = new Dictionary<string, AttributeDisplayInfo>(StringComparer.OrdinalIgnoreCase)
+                {
+                    ["customerid"] = new AttributeDisplayInfo
+                    {
+                        LogicalName = "customerid",
+                        DisplayName = "Customer",
+                        AttributeType = "Lookup"
+                    }
+                }
+            };
+
+            var tmdl = _builder.GenerateTableTmdl(
+                table,
+                attributeDisplayInfo,
+                new HashSet<string>(StringComparer.OrdinalIgnoreCase));
+
+            Assert.Contains("Customer Name", tmdl);
+            Assert.DoesNotContain("Customer : Name", tmdl);
+        }
+
+        [Fact]
+        public void GenerateTableTmdl_ExpandedLookupLinkMeasure_UsesCurrentRecordLookupValue()
+        {
+            var table = new ExportTable
+            {
+                LogicalName = "opportunity",
+                DisplayName = "Opportunity",
+                PrimaryIdAttribute = "opportunityid",
+                Attributes = new List<DataverseToPowerBI.Core.Models.AttributeMetadata>
+                {
+                    new DataverseToPowerBI.Core.Models.AttributeMetadata
+                    {
+                        LogicalName = "parentaccountid",
+                        DisplayName = "Parent Account",
+                        SchemaName = "ParentAccountId",
+                        AttributeType = "Lookup"
+                    }
+                },
+                ExpandedLookups = new List<DataverseToPowerBI.Core.Models.ExpandedLookupConfig>
+                {
+                    new DataverseToPowerBI.Core.Models.ExpandedLookupConfig
+                    {
+                        LookupAttributeName = "parentaccountid",
+                        LookupDisplayName = "Parent Account",
+                        IncludeRelatedRecordLink = true,
+                        TargetTableLogicalName = "account",
+                        TargetTableDisplayName = "Account",
+                        TargetTablePrimaryKey = "accountid"
+                    }
+                }
+            };
+
+            var tmdl = _builder.GenerateTableTmdl(
+                table,
+                new Dictionary<string, Dictionary<string, AttributeDisplayInfo>>(StringComparer.OrdinalIgnoreCase),
+                new HashSet<string>(StringComparer.OrdinalIgnoreCase));
+
+            Assert.Contains("measure 'Link to Opportunity:Parent Account'", tmdl);
+            Assert.Contains("IF (", tmdl);
+            Assert.Contains("LEN ( SELECTEDVALUE ( 'Opportunity'[parentaccountid] ) ) > 1", tmdl);
+            Assert.Contains("etn=account&id=", tmdl);
+            Assert.Contains("& SELECTEDVALUE ( 'Opportunity'[parentaccountid], BLANK () )", tmdl);
+            Assert.Contains("BLANK ()", tmdl);
+        }
+
+        [Fact]
+        public void GenerateTableTmdl_ExpandedLookupLinkMeasure_UsesSourceTableAndLookupName()
+        {
+            var table = new ExportTable
+            {
+                LogicalName = "resource",
+                DisplayName = "Resource",
+                PrimaryIdAttribute = "resourceid",
+                Attributes = new List<DataverseToPowerBI.Core.Models.AttributeMetadata>
+                {
+                    new DataverseToPowerBI.Core.Models.AttributeMetadata
+                    {
+                        LogicalName = "managerid",
+                        DisplayName = "Manager",
+                        SchemaName = "ManagerId",
+                        AttributeType = "Lookup"
+                    }
+                },
+                ExpandedLookups = new List<DataverseToPowerBI.Core.Models.ExpandedLookupConfig>
+                {
+                    new DataverseToPowerBI.Core.Models.ExpandedLookupConfig
+                    {
+                        LookupAttributeName = "managerid",
+                        LookupDisplayName = "Manager",
+                        IncludeRelatedRecordLink = true,
+                        TargetTableLogicalName = "position",
+                        TargetTableDisplayName = "Position",
+                        TargetTablePrimaryKey = "positionid"
+                    }
+                }
+            };
+
+            var tmdl = _builder.GenerateTableTmdl(
+                table,
+                new Dictionary<string, Dictionary<string, AttributeDisplayInfo>>(StringComparer.OrdinalIgnoreCase),
+                new HashSet<string>(StringComparer.OrdinalIgnoreCase));
+
+            Assert.Contains("measure 'Link to Resource:Manager'", tmdl);
+        }
+
+        [Fact]
+        public void GenerateTableTmdl_ExpandedLookupLinkMeasure_UsesSourceTableAndLookupName_WhenLookupLabelMatchesTarget()
+        {
+            var table = new ExportTable
+            {
+                LogicalName = "resource",
+                DisplayName = "Resource",
+                PrimaryIdAttribute = "resourceid",
+                Attributes = new List<DataverseToPowerBI.Core.Models.AttributeMetadata>
+                {
+                    new DataverseToPowerBI.Core.Models.AttributeMetadata
+                    {
+                        LogicalName = "positionid",
+                        DisplayName = "Position",
+                        SchemaName = "PositionId",
+                        AttributeType = "Lookup"
+                    }
+                },
+                ExpandedLookups = new List<DataverseToPowerBI.Core.Models.ExpandedLookupConfig>
+                {
+                    new DataverseToPowerBI.Core.Models.ExpandedLookupConfig
+                    {
+                        LookupAttributeName = "positionid",
+                        LookupDisplayName = "Position",
+                        IncludeRelatedRecordLink = true,
+                        TargetTableLogicalName = "position",
+                        TargetTableDisplayName = "Position",
+                        TargetTablePrimaryKey = "positionid"
+                    }
+                }
+            };
+
+            var tmdl = _builder.GenerateTableTmdl(
+                table,
+                new Dictionary<string, Dictionary<string, AttributeDisplayInfo>>(StringComparer.OrdinalIgnoreCase),
+                new HashSet<string>(StringComparer.OrdinalIgnoreCase));
+
+            Assert.Contains("measure 'Link to Resource:Position'", tmdl);
+        }
+
+        [Fact]
+        public void GenerateTableTmdl_ExpandedLookupLinkMeasure_ForcesLocalLookupIdIncludedAndHidden()
+        {
+            var table = new ExportTable
+            {
+                LogicalName = "resource",
+                DisplayName = "Resource",
+                PrimaryIdAttribute = "resourceid",
+                Attributes = new List<DataverseToPowerBI.Core.Models.AttributeMetadata>
+                {
+                    new DataverseToPowerBI.Core.Models.AttributeMetadata
+                    {
+                        LogicalName = "managerid",
+                        DisplayName = "Manager",
+                        AttributeType = "Lookup"
+                    }
+                },
+                ExpandedLookups = new List<DataverseToPowerBI.Core.Models.ExpandedLookupConfig>
+                {
+                    new DataverseToPowerBI.Core.Models.ExpandedLookupConfig
+                    {
+                        LookupAttributeName = "managerid",
+                        LookupDisplayName = "Manager",
+                        IncludeRelatedRecordLink = true,
+                        TargetTableLogicalName = "position",
+                        TargetTableDisplayName = "Position",
+                        TargetTablePrimaryKey = "positionid"
+                    }
+                },
+                LookupSubColumnConfigs = new Dictionary<string, DataverseToPowerBI.Core.Models.LookupSubColumnConfig>(StringComparer.OrdinalIgnoreCase)
+                {
+                    ["managerid"] = new DataverseToPowerBI.Core.Models.LookupSubColumnConfig
+                    {
+                        LookupAttributeLogicalName = "managerid",
+                        IncludeIdField = false,
+                        IncludeNameField = false
+                    }
+                }
+            };
+
+            var info = new Dictionary<string, Dictionary<string, AttributeDisplayInfo>>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["resource"] = new Dictionary<string, AttributeDisplayInfo>(StringComparer.OrdinalIgnoreCase)
+                {
+                    ["managerid"] = new AttributeDisplayInfo { LogicalName = "managerid", DisplayName = "Manager", AttributeType = "Lookup" }
+                }
+            };
+
+            var tmdl = _builder.GenerateTableTmdl(table, info, new HashSet<string>(StringComparer.OrdinalIgnoreCase));
+
+            Assert.Matches(@"column managerid\r?\n(?:\t\t[^\r\n]*\r?\n)*\t\tisHidden", tmdl);
         }
 
         [Fact]

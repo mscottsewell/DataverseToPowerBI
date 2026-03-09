@@ -988,6 +988,7 @@
         ],
         "values": [
           {
+            "urlIcon": true,
             "wordWrap": false,
             "fontSize": 8,
             "fontFamily": "Segoe UI",
@@ -1224,6 +1225,7 @@
         ],
         "values": [
           {
+            "urlIcon": true,
             "wordWrap": false,
             "fontSize": 8,
             "fontFamily": "Segoe UI",

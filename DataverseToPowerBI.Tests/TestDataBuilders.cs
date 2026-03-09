@@ -168,10 +168,21 @@ namespace DataverseToPowerBI.Tests
         /// <summary>Adds an expanded lookup configuration.</summary>
         public TableBuilder WithExpandedLookup(string lookupAttribute, string targetTable, string targetPrimaryKey, params (string logicalName, string displayName, string type)[] attributes)
         {
+            return WithExpandedLookup(lookupAttribute, targetTable, targetPrimaryKey, false, attributes);
+        }
+
+        /// <summary>Adds an expanded lookup configuration.</summary>
+        public TableBuilder WithExpandedLookup(string lookupAttribute, string targetTable, string targetPrimaryKey, bool includeRelatedRecordLink = false, params (string logicalName, string displayName, string type)[] attributes)
+        {
+            var lookupDisplayName = _attributes
+                .FirstOrDefault(a => a.LogicalName.Equals(lookupAttribute, StringComparison.OrdinalIgnoreCase))
+                ?.DisplayName ?? lookupAttribute;
+
             var config = new ExpandedLookupConfig
             {
                 LookupAttributeName = lookupAttribute,
-                LookupDisplayName = lookupAttribute,
+                LookupDisplayName = lookupDisplayName,
+            IncludeRelatedRecordLink = includeRelatedRecordLink,
                 TargetTableLogicalName = targetTable,
                 TargetTableDisplayName = ToPascalCase(targetTable),
                 TargetTablePrimaryKey = targetPrimaryKey,

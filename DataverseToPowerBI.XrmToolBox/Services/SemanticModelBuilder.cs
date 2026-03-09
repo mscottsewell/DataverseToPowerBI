@@ -1195,6 +1195,9 @@ namespace DataverseToPowerBI.XrmToolBox.Services
             ExpandedLookupAttribute expandedAttribute,
             Dictionary<string, AttributeDisplayInfo> sourceAttributeInfo)
         {
+            if (!string.IsNullOrWhiteSpace(expandedAttribute.OutputDisplayNameOverride))
+                return expandedAttribute.OutputDisplayNameOverride!;
+
             sourceAttributeInfo.TryGetValue(expand.LookupAttributeName, out var lookupAttributeInfo);
 
             var lookupAttribute = sourceTable.Attributes.FirstOrDefault(a =>
@@ -1209,6 +1212,48 @@ namespace DataverseToPowerBI.XrmToolBox.Services
             var expandedDisplayName = expandedAttribute.DisplayName ?? expandedAttribute.LogicalName;
 
             return $"{lookupDisplayPrefix} : {expandedDisplayName}";
+        }
+
+        private string GetExpandedLookupMeasureLabel(ExportTable sourceTable, ExpandedLookupConfig expand)
+        {
+            var lookupAttribute = sourceTable.Attributes.FirstOrDefault(a =>
+                a.LogicalName.Equals(expand.LookupAttributeName, StringComparison.OrdinalIgnoreCase));
+
+            return expand.LookupDisplayName
+                ?? lookupAttribute?.DisplayName
+                ?? lookupAttribute?.SchemaName
+                ?? expand.LookupAttributeName;
+        }
+
+        private string BuildExpandedLookupLinkMeasureName(ExportTable sourceTable, ExpandedLookupConfig expand)
+        {
+            var sourceTableLabel = sourceTable.DisplayName ?? sourceTable.SchemaName ?? sourceTable.LogicalName;
+            var lookupLabel = GetExpandedLookupMeasureLabel(sourceTable, expand);
+
+            return $"Link to {sourceTableLabel}:{lookupLabel}";
+        }
+
+        private HashSet<string> BuildAutoMeasureNames(ExportTable table)
+        {
+            var displayName = table.DisplayName ?? table.SchemaName ?? table.LogicalName;
+            var autoMeasures = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                $"Link to {displayName}",
+                $"{displayName} Count"
+            };
+
+            if (table.ExpandedLookups != null)
+            {
+                foreach (var expand in table.ExpandedLookups)
+                {
+                    if (expand.IncludeRelatedRecordLink)
+                    {
+                        autoMeasures.Add(BuildExpandedLookupLinkMeasureName(table, expand));
+                    }
+                }
+            }
+
+            return autoMeasures;
         }
 
         private static bool IsLookupType(string? attrType)
@@ -1263,6 +1308,11 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                 table.LookupSubColumnConfigs.TryGetValue(attr.LogicalName, out config);
             }
 
+            var requiresExpandedLookupLinkId = table.ExpandedLookups != null &&
+                table.ExpandedLookups.Any(expand =>
+                    expand.LookupAttributeName.Equals(attr.LogicalName, StringComparison.OrdinalIgnoreCase) &&
+                    expand.IncludeRelatedRecordLink);
+
             var includeId = config?.IncludeIdField ?? false;
             var idHidden = config?.IdFieldHidden ?? false;
             var includeName = config?.IncludeNameField ?? true;
@@ -1271,6 +1321,12 @@ namespace DataverseToPowerBI.XrmToolBox.Services
             var typeHidden = config?.TypeFieldHidden ?? false;
             var includeYomi = config?.IncludeYomiField ?? false;
             var yomiHidden = config?.YomiFieldHidden ?? false;
+
+            if (requiresExpandedLookupLinkId)
+            {
+                includeId = true;
+                idHidden = true;
+            }
 
             if (idHidden && !includeId) includeId = true;
             if (nameHidden && !includeName) includeName = true;
@@ -4221,12 +4277,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                 return userMeasures;
 
             // Auto-generated measure names to exclude
-            var displayName = table.DisplayName ?? table.SchemaName ?? table.LogicalName;
-            var autoMeasures = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-            {
-                $"Link to {displayName}",
-                $"{displayName} Count"
-            };
+            var autoMeasures = BuildAutoMeasureNames(table);
 
             try
             {
@@ -4489,22 +4540,19 @@ namespace DataverseToPowerBI.XrmToolBox.Services
             var hasDateTable = FindExistingDateTable(tablesFolder) != null;
             UpdateModelTmdl(pbipFolder, projectName, tables, hasDateTable);
 
-            // Regenerate diagram layout (always regenerate because Power BI Desktop resets
-            // the layout on first open of a new/changed project — our computed layout is
-            // reapplied so the next open will show the arranged model)
-            // diagramLayout.json goes at the SemanticModel root (not in definition/)
+            // Preserve existing diagram layout during incremental updates/merges.
+            // Users may have manually arranged Model View after the initial build, and
+            // update builds should not overwrite that existing layout.
+            // Fresh builds from scratch still generate diagramLayout.json.
             var incrementalSemanticModelFolder = Path.Combine(pbipFolder, $"{projectName}.SemanticModel");
             var layoutPath = Path.Combine(incrementalSemanticModelFolder, "diagramLayout.json");
-            SetStatus("Generating diagram layout...");
-            try
+            if (File.Exists(layoutPath))
             {
-                var layoutJson = DiagramLayoutGenerator.Generate(tables, relationships, dateTableConfig);
-                File.WriteAllText(layoutPath, layoutJson, Utf8WithoutBom);
-                DebugLogger.Log($"Generated diagramLayout.json with {tables.Count} table(s)");
+                DebugLogger.Log("Preserving existing diagramLayout.json during incremental update.");
             }
-            catch (Exception ex)
+            else
             {
-                DebugLogger.Log($"Warning: Failed to generate diagram layout: {ex.Message}");
+                DebugLogger.Log("diagramLayout.json not found during incremental update; leaving layout ungenerated.");
             }
 
             // Ensure .pbi editor settings exist
@@ -4533,9 +4581,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                 var autoMeasures = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
                 if (table != null)
                 {
-                    var displayName = table.DisplayName ?? table.SchemaName ?? table.LogicalName;
-                    autoMeasures.Add($"Link to {displayName}");
-                    autoMeasures.Add($"{displayName} Count");
+                    autoMeasures = BuildAutoMeasureNames(table);
                 }
 
                 // Find all measure blocks
@@ -5776,6 +5822,33 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                     sb.AppendLine($"\tmeasure '{displayName} Count' = COUNTROWS('{displayName}')");
                     sb.AppendLine($"\t\tformatString: 0");
                     sb.AppendLine($"\t\tlineageTag: {GetOrNewLineageTag(existingLineageTags, $"measure:{displayName} Count")}");
+                    sb.AppendLine();
+                }
+            }
+
+            if (table.ExpandedLookups != null)
+            {
+                foreach (var expand in table.ExpandedLookups)
+                {
+                    if (!expand.IncludeRelatedRecordLink ||
+                        string.IsNullOrWhiteSpace(expand.LookupAttributeName) ||
+                        string.IsNullOrWhiteSpace(expand.TargetTableLogicalName))
+                    {
+                        continue;
+                    }
+
+                    var expandedLookupLinkMeasureName = BuildExpandedLookupLinkMeasureName(table, expand);
+
+                    sb.AppendLine($"\tmeasure '{expandedLookupLinkMeasureName}' = ```");
+                    sb.AppendLine($"\t\t\tIF (");
+                    sb.AppendLine($"\t\t\t\tLEN ( SELECTEDVALUE ( '{displayName}'[{expand.LookupAttributeName}] ) ) > 1,");
+                    sb.AppendLine($"\t\t\t\t\"https://\" & DataverseURL & \"/main.aspx?pagetype=entityrecord&etn={expand.TargetTableLogicalName}&id=\"");
+                    sb.AppendLine($"\t\t\t\t\t& SELECTEDVALUE ( '{displayName}'[{expand.LookupAttributeName}], BLANK () ),");
+                    sb.AppendLine($"\t\t\t\tBLANK ()");
+                    sb.AppendLine($"\t\t\t)");
+                    sb.AppendLine($"\t\t\t```");
+                    sb.AppendLine($"\t\tlineageTag: {GetOrNewLineageTag(existingLineageTags, $"measure:{expandedLookupLinkMeasureName}")}");
+                    sb.AppendLine($"\t\tdataCategory: WebUrl");
                     sb.AppendLine();
                 }
             }

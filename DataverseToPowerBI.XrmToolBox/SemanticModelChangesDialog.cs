@@ -46,6 +46,7 @@ namespace DataverseToPowerBI.XrmToolBox
         private Panel pnlFilters = null!;
         private Button btnApply = null!;
         private Button btnCancel = null!;
+        private Button btnCopyToClipboard = null!;
         private CheckBox chkBackup = null!;
         private CheckBox chkRemoveOrphaned = null!;
 
@@ -223,6 +224,16 @@ namespace DataverseToPowerBI.XrmToolBox
             };
             pnlBottom.Controls.Add(chkRemoveOrphaned);
 
+            btnCopyToClipboard = new Button
+            {
+                Anchor = AnchorStyles.Bottom | AnchorStyles.Left,
+                Location = new Point(12, 38),
+                Size = new Size(140, 30),
+                Text = "Copy to Clipboard"
+            };
+            btnCopyToClipboard.Click += BtnCopyToClipboard_Click;
+            pnlBottom.Controls.Add(btnCopyToClipboard);
+
             btnCancel = new Button
             {
                 Anchor = AnchorStyles.Bottom | AnchorStyles.Right,
@@ -279,6 +290,66 @@ namespace DataverseToPowerBI.XrmToolBox
             };
             chk.CheckedChanged += (s, e) => LoadChanges();
             return chk;
+        }
+
+        private void BtnCopyToClipboard_Click(object? sender, EventArgs e)
+        {
+            Clipboard.SetText(BuildChangesSummaryText());
+
+            // Brief visual confirmation
+            var origText = btnCopyToClipboard.Text;
+            btnCopyToClipboard.Text = "Copied!";
+            btnCopyToClipboard.Enabled = false;
+            var timer = new System.Windows.Forms.Timer { Interval = 1500 };
+            timer.Tick += (ts, te) =>
+            {
+                timer.Stop();
+                timer.Dispose();
+                if (!IsDisposed)
+                {
+                    btnCopyToClipboard.Text = origText;
+                    btnCopyToClipboard.Enabled = true;
+                }
+            };
+            timer.Start();
+        }
+
+        private string BuildChangesSummaryText()
+        {
+            var sb = new System.Text.StringBuilder();
+            sb.AppendLine("Semantic Model Changes Summary");
+            sb.AppendLine($"Generated: {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
+            sb.AppendLine(new string('=', 70));
+            sb.AppendLine();
+
+            var sections = new[]
+            {
+                (Header: "WARNINGS",   Types: new[] { ChangeType.Warning, ChangeType.Error }),
+                (Header: "NEW",        Types: new[] { ChangeType.New }),
+                (Header: "UPDATED",    Types: new[] { ChangeType.Update }),
+                (Header: "PRESERVED",  Types: new[] { ChangeType.Preserve, ChangeType.Info }),
+            };
+
+            foreach (var section in sections)
+            {
+                var items = _changes.Where(c => section.Types.Contains(c.ChangeType)).ToList();
+                if (items.Count == 0) continue;
+
+                sb.AppendLine($"{section.Header} ({items.Count})");
+                sb.AppendLine(new string('-', 40));
+
+                foreach (var change in items)
+                {
+                    var icon = GetChangeIcon(change);
+                    var impactTag = GetImpactTag(change);
+                    var parent = !string.IsNullOrEmpty(change.ParentKey) ? $"{change.ParentKey} > " : "";
+                    sb.AppendLine($"  {icon} {parent}{change.ObjectName}  {impactTag}— {change.Description}");
+                }
+
+                sb.AppendLine();
+            }
+
+            return sb.ToString();
         }
 
         private void BtnApply_Click(object? sender, EventArgs e)

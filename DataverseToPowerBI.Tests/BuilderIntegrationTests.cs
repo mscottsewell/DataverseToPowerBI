@@ -712,6 +712,30 @@ namespace DataverseToPowerBI.Tests
             Assert.Contains("LEFT OUTER JOIN", tableContent, StringComparison.OrdinalIgnoreCase);
         }
 
+        [Fact]
+        public void Build_ExpandedLookup_WithRelatedRecordLink_TableContentIncludesLookupLinkMeasure()
+        {
+            var scenario = new ScenarioBuilder()
+                .WithTable(new TableBuilder("opportunity", "Opportunity")
+                    .WithPrimaryName("name", "Opportunity Name")
+                    .WithLookup("_parentaccountid_value", "Parent Account", "account")
+                    .WithExpandedLookup("_parentaccountid_value", "account", "accountid", true,
+                        ("name", "Account Name", "String"))
+                    .AsFact());
+
+            var builder = CreateBuilder();
+            builder.Build(scenario.SemanticModelName, _tempDir, scenario.DataverseUrl,
+                scenario.BuildTables(), scenario.BuildRelationships(), scenario.BuildAttributeDisplayInfo());
+
+            var tableContent = TmdlAssertions.ReadTableTmdl(_tempDir, "Opportunity");
+            Assert.Contains("measure 'Link to Opportunity:Parent Account'", tableContent, StringComparison.Ordinal);
+            Assert.Contains("IF (", tableContent, StringComparison.Ordinal);
+            Assert.Contains("LEN ( SELECTEDVALUE ( 'Opportunity'[_parentaccountid_value] ) ) > 1", tableContent, StringComparison.Ordinal);
+            Assert.Contains("etn=account&id=", tableContent, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("& SELECTEDVALUE ( 'Opportunity'[_parentaccountid_value], BLANK () )", tableContent, StringComparison.Ordinal);
+            Assert.Matches(@"column _parentaccountid_value\r?\n(?:\t\t[^\r\n]*\r?\n)*\t\tisHidden", tableContent);
+        }
+
         #endregion
 
         #region FabricLink with Picklist Tests
@@ -911,6 +935,53 @@ namespace DataverseToPowerBI.Tests
 
             var actionable = changes.Where(c => c.ChangeType == ChangeType.New || c.ChangeType == ChangeType.Update).ToList();
             Assert.Empty(actionable);
+        }
+
+        [Fact]
+        public void ApplyChanges_ExistingPbip_PreservesDiagramLayout()
+        {
+            var scenario = new ScenarioBuilder()
+                .WithTable(new TableBuilder("account", "Account")
+                    .WithPrimaryName("name", "Account Name")
+                    .WithAttribute("telephone1", "Phone", "String"));
+
+            var tables = scenario.BuildTables();
+            var relationships = scenario.BuildRelationships();
+            var displayInfo = scenario.BuildAttributeDisplayInfo();
+
+            var builder = CreateBuilder();
+
+            builder.Build(
+                scenario.SemanticModelName,
+                _tempDir,
+                scenario.DataverseUrl,
+                tables,
+                relationships,
+                displayInfo);
+
+            var layoutPath = Path.Combine(
+                _tempDir,
+                "testorg",
+                scenario.SemanticModelName,
+                $"{scenario.SemanticModelName}.SemanticModel",
+                "diagramLayout.json");
+
+            Assert.True(File.Exists(layoutPath), $"diagramLayout.json not found at {layoutPath}");
+
+            const string customLayoutJson = "{\"preserve\":true,\"tables\":[\"Account\"]}";
+            File.WriteAllText(layoutPath, customLayoutJson);
+
+            var result = builder.ApplyChanges(
+                scenario.SemanticModelName,
+                _tempDir,
+                scenario.DataverseUrl,
+                tables,
+                relationships,
+                displayInfo,
+                createBackup: false);
+
+            Assert.True(result);
+            Assert.Equal(customLayoutJson, File.ReadAllText(layoutPath));
         }
 
         #endregion

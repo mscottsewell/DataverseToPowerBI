@@ -50,9 +50,6 @@
     <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Configuration" />
 
-    <Reference Include="..\DataverseToPowerBI.Core\bin\Release\net48\DataverseToPowerBI.Core.dll">
-      <Private>True</Private>
-    </Reference>
     <Reference Include="XrmToolBox.Extensibility">
       <HintPath>$(APPDATA)\MscrmTools\XrmToolBox\Plugins\XrmToolBox.Extensibility.dll</HintPath>
       <Private>False</Private>
@@ -143,10 +140,10 @@
     <EmbeddedResource Include="Assets\Icons\*.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\DataverseToPowerBI.Core\bin\Release\net48\DataverseToPowerBI.Core.dll">
-      <Link>DataverseToPowerBI.Core.dll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <ProjectReference Include="..\DataverseToPowerBI.Core\DataverseToPowerBI.Core.csproj">
+      <Private>True</Private>
+      <Name>DataverseToPowerBI.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <!-- Embed DateTable.tmdl template -->

@@ -110,6 +110,8 @@ namespace DataverseToPowerBI.Tests
                         new SerializedExpandedLookup
                         {
                             LookupAttributeName = "ownerid",
+                            LookupDisplayName = "Owner",
+                            IncludeRelatedRecordLink = true,
                             TargetTableLogicalName = "systemuser",
                             TargetTablePrimaryKey = "systemuserid",
                             Attributes = new List<SerializedExpandedLookupAttribute>
@@ -118,6 +120,7 @@ namespace DataverseToPowerBI.Tests
                                 {
                                     LogicalName = "fullname",
                                     DisplayName = "Full Name",
+                                    OutputDisplayNameOverride = "Owner Name",
                                     IsHidden = true
                                 }
                             }
@@ -129,8 +132,13 @@ namespace DataverseToPowerBI.Tests
             var roundTripped = RoundTrip(settings);
 
             Assert.True(roundTripped.ExpandedLookups.ContainsKey("account"));
-            var attr = roundTripped.ExpandedLookups["account"][0].Attributes[0];
+            var expandedLookup = roundTripped.ExpandedLookups["account"][0];
+            Assert.Equal("Owner", expandedLookup.LookupDisplayName);
+            Assert.True(expandedLookup.IncludeRelatedRecordLink);
+
+            var attr = expandedLookup.Attributes[0];
             Assert.Equal("fullname", attr.LogicalName);
+            Assert.Equal("Owner Name", attr.OutputDisplayNameOverride);
             Assert.True(attr.IsHidden);
         }
 
@@ -176,6 +184,14 @@ namespace DataverseToPowerBI.Tests
             var result = PluginControl.GetExpandedLookupFieldDisplayName("Manager", null, "internalemailaddress");
 
             Assert.Equal("Manager : internalemailaddress", result);
+        }
+
+        [Fact]
+        public void GetExpandedLookupFieldDisplayName_UsesExplicitOverride_WhenProvided()
+        {
+            var result = PluginControl.GetExpandedLookupFieldDisplayName("Manager", "Primary Email", "internalemailaddress", "Email");
+
+            Assert.Equal("Email", result);
         }
 
         [Fact]

@@ -710,6 +710,8 @@ namespace DataverseToPowerBI.XrmToolBox
                     _expandedLookups[kvp.Key] = kvp.Value.Select(e => new ExpandedLookupConfig
                     {
                         LookupAttributeName = e.LookupAttributeName,
+                        LookupDisplayName = e.LookupDisplayName,
+                        IncludeRelatedRecordLink = e.IncludeRelatedRecordLink,
                         TargetTableLogicalName = e.TargetTableLogicalName,
                         TargetTableDisplayName = e.TargetTableDisplayName,
                         TargetTablePrimaryKey = e.TargetTablePrimaryKey,
@@ -718,6 +720,7 @@ namespace DataverseToPowerBI.XrmToolBox
                         {
                             LogicalName = a.LogicalName,
                             DisplayName = a.DisplayName,
+                            OutputDisplayNameOverride = a.OutputDisplayNameOverride,
                             AttributeType = a.AttributeType,
                             SchemaName = a.SchemaName,
                             Targets = a.Targets?.ToList(),
@@ -1016,6 +1019,8 @@ namespace DataverseToPowerBI.XrmToolBox
                     settings.ExpandedLookups[kvp.Key] = kvp.Value.Select(e => new SerializedExpandedLookup
                     {
                         LookupAttributeName = e.LookupAttributeName,
+                        LookupDisplayName = e.LookupDisplayName,
+                        IncludeRelatedRecordLink = e.IncludeRelatedRecordLink,
                         TargetTableLogicalName = e.TargetTableLogicalName,
                         TargetTableDisplayName = e.TargetTableDisplayName,
                         TargetTablePrimaryKey = e.TargetTablePrimaryKey,
@@ -1024,6 +1029,7 @@ namespace DataverseToPowerBI.XrmToolBox
                         {
                             LogicalName = a.LogicalName,
                             DisplayName = a.DisplayName,
+                            OutputDisplayNameOverride = a.OutputDisplayNameOverride,
                             AttributeType = a.AttributeType,
                             SchemaName = a.SchemaName,
                             Targets = a.Targets,
@@ -2546,6 +2552,10 @@ namespace DataverseToPowerBI.XrmToolBox
             var inRelationship = _relationships.Any(r =>
                 r.SourceTable.Equals(tableLogicalName, StringComparison.OrdinalIgnoreCase) &&
                 r.SourceAttribute.Equals(lookupLogicalName, StringComparison.OrdinalIgnoreCase));
+            var requiresExpandedLookupLinkId = _expandedLookups.TryGetValue(tableLogicalName, out var tableExpandedLookups) &&
+                tableExpandedLookups.Any(e =>
+                    e.LookupAttributeName.Equals(lookupLogicalName, StringComparison.OrdinalIgnoreCase) &&
+                    e.IncludeRelatedRecordLink);
 
             var includeId = stored?.IncludeIdField ?? inRelationship;
             var idHidden = stored?.IdFieldHidden ?? inRelationship;
@@ -2555,6 +2565,12 @@ namespace DataverseToPowerBI.XrmToolBox
             var typeHidden = stored?.TypeFieldHidden ?? false;
             var includeYomi = stored?.IncludeYomiField ?? false;
             var yomiHidden = stored?.YomiFieldHidden ?? false;
+
+            if (requiresExpandedLookupLinkId)
+            {
+                includeId = true;
+                idHidden = true;
+            }
 
             if (idHidden && !includeId) includeId = true;
             if (nameHidden && !includeName) includeName = true;
@@ -2612,9 +2628,29 @@ namespace DataverseToPowerBI.XrmToolBox
 
         internal static string GetExpandedLookupFieldDisplayName(string lookupDisplayName, string? expandedDisplayName, string expandedLogicalName)
         {
+            return GetExpandedLookupFieldDisplayName(lookupDisplayName, expandedDisplayName, expandedLogicalName, null);
+        }
+
+        internal static string GetExpandedLookupFieldDisplayName(string lookupDisplayName, string? expandedDisplayName, string expandedLogicalName, string? outputDisplayNameOverride)
+        {
+            if (!string.IsNullOrWhiteSpace(outputDisplayNameOverride))
+                return outputDisplayNameOverride!;
+
             var prefix = string.IsNullOrWhiteSpace(lookupDisplayName) ? "Lookup" : lookupDisplayName;
             var expandedName = string.IsNullOrWhiteSpace(expandedDisplayName) ? expandedLogicalName : expandedDisplayName;
             return $"{prefix} : {expandedName}";
+        }
+
+        internal static string GetExpandedLookupStatusText(int expandedCount, bool includeRelatedRecordLink)
+        {
+            if (includeRelatedRecordLink)
+            {
+                return expandedCount > 0
+                    ? $"▶ Expand + Link ({expandedCount})"
+                    : "▶ Link";
+            }
+
+            return expandedCount > 0 ? $"▶ Expand ({expandedCount})" : "▶ Expand";
         }
 
         /// <summary>
@@ -2663,6 +2699,58 @@ namespace DataverseToPowerBI.XrmToolBox
             }
 
             return NormalizeDisplayNameInput(renderedText);
+        }
+
+        private ExpandedLookupAttribute? FindExpandedLookupAttribute(string tableName, string parentLookup, string expandedAttribute)
+        {
+            if (!_expandedLookups.TryGetValue(tableName, out var expands))
+                return null;
+
+            var expand = expands.FirstOrDefault(e =>
+                e.LookupAttributeName.Equals(parentLookup, StringComparison.OrdinalIgnoreCase));
+
+            return expand?.Attributes.FirstOrDefault(a =>
+                a.LogicalName.Equals(expandedAttribute, StringComparison.OrdinalIgnoreCase));
+        }
+
+        private string GetExpandedLookupBaseDisplayName(string tableName, string parentLookup)
+        {
+            if (_attributeDisplayNameOverrides.TryGetValue(tableName, out var tableOverrides) &&
+                tableOverrides.TryGetValue(parentLookup, out var overrideName) &&
+                !string.IsNullOrWhiteSpace(overrideName))
+            {
+                return overrideName;
+            }
+
+            if (_tableAttributes.TryGetValue(tableName, out var attrs))
+            {
+                var attr = attrs.FirstOrDefault(a =>
+                    a.LogicalName.Equals(parentLookup, StringComparison.OrdinalIgnoreCase));
+                if (attr != null)
+                    return GetLookupLabelDisplayName(attr);
+            }
+
+            return parentLookup;
+        }
+
+        private string GetExpandedLookupDefaultDisplayName(string tableName, string parentLookup, ExpandedLookupAttribute expandedAttribute)
+        {
+            var lookupDisplayName = GetExpandedLookupBaseDisplayName(tableName, parentLookup);
+            return GetExpandedLookupFieldDisplayName(
+                lookupDisplayName,
+                expandedAttribute.DisplayName,
+                expandedAttribute.LogicalName,
+                null);
+        }
+
+        private string GetExpandedLookupEffectiveDisplayName(string tableName, string parentLookup, ExpandedLookupAttribute expandedAttribute)
+        {
+            var lookupDisplayName = GetExpandedLookupBaseDisplayName(tableName, parentLookup);
+            return GetExpandedLookupFieldDisplayName(
+                lookupDisplayName,
+                expandedAttribute.DisplayName,
+                expandedAttribute.LogicalName,
+                expandedAttribute.OutputDisplayNameOverride);
         }
 
         private void RecalculateLookupDefaults()
@@ -2898,7 +2986,7 @@ namespace DataverseToPowerBI.XrmToolBox
                 : logicalName;
             groupBoxAttributes.Text = $"Attributes - {tableDisplay}";
 
-            colAttrExpand.Width = 104;
+            colAttrExpand.Width = 138;
             colAttrInclude.Width = 50;
             colAttrHidden.Width = 50;
             
@@ -3029,7 +3117,9 @@ namespace DataverseToPowerBI.XrmToolBox
                     var expandedCount = hasExpand
                         ? expandConfig!.Attributes.Count(a => a.IncludeInModel ?? true)
                         : 0;
-                    headerItem.SubItems.Add(expandedCount > 0 ? $"▶ Expand ({expandedCount})" : "▶ Expand");
+                    headerItem.SubItems.Add(GetExpandedLookupStatusText(
+                        expandedCount,
+                        expandConfig?.IncludeRelatedRecordLink ?? false));
                     headerItem.ForeColor = hasAnyIncluded ? Color.Black : Color.Gray;
 
                     if (!string.IsNullOrEmpty(searchText) &&
@@ -3098,16 +3188,17 @@ namespace DataverseToPowerBI.XrmToolBox
 
                         if (hasExpand && expandConfig!.Attributes.Count > 0)
                         {
-                            var lookupDisplayBase = overrides.ContainsKey(attr.LogicalName)
-                                ? overrides[attr.LogicalName]
-                                : GetLookupLabelDisplayName(attr);
-                            foreach (var expAttr in expandConfig.Attributes.OrderBy(a => a.DisplayName ?? a.LogicalName))
+                            foreach (var expAttr in expandConfig.Attributes.OrderBy(a =>
+                                a.OutputDisplayNameOverride ?? a.DisplayName ?? a.LogicalName))
                             {
+                                var expandedDisplayName = GetExpandedLookupEffectiveDisplayName(logicalName, attr.LogicalName, expAttr);
+
                                 if (!string.IsNullOrEmpty(searchText))
                                 {
-                                    if (!(expAttr.DisplayName?.ToLower().Contains(searchText) == true ||
+                                    if (!(expandedDisplayName.ToLower().Contains(searchText) ||
+                                          expAttr.DisplayName?.ToLower().Contains(searchText) == true ||
                                           expAttr.LogicalName.ToLower().Contains(searchText) ||
-                                          lookupDisplayBase.ToLower().Contains(searchText)))
+                                          GetExpandedLookupBaseDisplayName(logicalName, attr.LogicalName).ToLower().Contains(searchText)))
                                         continue;
                                 }
 
@@ -3120,7 +3211,7 @@ namespace DataverseToPowerBI.XrmToolBox
                                     expandConfig.TargetTableLogicalName,
                                     expAttr.LogicalName));
                                 childItem.SubItems.Add((fieldSelectionMode == FieldSelectionMode.View || fieldSelectionMode == FieldSelectionMode.DifferentView) && isFromSelectedView ? "✓" : "");
-                                childItem.SubItems.Add($"    ↳ {GetExpandedLookupFieldDisplayName(lookupDisplayBase, expAttr.DisplayName, expAttr.LogicalName)}");
+                                childItem.SubItems.Add($"    ↳ {expandedDisplayName}");
                                 childItem.SubItems.Add($"{expandConfig.TargetTableLogicalName}.{expAttr.LogicalName}");
                                 childItem.SubItems.Add(expAttr.AttributeType ?? "");
                                 var includeExpanded = expAttr.IncludeInModel ?? true;
@@ -3926,6 +4017,64 @@ namespace DataverseToPowerBI.XrmToolBox
                     return;
                 attrLogicalName = parentLookup;
             }
+
+            if (TryParseExpandedSubRowTag(attrLogicalName, out var expandedParentLookup, out var expandedAttributeName))
+            {
+                var expandedTableName = listViewSelectedTables.SelectedItems[0].Name;
+                var expandedAttr = FindExpandedLookupAttribute(expandedTableName, expandedParentLookup, expandedAttributeName);
+                if (expandedAttr == null) return;
+
+                var expandedCurrentText = !string.IsNullOrWhiteSpace(expandedAttr.OutputDisplayNameOverride)
+                    ? expandedAttr.OutputDisplayNameOverride
+                    : NormalizeDisplayNameInput(editSubItem.Text);
+
+                var expandedBounds = editSubItem.Bounds;
+                var expandedEditBox = new TextBox
+                {
+                    Text = expandedCurrentText,
+                    Bounds = expandedBounds,
+                    Font = listViewAttributes.Font,
+                    BorderStyle = BorderStyle.FixedSingle
+                };
+
+                expandedEditBox.SelectAll();
+
+                void CommitExpandedEdit()
+                {
+                    var newName = NormalizeDisplayNameInput(expandedEditBox.Text);
+                    if (expandedEditBox.Parent == null) return;
+                    listViewAttributes.Controls.Remove(expandedEditBox);
+                    expandedEditBox.Dispose();
+
+                    if (string.IsNullOrEmpty(newName)) return;
+
+                    var defaultDisplayName = GetExpandedLookupDefaultDisplayName(expandedTableName, expandedParentLookup, expandedAttr);
+                    expandedAttr.OutputDisplayNameOverride = newName.Equals(defaultDisplayName, StringComparison.OrdinalIgnoreCase)
+                        ? null
+                        : newName;
+
+                    SaveSettings();
+                    UpdateAttributesDisplay(expandedTableName);
+                }
+
+                void CancelExpandedEdit()
+                {
+                    if (expandedEditBox.Parent == null) return;
+                    listViewAttributes.Controls.Remove(expandedEditBox);
+                    expandedEditBox.Dispose();
+                }
+
+                expandedEditBox.KeyDown += (s, ke) =>
+                {
+                    if (ke.KeyCode == Keys.Enter) { ke.SuppressKeyPress = true; CommitExpandedEdit(); }
+                    else if (ke.KeyCode == Keys.Escape) { ke.SuppressKeyPress = true; CancelExpandedEdit(); }
+                };
+                expandedEditBox.LostFocus += (s, _) => CommitExpandedEdit();
+
+                listViewAttributes.Controls.Add(expandedEditBox);
+                expandedEditBox.Focus();
+                return;
+            }
             
             var tableName = listViewSelectedTables.SelectedItems[0].Name;
             
@@ -4306,6 +4455,7 @@ namespace DataverseToPowerBI.XrmToolBox
                         attributes,
                         existingConfig?.Attributes,
                         existingConfig?.FormId,
+                        existingConfig?.IncludeRelatedRecordLink ?? false,
                         currentExpandCount))
                     {
                         if (dialog.ShowDialog(this) == DialogResult.OK)
@@ -4317,7 +4467,7 @@ namespace DataverseToPowerBI.XrmToolBox
                             _expandedLookups[sourceTableName].RemoveAll(e => 
                                 e.LookupAttributeName.Equals(lookupAttr.LogicalName, StringComparison.OrdinalIgnoreCase));
                             
-                            if (dialog.SelectedAttributes.Count > 0)
+                            if (dialog.SelectedAttributes.Count > 0 || dialog.IncludeRelatedRecordLink)
                             {
                                 var existingHiddenMap = existingConfig?.Attributes?
                                     .ToDictionary(a => a.LogicalName, a => a.IsHidden, StringComparer.OrdinalIgnoreCase)
@@ -4336,6 +4486,8 @@ namespace DataverseToPowerBI.XrmToolBox
                                 _expandedLookups[sourceTableName].Add(new ExpandedLookupConfig
                                 {
                                     LookupAttributeName = lookupAttr.LogicalName,
+                                    LookupDisplayName = lookupAttr.DisplayName ?? lookupAttr.LogicalName,
+                                    IncludeRelatedRecordLink = dialog.IncludeRelatedRecordLink,
                                     TargetTableLogicalName = targetTableLogicalName,
                                     TargetTableDisplayName = tableMeta?.DisplayName ?? targetTableLogicalName,
                                     TargetTablePrimaryKey = tableMeta?.PrimaryIdAttribute ?? (targetTableLogicalName + "id"),
@@ -4389,7 +4541,7 @@ namespace DataverseToPowerBI.XrmToolBox
             const int typeWidth = 78;
             const int includeWidth = 50;
             const int hiddenWidth = 50;
-            const int expandWidth = 104;
+            const int expandWidth = 138;
             const int scrollBarWidth = 20;
             colAttrExpand.Width = expandWidth;
             colAttrInclude.Width = includeWidth;
@@ -5373,6 +5525,22 @@ namespace DataverseToPowerBI.XrmToolBox
                         nameToAttrs[effectiveName] = new List<string>();
                     nameToAttrs[effectiveName].Add(attr.LogicalName);
                 }
+
+                if (_expandedLookups.TryGetValue(tableName, out var expands))
+                {
+                    foreach (var expand in expands)
+                    {
+                        foreach (var attr in expand.Attributes.Where(a => a.IncludeInModel ?? true))
+                        {
+                            var effectiveName = GetExpandedLookupEffectiveDisplayName(tableName, expand.LookupAttributeName, attr);
+                            var logicalReference = $"{expand.LookupAttributeName}.{attr.LogicalName}";
+
+                            if (!nameToAttrs.ContainsKey(effectiveName))
+                                nameToAttrs[effectiveName] = new List<string>();
+                            nameToAttrs[effectiveName].Add(logicalReference);
+                        }
+                    }
+                }
                 
                 foreach (var kvp in nameToAttrs.Where(n => n.Value.Count > 1))
                 {
@@ -6182,6 +6350,10 @@ namespace DataverseToPowerBI.XrmToolBox
         [System.Runtime.Serialization.DataMember]
         public string LookupAttributeName { get; set; } = "";
         [System.Runtime.Serialization.DataMember]
+        public string? LookupDisplayName { get; set; }
+        [System.Runtime.Serialization.DataMember]
+        public bool IncludeRelatedRecordLink { get; set; }
+        [System.Runtime.Serialization.DataMember]
         public string TargetTableLogicalName { get; set; } = "";
         [System.Runtime.Serialization.DataMember]
         public string? TargetTableDisplayName { get; set; }
@@ -6200,6 +6372,8 @@ namespace DataverseToPowerBI.XrmToolBox
         public string LogicalName { get; set; } = "";
         [System.Runtime.Serialization.DataMember]
         public string? DisplayName { get; set; }
+        [System.Runtime.Serialization.DataMember]
+        public string? OutputDisplayNameOverride { get; set; }
         [System.Runtime.Serialization.DataMember]
         public string? AttributeType { get; set; }
         [System.Runtime.Serialization.DataMember]

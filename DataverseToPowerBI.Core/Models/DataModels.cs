@@ -1266,6 +1266,12 @@ namespace DataverseToPowerBI.Core.Models
         public string? LookupDisplayName { get; set; }
 
         /// <summary>
+        /// Whether to generate a Dataverse URL measure to the related record using
+        /// the source table's current lookup value.
+        /// </summary>
+        public bool IncludeRelatedRecordLink { get; set; } = false;
+
+        /// <summary>
         /// Logical name of the related/target table being expanded.
         /// </summary>
         public string TargetTableLogicalName { get; set; } = "";
@@ -1389,6 +1395,11 @@ namespace DataverseToPowerBI.Core.Models
         /// Display name of the attribute.
         /// </summary>
         public string? DisplayName { get; set; }
+        /// <summary>
+        /// Optional explicit output name to use for the generated Power BI column.
+        /// When null, the builder uses the default "Lookup : Attribute" naming pattern.
+        /// </summary>
+        public string? OutputDisplayNameOverride { get; set; }
 
         /// <summary>
         /// The attribute type (String, Integer, Lookup, etc.).

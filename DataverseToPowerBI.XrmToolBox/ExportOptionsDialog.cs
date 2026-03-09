@@ -283,6 +283,8 @@ namespace DataverseToPowerBI.XrmToolBox
                         .ToDictionary(kv => kv.Key, kv => kv.Value.Select(e => new SerializedExpandedLookup
                         {
                             LookupAttributeName = e.LookupAttributeName,
+                            LookupDisplayName = e.LookupDisplayName,
+                            IncludeRelatedRecordLink = e.IncludeRelatedRecordLink,
                             TargetTableLogicalName = e.TargetTableLogicalName,
                             TargetTableDisplayName = e.TargetTableDisplayName,
                             TargetTablePrimaryKey = e.TargetTablePrimaryKey,
@@ -291,6 +293,7 @@ namespace DataverseToPowerBI.XrmToolBox
                             {
                                 LogicalName = a.LogicalName,
                                 DisplayName = a.DisplayName,
+                                OutputDisplayNameOverride = a.OutputDisplayNameOverride,
                                 AttributeType = a.AttributeType,
                                 SchemaName = a.SchemaName,
                                 Targets = a.Targets?.ToList(),
@@ -403,14 +406,14 @@ namespace DataverseToPowerBI.XrmToolBox
                 if (settings.ExpandedLookups != null && settings.ExpandedLookups.Count > 0)
                 {
                     sb.Clear();
-                    sb.AppendLine("Source Table,Lookup Attribute,Target Table,Target Display Name,Expanded Attribute,Attribute Display Name,Attribute Type");
+                    sb.AppendLine("Source Table,Lookup Attribute,Lookup Display Name,Target Table,Target Display Name,Include Related Record Link,Expanded Attribute,Attribute Display Name,Attribute Type");
                     foreach (var kvp in settings.ExpandedLookups.OrderBy(kv => kv.Key))
                     {
                         foreach (var expand in kvp.Value)
                         {
                             foreach (var attr in expand.Attributes.OrderBy(a => a.LogicalName))
                             {
-                                sb.AppendLine($"{CsvEscape(kvp.Key)},{CsvEscape(expand.LookupAttributeName)},{CsvEscape(expand.TargetTableLogicalName)},{CsvEscape(expand.TargetTableDisplayName ?? "")},{CsvEscape(attr.LogicalName)},{CsvEscape(attr.DisplayName ?? "")},{CsvEscape(attr.AttributeType ?? "")}");
+                                sb.AppendLine($"{CsvEscape(kvp.Key)},{CsvEscape(expand.LookupAttributeName)},{CsvEscape(expand.LookupDisplayName ?? "")},{CsvEscape(expand.TargetTableLogicalName)},{CsvEscape(expand.TargetTableDisplayName ?? "")},{expand.IncludeRelatedRecordLink},{CsvEscape(attr.LogicalName)},{CsvEscape(attr.DisplayName ?? "")},{CsvEscape(attr.AttributeType ?? "")}");
                             }
                         }
                     }

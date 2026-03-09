@@ -476,6 +476,8 @@ namespace DataverseToPowerBI.XrmToolBox
                     v => v.Value?.Select(e => new SerializedExpandedLookup
                     {
                         LookupAttributeName = e.LookupAttributeName,
+                        LookupDisplayName = e.LookupDisplayName,
+                        IncludeRelatedRecordLink = e.IncludeRelatedRecordLink,
                         TargetTableLogicalName = e.TargetTableLogicalName,
                         TargetTableDisplayName = e.TargetTableDisplayName,
                         TargetTablePrimaryKey = e.TargetTablePrimaryKey,
@@ -484,6 +486,7 @@ namespace DataverseToPowerBI.XrmToolBox
                         {
                             LogicalName = a.LogicalName,
                             DisplayName = a.DisplayName,
+                            OutputDisplayNameOverride = a.OutputDisplayNameOverride,
                             AttributeType = a.AttributeType,
                             SchemaName = a.SchemaName,
                             Targets = a.Targets?.ToList(),

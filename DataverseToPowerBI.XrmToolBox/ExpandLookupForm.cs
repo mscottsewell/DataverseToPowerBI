@@ -27,6 +27,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Collections;
 using System.Windows.Forms;
 using DataverseToPowerBI.Core.Models;
 
@@ -42,6 +43,9 @@ namespace DataverseToPowerBI.XrmToolBox
     {
         private const int MAX_RECOMMENDED_FIELDS = 10;
         private const int MAX_RECOMMENDED_EXPANDS = 3;
+        private const int CONTENT_LEFT = 15;
+        private const int CONTENT_WIDTH = 550;
+        private const int BUTTON_ROW_HEIGHT = 28;
 
         private readonly string _lookupAttributeName;
         private readonly string _lookupDisplayName;
@@ -52,6 +56,7 @@ namespace DataverseToPowerBI.XrmToolBox
         private readonly List<CoreAttributeMetadata> _allAttributes;
         private readonly List<ExpandedLookupAttribute>? _existingSelection;
         private readonly string? _existingFormId;
+        private readonly bool _existingIncludeRelatedRecordLink;
         private readonly int _currentExpandCount;
 
         // UI Controls
@@ -62,6 +67,7 @@ namespace DataverseToPowerBI.XrmToolBox
         private WinLabel lblFormFieldCount = null!;
         private WinLabel lblWarning = null!;
         private Panel pnlWarning = null!;
+        private CheckBox chkIncludeRelatedRecordLink = null!;
         private ListView listViewAttributes = null!;
         private Button btnOk = null!;
         private Button btnCancel = null!;
@@ -70,6 +76,8 @@ namespace DataverseToPowerBI.XrmToolBox
         private WinLabel lblStatus = null!;
 
         private bool _isLoading = false;
+        private int _sortColumn = 1;
+        private bool _sortAscending = true;
 
         /// <summary>
         /// The selected attributes from the related table.
@@ -81,6 +89,11 @@ namespace DataverseToPowerBI.XrmToolBox
         /// </summary>
         public string? SelectedFormId { get; private set; }
 
+        /// <summary>
+        /// Whether to generate a related-record link measure for this lookup.
+        /// </summary>
+        public bool IncludeRelatedRecordLink => chkIncludeRelatedRecordLink.Checked;
+
         public ExpandLookupForm(
             string lookupAttributeName,
             string lookupDisplayName,
@@ -91,6 +104,7 @@ namespace DataverseToPowerBI.XrmToolBox
             List<CoreAttributeMetadata> allAttributes,
             List<ExpandedLookupAttribute>? existingSelection = null,
             string? existingFormId = null,
+            bool existingIncludeRelatedRecordLink = false,
             int currentExpandCount = 0)
         {
             _lookupAttributeName = lookupAttributeName;
@@ -102,6 +116,7 @@ namespace DataverseToPowerBI.XrmToolBox
             _allAttributes = allAttributes;
             _existingSelection = existingSelection;
             _existingFormId = existingFormId;
+            _existingIncludeRelatedRecordLink = existingIncludeRelatedRecordLink;
             _currentExpandCount = currentExpandCount;
 
             InitializeComponent();
@@ -123,7 +138,7 @@ namespace DataverseToPowerBI.XrmToolBox
             lblLookupInfo = new WinLabel
             {
                 Text = $"Lookup Field: {_lookupDisplayName} ({_lookupAttributeName})",
-                Location = new Point(15, y),
+                Location = new Point(CONTENT_LEFT, y),
                 AutoSize = true,
                 Font = new Font(this.Font, FontStyle.Bold)
             };
@@ -133,18 +148,29 @@ namespace DataverseToPowerBI.XrmToolBox
             lblTargetTable = new WinLabel
             {
                 Text = $"Related Table: {_targetTableDisplayName} ({_targetTableLogicalName})",
-                Location = new Point(15, y),
+                Location = new Point(CONTENT_LEFT, y),
                 AutoSize = true,
                 ForeColor = Color.DarkBlue
             };
             this.Controls.Add(lblTargetTable);
             y += 30;
 
+            chkIncludeRelatedRecordLink = new CheckBox
+            {
+                Text = "Include link to the related record using this lookup value",
+                Location = new Point(CONTENT_LEFT, y),
+                AutoSize = true,
+                Checked = _existingIncludeRelatedRecordLink
+            };
+            chkIncludeRelatedRecordLink.CheckedChanged += ChkIncludeRelatedRecordLink_CheckedChanged;
+            this.Controls.Add(chkIncludeRelatedRecordLink);
+            y += 24;
+
             // Warning panel
             pnlWarning = new Panel
             {
-                Location = new Point(15, y),
-                Size = new Size(550, 50),
+                Location = new Point(CONTENT_LEFT, y),
+                Size = new Size(CONTENT_WIDTH, 50),
                 BackColor = Color.FromArgb(255, 248, 220),
                 BorderStyle = BorderStyle.FixedSingle,
                 Visible = false
@@ -159,13 +185,12 @@ namespace DataverseToPowerBI.XrmToolBox
             };
             pnlWarning.Controls.Add(lblWarning);
             this.Controls.Add(pnlWarning);
-            y += 55;
 
             // Form selector
             lblForm = new WinLabel
             {
                 Text = "Form:",
-                Location = new Point(15, y + 3),
+                Location = new Point(CONTENT_LEFT, y + 3),
                 AutoSize = true
             };
             this.Controls.Add(lblForm);
@@ -192,8 +217,8 @@ namespace DataverseToPowerBI.XrmToolBox
             // Attribute list
             listViewAttributes = new ListView
             {
-                Location = new Point(15, y),
-                Size = new Size(550, 320),
+                Location = new Point(CONTENT_LEFT, y),
+                Size = new Size(CONTENT_WIDTH, 320),
                 View = View.Details,
                 FullRowSelect = true,
                 CheckBoxes = true
@@ -202,6 +227,7 @@ namespace DataverseToPowerBI.XrmToolBox
             listViewAttributes.Columns.Add("Display Name", 200);
             listViewAttributes.Columns.Add("Logical Name", 170);
             listViewAttributes.Columns.Add("Type", 120);
+            listViewAttributes.ColumnClick += ListViewAttributes_ColumnClick;
             listViewAttributes.ItemChecked += ListViewAttributes_ItemChecked;
             this.Controls.Add(listViewAttributes);
             y += 325;
@@ -229,7 +255,9 @@ namespace DataverseToPowerBI.XrmToolBox
             {
                 Text = "Select a form to see available attributes.",
                 Location = new Point(195, y + 10),
-                AutoSize = true,
+                AutoSize = false,
+                Size = new Size(195, 28),
+                AutoEllipsis = true,
                 ForeColor = Color.Gray
             };
             this.Controls.Add(lblStatus);
@@ -256,6 +284,46 @@ namespace DataverseToPowerBI.XrmToolBox
 
             this.AcceptButton = btnOk;
             this.CancelButton = btnCancel;
+
+            LayoutControls();
+        }
+
+        private void LayoutControls()
+        {
+            int y = 15;
+
+            lblLookupInfo.Location = new Point(CONTENT_LEFT, y);
+            y += 25;
+
+            lblTargetTable.Location = new Point(CONTENT_LEFT, y);
+            y += 30;
+
+            chkIncludeRelatedRecordLink.Location = new Point(CONTENT_LEFT, y);
+            y += 24;
+
+            pnlWarning.Location = new Point(CONTENT_LEFT, y);
+            if (pnlWarning.Visible)
+            {
+                y += pnlWarning.Height + 5;
+            }
+
+            lblForm.Location = new Point(CONTENT_LEFT, y + 3);
+            cboForm.Location = new Point(60, y);
+            lblFormFieldCount.Location = new Point(450, y + 3);
+            y += 35;
+
+            int buttonTop = this.ClientSize.Height - BUTTON_ROW_HEIGHT - 15;
+            int listHeight = Math.Max(220, buttonTop - y - 10);
+
+            listViewAttributes.Location = new Point(CONTENT_LEFT, y);
+            listViewAttributes.Size = new Size(CONTENT_WIDTH, listHeight);
+
+            btnSelectAll.Location = new Point(CONTENT_LEFT, buttonTop);
+            btnDeselectAll.Location = new Point(100, buttonTop);
+            lblStatus.Location = new Point(195, buttonTop + 5);
+            btnOk.Location = new Point(400, buttonTop);
+            btnCancel.Location = new Point(485, buttonTop);
+            lblStatus.Size = new Size(Math.Max(80, btnOk.Left - lblStatus.Left - 10), BUTTON_ROW_HEIGHT);
         }
 
         private void PopulateFormDropdown()
@@ -289,6 +357,27 @@ namespace DataverseToPowerBI.XrmToolBox
         private void CboForm_SelectedIndexChanged(object? sender, EventArgs e)
         {
             PopulateAttributes();
+        }
+
+        private void ListViewAttributes_ColumnClick(object? sender, ColumnClickEventArgs e)
+        {
+            if (e.Column == _sortColumn)
+            {
+                _sortAscending = !_sortAscending;
+            }
+            else
+            {
+                _sortColumn = e.Column;
+                _sortAscending = true;
+            }
+
+            ApplyListSort();
+        }
+
+        private void ChkIncludeRelatedRecordLink_CheckedChanged(object? sender, EventArgs e)
+        {
+            UpdateStatus();
+            UpdateWarnings();
         }
 
         private void PopulateAttributes()
@@ -347,10 +436,20 @@ namespace DataverseToPowerBI.XrmToolBox
                 listViewAttributes.Items.Add(item);
             }
 
+            ApplyListSort();
             listViewAttributes.EndUpdate();
             _isLoading = false;
             UpdateStatus();
             UpdateWarnings();
+        }
+
+        private void ApplyListSort()
+        {
+            if (listViewAttributes.Items.Count == 0)
+                return;
+
+            listViewAttributes.ListViewItemSorter = new AttributeListViewItemComparer(_sortColumn, _sortAscending);
+            listViewAttributes.Sort();
         }
 
         /// <summary>
@@ -384,9 +483,18 @@ namespace DataverseToPowerBI.XrmToolBox
         private void UpdateStatus()
         {
             var checkedCount = listViewAttributes.CheckedItems.Count;
-            lblStatus.Text = checkedCount == 0
-                ? "No attributes selected (will remove expansion)."
-                : $"{checkedCount} attribute{(checkedCount == 1 ? "" : "s")} selected.";
+            if (checkedCount == 0)
+            {
+                lblStatus.Text = chkIncludeRelatedRecordLink.Checked
+                    ? "No attributes selected. Related record link will still be generated."
+                    : "No attributes selected (will remove expansion).";
+            }
+            else
+            {
+                lblStatus.Text = $"{checkedCount} attribute{(checkedCount == 1 ? "" : "s")} selected" +
+                    (chkIncludeRelatedRecordLink.Checked ? "; related record link included." : ".");
+            }
+
             btnOk.Enabled = true;
         }
 
@@ -401,7 +509,7 @@ namespace DataverseToPowerBI.XrmToolBox
             }
 
             // +1 because adding this expand counts toward the total
-            var totalExpands = _currentExpandCount + 1;
+            var totalExpands = _currentExpandCount + (checkedCount > 0 ? 1 : 0);
             if (totalExpands >= MAX_RECOMMENDED_EXPANDS)
             {
                 warnings.Add($"\u26a0 This table has {totalExpands} expanded lookups. {MAX_RECOMMENDED_EXPANDS}+ expanded lookups on a single table may impact performance.");
@@ -417,6 +525,8 @@ namespace DataverseToPowerBI.XrmToolBox
             {
                 pnlWarning.Visible = false;
             }
+
+            LayoutControls();
         }
 
         private void BtnSelectAll_Click(object? sender, EventArgs e)
@@ -483,6 +593,41 @@ namespace DataverseToPowerBI.XrmToolBox
             public override string ToString()
             {
                 return $"{Form.Name} ({FieldCount} fields)";
+            }
+        }
+
+        private class AttributeListViewItemComparer : IComparer
+        {
+            private readonly int _column;
+            private readonly bool _ascending;
+
+            public AttributeListViewItemComparer(int column, bool ascending)
+            {
+                _column = column;
+                _ascending = ascending;
+            }
+
+            public int Compare(object? x, object? y)
+            {
+                var left = x as ListViewItem;
+                var right = y as ListViewItem;
+
+                if (left == null || right == null)
+                    return 0;
+
+                int result;
+                if (_column == 0)
+                {
+                    result = left.Checked.CompareTo(right.Checked);
+                }
+                else
+                {
+                    var leftText = left.SubItems.Count > _column ? left.SubItems[_column].Text : string.Empty;
+                    var rightText = right.SubItems.Count > _column ? right.SubItems[_column].Text : string.Empty;
+                    result = StringComparer.CurrentCultureIgnoreCase.Compare(leftText, rightText);
+                }
+
+                return _ascending ? result : -result;
             }
         }
     }
