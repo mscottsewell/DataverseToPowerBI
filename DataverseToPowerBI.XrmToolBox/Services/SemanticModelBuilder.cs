@@ -4555,7 +4555,12 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                     if (autoMeasures.Contains(measureName))
                         continue;
 
-                    sb.Append(match.Value);
+                    // The regex can capture a leading \n from the blank-line separator between measures
+                    // (^\s* in multiline mode consumes the newline of a blank line + the next line's indent).
+                    // Strip it so InsertUserMeasures doesn't produce a double blank line in the output.
+                    var block = match.Value.TrimStart('\r', '\n');
+                    if (!string.IsNullOrEmpty(block))
+                        sb.Append(block);
                 }
 
                 return sb.Length > 0 ? sb.ToString() : null;
@@ -4577,7 +4582,22 @@ namespace DataverseToPowerBI.XrmToolBox.Services
             var columnIndex = tableTmdl.IndexOf("\tcolumn ");
             if (columnIndex > 0)
             {
-                return tableTmdl.Insert(columnIndex, measuresSection);
+                // Walk back past any /// doc-comment lines that immediately precede the column.
+                // If we insert at \tcolumn the comment gets orphaned above the user measures.
+                var insertPos = columnIndex;
+                while (insertPos > 0)
+                {
+                    // endOfPreceding: the \n that closes the line immediately before insertPos
+                    var endOfPreceding = tableTmdl.LastIndexOf('\n', insertPos - 1);
+                    if (endOfPreceding <= 0) break;
+                    // startOfPreceding: one past the \n that closes the line before THAT
+                    var startOfPreceding = tableTmdl.LastIndexOf('\n', endOfPreceding - 1) + 1;
+                    if (tableTmdl.IndexOf("\t///", startOfPreceding) == startOfPreceding)
+                        insertPos = startOfPreceding;
+                    else
+                        break;
+                }
+                return tableTmdl.Insert(insertPos, measuresSection);
             }
 
             // No columns — insert before partition

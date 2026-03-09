@@ -1,0 +1,60 @@
+/// Source: contact
+table Contact
+	lineageTag: aaaaaaaa-1111-2222-3333-bbbbbbbbbbbb
+
+	measure 'Link to Contact' = ```
+			
+			"https://" & DataverseURL & "/main.aspx?pagetype=entityrecord&etn=contact&id=" 
+				& SELECTEDVALUE('Contact'[contactid], BLANK())
+			```
+		lineageTag: 11111111-aaaa-bbbb-cccc-222222222222
+		dataCategory: WebUrl
+
+	measure 'Contact Count' = COUNTROWS('Contact')
+		formatString: 0
+		lineageTag: 22222222-bbbb-cccc-dddd-333333333333
+
+	measure 'Active Contacts' = CALCULATE(COUNTROWS('Contact'), 'Contact'[statecode] = 0)
+		formatString: 0
+		lineageTag: 33333333-cccc-dddd-eeee-444444444444
+
+	measure 'Active %' = DIVIDE([Active Contacts], [Contact Count])
+		formatString: #,0%;-#,0%;#,0%
+		lineageTag: 44444444-dddd-eeee-ffff-555555555555
+
+	column contactid
+		dataType: string
+		isHidden
+		isKey
+		lineageTag: 55555555-eeee-ffff-aaaa-666666666666
+		summarizeBy: none
+		sourceColumn: contactid
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation DataverseToPowerBI_LogicalName = contactid
+
+	column 'Full Name'
+		dataType: string
+		lineageTag: 66666666-ffff-aaaa-bbbb-777777777777
+		isDefaultLabel
+		summarizeBy: none
+		sourceColumn: Full Name
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation DataverseToPowerBI_LogicalName = fullname
+
+	partition Contact = m
+		mode: directQuery
+		queryGroup: Facts
+		source =
+				let
+				    Source = Sql.Database(DataverseURL, DataverseUniqueDB),
+				    Query = Value.NativeQuery(Source, "SELECT contactid, fullname FROM contact", null, [PreserveTypes = true, EnableFolding = true])
+				in
+				    Query
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table

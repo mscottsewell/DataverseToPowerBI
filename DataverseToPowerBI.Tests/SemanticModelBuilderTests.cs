@@ -578,6 +578,65 @@ namespace DataverseToPowerBI.Tests
             Assert.Null(result);
         }
 
+        /// <summary>
+        /// Regression: when user measures appear BETWEEN auto-generated measures and columns,
+        /// the MeasureBlockRegex (^\s* in multiline mode) captured a leading \n from the blank
+        /// separator line of the preceding measure. InsertUserMeasures then produced a double
+        /// blank line that broke the TMDL parser ("blank row on line N").
+        /// </summary>
+        [Fact]
+        public void ExtractUserMeasuresSection_DoesNotCaptureLeadingBlankLine_WhenMeasuresBeforeColumns()
+        {
+            var table = new ExportTable
+            {
+                LogicalName = "contact",
+                DisplayName = "Contact"
+            };
+
+            var result = _builder.ExtractUserMeasuresSection(
+                FixturePath("SampleTableWithUserMeasuresBeforeColumns.tmdl"), table);
+
+            Assert.NotNull(result);
+            Assert.Contains("Active Contacts", result);
+            Assert.Contains("Active %", result);
+
+            // Must NOT start with a blank line — inserting a leading \n before \tcolumn
+            // produces a double blank line that breaks the TMDL parser.
+            Assert.False(result!.StartsWith("\r") || result.StartsWith("\n"),
+                "Extracted user measures section must not begin with a blank line.");
+        }
+
+        [Fact]
+        public void InsertUserMeasures_NoDuplicateBlankLines_WhenUserMeasuresSectionHasNoLeadingBlank()
+        {
+            // Simulate auto-generated TMDL that ends a count measure with the standard blank line
+            var tmdl =
+                "/// Source: contact\r\n" +
+                "table Contact\r\n" +
+                "\tlineageTag: aaaa\r\n" +
+                "\r\n" +
+                "\tmeasure 'Contact Count' = COUNTROWS('Contact')\r\n" +
+                "\t\tformatString: 0\r\n" +
+                "\t\tlineageTag: bbbb\r\n" +
+                "\r\n" +
+                "\tcolumn contactid\r\n" +
+                "\t\tdataType: string\r\n";
+
+            // User measures section as produced by the fixed ExtractUserMeasuresSection (no leading blank)
+            var measures =
+                "\tmeasure 'Active Contacts' = CALCULATE(COUNTROWS('Contact'), 'Contact'[statecode] = 0)\r\n" +
+                "\t\tformatString: 0\r\n" +
+                "\t\tlineageTag: cccc\r\n" +
+                "\r\n";
+
+            var result = _builder.InsertUserMeasures(tmdl, measures);
+
+            // After the count measure's trailing blank and before 'Active Contacts', there must be
+            // exactly ONE blank line, not two.
+            Assert.False(result.Contains("\r\n\r\n\r\n"),
+                "Output must not contain consecutive double blank lines.");
+        }
+
         #endregion
 
         #region InsertUserMeasures Tests
@@ -604,6 +663,46 @@ namespace DataverseToPowerBI.Tests
             var annotationIndex = result.IndexOf("annotation");
             var measureIndex = result.IndexOf("My Measure");
             Assert.True(measureIndex < annotationIndex, "Measure should appear before annotation");
+        }
+
+        /// <summary>
+        /// Regression: when the first column has a preceding /// doc-comment, InsertUserMeasures
+        /// was inserting at \tcolumn — AFTER the comment — leaving the comment orphaned above
+        /// the user measures and duplicated at its correct position below them.
+        /// </summary>
+        [Fact]
+        public void InsertUserMeasures_InsertsBeforeDocComment_NotBetweenCommentAndColumn()
+        {
+            var tmdl =
+                "table Test\r\n" +
+                "\tlineageTag: aaaa\r\n" +
+                "\r\n" +
+                "\tmeasure 'Test Count' = COUNTROWS('Test')\r\n" +
+                "\t\tformatString: 0\r\n" +
+                "\t\tlineageTag: bbbb\r\n" +
+                "\r\n" +
+                "\t/// Source: test.col1\r\n" +
+                "\tcolumn Col1\r\n" +
+                "\t\tdataType: string\r\n";
+
+            var measures = "\tmeasure 'My Measure' = 1\r\n\t\tlineageTag: cccc\r\n\r\n";
+
+            var result = _builder.InsertUserMeasures(tmdl, measures);
+
+            // The doc-comment must stay immediately before its column
+            var commentPos = result.IndexOf("\t/// Source: test.col1");
+            var colPos     = result.IndexOf("\tcolumn Col1");
+            var measurePos = result.IndexOf("My Measure");
+
+            Assert.True(measurePos < commentPos,
+                "User measure must appear before the column doc-comment.");
+            Assert.True(commentPos < colPos,
+                "Doc-comment must remain immediately before its column.");
+
+            // The comment must appear exactly once
+            var count = (result.Length - result.Replace("/// Source: test.col1", "").Length)
+                        / "/// Source: test.col1".Length;
+            Assert.Equal(1, count);
         }
 
         #endregion

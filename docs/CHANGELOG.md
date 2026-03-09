@@ -10,6 +10,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.2026.6.3] - 2026-03-09
+
+### Fixed
+
+- **Incremental Update: User Measures Duplicating Column Doc-Comment** — When a table file contained user-created measures and was rebuilt incrementally, the first auto-generated column's `/// Source:` doc-comment was duplicated: once as a stray orphaned line above the user measures, and again in its correct position before its column. The orphaned comment and its trailing blank line caused Power BI Desktop to reject the TMDL file on open with a parse error referencing a blank row.
+
+---
+
 ## [1.2026.6.1] - 2026-03-08
 
 ### Added

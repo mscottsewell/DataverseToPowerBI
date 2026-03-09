@@ -2,7 +2,7 @@
 <package>
 	<metadata>
     <id>DataverseToPowerBI.XrmToolBox</id>
-    <version>1.2026.6.1</version>
+    <version>1.2026.6.3</version>
     <title>Dataverse to Power BI Semantic Model</title>
     <authors>Scott Sewell</authors>
     <owners>mScottSewell</owners>
@@ -11,6 +11,9 @@
     <description>Extract Dataverse metadata and generate Power BI TMDL/PBIP semantic models with automatic table relationships, calendar tables, and incremental change detection.</description>
     <summary>XrmToolBox plugin for generating Power BI semantic models from Dataverse metadata</summary>
     <releaseNotes>
+      v1.2026.6.3 — **Incremental update bug fix: user-created measures no longer corrupt the TMDL file.**
+      FIXED — When rebuilding a table incrementally, user-created measures (measures you added manually to the TMDL) caused the first auto-generated column's doc-comment to be duplicated as a stray orphaned line. Power BI Desktop rejected the resulting file with a parse error on that blank line. Both the duplicated comment and the extra blank line are now eliminated.
+
       v1.2026.6.1 — **SQL Native Query release line with usability and template management enhancements.**
 
       Important: Moved from CommonDataService connector to Sql.Database + Value.NativeQuery for all connection modes. This resolves metadata management failures in recent Power BI Desktop releases that caused reports to break after any model update. Existing reports will need to be refreshed with this tool to migrate to the new connector.
