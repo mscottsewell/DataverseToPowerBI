@@ -86,31 +86,32 @@ This tool eliminates all of that complexity:
 
 ## 📌 Latest Changes
 
-> **v1.2026.6.1** — Full details in [CHANGELOG.md](docs/CHANGELOG.md).
+> **v1.2026.6.8** — Full details in [CHANGELOG.md](docs/CHANGELOG.md).
 
-### 🔌 New Connector Architecture (SQL Native Query)
+### 📋 Change Review Improvements
 
-The biggest change in this release is a switch from the legacy `CommonDataService.Database` connector to the standard `Sql.Database` connector with `Value.NativeQuery`. If you've ever seen your reports suddenly break after a model refresh or Power BI Desktop update, this is the fix. The new connector is more stable, more consistent between TDS and FabricLink modes, and enables Power BI's query folding optimization.
+The **Review Semantic Model Changes** dialog now includes a **Copy to Clipboard** action, making it easier to paste a clean summary of new, updated, preserved, and warning items into notes, tickets, or pull requests.
 
-> **Already have a model?** Run the tool again — it'll show you a change preview before applying anything. The data source will switch to `Sql.Database`, but your SQL queries and customizations are preserved.
+### 🔒 Safer Rebuilds for Existing Reports
 
-### 🏭 Fabric Link Long Term Retention (LTR) Data
+If you manually change the semantic model database compatibility level in Power BI to enable newer features such as UDFs, subsequent builds from this tool will now preserve that user-edited version instead of resetting it back to the template default.
 
-If you're using Fabric Link, you can now control per-table which rows are included: **All** (live + retained), **Live only**, or **LTR (archived) only**. Great for keeping your fact table lean while still having access to historical records in separate archive dimensions.
+> **Important:** New reports still start from the bundled default compatibility level of `1600`. Only user-changed existing reports are preserved.
 
-### 🎛️ Choice Sub-Column Controls
+### 🔄 Better Incremental Update Preservation
 
-You can now individually show or hide the numeric value and display label sub-columns for each choice field — the same Include/Hidden pattern that already exists for lookup sub-columns.
+- Existing `diagramLayout.json` files are preserved during update builds, so manual Model View layout work is not lost.
+- Expanded-lookup related-record link measures are treated as tool-generated during update builds, preventing accidental duplication or preservation as user-authored measures.
 
-### 📏 Per-Table Count & Record Link Measure Toggles
+### 🔎 Expanded Lookup Enhancements
 
-Count and record-link measures can now be added to any table, not just the fact table. Each table has its own opt-in toggle, so you only generate the measures you actually need.
+- Expanded lookups can now generate a related-record Dataverse URL measure even in link-only scenarios.
+- Expanded child attributes can have explicit output display-name overrides.
+- The expanded attribute picker has clearer warnings, better status text, and sortable columns.
 
-### 🆕 Also in this release
+### 🎨 Small Quality-of-Life Improvements
 
-- **In-app Help links** — A new Help button on the ribbon and XrmToolBox's built-in Help surface both open the README on GitHub.
-- **Per-organization PBIP templates** — New models default to a template folder scoped to the current environment (`{WorkingFolder}/{EnvironmentName}/-PBIP_Template`). Models still pointing to the old global AppData template are automatically migrated; custom template paths are never touched.
-- **Duplicate name detection fix** — Eliminated a false-positive warning that sometimes incorrectly flagged primary key columns as having duplicate display names.
+- Generated web URL fields are marked for URL icon rendering in the default PBIP theme.
 
 ---
 

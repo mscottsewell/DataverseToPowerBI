@@ -91,6 +91,32 @@ namespace DataverseToPowerBI.Tests
         }
 
         [Fact]
+        public void Build_FullRebuild_PreservesExistingDatabaseCompatibilityLevel()
+        {
+            var scenario = new ScenarioBuilder()
+                .WithTable(new TableBuilder("account", "Account")
+                    .WithPrimaryName("name", "Account Name"));
+
+            var builder = CreateBuilder();
+            var tables = scenario.BuildTables();
+            var relationships = scenario.BuildRelationships();
+            var attributeDisplayInfo = scenario.BuildAttributeDisplayInfo();
+
+            builder.Build(scenario.SemanticModelName, _tempDir, scenario.DataverseUrl,
+                tables, relationships, attributeDisplayInfo);
+
+            var databasePath = Directory.GetFiles(_tempDir, "database.tmdl", SearchOption.AllDirectories).Single();
+            File.WriteAllText(databasePath, "database\r\n\tcompatibilityLevel: 1702\r\n");
+
+            builder.Build(scenario.SemanticModelName, _tempDir, scenario.DataverseUrl,
+                tables, relationships, attributeDisplayInfo);
+
+            var rebuiltDatabase = File.ReadAllText(databasePath);
+            Assert.Contains("compatibilityLevel: 1702", rebuiltDatabase);
+            Assert.DoesNotContain("compatibilityLevel: 1600", rebuiltDatabase);
+        }
+
+        [Fact]
         public void Build_SingleTable_NoRelationshipsFile()
         {
             var scenario = new ScenarioBuilder()

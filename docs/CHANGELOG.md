@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [1.2026.6.8] - 2026-03-10
+
 ### Added
 
 - **Changes Dialog: Copy to Clipboard** — The "Review Semantic Model Changes" dialog now has a **"Copy to Clipboard"** button in the bottom-left corner. Clicking it copies a plain-text summary of all changes (grouped by Warnings, New, Updated, and Preserved sections) to the clipboard. The button briefly shows "Copied!" as visual confirmation before resetting.
@@ -22,6 +24,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 
+- **Database Compatibility Level Preservation** — Subsequent builds of an existing report no longer overwrite a user-edited `database.tmdl` compatibility level. This preserves manual upgrades made to support newer semantic model features such as UDFs. New reports still use the default template compatibility level of `1600`.
 - **Expanded Lookup Link Measure Preservation** — Incremental update logic now recognizes expanded-lookup related-record link measures as tool-generated measures, preventing them from being preserved as if they were user-authored custom measures.
 - **Lookup ID Enforcement for Related Record Links** — When a related-record link measure is enabled for an expanded lookup, the source lookup ID column is now forced into the model as a hidden column so the generated DAX measure always has the required identifier value available.
 

@@ -499,6 +499,26 @@ namespace DataverseToPowerBI.XrmToolBox.Services
         }
 
         /// <summary>
+        /// Captures the existing database.tmdl so compatibility level upgrades survive a full rebuild.
+        /// </summary>
+        private string? CaptureExistingDatabaseTmdl(string pbipFolder, string projectName)
+        {
+            var databasePath = Path.Combine(pbipFolder, $"{projectName}.SemanticModel", "definition", "database.tmdl");
+            if (!File.Exists(databasePath))
+                return null;
+
+            try
+            {
+                return File.ReadAllText(databasePath, Utf8WithoutBom);
+            }
+            catch (Exception ex)
+            {
+                DebugLogger.Log($"Warning: Could not capture database.tmdl from {databasePath}: {ex.Message}");
+                return null;
+            }
+        }
+
+        /// <summary>
         /// Reads the queryGroup property from a partition in an existing TMDL file.
         /// Returns null if the file doesn't exist or has no queryGroup property.
         /// </summary>
@@ -1735,14 +1755,23 @@ namespace DataverseToPowerBI.XrmToolBox.Services
             // Always start fresh to avoid corruption
             SetStatus("Preparing project folder...");
             var existingTablePreservationData = new Dictionary<string, ExistingTablePreservationInfo>(StringComparer.OrdinalIgnoreCase);
+            string? existingDatabaseTmdl = null;
             if (Directory.Exists(pbipFolder))
             {
                 existingTablePreservationData = CaptureExistingTablePreservationData(pbipFolder, projectName);
+                existingDatabaseTmdl = CaptureExistingDatabaseTmdl(pbipFolder, projectName);
                 Directory.Delete(pbipFolder, true);
             }
             
             SetStatus("Copying PBIP template...");
             CopyTemplate(pbipFolder, projectName);
+
+            if (!string.IsNullOrWhiteSpace(existingDatabaseTmdl))
+            {
+                var databasePath = Path.Combine(pbipFolder, $"{projectName}.SemanticModel", "definition", "database.tmdl");
+                WriteTmdlFile(databasePath, existingDatabaseTmdl);
+                DebugLogger.Log("Preserved existing database.tmdl during full rebuild.");
+            }
 
             // Update project name and DataverseURL
             SetStatus("Updating project configuration...");

@@ -2,7 +2,7 @@
 <package>
 	<metadata>
     <id>DataverseToPowerBI.XrmToolBox</id>
-    <version>1.2026.6.6</version>
+  <version>1.2026.6.8</version>
     <title>Dataverse to Power BI Semantic Model</title>
     <authors>Scott Sewell</authors>
     <owners>mScottSewell</owners>
@@ -11,22 +11,15 @@
     <description>Extract Dataverse metadata and generate Power BI TMDL/PBIP semantic models with automatic table relationships, calendar tables, and incremental change detection.</description>
     <summary>XrmToolBox plugin for generating Power BI semantic models from Dataverse metadata</summary>
     <releaseNotes>
-      v1.2026.6.3 — **Incremental update bug fix: user-created measures no longer corrupt the TMDL file.**
-      FIXED — When rebuilding a table incrementally, user-created measures (measures you added manually to the TMDL) caused the first auto-generated column's doc-comment to be duplicated as a stray orphaned line. Power BI Desktop rejected the resulting file with a parse error on that blank line. Both the duplicated comment and the extra blank line are now eliminated.
+      v1.2026.6.8 — **Usability improvements and safer update behavior for existing PBIP reports.**
 
-      v1.2026.6.1 — **SQL Native Query release line with usability and template management enhancements.**
+      NEW — Added Copy to Clipboard in the Review Semantic Model Changes dialog, plus expanded-lookup related-record link generation and expanded child output-name overrides.
 
-      Important: Moved from CommonDataService connector to Sql.Database + Value.NativeQuery for all connection modes. This resolves metadata management failures in recent Power BI Desktop releases that caused reports to break after any model update. Existing reports will need to be refreshed with this tool to migrate to the new connector.
+      CHANGED — Incremental updates now preserve existing diagram layouts, expanded lookup selection UX is clearer, and generated web URL fields are marked for URL icon rendering.
 
-      NEW — DataverseUniqueDB Parameter, Fabric LTR controls, Choice sub-column configuration, and per-table measure toggles remain included in this release line.
+      FIXED — Subsequent builds no longer overwrite a user-changed semantic model database compatibility level; existing reports keep manual upgrades such as higher compatibility levels for newer Power BI features, while new reports still default to 1600.
 
-      NEW — In-app Help links to GitHub README: added XrmToolBox Help integration (IHelpPlugin) and a ribbon Help button with a GitHub icon.
-
-      CHANGED — PBIP templates now default to per-organization template folders under the working directory. Legacy AppData default template paths are auto-migrated; custom user template paths are preserved.
-
-      CHANGED — Display Name Rename option remains restricted to Import mode only (hidden for DirectQuery/Dual because it's incompatible with those modes).
-
-      FIXED — Duplicate display-name detection now correctly handles primary key logical-name behavior; false-positive duplicate warnings are removed.
+      FIXED — Expanded-lookup related-record link measures are correctly treated as tool-generated, and required hidden lookup ID columns are enforced for those measures.
 
       Full details: docs/CHANGELOG.md | https://github.com/mscottsewell/DataverseToPowerBI
     </releaseNotes>
