@@ -293,6 +293,10 @@ namespace DataverseToPowerBI.XrmToolBox
                             {
                                 LogicalName = a.LogicalName,
                                 DisplayName = a.DisplayName,
+                                TargetTableLogicalName = a.TargetTableLogicalName,
+                                TargetTableDisplayName = a.TargetTableDisplayName,
+                                TargetTablePrimaryKey = a.TargetTablePrimaryKey,
+                                TargetTableObjectTypeCode = a.TargetTableObjectTypeCode,
                                 OutputDisplayNameOverride = a.OutputDisplayNameOverride,
                                 AttributeType = a.AttributeType,
                                 SchemaName = a.SchemaName,

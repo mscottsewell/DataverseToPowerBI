@@ -15,8 +15,8 @@
 //
 // UI FLOW:
 // 1. User sees the related table name and lookup field info at top
-// 2. User selects a form to filter available attributes
-// 3. User checks attributes to include from that form
+// 2. User selects a form to filter available attributes (single-target lookups only)
+// 3. User checks attributes to include from the related table(s)
 // 4. Performance warnings shown if thresholds exceeded
 //
 // Expand Lookup: always enabled for Lookup/Owner/Customer attribute types
@@ -24,10 +24,10 @@
 // ===================================================================================
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Collections;
 using System.Windows.Forms;
 using DataverseToPowerBI.Core.Models;
 
@@ -37,7 +37,20 @@ using WinLabel = System.Windows.Forms.Label;
 namespace DataverseToPowerBI.XrmToolBox
 {
     /// <summary>
-    /// Dialog for selecting attributes from a related table to expand (flatten) into the parent table.
+    /// Target-table metadata used by the expand-lookup dialog.
+    /// </summary>
+    public sealed class ExpandLookupTargetContext
+    {
+        public string TableLogicalName { get; set; } = "";
+        public string TableDisplayName { get; set; } = "";
+        public string TablePrimaryKey { get; set; } = "";
+        public int ObjectTypeCode { get; set; }
+        public List<FormMetadata> Forms { get; set; } = new List<FormMetadata>();
+        public List<CoreAttributeMetadata> Attributes { get; set; } = new List<CoreAttributeMetadata>();
+    }
+
+    /// <summary>
+    /// Dialog for selecting attributes from one or more related tables to flatten into the parent table.
     /// </summary>
     public class ExpandLookupForm : Form
     {
@@ -49,21 +62,21 @@ namespace DataverseToPowerBI.XrmToolBox
 
         private readonly string _lookupAttributeName;
         private readonly string _lookupDisplayName;
-        private readonly string _targetTableLogicalName;
-        private readonly string _targetTableDisplayName;
-        private readonly string _targetTablePrimaryKey;
-        private readonly List<FormMetadata> _forms;
-        private readonly List<CoreAttributeMetadata> _allAttributes;
+        private readonly List<ExpandLookupTargetContext> _targetContexts;
         private readonly List<ExpandedLookupAttribute>? _existingSelection;
         private readonly string? _existingFormId;
         private readonly bool _existingIncludeRelatedRecordLink;
         private readonly int _currentExpandCount;
+        private readonly HashSet<string> _selectedAttributeKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        private readonly HashSet<string> _legacySelectedAttributeLogicalNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-        // UI Controls
         private WinLabel lblLookupInfo = null!;
-        private WinLabel lblTargetTable = null!;
+        private WinLabel lblTargetTableCaption = null!;
+        private FlowLayoutPanel pnlTargetTables = null!;
         private WinLabel lblForm = null!;
         private ComboBox cboForm = null!;
+        private WinLabel lblSearch = null!;
+        private TextBox txtSearch = null!;
         private WinLabel lblFormFieldCount = null!;
         private WinLabel lblWarning = null!;
         private Panel pnlWarning = null!;
@@ -71,37 +84,34 @@ namespace DataverseToPowerBI.XrmToolBox
         private ListView listViewAttributes = null!;
         private Button btnOk = null!;
         private Button btnCancel = null!;
-        private Button btnSelectAll = null!;
         private Button btnDeselectAll = null!;
         private WinLabel lblStatus = null!;
 
-        private bool _isLoading = false;
+        private bool _isLoading;
         private int _sortColumn = 1;
         private bool _sortAscending = true;
 
         /// <summary>
-        /// The selected attributes from the related table.
+        /// The selected attributes from the related table(s).
         /// </summary>
         public List<ExpandedLookupAttribute> SelectedAttributes { get; private set; } = new List<ExpandedLookupAttribute>();
 
         /// <summary>
-        /// The form ID selected by the user.
+        /// The form ID selected by the user for single-target lookups.
         /// </summary>
         public string? SelectedFormId { get; private set; }
 
         /// <summary>
-        /// Whether to generate a related-record link measure for this lookup.
+        /// Whether to generate a related-record link column for this lookup.
         /// </summary>
         public bool IncludeRelatedRecordLink => chkIncludeRelatedRecordLink.Checked;
+
+        private bool IsPolymorphic => _targetContexts.Count > 1;
 
         public ExpandLookupForm(
             string lookupAttributeName,
             string lookupDisplayName,
-            string targetTableLogicalName,
-            string targetTableDisplayName,
-            string targetTablePrimaryKey,
-            List<FormMetadata> forms,
-            List<CoreAttributeMetadata> allAttributes,
+            List<ExpandLookupTargetContext> targetContexts,
             List<ExpandedLookupAttribute>? existingSelection = null,
             string? existingFormId = null,
             bool existingIncludeRelatedRecordLink = false,
@@ -109,15 +119,22 @@ namespace DataverseToPowerBI.XrmToolBox
         {
             _lookupAttributeName = lookupAttributeName;
             _lookupDisplayName = lookupDisplayName;
-            _targetTableLogicalName = targetTableLogicalName;
-            _targetTableDisplayName = targetTableDisplayName;
-            _targetTablePrimaryKey = targetTablePrimaryKey;
-            _forms = forms;
-            _allAttributes = allAttributes;
+            _targetContexts = targetContexts ?? throw new ArgumentNullException(nameof(targetContexts));
             _existingSelection = existingSelection;
             _existingFormId = existingFormId;
             _existingIncludeRelatedRecordLink = existingIncludeRelatedRecordLink;
             _currentExpandCount = currentExpandCount;
+
+            if (_existingSelection != null)
+            {
+                foreach (var attribute in _existingSelection)
+                {
+                    if (!string.IsNullOrWhiteSpace(attribute.TargetTableLogicalName))
+                        _selectedAttributeKeys.Add(BuildSelectionKey(attribute.TargetTableLogicalName, attribute.LogicalName));
+                    else
+                        _legacySelectedAttributeLogicalNames.Add(attribute.LogicalName);
+                }
+            }
 
             InitializeComponent();
             PopulateFormDropdown();
@@ -125,35 +142,45 @@ namespace DataverseToPowerBI.XrmToolBox
 
         private void InitializeComponent()
         {
-            this.Text = $"Expand Lookup - {_lookupDisplayName}";
-            this.Size = new Size(600, 580);
-            this.StartPosition = FormStartPosition.CenterParent;
-            this.FormBorderStyle = FormBorderStyle.FixedDialog;
-            this.MaximizeBox = false;
-            this.MinimizeBox = false;
+            Text = $"Expand Lookup - {_lookupDisplayName}";
+            Size = new Size(600, 625);
+            StartPosition = FormStartPosition.CenterParent;
+            FormBorderStyle = FormBorderStyle.FixedDialog;
+            MaximizeBox = false;
+            MinimizeBox = false;
 
-            int y = 15;
+            var y = 15;
 
-            // Lookup info header
             lblLookupInfo = new WinLabel
             {
                 Text = $"Lookup Field: {_lookupDisplayName} ({_lookupAttributeName})",
                 Location = new Point(CONTENT_LEFT, y),
                 AutoSize = true,
-                Font = new Font(this.Font, FontStyle.Bold)
+                Font = new Font(Font, FontStyle.Bold)
             };
-            this.Controls.Add(lblLookupInfo);
+            Controls.Add(lblLookupInfo);
             y += 25;
 
-            lblTargetTable = new WinLabel
+            lblTargetTableCaption = new WinLabel
             {
-                Text = $"Related Table: {_targetTableDisplayName} ({_targetTableLogicalName})",
+                Text = IsPolymorphic ? "Related Tables:" : "Related Table:",
                 Location = new Point(CONTENT_LEFT, y),
-                AutoSize = true,
-                ForeColor = Color.DarkBlue
+                AutoSize = true
             };
-            this.Controls.Add(lblTargetTable);
-            y += 30;
+            Controls.Add(lblTargetTableCaption);
+
+            pnlTargetTables = new FlowLayoutPanel
+            {
+                AutoSize = true,
+                AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                WrapContents = true,
+                FlowDirection = FlowDirection.LeftToRight,
+                Margin = Padding.Empty,
+                Padding = Padding.Empty
+            };
+            Controls.Add(pnlTargetTables);
+            PopulateTargetTableLinks();
+            y += 38;
 
             chkIncludeRelatedRecordLink = new CheckBox
             {
@@ -163,10 +190,9 @@ namespace DataverseToPowerBI.XrmToolBox
                 Checked = _existingIncludeRelatedRecordLink
             };
             chkIncludeRelatedRecordLink.CheckedChanged += ChkIncludeRelatedRecordLink_CheckedChanged;
-            this.Controls.Add(chkIncludeRelatedRecordLink);
+            Controls.Add(chkIncludeRelatedRecordLink);
             y += 24;
 
-            // Warning panel
             pnlWarning = new Panel
             {
                 Location = new Point(CONTENT_LEFT, y),
@@ -184,25 +210,43 @@ namespace DataverseToPowerBI.XrmToolBox
                 ForeColor = Color.DarkGoldenrod
             };
             pnlWarning.Controls.Add(lblWarning);
-            this.Controls.Add(pnlWarning);
+            Controls.Add(pnlWarning);
 
-            // Form selector
             lblForm = new WinLabel
             {
-                Text = "Form:",
+                Text = IsPolymorphic ? "Scope:" : "Form:",
                 Location = new Point(CONTENT_LEFT, y + 3),
                 AutoSize = true
             };
-            this.Controls.Add(lblForm);
+            Controls.Add(lblForm);
 
             cboForm = new ComboBox
             {
                 Location = new Point(60, y),
                 Size = new Size(380, 23),
-                DropDownStyle = ComboBoxStyle.DropDownList
+                DropDownStyle = ComboBoxStyle.DropDownList,
+                Enabled = !IsPolymorphic
             };
             cboForm.SelectedIndexChanged += CboForm_SelectedIndexChanged;
-            this.Controls.Add(cboForm);
+            Controls.Add(cboForm);
+
+            y += 30;
+
+            lblSearch = new WinLabel
+            {
+                Text = "Search:",
+                Location = new Point(CONTENT_LEFT, y + 3),
+                AutoSize = true
+            };
+            Controls.Add(lblSearch);
+
+            txtSearch = new TextBox
+            {
+                Location = new Point(60, y),
+                Size = new Size(380, 23)
+            };
+            txtSearch.TextChanged += TxtSearch_TextChanged;
+            Controls.Add(txtSearch);
 
             lblFormFieldCount = new WinLabel
             {
@@ -211,56 +255,47 @@ namespace DataverseToPowerBI.XrmToolBox
                 AutoSize = true,
                 ForeColor = Color.Gray
             };
-            this.Controls.Add(lblFormFieldCount);
+            Controls.Add(lblFormFieldCount);
             y += 35;
 
-            // Attribute list
             listViewAttributes = new ListView
             {
                 Location = new Point(CONTENT_LEFT, y),
                 Size = new Size(CONTENT_WIDTH, 320),
                 View = View.Details,
                 FullRowSelect = true,
-                CheckBoxes = true
+                CheckBoxes = true,
+                ShowGroups = IsPolymorphic
             };
             listViewAttributes.Columns.Add("Sel", 35);
-            listViewAttributes.Columns.Add("Display Name", 200);
-            listViewAttributes.Columns.Add("Logical Name", 170);
-            listViewAttributes.Columns.Add("Type", 120);
+            listViewAttributes.Columns.Add("Display Name", 180);
+            listViewAttributes.Columns.Add("Related Table", 120);
+            listViewAttributes.Columns.Add("Logical Name", 135);
+            listViewAttributes.Columns.Add("Type", 80);
             listViewAttributes.ColumnClick += ListViewAttributes_ColumnClick;
             listViewAttributes.ItemChecked += ListViewAttributes_ItemChecked;
-            this.Controls.Add(listViewAttributes);
+            Controls.Add(listViewAttributes);
             y += 325;
-
-            // Buttons row
-            btnSelectAll = new Button
-            {
-                Text = "Select All",
-                Location = new Point(15, y + 5),
-                Size = new Size(80, 28)
-            };
-            btnSelectAll.Click += BtnSelectAll_Click;
-            this.Controls.Add(btnSelectAll);
 
             btnDeselectAll = new Button
             {
                 Text = "Deselect All",
-                Location = new Point(100, y + 5),
+                Location = new Point(15, y + 5),
                 Size = new Size(85, 28)
             };
             btnDeselectAll.Click += BtnDeselectAll_Click;
-            this.Controls.Add(btnDeselectAll);
+            Controls.Add(btnDeselectAll);
 
             lblStatus = new WinLabel
             {
                 Text = "Select a form to see available attributes.",
-                Location = new Point(195, y + 10),
+                Location = new Point(110, y + 10),
                 AutoSize = false,
-                Size = new Size(195, 28),
+                Size = new Size(280, 28),
                 AutoEllipsis = true,
                 ForeColor = Color.Gray
             };
-            this.Controls.Add(lblStatus);
+            Controls.Add(lblStatus);
 
             btnOk = new Button
             {
@@ -271,7 +306,7 @@ namespace DataverseToPowerBI.XrmToolBox
                 Enabled = false
             };
             btnOk.Click += BtnOk_Click;
-            this.Controls.Add(btnOk);
+            Controls.Add(btnOk);
 
             btnCancel = new Button
             {
@@ -280,67 +315,123 @@ namespace DataverseToPowerBI.XrmToolBox
                 Size = new Size(75, 28),
                 DialogResult = DialogResult.Cancel
             };
-            this.Controls.Add(btnCancel);
+            Controls.Add(btnCancel);
 
-            this.AcceptButton = btnOk;
-            this.CancelButton = btnCancel;
+            AcceptButton = btnOk;
+            CancelButton = btnCancel;
 
             LayoutControls();
         }
 
         private void LayoutControls()
         {
-            int y = 15;
+            var y = 15;
 
             lblLookupInfo.Location = new Point(CONTENT_LEFT, y);
             y += 25;
 
-            lblTargetTable.Location = new Point(CONTENT_LEFT, y);
-            y += 30;
+            lblTargetTableCaption.Location = new Point(CONTENT_LEFT, y + 3);
+            var targetPanelLeft = lblTargetTableCaption.Right + 5;
+            var targetPanelWidth = Math.Max(120, CONTENT_LEFT + CONTENT_WIDTH - targetPanelLeft);
+            pnlTargetTables.MaximumSize = new Size(targetPanelWidth, 0);
+            var targetPanelHeight = Math.Max(23, pnlTargetTables.GetPreferredSize(new Size(targetPanelWidth, 0)).Height);
+            pnlTargetTables.Location = new Point(targetPanelLeft, y);
+            pnlTargetTables.Size = new Size(targetPanelWidth, targetPanelHeight);
+            y += targetPanelHeight + 10;
 
             chkIncludeRelatedRecordLink.Location = new Point(CONTENT_LEFT, y);
             y += 24;
 
             pnlWarning.Location = new Point(CONTENT_LEFT, y);
             if (pnlWarning.Visible)
-            {
                 y += pnlWarning.Height + 5;
-            }
 
             lblForm.Location = new Point(CONTENT_LEFT, y + 3);
             cboForm.Location = new Point(60, y);
+            y += 35;
+
+            lblSearch.Location = new Point(CONTENT_LEFT, y + 3);
+            txtSearch.Location = new Point(60, y);
             lblFormFieldCount.Location = new Point(450, y + 3);
             y += 35;
 
-            int buttonTop = this.ClientSize.Height - BUTTON_ROW_HEIGHT - 15;
-            int listHeight = Math.Max(220, buttonTop - y - 10);
+            var buttonTop = ClientSize.Height - BUTTON_ROW_HEIGHT - 15;
+            var listHeight = Math.Max(220, buttonTop - y - 10);
 
             listViewAttributes.Location = new Point(CONTENT_LEFT, y);
             listViewAttributes.Size = new Size(CONTENT_WIDTH, listHeight);
 
-            btnSelectAll.Location = new Point(CONTENT_LEFT, buttonTop);
-            btnDeselectAll.Location = new Point(100, buttonTop);
-            lblStatus.Location = new Point(195, buttonTop + 5);
+            btnDeselectAll.Location = new Point(CONTENT_LEFT, buttonTop);
+            lblStatus.Location = new Point(110, buttonTop + 5);
             btnOk.Location = new Point(400, buttonTop);
             btnCancel.Location = new Point(485, buttonTop);
             lblStatus.Size = new Size(Math.Max(80, btnOk.Left - lblStatus.Left - 10), BUTTON_ROW_HEIGHT);
         }
 
+        private void PopulateTargetTableLinks()
+        {
+            pnlTargetTables.SuspendLayout();
+            pnlTargetTables.Controls.Clear();
+
+            var orderedTargets = _targetContexts
+                .OrderBy(target => target.TableDisplayName, StringComparer.CurrentCultureIgnoreCase)
+                .ToList();
+
+            for (var i = 0; i < orderedTargets.Count; i++)
+            {
+                var target = orderedTargets[i];
+                var link = new LinkLabel
+                {
+                    AutoSize = true,
+                    Margin = Padding.Empty,
+                    Padding = Padding.Empty,
+                    Text = IsPolymorphic
+                        ? target.TableDisplayName
+                        : $"{target.TableDisplayName} ({target.TableLogicalName})",
+                    Tag = target.TableLogicalName
+                };
+                link.LinkClicked += TargetTableLink_LinkClicked;
+                pnlTargetTables.Controls.Add(link);
+
+                if (i < orderedTargets.Count - 1)
+                {
+                    pnlTargetTables.Controls.Add(new WinLabel
+                    {
+                        AutoSize = true,
+                        Margin = Padding.Empty,
+                        Padding = Padding.Empty,
+                        Text = ", "
+                    });
+                }
+            }
+
+            pnlTargetTables.ResumeLayout();
+        }
+
         private void PopulateFormDropdown()
         {
             cboForm.Items.Clear();
+
+            if (IsPolymorphic)
+            {
+                cboForm.Items.Add("(All related tables)");
+                cboForm.SelectedIndex = 0;
+                PopulateAttributes();
+                return;
+            }
+
+            var target = _targetContexts[0];
             cboForm.Items.Add("(All Attributes)");
 
-            foreach (var form in _forms.OrderBy(f => f.Name))
+            foreach (var form in target.Forms.OrderBy(f => f.Name))
             {
                 var fieldCount = form.Fields?.Count ?? 0;
                 cboForm.Items.Add(new FormComboItem(form, fieldCount));
             }
 
-            // Pre-select existing form or first available
             if (!string.IsNullOrEmpty(_existingFormId))
             {
-                for (int i = 1; i < cboForm.Items.Count; i++)
+                for (var i = 1; i < cboForm.Items.Count; i++)
                 {
                     if (cboForm.Items[i] is FormComboItem item && item.Form.FormId == _existingFormId)
                     {
@@ -350,7 +441,6 @@ namespace DataverseToPowerBI.XrmToolBox
                 }
             }
 
-            // Default to first form if available, otherwise "All Attributes"
             cboForm.SelectedIndex = cboForm.Items.Count > 1 ? 1 : 0;
         }
 
@@ -359,12 +449,15 @@ namespace DataverseToPowerBI.XrmToolBox
             PopulateAttributes();
         }
 
+        private void TxtSearch_TextChanged(object? sender, EventArgs e)
+        {
+            PopulateAttributes();
+        }
+
         private void ListViewAttributes_ColumnClick(object? sender, ColumnClickEventArgs e)
         {
             if (e.Column == _sortColumn)
-            {
                 _sortAscending = !_sortAscending;
-            }
             else
             {
                 _sortColumn = e.Column;
@@ -385,10 +478,10 @@ namespace DataverseToPowerBI.XrmToolBox
             _isLoading = true;
             listViewAttributes.BeginUpdate();
             listViewAttributes.Items.Clear();
+            listViewAttributes.Groups.Clear();
 
-            // Get form fields filter
             HashSet<string>? formFields = null;
-            if (cboForm.SelectedItem is FormComboItem formItem)
+            if (!IsPolymorphic && cboForm.SelectedItem is FormComboItem formItem)
             {
                 formFields = formItem.Form.Fields != null
                     ? new HashSet<string>(formItem.Form.Fields, StringComparer.OrdinalIgnoreCase)
@@ -398,49 +491,99 @@ namespace DataverseToPowerBI.XrmToolBox
             }
             else
             {
-                lblFormFieldCount.Text = $"{_allAttributes.Count} total";
+                var totalAttributes = _targetContexts.Sum(t => t.Attributes.Count);
+                lblFormFieldCount.Text = IsPolymorphic ? $"{totalAttributes} total" : $"{_targetContexts[0].Attributes.Count} total";
                 SelectedFormId = null;
             }
 
-            // Build existing selection lookup
-            var existingSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            if (_existingSelection != null)
-            {
-                foreach (var attr in _existingSelection)
-                    existingSet.Add(attr.LogicalName);
-            }
+            var searchText = txtSearch.Text?.Trim() ?? string.Empty;
 
-            // Filter and display attributes
-            var filteredAttrs = _allAttributes
-                .Where(a => !IsExcludedAttribute(a))
-                .Where(a => formFields == null || formFields.Contains(a.LogicalName) || existingSet.Contains(a.LogicalName))
-                .OrderBy(a => a.DisplayName ?? a.LogicalName)
+            var attributeOptions = _targetContexts
+                .SelectMany(target => target.Attributes.Select(attr => new AttributeOption(target, attr)))
+                .Where(option => !IsExcludedAttribute(option.Attribute, option.Target.TablePrimaryKey))
+                .Where(option => HasDisplayName(option.Attribute))
+                .Where(option => IsPolymorphic ||
+                    formFields == null ||
+                    formFields.Contains(option.Attribute.LogicalName) ||
+                    _selectedAttributeKeys.Contains(BuildSelectionKey(option.Target.TableLogicalName, option.Attribute.LogicalName)) ||
+                    _legacySelectedAttributeLogicalNames.Contains(option.Attribute.LogicalName))
+                .Where(option => MatchesSearch(option, searchText))
+                .OrderBy(option => option.Attribute.DisplayName ?? option.Attribute.LogicalName)
+                .ThenBy(option => option.Target.TableDisplayName)
                 .ToList();
 
-            foreach (var attr in filteredAttrs)
+            foreach (var option in attributeOptions)
             {
-                var item = new ListViewItem("");
-                item.Checked = existingSet.Contains(attr.LogicalName);
-                item.SubItems.Add(attr.DisplayName ?? attr.LogicalName);
-                item.SubItems.Add(attr.LogicalName);
-                item.SubItems.Add(attr.AttributeType ?? "");
-                item.Tag = attr;
-                item.Name = attr.LogicalName;
+                var selectionKey = BuildSelectionKey(option.Target.TableLogicalName, option.Attribute.LogicalName);
+                var isSelected = _selectedAttributeKeys.Contains(selectionKey) ||
+                    _legacySelectedAttributeLogicalNames.Contains(option.Attribute.LogicalName);
 
-                // Gray out attributes not on the form
-                if (formFields != null && !formFields.Contains(attr.LogicalName) && !existingSet.Contains(attr.LogicalName))
+                var item = new ListViewItem("")
                 {
+                    Checked = isSelected,
+                    Tag = option,
+                    Name = selectionKey
+                };
+                item.SubItems.Add(option.Attribute.DisplayName ?? option.Attribute.LogicalName);
+                item.SubItems.Add(option.Target.TableDisplayName);
+                item.SubItems.Add(option.Attribute.LogicalName);
+                item.SubItems.Add(option.Attribute.AttributeType ?? "");
+
+                if (formFields != null && !formFields.Contains(option.Attribute.LogicalName) && !isSelected)
                     item.ForeColor = Color.LightGray;
-                }
 
                 listViewAttributes.Items.Add(item);
             }
 
-            ApplyListSort();
+            if (IsPolymorphic)
+            {
+                ApplyPolymorphicGrouping();
+            }
+            else
+            {
+                ApplyListSort();
+            }
+
             listViewAttributes.EndUpdate();
             _isLoading = false;
             UpdateStatus();
             UpdateWarnings();
+        }
+
+        private void ApplyPolymorphicGrouping()
+        {
+            listViewAttributes.ShowGroups = true;
+
+            var groupedItems = listViewAttributes.Items.Cast<ListViewItem>()
+                .Where(item => item.Tag is AttributeOption)
+                .GroupBy(item => ((AttributeOption)item.Tag).Target.TableLogicalName, StringComparer.OrdinalIgnoreCase)
+                .OrderBy(group => ((AttributeOption)group.First().Tag).Target.TableDisplayName, StringComparer.CurrentCultureIgnoreCase)
+                .ToList();
+
+            var groupsByTarget = new Dictionary<string, ListViewGroup>(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var group in groupedItems)
+            {
+                var firstOption = (AttributeOption)group.First().Tag;
+                var listGroup = new ListViewGroup(
+                    firstOption.Target.TableDisplayName,
+                    firstOption.Target.TableDisplayName)
+                {
+                    HeaderAlignment = HorizontalAlignment.Left
+                };
+
+                listViewAttributes.Groups.Add(listGroup);
+                groupsByTarget[group.Key] = listGroup;
+            }
+
+            foreach (ListViewItem item in listViewAttributes.Items)
+            {
+                if (item.Tag is not AttributeOption option)
+                    continue;
+
+                if (groupsByTarget.TryGetValue(option.Target.TableLogicalName, out var group))
+                    item.Group = group;
+            }
         }
 
         private void ApplyListSort()
@@ -452,20 +595,14 @@ namespace DataverseToPowerBI.XrmToolBox
             listViewAttributes.Sort();
         }
 
-        /// <summary>
-        /// Excludes system/virtual attributes that shouldn't be expanded.
-        /// </summary>
-        private bool IsExcludedAttribute(CoreAttributeMetadata attr)
+        private static bool IsExcludedAttribute(CoreAttributeMetadata attr, string targetTablePrimaryKey)
         {
-            // Exclude virtual attributes
             if (attr.AttributeType?.Equals("Virtual", StringComparison.OrdinalIgnoreCase) == true)
                 return true;
 
-            // Exclude primary key (it's used for the JOIN, not as a display column)
-            if (attr.LogicalName.Equals(_targetTablePrimaryKey, StringComparison.OrdinalIgnoreCase))
+            if (attr.LogicalName.Equals(targetTablePrimaryKey, StringComparison.OrdinalIgnoreCase))
                 return true;
 
-            // Exclude state/status codes
             if (attr.LogicalName.Equals("statecode", StringComparison.OrdinalIgnoreCase) ||
                 attr.LogicalName.Equals("statuscode", StringComparison.OrdinalIgnoreCase))
                 return true;
@@ -473,16 +610,86 @@ namespace DataverseToPowerBI.XrmToolBox
             return false;
         }
 
+        private static bool HasDisplayName(CoreAttributeMetadata attr)
+        {
+            if (string.IsNullOrWhiteSpace(attr.DisplayName))
+                return false;
+
+            return !string.Equals(
+                attr.DisplayName.Trim(),
+                attr.LogicalName?.Trim(),
+                StringComparison.OrdinalIgnoreCase);
+        }
+
         private void ListViewAttributes_ItemChecked(object? sender, ItemCheckedEventArgs e)
         {
             if (_isLoading) return;
+
+            if (e.Item.Tag is AttributeOption option)
+            {
+                var selectionKey = BuildSelectionKey(option.Target.TableLogicalName, option.Attribute.LogicalName);
+                _legacySelectedAttributeLogicalNames.Remove(option.Attribute.LogicalName);
+                if (e.Item.Checked)
+                    _selectedAttributeKeys.Add(selectionKey);
+                else
+                    _selectedAttributeKeys.Remove(selectionKey);
+            }
+
             UpdateStatus();
             UpdateWarnings();
         }
 
+        private static bool MatchesSearch(AttributeOption option, string searchText)
+        {
+            if (string.IsNullOrWhiteSpace(searchText))
+                return true;
+
+            return (option.Attribute.DisplayName?.IndexOf(searchText, StringComparison.CurrentCultureIgnoreCase) ?? -1) >= 0 ||
+                option.Attribute.LogicalName.IndexOf(searchText, StringComparison.CurrentCultureIgnoreCase) >= 0;
+        }
+
+        private void TargetTableLink_LinkClicked(object? sender, LinkLabelLinkClickedEventArgs e)
+        {
+            if (sender is not LinkLabel link || link.Tag is not string targetTableLogicalName)
+                return;
+
+            var targetItem = listViewAttributes.Items.Cast<ListViewItem>()
+                .FirstOrDefault(item =>
+                    item.Tag is AttributeOption option &&
+                    string.Equals(option.Target.TableLogicalName, targetTableLogicalName, StringComparison.OrdinalIgnoreCase));
+
+            if (targetItem == null && !string.IsNullOrWhiteSpace(txtSearch.Text))
+            {
+                txtSearch.Clear();
+                targetItem = listViewAttributes.Items.Cast<ListViewItem>()
+                    .FirstOrDefault(item =>
+                        item.Tag is AttributeOption option &&
+                        string.Equals(option.Target.TableLogicalName, targetTableLogicalName, StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (targetItem == null)
+                return;
+
+            targetItem.Selected = true;
+            targetItem.Focused = true;
+            targetItem.EnsureVisible();
+        }
+
+        private int GetCheckedAttributeCount()
+        {
+            return listViewAttributes.CheckedItems.Count;
+        }
+
+        private IEnumerable<AttributeOption> GetCheckedAttributeOptions()
+        {
+            return listViewAttributes.CheckedItems.Cast<ListViewItem>()
+                .Where(item => item.Tag is AttributeOption)
+                .Select(item => (AttributeOption)item.Tag);
+        }
+
         private void UpdateStatus()
         {
-            var checkedCount = listViewAttributes.CheckedItems.Count;
+            var checkedCount = GetCheckedAttributeCount();
             if (checkedCount == 0)
             {
                 lblStatus.Text = chkIncludeRelatedRecordLink.Checked
@@ -500,19 +707,18 @@ namespace DataverseToPowerBI.XrmToolBox
 
         private void UpdateWarnings()
         {
-            var checkedCount = listViewAttributes.CheckedItems.Count;
+            var checkedCount = GetCheckedAttributeCount();
             var warnings = new List<string>();
 
             if (checkedCount >= MAX_RECOMMENDED_FIELDS)
             {
-                warnings.Add($"\u26a0 {checkedCount} fields selected. Selecting {MAX_RECOMMENDED_FIELDS}+ fields from a single expanded lookup may impact DirectQuery performance.");
+                warnings.Add($"⚠ {checkedCount} fields selected. Selecting {MAX_RECOMMENDED_FIELDS}+ fields from a single expanded lookup may impact DirectQuery performance.");
             }
 
-            // +1 because adding this expand counts toward the total
             var totalExpands = _currentExpandCount + (checkedCount > 0 ? 1 : 0);
             if (totalExpands >= MAX_RECOMMENDED_EXPANDS)
             {
-                warnings.Add($"\u26a0 This table has {totalExpands} expanded lookups. {MAX_RECOMMENDED_EXPANDS}+ expanded lookups on a single table may impact performance.");
+                warnings.Add($"⚠ This table has {totalExpands} expanded lookups. {MAX_RECOMMENDED_EXPANDS}+ expanded lookups on a single table may impact performance.");
             }
 
             if (warnings.Count > 0)
@@ -529,66 +735,69 @@ namespace DataverseToPowerBI.XrmToolBox
             LayoutControls();
         }
 
-        private void BtnSelectAll_Click(object? sender, EventArgs e)
-        {
-            _isLoading = true;
-            foreach (ListViewItem item in listViewAttributes.Items)
-            {
-                item.Checked = true;
-            }
-            _isLoading = false;
-            UpdateStatus();
-            UpdateWarnings();
-        }
-
         private void BtnDeselectAll_Click(object? sender, EventArgs e)
         {
             _isLoading = true;
             foreach (ListViewItem item in listViewAttributes.Items)
-            {
                 item.Checked = false;
-            }
             _isLoading = false;
+            _selectedAttributeKeys.Clear();
+            _legacySelectedAttributeLogicalNames.Clear();
             UpdateStatus();
             UpdateWarnings();
         }
 
         private void BtnOk_Click(object? sender, EventArgs e)
         {
-            SelectedAttributes = listViewAttributes.CheckedItems.Cast<ListViewItem>()
-                .Where(item => item.Tag is CoreAttributeMetadata)
-                .Select(item =>
+            SelectedAttributes = GetCheckedAttributeOptions()
+                .Select(option => new ExpandedLookupAttribute
                 {
-                    var attr = (CoreAttributeMetadata)item.Tag;
-                    return new ExpandedLookupAttribute
-                    {
-                        LogicalName = attr.LogicalName,
-                        DisplayName = attr.DisplayName,
-                        AttributeType = attr.AttributeType,
-                        SchemaName = attr.SchemaName,
-                        Targets = attr.Targets,
-                        VirtualAttributeName = attr.VirtualAttributeName,
-                        IsGlobal = attr.IsGlobal,
-                        OptionSetName = attr.OptionSetName,
-                        IncludeInModel = true
-                    };
+                    LogicalName = option.Attribute.LogicalName,
+                    DisplayName = option.Attribute.DisplayName,
+                    TargetTableLogicalName = option.Target.TableLogicalName,
+                    TargetTableDisplayName = option.Target.TableDisplayName,
+                    TargetTablePrimaryKey = option.Target.TablePrimaryKey,
+                    TargetTableObjectTypeCode = option.Target.ObjectTypeCode,
+                    AttributeType = option.Attribute.AttributeType,
+                    SchemaName = option.Attribute.SchemaName,
+                    Targets = option.Attribute.Targets,
+                    VirtualAttributeName = option.Attribute.VirtualAttributeName,
+                    IsGlobal = option.Attribute.IsGlobal,
+                    OptionSetName = option.Attribute.OptionSetName,
+                    IncludeInModel = true
                 })
                 .ToList();
         }
 
-        /// <summary>
-        /// Helper class for form combo box items.
-        /// </summary>
-        private class FormComboItem
+        private static string BuildSelectionKey(string? tableLogicalName, string attributeLogicalName)
         {
-            public FormMetadata Form { get; }
-            public int FieldCount { get; }
+            return string.IsNullOrWhiteSpace(tableLogicalName)
+                ? attributeLogicalName
+                : $"{tableLogicalName}|{attributeLogicalName}";
+        }
 
+        private sealed class AttributeOption
+        {
+            public AttributeOption(ExpandLookupTargetContext target, CoreAttributeMetadata attribute)
+            {
+                Target = target;
+                Attribute = attribute;
+            }
+
+            public ExpandLookupTargetContext Target { get; }
+            public CoreAttributeMetadata Attribute { get; }
+        }
+
+        private sealed class FormComboItem
+        {
             public FormComboItem(FormMetadata form, int fieldCount)
             {
                 Form = form;
                 FieldCount = fieldCount;
             }
+
+            public FormMetadata Form { get; }
+            public int FieldCount { get; }
 
             public override string ToString()
             {
@@ -596,7 +805,7 @@ namespace DataverseToPowerBI.XrmToolBox
             }
         }
 
-        private class AttributeListViewItemComparer : IComparer
+        private sealed class AttributeListViewItemComparer : IComparer
         {
             private readonly int _column;
             private readonly bool _ascending;

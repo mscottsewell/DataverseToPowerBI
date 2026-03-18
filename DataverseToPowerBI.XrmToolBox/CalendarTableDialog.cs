@@ -704,17 +704,11 @@ namespace DataverseToPowerBI.XrmToolBox
 
             // Build config
             var wrappedFields = new List<DateTimeFieldConfig>();
-            var nonAdjustableSelection = new List<string>();
             for (int i = 0; i < lstDateTimeFields.Items.Count; i++)
             {
                 if (lstDateTimeFields.GetItemChecked(i))
                 {
                     var field = _allDateTimeFields[i];
-                    if (!IsTimeZoneAdjustable(field.DateTimeBehavior))
-                    {
-                        nonAdjustableSelection.Add(field.DisplayName);
-                    }
-
                     wrappedFields.Add(new DateTimeFieldConfig
                     {
                         TableName = field.TableName,
@@ -735,18 +729,6 @@ namespace DataverseToPowerBI.XrmToolBox
                     FieldName = fieldItem.Value,
                     ConvertToDateOnly = true
                 });
-            }
-
-            if (Math.Abs(tzItem.TimeZone.BaseUtcOffset.TotalHours) > 0.0001 && nonAdjustableSelection.Count > 0)
-            {
-                MessageBox.Show(
-                    "Some selected DateTime fields have Dataverse behavior DateOnly/TimeZoneIndependent.\n\n" +
-                    "These fields will NOT be timezone-adjusted and will remain in their stored calendar values:\n" +
-                    string.Join("\n", nonAdjustableSelection.Take(10)) +
-                    (nonAdjustableSelection.Count > 10 ? $"\n...and {nonAdjustableSelection.Count - 10} more" : ""),
-                    "Timezone Adjustment Warning",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Information);
             }
 
             Config = new DateTableConfig

@@ -105,7 +105,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
 
         /// <summary>Column definition pattern for <see cref="ParseExistingColumns"/>.</summary>
         private static readonly Regex ColumnDefinitionRegex = new Regex(
-            @"(?://\/[^\r\n]*\r?\n)?\s*column\s+(?:'([^']+)'|""([^""]+)""|([^\r\n]+))\r?\n((?:(?!^\s*(?:column|measure|partition)\s).*(?:\r?\n|$))*)",
+            @"(?://\/[^^\r\n]*\r?\n)?\s*column\s+(?:'([^']+)'|""([^""]+)""|([^\r\n=]+?))(?:\s*=\s*```)?\r?\n((?:(?!^\s*(?:column|measure|partition)\s).*(?:\r?\n|$))*)",
             RegexOptions.Multiline | RegexOptions.Compiled, RegexTimeout);
 
         /// <summary>Measure block pattern for <see cref="ExtractUserMeasuresSection"/>.</summary>
@@ -1229,9 +1229,60 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                 ?? expand.LookupAttributeName;
 
             var lookupDisplayPrefix = GetEffectiveDisplayName(lookupAttributeInfo, lookupDisplayFallback);
+            var targetDisplayName = GetExpandedLookupTargetDisplayName(sourceTable, expand, expandedAttribute);
+            if (!string.IsNullOrWhiteSpace(targetDisplayName))
+                lookupDisplayPrefix = $"{lookupDisplayPrefix} : {targetDisplayName}";
+
             var expandedDisplayName = expandedAttribute.DisplayName ?? expandedAttribute.LogicalName;
 
             return $"{lookupDisplayPrefix} : {expandedDisplayName}";
+        }
+
+        private string? GetExpandedLookupTargetDisplayName(ExportTable sourceTable, ExpandedLookupConfig expand, ExpandedLookupAttribute expandedAttribute)
+        {
+            var lookupAttribute = sourceTable.Attributes.FirstOrDefault(a =>
+                a.LogicalName.Equals(expand.LookupAttributeName, StringComparison.OrdinalIgnoreCase));
+
+            if (!IsPolymorphicLookupType(lookupAttribute))
+                return null;
+
+            return expandedAttribute.TargetTableDisplayName
+                ?? expand.TargetTableDisplayName
+                ?? expandedAttribute.TargetTableLogicalName
+                ?? expand.TargetTableLogicalName;
+        }
+
+        private string GetExpandedLookupTargetLogicalName(ExpandedLookupConfig expand, ExpandedLookupAttribute expandedAttribute)
+        {
+            return expandedAttribute.TargetTableLogicalName
+                ?? expand.TargetTableLogicalName;
+        }
+
+        private string GetExpandedLookupTargetPrimaryKey(ExpandedLookupConfig expand, ExpandedLookupAttribute expandedAttribute)
+        {
+            var targetLogicalName = GetExpandedLookupTargetLogicalName(expand, expandedAttribute);
+            return expandedAttribute.TargetTablePrimaryKey
+                ?? expand.TargetTablePrimaryKey
+                ?? (targetLogicalName + "id");
+        }
+
+        private int? GetExpandedLookupTargetObjectTypeCode(ExpandedLookupAttribute expandedAttribute)
+        {
+            return expandedAttribute.TargetTableObjectTypeCode > 0
+                ? expandedAttribute.TargetTableObjectTypeCode
+                : null;
+        }
+
+        private string BuildExpandedLookupColumnKey(ExportTable sourceTable, ExpandedLookupConfig expand, ExpandedLookupAttribute expandedAttribute)
+        {
+            var lookupAttribute = sourceTable.Attributes.FirstOrDefault(a =>
+                a.LogicalName.Equals(expand.LookupAttributeName, StringComparison.OrdinalIgnoreCase));
+
+            var targetLogicalName = GetExpandedLookupTargetLogicalName(expand, expandedAttribute);
+            if (!IsPolymorphicLookupType(lookupAttribute) || string.IsNullOrWhiteSpace(targetLogicalName))
+                return $"{expand.LookupAttributeName}_{expandedAttribute.LogicalName}";
+
+            return $"{expand.LookupAttributeName}_{targetLogicalName}_{expandedAttribute.LogicalName}";
         }
 
         private string GetExpandedLookupMeasureLabel(ExportTable sourceTable, ExpandedLookupConfig expand)
@@ -1245,12 +1296,64 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                 ?? expand.LookupAttributeName;
         }
 
-        private string BuildExpandedLookupLinkMeasureName(ExportTable sourceTable, ExpandedLookupConfig expand)
+        private string BuildExpandedLookupLinkColumnName(ExportTable sourceTable, ExpandedLookupConfig expand)
         {
             var sourceTableLabel = sourceTable.DisplayName ?? sourceTable.SchemaName ?? sourceTable.LogicalName;
             var lookupLabel = GetExpandedLookupMeasureLabel(sourceTable, expand);
 
             return $"Link to {sourceTableLabel}:{lookupLabel}";
+        }
+
+        private string BuildExpandedLookupLinkColumnExpression(ExportTable sourceTable, ExpandedLookupConfig expand, AttributeMetadata? lookupAttribute)
+        {
+            var tableDisplayName = sourceTable.DisplayName ?? sourceTable.SchemaName ?? sourceTable.LogicalName;
+            var lookupColumnReference = $"'{tableDisplayName}'[{expand.LookupAttributeName}]";
+
+            if (IsPolymorphicLookupType(lookupAttribute))
+            {
+                var typeColumnReference = $"'{tableDisplayName}'[{expand.LookupAttributeName}type]";
+                return string.Join("\r\n", new[]
+                {
+                    "IF (",
+                    $"    LEN ( {lookupColumnReference} ) > 1,",
+                    $"    \"https://\" & DataverseURL & \"/main.aspx?pagetype=entityrecord&etc=\" & {typeColumnReference} & \"&id=\" & {lookupColumnReference},",
+                    "    BLANK ()",
+                    ")"
+                });
+            }
+
+            var targetTableLogicalName = expand.TargetTableLogicalName;
+            return string.Join("\r\n", new[]
+            {
+                "IF (",
+                $"    LEN ( {lookupColumnReference} ) > 1,",
+                $"    \"https://\" & DataverseURL & \"/main.aspx?pagetype=entityrecord&etn={targetTableLogicalName}&id=\" & {lookupColumnReference},",
+                "    BLANK ()",
+                ")"
+            });
+        }
+
+        private string BuildRecordLinkColumnName(ExportTable table)
+        {
+            var displayName = table.DisplayName ?? table.SchemaName ?? table.LogicalName;
+            return $"Link to {displayName}";
+        }
+
+        private string BuildRecordLinkColumnExpression(ExportTable table)
+        {
+            var displayName = table.DisplayName ?? table.SchemaName ?? table.LogicalName;
+            var entityLogicalName = table.LogicalName;
+            var factPrimaryKey = table.PrimaryIdAttribute ?? (table.LogicalName + "id");
+            var primaryKeyReference = $"'{displayName}'[{factPrimaryKey}]";
+
+            return string.Join("\r\n", new[]
+            {
+                "IF (",
+                $"    LEN ( {primaryKeyReference} ) > 1,",
+                $"    \"https://\" & DataverseURL & \"/main.aspx?pagetype=entityrecord&etn={entityLogicalName}&id=\" & {primaryKeyReference},",
+                "    BLANK ()",
+                ")"
+            });
         }
 
         private HashSet<string> BuildAutoMeasureNames(ExportTable table)
@@ -1268,7 +1371,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                 {
                     if (expand.IncludeRelatedRecordLink)
                     {
-                        autoMeasures.Add(BuildExpandedLookupLinkMeasureName(table, expand));
+                        autoMeasures.Add(BuildExpandedLookupLinkColumnName(table, expand));
                     }
                 }
             }
@@ -1287,6 +1390,17 @@ namespace DataverseToPowerBI.XrmToolBox.Services
         {
             return string.Equals(attrType, "Owner", StringComparison.OrdinalIgnoreCase) ||
                    string.Equals(attrType, "Customer", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static bool IsPolymorphicLookupType(AttributeMetadata? attr)
+        {
+            if (attr == null)
+                return false;
+
+            if (IsPolymorphicLookupType(attr.AttributeType))
+                return true;
+
+            return IsLookupType(attr.AttributeType) && (attr.Targets?.Count ?? 0) > 1;
         }
 
         private static bool IsOwningLookupLogicalName(string logicalName)
@@ -1311,7 +1425,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                 var parent = tableAttributes.FirstOrDefault(a =>
                     a.LogicalName.Equals(parentName, StringComparison.OrdinalIgnoreCase));
 
-                if (parent != null && PolymorphicParentTypes.Contains(parent.AttributeType ?? ""))
+                if (IsPolymorphicLookupType(parent))
                     return true;
             }
 
@@ -1328,7 +1442,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                 table.LookupSubColumnConfigs.TryGetValue(attr.LogicalName, out config);
             }
 
-            var requiresExpandedLookupLinkId = table.ExpandedLookups != null &&
+            var requiresExpandedLookupLink = table.ExpandedLookups != null &&
                 table.ExpandedLookups.Any(expand =>
                     expand.LookupAttributeName.Equals(attr.LogicalName, StringComparison.OrdinalIgnoreCase) &&
                     expand.IncludeRelatedRecordLink);
@@ -1342,10 +1456,16 @@ namespace DataverseToPowerBI.XrmToolBox.Services
             var includeYomi = config?.IncludeYomiField ?? false;
             var yomiHidden = config?.YomiFieldHidden ?? false;
 
-            if (requiresExpandedLookupLinkId)
+            if (requiresExpandedLookupLink)
             {
                 includeId = true;
                 idHidden = true;
+
+                if (IsPolymorphicLookupType(attr))
+                {
+                    includeType = true;
+                    typeHidden = true;
+                }
             }
 
             if (idHidden && !includeId) includeId = true;
@@ -1358,7 +1478,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
             if (!includeType) typeHidden = false;
             if (!includeYomi) yomiHidden = false;
 
-            if (!IsPolymorphicLookupType(attrType))
+            if (!IsPolymorphicLookupType(attr))
             {
                 includeType = false;
                 typeHidden = false;
@@ -2806,7 +2926,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
 
                         processedColumns.Add(nameColumn);
                         processedColumns.Add(attr.LogicalName);
-                        if (IsPolymorphicLookupType(attrType))
+                        if (IsPolymorphicLookupType(attr))
                         {
                             processedColumns.Add(typeColumn);
                             processedColumns.Add(yomiColumn);
@@ -2977,7 +3097,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                         if (!(expAttr.IncludeInModel ?? true))
                             continue;
 
-                        var colKey = $"{expand.LookupAttributeName}_{expAttr.LogicalName}";
+                        var colKey = BuildExpandedLookupColumnKey(table, expand, expAttr);
                         if (processedColumns.Contains(colKey))
                             continue;
 
@@ -3022,6 +3142,38 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                         processedColumns.Add(colKey);
                     }
                 }
+
+                foreach (var expand in table.ExpandedLookups)
+                {
+                    if (!expand.IncludeRelatedRecordLink || string.IsNullOrWhiteSpace(expand.LookupAttributeName))
+                        continue;
+
+                    var linkColumnName = BuildExpandedLookupLinkColumnName(table, expand);
+                    columns[linkColumnName] = new ColumnDefinition
+                    {
+                        DisplayName = linkColumnName,
+                        LogicalName = $"expandedlink:{expand.LookupAttributeName}",
+                        DataType = "string",
+                        SourceColumn = null,
+                        FormatString = null
+                    };
+                }
+            }
+
+            var includeRecordLinkMeasure = table.IncludeRecordLinkMeasure ?? string.Equals(table.Role, "Fact", StringComparison.OrdinalIgnoreCase);
+            if (includeRecordLinkMeasure)
+            {
+                var factPrimaryKey = table.PrimaryIdAttribute ?? (table.LogicalName + "id");
+                var linkColumnName = BuildRecordLinkColumnName(table);
+
+                columns[linkColumnName] = new ColumnDefinition
+                {
+                    DisplayName = linkColumnName,
+                    LogicalName = $"recordlink:{factPrimaryKey}",
+                    DataType = "string",
+                    SourceColumn = null,
+                    FormatString = null
+                };
             }
 
             // Add any missing lookup columns from requiredLookupColumns that weren't in table.Attributes
@@ -3202,7 +3354,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
 
                         processedColumns.Add(nameColumn);
                         processedColumns.Add(attr.LogicalName);
-                        if (IsPolymorphicLookupType(attrType))
+                        if (IsPolymorphicLookupType(attr))
                         {
                             processedColumns.Add(typeColumn);
                             processedColumns.Add(yomiColumn);
@@ -3351,17 +3503,15 @@ namespace DataverseToPowerBI.XrmToolBox.Services
 
                         if (shouldWrapDateTime)
                         {
-                            var dtAliasClause = $"AS {attr.LogicalName}";
+                            var wrappedExpression = $"CAST(Base.{attr.LogicalName} AS DATE)";
                             var behavior = attr.DateTimeBehavior ?? attrDisplayInfo2?.DateTimeBehavior;
                             if (ShouldApplyTimezoneAdjustment(behavior))
                             {
                                 var offset = dateTableConfig!.UtcOffsetHours;
-                                sqlFields.Add($"CAST(DATEADD(hour, {offset}, Base.{attr.LogicalName}) AS DATE) {dtAliasClause}");
+                                wrappedExpression = $"CAST(DATEADD(hour, {offset}, Base.{attr.LogicalName}) AS DATE)";
                             }
-                            else
-                            {
-                                sqlFields.Add($"CAST(Base.{attr.LogicalName} AS DATE) {dtAliasClause}");
-                            }
+
+                            sqlFields.Add(ApplySqlAlias(wrappedExpression, effectiveName, attr.LogicalName, isPrimaryKey));
                         }
                         else
                         {
@@ -3378,18 +3528,44 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                 foreach (var expand in table.ExpandedLookups)
                 {
                     if (expand.Attributes == null || expand.Attributes.Count == 0) continue;
-                    
-                    var joinAlias = $"exp_{expand.LookupAttributeName}";
-                    var targetTable = expand.TargetTableLogicalName;
-                    
-                    joinClauses.Add($"LEFT OUTER JOIN {targetTable} {joinAlias} ON {joinAlias}.{expand.TargetTablePrimaryKey} = Base.{expand.LookupAttributeName}");
-                    
+
+                    var lookupAttribute = table.Attributes.FirstOrDefault(a =>
+                        a.LogicalName.Equals(expand.LookupAttributeName, StringComparison.OrdinalIgnoreCase));
+                    var isPolymorphicLookup = IsPolymorphicLookupType(lookupAttribute);
+                    var joinGroups = expand.Attributes
+                        .Where(a => a.IncludeInModel ?? true)
+                        .GroupBy(a => GetExpandedLookupTargetLogicalName(expand, a), StringComparer.OrdinalIgnoreCase);
+
+                    var joinAliasByTarget = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                    foreach (var joinGroup in joinGroups)
+                    {
+                        var targetTable = joinGroup.Key;
+                        if (string.IsNullOrWhiteSpace(targetTable))
+                            continue;
+
+                        var targetSample = joinGroup.First();
+                        var joinAlias = $"exp_{expand.LookupAttributeName}_{targetTable}";
+                        var targetPrimaryKey = GetExpandedLookupTargetPrimaryKey(expand, targetSample);
+                        var joinCondition = $"{joinAlias}.{targetPrimaryKey} = Base.{expand.LookupAttributeName}";
+                        var targetObjectTypeCode = GetExpandedLookupTargetObjectTypeCode(targetSample);
+
+                        if (isPolymorphicLookup && targetObjectTypeCode.HasValue)
+                            joinCondition += $" AND Base.{expand.LookupAttributeName}type = {targetObjectTypeCode.Value}";
+
+                        joinClauses.Add($"LEFT OUTER JOIN {targetTable} {joinAlias} ON {joinCondition}");
+                        joinAliasByTarget[targetTable] = joinAlias;
+                    }
+
                     foreach (var expAttr in expand.Attributes)
                     {
                         if (!(expAttr.IncludeInModel ?? true))
                             continue;
 
-                        var colKey = $"{expand.LookupAttributeName}_{expAttr.LogicalName}";
+                        var targetTable = GetExpandedLookupTargetLogicalName(expand, expAttr);
+                        if (string.IsNullOrWhiteSpace(targetTable) || !joinAliasByTarget.TryGetValue(targetTable, out var joinAlias))
+                            continue;
+
+                        var colKey = BuildExpandedLookupColumnKey(table, expand, expAttr);
                         if (processedColumns.Contains(colKey)) continue;
                         var expandedHidden = expAttr.IsHidden ?? false;
                         
@@ -3423,14 +3599,14 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                                 if (isExpBoolean)
                                 {
                                     var isGlobal = expAttr.IsGlobal;
-                                    var metadataTable = ResolveFabricOptionSetMetadataTable(expAttrType, expAttr.LogicalName, optionSetNameHint, isGlobal, expand.TargetTableLogicalName);
-                                    joinClauses.Add($"LEFT JOIN [{metadataTable}] {metadataJoinAlias} ON {metadataJoinAlias}.[OptionSetName]='{optionSetName}' AND {metadataJoinAlias}.[EntityName]='{expand.TargetTableLogicalName}' AND {metadataJoinAlias}.[LocalizedLabelLanguageCode]={_languageCode} AND {metadataJoinAlias}.[Option]={joinAlias}.{expAttr.LogicalName}");
+                                    var metadataTable = ResolveFabricOptionSetMetadataTable(expAttrType, expAttr.LogicalName, optionSetNameHint, isGlobal, targetTable);
+                                    joinClauses.Add($"LEFT JOIN [{metadataTable}] {metadataJoinAlias} ON {metadataJoinAlias}.[OptionSetName]='{optionSetName}' AND {metadataJoinAlias}.[EntityName]='{targetTable}' AND {metadataJoinAlias}.[LocalizedLabelLanguageCode]={_languageCode} AND {metadataJoinAlias}.[Option]={joinAlias}.{expAttr.LogicalName}");
                                 }
                                 else
                                 {
                                     var isGlobal = expAttr.IsGlobal;
-                                    var metadataTable = ResolveFabricOptionSetMetadataTable(expAttrType, expAttr.LogicalName, optionSetNameHint, isGlobal, expand.TargetTableLogicalName);
-                                    joinClauses.Add($"LEFT JOIN [{metadataTable}] {metadataJoinAlias} ON {metadataJoinAlias}.[OptionSetName]='{optionSetName}' AND {metadataJoinAlias}.[EntityName]='{expand.TargetTableLogicalName}' AND {metadataJoinAlias}.[LocalizedLabelLanguageCode]={_languageCode} AND {metadataJoinAlias}.[Option]={joinAlias}.{expAttr.LogicalName}");
+                                    var metadataTable = ResolveFabricOptionSetMetadataTable(expAttrType, expAttr.LogicalName, optionSetNameHint, isGlobal, targetTable);
+                                    joinClauses.Add($"LEFT JOIN [{metadataTable}] {metadataJoinAlias} ON {metadataJoinAlias}.[OptionSetName]='{optionSetName}' AND {metadataJoinAlias}.[EntityName]='{targetTable}' AND {metadataJoinAlias}.[LocalizedLabelLanguageCode]={_languageCode} AND {metadataJoinAlias}.[Option]={joinAlias}.{expAttr.LogicalName}");
                                 }
                                 
                                 var fabricAlias = $"{metadataJoinAlias}.[LocalizedLabel] {EscapeSqlIdentifier(prefixedDisplayName)}";
@@ -3453,9 +3629,9 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                                 var metaAlias = $"meta_{joinAlias}_{expAttr.LogicalName}";
                                 var isGlobal = expAttr.IsGlobal;
                                 var optionSetName = expAttr.OptionSetName ?? expAttr.LogicalName;
-                                var metadataTable = ResolveFabricOptionSetMetadataTable(expAttrType, expAttr.LogicalName, optionSetName, isGlobal, expand.TargetTableLogicalName);
+                                var metadataTable = ResolveFabricOptionSetMetadataTable(expAttrType, expAttr.LogicalName, optionSetName, isGlobal, targetTable);
 
-                                joinClauses.Add($"OUTER APPLY (SELECT STRING_AGG({metaAlias}.[LocalizedLabel], ', ') AS {nameColumn} FROM STRING_SPLIT(CAST({joinAlias}.{expAttr.LogicalName} AS VARCHAR(4000)), ';') AS split JOIN [{metadataTable}] AS {metaAlias} ON {metaAlias}.[OptionSetName]='{optionSetName}' AND {metaAlias}.[EntityName]='{expand.TargetTableLogicalName}' AND {metaAlias}.[LocalizedLabelLanguageCode]={_languageCode} AND {metaAlias}.[Option]=CAST(LTRIM(RTRIM(split.value)) AS INT) WHERE {joinAlias}.{expAttr.LogicalName} IS NOT NULL) {applyAlias}");
+                                joinClauses.Add($"OUTER APPLY (SELECT STRING_AGG({metaAlias}.[LocalizedLabel], ', ') AS {nameColumn} FROM STRING_SPLIT(CAST({joinAlias}.{expAttr.LogicalName} AS VARCHAR(4000)), ';') AS split JOIN [{metadataTable}] AS {metaAlias} ON {metaAlias}.[OptionSetName]='{optionSetName}' AND {metaAlias}.[EntityName]='{targetTable}' AND {metaAlias}.[LocalizedLabelLanguageCode]={_languageCode} AND {metaAlias}.[Option]=CAST(LTRIM(RTRIM(split.value)) AS INT) WHERE {joinAlias}.{expAttr.LogicalName} IS NOT NULL) {applyAlias}");
                                 sqlFields.Add(ApplySqlAlias($"{applyAlias}.{nameColumn}", prefixedDisplayName, colKey, expandedHidden));
                             }
                             else
@@ -5327,7 +5503,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                             IsHidden = typeHidden,
                             IsVisibilityUserConfigurable = true,
                             Description = description,
-                            AttributeType = "EntityName"
+                            AttributeType = "Integer"
                         });
                         sqlFields.Add($"Base.{typeColumn}");
                     }
@@ -5349,7 +5525,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
 
                     processedColumns.Add(nameColumn);
                     processedColumns.Add(attr.LogicalName);
-                    if (IsPolymorphicLookupType(attrType))
+                    if (IsPolymorphicLookupType(attr))
                     {
                         processedColumns.Add(typeColumn);
                         processedColumns.Add(yomiColumn);
@@ -5632,17 +5808,15 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                     // Generate SQL field - wrap datetime if configured
                     if (shouldWrapDateTime)
                     {
-                        var dtAliasClause = $"AS {attr.LogicalName}";
+                        var wrappedExpression = $"CAST(Base.{attr.LogicalName} AS DATE)";
                         var behavior = attr.DateTimeBehavior;
                         if (ShouldApplyTimezoneAdjustment(behavior))
                         {
                             var offset = dateTableConfig!.UtcOffsetHours;
-                            sqlFields.Add($"CAST(DATEADD(hour, {offset}, Base.{attr.LogicalName}) AS DATE) {dtAliasClause}");
+                            wrappedExpression = $"CAST(DATEADD(hour, {offset}, Base.{attr.LogicalName}) AS DATE)";
                         }
-                        else
-                        {
-                            sqlFields.Add($"CAST(Base.{attr.LogicalName} AS DATE) {dtAliasClause}");
-                        }
+
+                        sqlFields.Add(ApplySqlAlias(wrappedExpression, effectiveName, attr.LogicalName, isPrimaryKey));
                     }
                     else
                     {
@@ -5658,25 +5832,49 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                 foreach (var expand in table.ExpandedLookups)
                 {
                     if (expand.Attributes == null || expand.Attributes.Count == 0) continue;
-                    
-                    // Build a unique join alias for this expanded table
-                    var joinAlias = $"exp_{expand.LookupAttributeName}";
-                    var targetTable = expand.TargetTableLogicalName;
-                    
-                    // Add LEFT OUTER JOIN
-                    joinClauses.Add($"LEFT OUTER JOIN {targetTable} {joinAlias} ON {joinAlias}.{expand.TargetTablePrimaryKey} = Base.{expand.LookupAttributeName}");
-                    
+
+                    var lookupAttribute = table.Attributes.FirstOrDefault(a =>
+                        a.LogicalName.Equals(expand.LookupAttributeName, StringComparison.OrdinalIgnoreCase));
+                    var isPolymorphicLookup = IsPolymorphicLookupType(lookupAttribute);
+                    var joinGroups = expand.Attributes
+                        .Where(a => a.IncludeInModel ?? true)
+                        .GroupBy(a => GetExpandedLookupTargetLogicalName(expand, a), StringComparer.OrdinalIgnoreCase);
+
+                    var joinAliasByTarget = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                    foreach (var joinGroup in joinGroups)
+                    {
+                        var targetTable = joinGroup.Key;
+                        if (string.IsNullOrWhiteSpace(targetTable))
+                            continue;
+
+                        var targetSample = joinGroup.First();
+                        var joinAlias = $"exp_{expand.LookupAttributeName}_{targetTable}";
+                        var targetPrimaryKey = GetExpandedLookupTargetPrimaryKey(expand, targetSample);
+                        var joinCondition = $"{joinAlias}.{targetPrimaryKey} = Base.{expand.LookupAttributeName}";
+                        var targetObjectTypeCode = GetExpandedLookupTargetObjectTypeCode(targetSample);
+
+                        if (isPolymorphicLookup && targetObjectTypeCode.HasValue)
+                            joinCondition += $" AND Base.{expand.LookupAttributeName}type = {targetObjectTypeCode.Value}";
+
+                        joinClauses.Add($"LEFT OUTER JOIN {targetTable} {joinAlias} ON {joinCondition}");
+                        joinAliasByTarget[targetTable] = joinAlias;
+                    }
+
                     foreach (var expAttr in expand.Attributes)
                     {
                         if (!(expAttr.IncludeInModel ?? true))
                             continue;
 
-                        var colKey = $"{expand.LookupAttributeName}_{expAttr.LogicalName}";
+                        var targetTable = GetExpandedLookupTargetLogicalName(expand, expAttr);
+                        if (string.IsNullOrWhiteSpace(targetTable) || !joinAliasByTarget.TryGetValue(targetTable, out var joinAlias))
+                            continue;
+
+                        var colKey = BuildExpandedLookupColumnKey(table, expand, expAttr);
                         if (processedColumns.Contains(colKey)) continue;
                         var expandedHidden = expAttr.IsHidden ?? false;
                         
                         var prefixedDisplayName = BuildExpandedLookupDisplayName(table, expand, expAttr, attrInfo);
-                        var description = $"Source: {expand.TargetTableLogicalName}.{expAttr.LogicalName} (via {expand.LookupAttributeName})";
+                        var description = $"Source: {targetTable}.{expAttr.LogicalName} (via {expand.LookupAttributeName})";
                         
                         var expAttrType = expAttr.AttributeType ?? "";
                         var isExpLookup = expAttrType.Equals("Lookup", StringComparison.OrdinalIgnoreCase) ||
@@ -5718,22 +5916,22 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                                 if (isExpBoolean)
                                 {
                                     var isGlobal = expAttr.IsGlobal;
-                                    var metadataTable = ResolveFabricOptionSetMetadataTable(expAttrType, expAttr.LogicalName, optionSetNameHint, isGlobal, expand.TargetTableLogicalName);
+                                    var metadataTable = ResolveFabricOptionSetMetadataTable(expAttrType, expAttr.LogicalName, optionSetNameHint, isGlobal, targetTable);
                                     joinClauses.Add(
                                         $"LEFT JOIN [{metadataTable}] {metadataJoinAlias}\r\n" +
                                         $"\t\t\t\t            ON  {metadataJoinAlias}.[OptionSetName] = '{optionSetName}'\r\n" +
-                                        $"\t\t\t\t            AND {metadataJoinAlias}.[EntityName] = '{expand.TargetTableLogicalName}'\r\n" +
+                                        $"\t\t\t\t            AND {metadataJoinAlias}.[EntityName] = '{targetTable}'\r\n" +
                                         $"\t\t\t\t            AND {metadataJoinAlias}.[LocalizedLabelLanguageCode] = {_languageCode}\r\n" +
                                         $"\t\t\t\t            AND {metadataJoinAlias}.[Option] = {joinAlias}.{expAttr.LogicalName}");
                                 }
                                 else
                                 {
                                     var isGlobal = expAttr.IsGlobal;
-                                    var metadataTable = ResolveFabricOptionSetMetadataTable(expAttrType, expAttr.LogicalName, optionSetNameHint, isGlobal, expand.TargetTableLogicalName);
+                                    var metadataTable = ResolveFabricOptionSetMetadataTable(expAttrType, expAttr.LogicalName, optionSetNameHint, isGlobal, targetTable);
                                     joinClauses.Add(
                                         $"LEFT JOIN [{metadataTable}] {metadataJoinAlias}\r\n" +
                                         $"\t\t\t\t            ON  {metadataJoinAlias}.[OptionSetName] = '{optionSetName}'\r\n" +
-                                        $"\t\t\t\t            AND {metadataJoinAlias}.[EntityName] = '{expand.TargetTableLogicalName}'\r\n" +
+                                        $"\t\t\t\t            AND {metadataJoinAlias}.[EntityName] = '{targetTable}'\r\n" +
                                         $"\t\t\t\t            AND {metadataJoinAlias}.[LocalizedLabelLanguageCode] = {_languageCode}\r\n" +
                                         $"\t\t\t\t            AND {metadataJoinAlias}.[Option] = {joinAlias}.{expAttr.LogicalName}");
                                 }
@@ -5769,7 +5967,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                                 var metaAlias = $"meta_{joinAlias}_{expAttr.LogicalName}";
                                 var isGlobal = expAttr.IsGlobal;
                                 var optionSetName = expAttr.OptionSetName ?? expAttr.LogicalName;
-                                var metadataTable = ResolveFabricOptionSetMetadataTable(expAttrType, expAttr.LogicalName, optionSetName, isGlobal, expand.TargetTableLogicalName);
+                                var metadataTable = ResolveFabricOptionSetMetadataTable(expAttrType, expAttr.LogicalName, optionSetName, isGlobal, targetTable);
 
                                 joinClauses.Add(
                                     $"OUTER APPLY (\r\n" +
@@ -5777,7 +5975,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                                     $"\t\t\t\t        FROM STRING_SPLIT(CAST({joinAlias}.{expAttr.LogicalName} AS VARCHAR(4000)), ';') AS split\r\n" +
                                     $"\t\t\t\t        JOIN [{metadataTable}] AS {metaAlias}\r\n" +
                                     $"\t\t\t\t            ON  {metaAlias}.[OptionSetName] = '{optionSetName}'\r\n" +
-                                    $"\t\t\t\t            AND {metaAlias}.[EntityName] = '{expand.TargetTableLogicalName}'\r\n" +
+                                    $"\t\t\t\t            AND {metaAlias}.[EntityName] = '{targetTable}'\r\n" +
                                     $"\t\t\t\t            AND {metaAlias}.[LocalizedLabelLanguageCode] = {_languageCode}\r\n" +
                                     $"\t\t\t\t            AND {metaAlias}.[Option] = CAST(LTRIM(RTRIM(split.value)) AS INT)\r\n" +
                                     $"\t\t\t\t        WHERE {joinAlias}.{expAttr.LogicalName} IS NOT NULL\r\n" +
@@ -5822,64 +6020,56 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                 }
             }
 
-            // Auto-generate measures based on per-table options (fact tables default to both enabled)
-            // PBI Desktop expects measures to appear before columns in TMDL serialization order.
-            var includeRecordLinkMeasure = table.IncludeRecordLinkMeasure ?? string.Equals(table.Role, "Fact", StringComparison.OrdinalIgnoreCase);
-            var includeCountMeasure = table.IncludeCountMeasure ?? string.Equals(table.Role, "Fact", StringComparison.OrdinalIgnoreCase);
-
-            if (includeRecordLinkMeasure || includeCountMeasure)
-            {
-                var entityLogicalName = table.LogicalName;
-                var factPrimaryKey = table.PrimaryIdAttribute ?? (table.LogicalName + "id");
-
-                if (includeRecordLinkMeasure)
-                {
-                    // Link measure: builds a URL to open the record in Dynamics 365
-                    sb.AppendLine($"\tmeasure 'Link to {displayName}' = ```");
-                    sb.AppendLine($"\t\t\t");
-                    sb.AppendLine($"\t\t\t\"https://\" & DataverseURL & \"/main.aspx?pagetype=entityrecord&etn={entityLogicalName}&id=\" ");
-                    sb.AppendLine($"\t\t\t\t& SELECTEDVALUE('{displayName}'[{factPrimaryKey}], BLANK())");
-                    sb.AppendLine($"\t\t\t```");
-                    sb.AppendLine($"\t\tlineageTag: {GetOrNewLineageTag(existingLineageTags, $"measure:Link to {displayName}")}");
-                    sb.AppendLine($"\t\tdataCategory: WebUrl");
-                    sb.AppendLine();
-                }
-
-                if (includeCountMeasure)
-                {
-                    // Count measure: counts rows in the table
-                    sb.AppendLine($"\tmeasure '{displayName} Count' = COUNTROWS('{displayName}')");
-                    sb.AppendLine($"\t\tformatString: 0");
-                    sb.AppendLine($"\t\tlineageTag: {GetOrNewLineageTag(existingLineageTags, $"measure:{displayName} Count")}");
-                    sb.AppendLine();
-                }
-            }
-
             if (table.ExpandedLookups != null)
             {
                 foreach (var expand in table.ExpandedLookups)
                 {
-                    if (!expand.IncludeRelatedRecordLink ||
-                        string.IsNullOrWhiteSpace(expand.LookupAttributeName) ||
-                        string.IsNullOrWhiteSpace(expand.TargetTableLogicalName))
-                    {
+                    if (!expand.IncludeRelatedRecordLink || string.IsNullOrWhiteSpace(expand.LookupAttributeName))
                         continue;
-                    }
 
-                    var expandedLookupLinkMeasureName = BuildExpandedLookupLinkMeasureName(table, expand);
+                    var lookupAttribute = table.Attributes.FirstOrDefault(a =>
+                        a.LogicalName.Equals(expand.LookupAttributeName, StringComparison.OrdinalIgnoreCase));
+                    var linkColumnName = BuildExpandedLookupLinkColumnName(table, expand);
 
-                    sb.AppendLine($"\tmeasure '{expandedLookupLinkMeasureName}' = ```");
-                    sb.AppendLine($"\t\t\tIF (");
-                    sb.AppendLine($"\t\t\t\tLEN ( SELECTEDVALUE ( '{displayName}'[{expand.LookupAttributeName}] ) ) > 1,");
-                    sb.AppendLine($"\t\t\t\t\"https://\" & DataverseURL & \"/main.aspx?pagetype=entityrecord&etn={expand.TargetTableLogicalName}&id=\"");
-                    sb.AppendLine($"\t\t\t\t\t& SELECTEDVALUE ( '{displayName}'[{expand.LookupAttributeName}], BLANK () ),");
-                    sb.AppendLine($"\t\t\t\tBLANK ()");
-                    sb.AppendLine($"\t\t\t)");
-                    sb.AppendLine($"\t\t\t```");
-                    sb.AppendLine($"\t\tlineageTag: {GetOrNewLineageTag(existingLineageTags, $"measure:{expandedLookupLinkMeasureName}")}");
-                    sb.AppendLine($"\t\tdataCategory: WebUrl");
-                    sb.AppendLine();
+                    columns.Add(new ColumnInfo
+                    {
+                        LogicalName = $"expandedlink:{expand.LookupAttributeName}",
+                        DisplayName = linkColumnName,
+                        SourceColumn = $"expandedlink:{expand.LookupAttributeName}",
+                        AttributeType = "string",
+                        ForceSummarizeByNone = true,
+                        DataCategory = "WebUrl",
+                        Expression = BuildExpandedLookupLinkColumnExpression(table, expand, lookupAttribute)
+                    });
                 }
+            }
+
+            var includeRecordLinkMeasure = table.IncludeRecordLinkMeasure ?? string.Equals(table.Role, "Fact", StringComparison.OrdinalIgnoreCase);
+            var includeCountMeasure = table.IncludeCountMeasure ?? string.Equals(table.Role, "Fact", StringComparison.OrdinalIgnoreCase);
+
+            if (includeRecordLinkMeasure)
+            {
+                columns.Add(new ColumnInfo
+                {
+                    LogicalName = $"recordlink:{table.PrimaryIdAttribute ?? (table.LogicalName + "id")}",
+                    DisplayName = BuildRecordLinkColumnName(table),
+                    SourceColumn = $"recordlink:{table.PrimaryIdAttribute ?? (table.LogicalName + "id")}",
+                    AttributeType = "string",
+                    ForceSummarizeByNone = true,
+                    DataCategory = "WebUrl",
+                    Expression = BuildRecordLinkColumnExpression(table)
+                });
+            }
+
+            // Auto-generate table count measure based on per-table options (fact tables default enabled).
+            // PBI Desktop expects measures to appear before columns in TMDL serialization order.
+
+            if (includeCountMeasure)
+            {
+                sb.AppendLine($"\tmeasure '{displayName} Count' = COUNTROWS('{displayName}')");
+                sb.AppendLine($"\t\tformatString: 0");
+                sb.AppendLine($"\t\tlineageTag: {GetOrNewLineageTag(existingLineageTags, $"measure:{displayName} Count")}");
+                sb.AppendLine();
             }
 
             // Write columns
@@ -5897,6 +6087,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                 var (dataType, formatString, sourceProviderType, summarizeBy) = MapDataType(col.AttributeType);
                 var isDateTime = col.AttributeType?.Equals("dateonly", StringComparison.OrdinalIgnoreCase) == true ||
                                  col.AttributeType?.Equals("datetime", StringComparison.OrdinalIgnoreCase) == true;
+                var isCalculatedColumn = !string.IsNullOrWhiteSpace(col.Expression);
 
                 // Check for existing column metadata to preserve user customizations
                 ExistingColumnInfo? existingCol = null;
@@ -5927,7 +6118,19 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                 {
                     sb.AppendLine($"\t/// {col.Description}");
                 }
-                sb.AppendLine($"\tcolumn {QuoteTmdlName(col.DisplayName)}");
+                if (isCalculatedColumn)
+                {
+                    sb.AppendLine($"\tcolumn {QuoteTmdlName(col.DisplayName)} = ```");
+                    foreach (var expressionLine in col.Expression!.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None))
+                    {
+                        sb.AppendLine($"\t\t\t{expressionLine}");
+                    }
+                    sb.AppendLine($"\t\t```");
+                }
+                else
+                {
+                    sb.AppendLine($"\tcolumn {QuoteTmdlName(col.DisplayName)}");
+                }
                 sb.AppendLine($"\t\tdataType: {dataType}");
                 if (formatString != null)
                 {
@@ -5958,11 +6161,15 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                     sb.AppendLine($"\t\tisDefaultLabel");
                 }
                 sb.AppendLine($"\t\tsummarizeBy: {summarizeBy}");
-                sb.AppendLine($"\t\tsourceColumn: {col.SourceColumn}");
-                // Preserve user-assigned data category (e.g. City, Country/Region, Latitude, Longitude)
-                if (existingCol?.DataCategory != null)
+                if (!isCalculatedColumn)
                 {
-                    sb.AppendLine($"\t\tdataCategory: {existingCol.DataCategory}");
+                    sb.AppendLine($"\t\tsourceColumn: {col.SourceColumn}");
+                }
+                // Preserve user-assigned data category (e.g. City, Country/Region, Latitude, Longitude)
+                var dataCategory = col.DataCategory ?? existingCol?.DataCategory;
+                if (dataCategory != null)
+                {
+                    sb.AppendLine($"\t\tdataCategory: {dataCategory}");
                 }
                 sb.AppendLine();
                 if (isDateTime)
@@ -6391,6 +6598,9 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                     
                     // Boolean types
                     "boolean" => ("boolean", null, "bit", "none"),
+
+                    // Polymorphic entity-type discriminator columns are numeric object type codes.
+                    "entityname" => ("int64", "0", "int", "none"),
                     
                     // GUID types
                     "lookup" or "owner" or "customer" or "uniqueidentifier" => ("string", null, "uniqueidentifier", "none"),
@@ -6422,6 +6632,9 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                 
                 // Boolean types
                 "boolean" => ("boolean", null, "bit", "none"),
+
+                // Polymorphic entity-type discriminator columns are numeric object type codes.
+                "entityname" => ("int64", "0", "int", "none"),
                 
                 // GUID types (lookups are GUIDs in the database)
                 "lookup" or "owner" or "customer" or "uniqueidentifier" => ("string", null, "uniqueidentifier", "none"),
@@ -6458,6 +6671,9 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                 
                 // Boolean types
                 "boolean" => "type logical",
+
+                // Polymorphic entity-type discriminator columns are numeric object type codes.
+                "entityname" => "Int64.Type",
                 
                 // Text types (including Lookup/Choice which use 'name' suffix)
                 _ => "type text"
@@ -6554,6 +6770,38 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                     throw new FileNotFoundException($"Template definition.pbism file not found at: {templatePbism}");
                 }
             }
+
+            RemoveStrayGitIgnoreFiles(pbipFolder);
+        }
+
+        /// <summary>
+        /// Removes stray .gitignore files that may have come from older local templates or prior builds.
+        /// Generated PBIP folders do not need them.
+        /// </summary>
+        private void RemoveStrayGitIgnoreFiles(string pbipFolder)
+        {
+            try
+            {
+                if (!Directory.Exists(pbipFolder))
+                    return;
+
+                foreach (var gitIgnorePath in Directory.GetFiles(pbipFolder, ".gitignore", SearchOption.AllDirectories))
+                {
+                    try
+                    {
+                        File.Delete(gitIgnorePath);
+                        DebugLogger.Log($"Removed stray .gitignore: {gitIgnorePath}");
+                    }
+                    catch (Exception ex)
+                    {
+                        DebugLogger.Log($"Warning: Failed to remove stray .gitignore '{gitIgnorePath}': {ex.Message}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                DebugLogger.Log($"Warning: Failed while scanning for stray .gitignore files: {ex.Message}");
+            }
         }
 
         /// <summary>
@@ -6595,6 +6843,8 @@ namespace DataverseToPowerBI.XrmToolBox.Services
             public bool IsKey { get; set; }  // Marks this as the key column (Primary ID)
             public bool IsRowLabel { get; set; }  // Marks this as the row label (Primary Name)
             public bool ForceSummarizeByNone { get; set; }  // Force summarizeBy: none regardless of numeric data type
+            public string? Expression { get; set; }  // DAX expression for calculated columns
+            public string? DataCategory { get; set; }  // Explicit data category override for generated columns
         }
 
         /// <summary>

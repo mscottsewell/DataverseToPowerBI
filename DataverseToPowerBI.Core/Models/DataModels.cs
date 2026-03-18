@@ -789,6 +789,11 @@ namespace DataverseToPowerBI.Core.Models
         public string? SchemaName { get; set; }
 
         /// <summary>
+        /// The internal object type code assigned by Dataverse.
+        /// </summary>
+        public int ObjectTypeCode { get; set; }
+
+        /// <summary>
         /// Primary key attribute name.
         /// </summary>
         public string? PrimaryIdAttribute { get; set; }
@@ -797,6 +802,11 @@ namespace DataverseToPowerBI.Core.Models
         /// Primary name/display attribute name.
         /// </summary>
         public string? PrimaryNameAttribute { get; set; }
+
+        /// <summary>
+        /// GUID for the table's metadata record.
+        /// </summary>
+        public string? MetadataId { get; set; }
     }
 
     /// <summary>
@@ -1395,6 +1405,28 @@ namespace DataverseToPowerBI.Core.Models
         /// Display name of the attribute.
         /// </summary>
         public string? DisplayName { get; set; }
+        /// <summary>
+        /// Logical name of the related/target table that this expanded attribute comes from.
+        /// Required when the parent lookup can target multiple tables.
+        /// </summary>
+        public string? TargetTableLogicalName { get; set; }
+
+        /// <summary>
+        /// Display name of the related/target table that this expanded attribute comes from.
+        /// </summary>
+        public string? TargetTableDisplayName { get; set; }
+
+        /// <summary>
+        /// Primary key attribute of the related/target table.
+        /// </summary>
+        public string? TargetTablePrimaryKey { get; set; }
+
+        /// <summary>
+        /// Dataverse object type code for the related/target table.
+        /// Used when expanding polymorphic lookups.
+        /// </summary>
+        public int? TargetTableObjectTypeCode { get; set; }
+
         /// <summary>
         /// Optional explicit output name to use for the generated Power BI column.
         /// When null, the builder uses the default "Lookup : Attribute" naming pattern.

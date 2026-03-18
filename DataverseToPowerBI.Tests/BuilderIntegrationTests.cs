@@ -739,7 +739,7 @@ namespace DataverseToPowerBI.Tests
         }
 
         [Fact]
-        public void Build_ExpandedLookup_WithRelatedRecordLink_TableContentIncludesLookupLinkMeasure()
+        public void Build_ExpandedLookup_WithRelatedRecordLink_TableContentIncludesLookupLinkColumn()
         {
             var scenario = new ScenarioBuilder()
                 .WithTable(new TableBuilder("opportunity", "Opportunity")
@@ -754,11 +754,11 @@ namespace DataverseToPowerBI.Tests
                 scenario.BuildTables(), scenario.BuildRelationships(), scenario.BuildAttributeDisplayInfo());
 
             var tableContent = TmdlAssertions.ReadTableTmdl(_tempDir, "Opportunity");
-            Assert.Contains("measure 'Link to Opportunity:Parent Account'", tableContent, StringComparison.Ordinal);
+            Assert.Contains("column 'Link to Opportunity:Parent Account' = ```", tableContent, StringComparison.Ordinal);
             Assert.Contains("IF (", tableContent, StringComparison.Ordinal);
-            Assert.Contains("LEN ( SELECTEDVALUE ( 'Opportunity'[_parentaccountid_value] ) ) > 1", tableContent, StringComparison.Ordinal);
+            Assert.Contains("LEN ( 'Opportunity'[_parentaccountid_value] ) > 1", tableContent, StringComparison.Ordinal);
             Assert.Contains("etn=account&id=", tableContent, StringComparison.OrdinalIgnoreCase);
-            Assert.Contains("& SELECTEDVALUE ( 'Opportunity'[_parentaccountid_value], BLANK () )", tableContent, StringComparison.Ordinal);
+            Assert.Contains("& 'Opportunity'[_parentaccountid_value]", tableContent, StringComparison.Ordinal);
             Assert.Matches(@"column _parentaccountid_value\r?\n(?:\t\t[^\r\n]*\r?\n)*\t\tisHidden", tableContent);
         }
 

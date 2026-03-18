@@ -76,7 +76,7 @@ This tool eliminates all of that complexity:
 | **Relationship Detection** | Finds and creates relationships from your lookup fields, with search/filter and multi-relationship management |
 | **Date Table Generation** | Creates a proper calendar dimension with timezone support |
 | **View-Based Filtering** | Applies your Dataverse view filters (FetchXML) directly to the data model — supports 20+ filter operators |
-| **Auto-Generated Measures** | Creates a record count and a clickable URL link measure on your fact table |
+| **Auto-Generated Count & Link Output** | Creates a `{Table} Count` measure and a clickable `Link to {Table}` URL column on fact tables by default |
 | **Incremental Updates** | Safely update your model while preserving custom measures, descriptions, formatting, and relationships |
 | **Change Preview** | TreeView-based change preview with impact analysis (Safe/Additive/Moderate/Destructive) before applying any changes |
 | **Expand Lookups** | Denormalize fields from related tables directly into a parent table's query — no extra dimension needed |
@@ -86,32 +86,29 @@ This tool eliminates all of that complexity:
 
 ## 📌 Latest Changes
 
-> **v1.2026.6.8** — Full details in [CHANGELOG.md](docs/CHANGELOG.md).
+> **v1.2026.6.14** — Full details in [CHANGELOG.md](docs/CHANGELOG.md).
 
-### 📋 Change Review Improvements
+### 🔀 Polymorphic Expanded Lookups
 
-The **Review Semantic Model Changes** dialog now includes a **Copy to Clipboard** action, making it easier to paste a clean summary of new, updated, preserved, and warning items into notes, tickets, or pull requests.
+Expanded lookups can now work across **multi-target lookups** such as `ReportedBy`, allowing you to select fields from any possible related entity in one dialog.
 
-### 🔒 Safer Rebuilds for Existing Reports
+- Expanded fields now keep target-table context in their names where needed, for example `Reported By : Account : Address 1: City`.
+- The picker groups available attributes by related entity to match the relationship selector experience.
 
-If you manually change the semantic model database compatibility level in Power BI to enable newer features such as UDFs, subsequent builds from this tool will now preserve that user-edited version instead of resetting it back to the template default.
+### 🔗 Related Record Links Now Use Columns
 
-> **Important:** New reports still start from the bundled default compatibility level of `1600`. Only user-changed existing reports are preserved.
+Related-record navigation links are now generated as **calculated columns** instead of measures.
 
-### 🔄 Better Incremental Update Preservation
+- Standard table links now generate as `Link to {Table}` columns.
+- Expanded lookup links also generate as columns, using `etn=` for single-target lookups and `etc=` for polymorphic lookups.
+- For polymorphic links, the required lookup id and lookup type columns are auto-included and hidden.
 
-- Existing `diagramLayout.json` files are preserved during update builds, so manual Model View layout work is not lost.
-- Expanded-lookup related-record link measures are treated as tool-generated during update builds, preventing accidental duplication or preservation as user-authored measures.
+### 🛠 Stability Fixes
 
-### 🔎 Expanded Lookup Enhancements
+- Wrapped DateTime fields now keep their display-name aliases when generated as date casts.
+- Unchanged rebuilds no longer report false column changes for existing calculated link columns.
+- The informational timezone warning popup in the calendar dialog was removed.
 
-- Expanded lookups can now generate a related-record Dataverse URL measure even in link-only scenarios.
-- Expanded child attributes can have explicit output display-name overrides.
-- The expanded attribute picker has clearer warnings, better status text, and sortable columns.
-
-### 🎨 Small Quality-of-Life Improvements
-
-- Generated web URL fields are marked for URL icon rendering in the default PBIP theme.
 
 ---
 

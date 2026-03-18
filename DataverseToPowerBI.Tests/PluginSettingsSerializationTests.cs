@@ -120,6 +120,10 @@ namespace DataverseToPowerBI.Tests
                                 {
                                     LogicalName = "fullname",
                                     DisplayName = "Full Name",
+                                    TargetTableLogicalName = "systemuser",
+                                    TargetTableDisplayName = "User",
+                                    TargetTablePrimaryKey = "systemuserid",
+                                    TargetTableObjectTypeCode = 8,
                                     OutputDisplayNameOverride = "Owner Name",
                                     IsHidden = true
                                 }
@@ -138,6 +142,10 @@ namespace DataverseToPowerBI.Tests
 
             var attr = expandedLookup.Attributes[0];
             Assert.Equal("fullname", attr.LogicalName);
+            Assert.Equal("systemuser", attr.TargetTableLogicalName);
+            Assert.Equal("User", attr.TargetTableDisplayName);
+            Assert.Equal("systemuserid", attr.TargetTablePrimaryKey);
+            Assert.Equal(8, attr.TargetTableObjectTypeCode);
             Assert.Equal("Owner Name", attr.OutputDisplayNameOverride);
             Assert.True(attr.IsHidden);
         }
@@ -192,6 +200,44 @@ namespace DataverseToPowerBI.Tests
             var result = PluginControl.GetExpandedLookupFieldDisplayName("Manager", "Primary Email", "internalemailaddress", "Email");
 
             Assert.Equal("Email", result);
+        }
+
+        [Fact]
+        public void GetExpandedLookupFieldDisplayName_IncludesTargetTable_WhenProvided()
+        {
+            var result = PluginControl.GetExpandedLookupFieldDisplayName("Reported By", "Account", "Address 1: City", "address1_city", null);
+
+            Assert.Equal("Reported By : Account : Address 1: City", result);
+        }
+
+        [Fact]
+        public void ShouldForceExpandedLookupLinkType_ReturnsTrue_ForPolymorphicLookupWithLinkEnabled()
+        {
+            var lookupAttr = new AttributeMetadata
+            {
+                LogicalName = "pbi_reportedbyid",
+                AttributeType = "Lookup",
+                Targets = new List<string> { "account", "contact", "employee" }
+            };
+
+            var result = PluginControl.ShouldForceExpandedLookupLinkType(true, lookupAttr);
+
+            Assert.True(result);
+        }
+
+        [Fact]
+        public void ShouldForceExpandedLookupLinkType_ReturnsFalse_ForSingleTargetLookup()
+        {
+            var lookupAttr = new AttributeMetadata
+            {
+                LogicalName = "customerid",
+                AttributeType = "Lookup",
+                Targets = new List<string> { "account" }
+            };
+
+            var result = PluginControl.ShouldForceExpandedLookupLinkType(true, lookupAttr);
+
+            Assert.False(result);
         }
 
         [Fact]

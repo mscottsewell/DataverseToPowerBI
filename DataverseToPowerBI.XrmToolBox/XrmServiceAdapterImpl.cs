@@ -353,8 +353,10 @@ namespace DataverseToPowerBI.XrmToolBox
                 LogicalName = logicalName,
                 DisplayName = displayName,
                 SchemaName = metadata.SchemaName,
+                ObjectTypeCode = metadata.ObjectTypeCode ?? 0,
                 PrimaryIdAttribute = metadata.PrimaryIdAttribute,
-                PrimaryNameAttribute = metadata.PrimaryNameAttribute
+                PrimaryNameAttribute = metadata.PrimaryNameAttribute,
+                MetadataId = metadata.MetadataId?.ToString()
             };
         }
 

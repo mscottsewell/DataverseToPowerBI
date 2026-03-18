@@ -1384,8 +1384,8 @@ namespace DataverseToPowerBI.Tests
                 attributeDisplayInfo,
                 new HashSet<string>(StringComparer.OrdinalIgnoreCase));
 
-            Assert.Contains("LEFT OUTER JOIN account exp_customerid ON exp_customerid.accountid = Base.customerid", tmdl);
-            Assert.DoesNotContain("LEFT OUTER JOIN Account Display Name exp_customerid", tmdl);
+            Assert.Contains("LEFT OUTER JOIN account exp_customerid_account ON exp_customerid_account.accountid = Base.customerid", tmdl);
+            Assert.DoesNotContain("LEFT OUTER JOIN Account Display Name exp_customerid_account", tmdl);
             Assert.Contains("Customer : Name", tmdl);
             Assert.DoesNotContain("Account Display Name : Name", tmdl);
         }
@@ -1454,7 +1454,7 @@ namespace DataverseToPowerBI.Tests
         }
 
         [Fact]
-        public void GenerateTableTmdl_ExpandedLookupLinkMeasure_UsesCurrentRecordLookupValue()
+        public void GenerateTableTmdl_ExpandedLookupLinkColumn_UsesCurrentRecordLookupValue()
         {
             var table = new ExportTable
             {
@@ -1490,16 +1490,18 @@ namespace DataverseToPowerBI.Tests
                 new Dictionary<string, Dictionary<string, AttributeDisplayInfo>>(StringComparer.OrdinalIgnoreCase),
                 new HashSet<string>(StringComparer.OrdinalIgnoreCase));
 
-            Assert.Contains("measure 'Link to Opportunity:Parent Account'", tmdl);
+            Assert.Contains("column 'Link to Opportunity:Parent Account' = ```", tmdl);
             Assert.Contains("IF (", tmdl);
-            Assert.Contains("LEN ( SELECTEDVALUE ( 'Opportunity'[parentaccountid] ) ) > 1", tmdl);
+            Assert.Contains("LEN ( 'Opportunity'[parentaccountid] ) > 1", tmdl);
             Assert.Contains("etn=account&id=", tmdl);
-            Assert.Contains("& SELECTEDVALUE ( 'Opportunity'[parentaccountid], BLANK () )", tmdl);
+            Assert.DoesNotContain("&etc=", tmdl);
+            Assert.Contains("& 'Opportunity'[parentaccountid]", tmdl);
             Assert.Contains("BLANK ()", tmdl);
+            Assert.Contains("dataCategory: WebUrl", tmdl);
         }
 
         [Fact]
-        public void GenerateTableTmdl_ExpandedLookupLinkMeasure_UsesSourceTableAndLookupName()
+        public void GenerateTableTmdl_ExpandedLookupLinkColumn_UsesSourceTableAndLookupName()
         {
             var table = new ExportTable
             {
@@ -1535,11 +1537,11 @@ namespace DataverseToPowerBI.Tests
                 new Dictionary<string, Dictionary<string, AttributeDisplayInfo>>(StringComparer.OrdinalIgnoreCase),
                 new HashSet<string>(StringComparer.OrdinalIgnoreCase));
 
-            Assert.Contains("measure 'Link to Resource:Manager'", tmdl);
+            Assert.Contains("column 'Link to Resource:Manager' = ```", tmdl);
         }
 
         [Fact]
-        public void GenerateTableTmdl_ExpandedLookupLinkMeasure_UsesSourceTableAndLookupName_WhenLookupLabelMatchesTarget()
+        public void GenerateTableTmdl_ExpandedLookupLinkColumn_UsesSourceTableAndLookupName_WhenLookupLabelMatchesTarget()
         {
             var table = new ExportTable
             {
@@ -1575,11 +1577,11 @@ namespace DataverseToPowerBI.Tests
                 new Dictionary<string, Dictionary<string, AttributeDisplayInfo>>(StringComparer.OrdinalIgnoreCase),
                 new HashSet<string>(StringComparer.OrdinalIgnoreCase));
 
-            Assert.Contains("measure 'Link to Resource:Position'", tmdl);
+            Assert.Contains("column 'Link to Resource:Position' = ```", tmdl);
         }
 
         [Fact]
-        public void GenerateTableTmdl_ExpandedLookupLinkMeasure_ForcesLocalLookupIdIncludedAndHidden()
+        public void GenerateTableTmdl_ExpandedLookupLinkColumn_ForcesLocalLookupIdIncludedAndHidden()
         {
             var table = new ExportTable
             {
@@ -1629,6 +1631,82 @@ namespace DataverseToPowerBI.Tests
             var tmdl = _builder.GenerateTableTmdl(table, info, new HashSet<string>(StringComparer.OrdinalIgnoreCase));
 
             Assert.Matches(@"column managerid\r?\n(?:\t\t[^\r\n]*\r?\n)*\t\tisHidden", tmdl);
+        }
+
+        [Fact]
+        public void GenerateTableTmdl_PolymorphicExpandedLookupLinkColumn_UsesTypeAndHidesTypeColumn()
+        {
+            var table = new ExportTable
+            {
+                LogicalName = "incident",
+                DisplayName = "Case",
+                PrimaryIdAttribute = "incidentid",
+                Attributes = new List<DataverseToPowerBI.Core.Models.AttributeMetadata>
+                {
+                    new DataverseToPowerBI.Core.Models.AttributeMetadata
+                    {
+                        LogicalName = "pbi_reportedbyid",
+                        DisplayName = "Reported By",
+                        AttributeType = "Lookup",
+                        Targets = new List<string> { "account", "contact" }
+                    }
+                },
+                ExpandedLookups = new List<DataverseToPowerBI.Core.Models.ExpandedLookupConfig>
+                {
+                    new DataverseToPowerBI.Core.Models.ExpandedLookupConfig
+                    {
+                        LookupAttributeName = "pbi_reportedbyid",
+                        LookupDisplayName = "Reported By",
+                        IncludeRelatedRecordLink = true,
+                        TargetTableLogicalName = "account",
+                        TargetTableDisplayName = "Account",
+                        TargetTablePrimaryKey = "accountid",
+                        Attributes = new List<DataverseToPowerBI.Core.Models.ExpandedLookupAttribute>
+                        {
+                            new DataverseToPowerBI.Core.Models.ExpandedLookupAttribute
+                            {
+                                LogicalName = "address1_city",
+                                DisplayName = "Address 1: City",
+                                TargetTableLogicalName = "account",
+                                TargetTableDisplayName = "Account",
+                                TargetTablePrimaryKey = "accountid",
+                                TargetTableObjectTypeCode = 1,
+                                AttributeType = "String",
+                                IncludeInModel = true
+                            }
+                        }
+                    }
+                },
+                LookupSubColumnConfigs = new Dictionary<string, DataverseToPowerBI.Core.Models.LookupSubColumnConfig>(StringComparer.OrdinalIgnoreCase)
+                {
+                    ["pbi_reportedbyid"] = new DataverseToPowerBI.Core.Models.LookupSubColumnConfig
+                    {
+                        LookupAttributeLogicalName = "pbi_reportedbyid",
+                        IncludeIdField = false,
+                        IncludeTypeField = false,
+                        IncludeNameField = false
+                    }
+                }
+            };
+
+            var info = new Dictionary<string, Dictionary<string, AttributeDisplayInfo>>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["incident"] = new Dictionary<string, AttributeDisplayInfo>(StringComparer.OrdinalIgnoreCase)
+                {
+                    ["pbi_reportedbyid"] = new AttributeDisplayInfo { LogicalName = "pbi_reportedbyid", DisplayName = "Reported By", AttributeType = "Lookup" }
+                }
+            };
+
+            var tmdl = _builder.GenerateTableTmdl(table, info, new HashSet<string>(StringComparer.OrdinalIgnoreCase));
+
+            Assert.Contains("Reported By : Account : Address 1: City", tmdl);
+            Assert.Contains("column 'Link to Case:Reported By' = ```", tmdl);
+            Assert.Contains("pagetype=entityrecord&etc=", tmdl);
+            Assert.DoesNotContain("pagetype=entityrecord&etn=account", tmdl);
+            Assert.Contains("'Case'[pbi_reportedbyidtype]", tmdl);
+            Assert.Contains("'Case'[pbi_reportedbyid]", tmdl);
+            Assert.Matches(@"column pbi_reportedbyid\r?\n(?:\t\t[^\r\n]*\r?\n)*\t\tisHidden", tmdl);
+            Assert.Matches(@"column pbi_reportedbyidtype\r?\n(?:\t\t[^\r\n]*\r?\n)*\t\tisHidden", tmdl);
         }
 
         [Fact]
@@ -1710,6 +1788,67 @@ namespace DataverseToPowerBI.Tests
             var tmdl = _builder.GenerateTableTmdl(table, info, new HashSet<string>(StringComparer.OrdinalIgnoreCase));
             Assert.Contains("column customerid", tmdl);
             Assert.Contains("isHidden", tmdl);
+        }
+
+        [Fact]
+        public void GenerateTableTmdl_CustomPolymorphicLookup_GroupsNameTypeAndYomiColumns()
+        {
+            var table = new ExportTable
+            {
+                LogicalName = "incident",
+                DisplayName = "Incident",
+                PrimaryIdAttribute = "incidentid",
+                PrimaryNameAttribute = "title",
+                Attributes = new List<DataverseToPowerBI.Core.Models.AttributeMetadata>
+                {
+                    new DataverseToPowerBI.Core.Models.AttributeMetadata { LogicalName = "pbi_reportedbyidname", AttributeType = "String" },
+                    new DataverseToPowerBI.Core.Models.AttributeMetadata { LogicalName = "pbi_reportedbyidtype", AttributeType = "EntityName" },
+                    new DataverseToPowerBI.Core.Models.AttributeMetadata { LogicalName = "pbi_reportedbyidyominame", AttributeType = "String" },
+                    new DataverseToPowerBI.Core.Models.AttributeMetadata
+                    {
+                        LogicalName = "pbi_reportedbyid",
+                        DisplayName = "ReportedBy",
+                        AttributeType = "Lookup",
+                        Targets = new List<string> { "account", "contact" }
+                    }
+                },
+                LookupSubColumnConfigs = new Dictionary<string, DataverseToPowerBI.Core.Models.LookupSubColumnConfig>(StringComparer.OrdinalIgnoreCase)
+                {
+                    ["pbi_reportedbyid"] = new DataverseToPowerBI.Core.Models.LookupSubColumnConfig
+                    {
+                        LookupAttributeLogicalName = "pbi_reportedbyid",
+                        IncludeIdField = true,
+                        IncludeNameField = true,
+                        IncludeTypeField = true,
+                        IncludeYomiField = true
+                    }
+                }
+            };
+
+            var info = new Dictionary<string, Dictionary<string, AttributeDisplayInfo>>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["incident"] = new Dictionary<string, AttributeDisplayInfo>(StringComparer.OrdinalIgnoreCase)
+                {
+                    ["pbi_reportedbyid"] = new AttributeDisplayInfo
+                    {
+                        LogicalName = "pbi_reportedbyid",
+                        DisplayName = "ReportedBy",
+                        AttributeType = "Lookup",
+                        Targets = new List<string> { "account", "contact" }
+                    },
+                    ["pbi_reportedbyidname"] = new AttributeDisplayInfo { LogicalName = "pbi_reportedbyidname", AttributeType = "String" },
+                    ["pbi_reportedbyidtype"] = new AttributeDisplayInfo { LogicalName = "pbi_reportedbyidtype", AttributeType = "EntityName" },
+                    ["pbi_reportedbyidyominame"] = new AttributeDisplayInfo { LogicalName = "pbi_reportedbyidyominame", AttributeType = "String" }
+                }
+            };
+
+            var tmdl = _builder.GenerateTableTmdl(table, info, new HashSet<string>(StringComparer.OrdinalIgnoreCase));
+
+            Assert.Contains("column ReportedBy", tmdl);
+            Assert.DoesNotContain("column pbi_reportedbyidname", tmdl);
+            Assert.Contains("column pbi_reportedbyidtype", tmdl);
+            Assert.Contains("column pbi_reportedbyidyominame", tmdl);
+            Assert.Contains("column pbi_reportedbyidtype\r\n\t\tdataType: int64", tmdl, StringComparison.OrdinalIgnoreCase);
         }
 
         [Fact]
@@ -2221,6 +2360,7 @@ namespace DataverseToPowerBI.Tests
                 new HashSet<string>(StringComparer.OrdinalIgnoreCase));
 
             Assert.DoesNotContain("measure 'Link to Account'", tmdl);
+            Assert.DoesNotContain("column 'Link to Account' = ```", tmdl);
             Assert.DoesNotContain("measure 'Account Count'", tmdl);
         }
 
@@ -2250,6 +2390,42 @@ namespace DataverseToPowerBI.Tests
 
             Assert.Contains("measure 'Account Count'", tmdl);
             Assert.DoesNotContain("measure 'Link to Account'", tmdl);
+            Assert.DoesNotContain("column 'Link to Account' = ```", tmdl);
+        }
+
+        [Fact]
+        public void GenerateTableTmdl_FactTable_DefaultAutoRecordLink_UsesCalculatedColumn()
+        {
+            var table = new ExportTable
+            {
+                LogicalName = "incident",
+                DisplayName = "Case",
+                SchemaName = "Incident",
+                PrimaryIdAttribute = "incidentid",
+                Role = "Fact",
+                Attributes = new List<DataverseToPowerBI.Core.Models.AttributeMetadata>
+                {
+                    new DataverseToPowerBI.Core.Models.AttributeMetadata
+                    {
+                        LogicalName = "incidentid",
+                        DisplayName = "Case",
+                        AttributeType = "Uniqueidentifier"
+                    }
+                }
+            };
+
+            var tmdl = _builder.GenerateTableTmdl(
+                table,
+                new Dictionary<string, Dictionary<string, AttributeDisplayInfo>>(StringComparer.OrdinalIgnoreCase),
+                new HashSet<string>(StringComparer.OrdinalIgnoreCase));
+
+            Assert.Contains("column 'Link to Case' = ```", tmdl);
+            Assert.Contains("LEN ( 'Case'[incidentid] ) > 1", tmdl);
+            Assert.Contains("pagetype=entityrecord&etn=incident&id=", tmdl);
+            Assert.Contains("& 'Case'[incidentid]", tmdl);
+            Assert.Contains("dataCategory: WebUrl", tmdl);
+            Assert.DoesNotContain("measure 'Link to Case'", tmdl);
+            Assert.Contains("measure 'Case Count'", tmdl);
         }
 
         #endregion
@@ -2504,6 +2680,47 @@ namespace DataverseToPowerBI.Tests
 
             var occurrences = tmdl.Split(new[] { collidingTag }, StringSplitOptions.None).Length - 1;
             Assert.Equal(1, occurrences);
+        }
+
+        [Fact]
+        public void GenerateTableTmdl_WrappedDateTime_UsesDisplayNameAliasInSql()
+        {
+            var tableBuilder = new TableBuilder("opportunity", "Opportunity")
+                .WithPrimaryName("name", "Opportunity Name")
+                .WithDateTime("createdon", "Created On")
+                .AsFact();
+
+            var table = tableBuilder.Build();
+            var attributeDisplayInfo = new Dictionary<string, Dictionary<string, AttributeDisplayInfo>>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["opportunity"] = tableBuilder.BuildDisplayInfo()
+            };
+            var dateTableConfig = new DataverseToPowerBI.Core.Models.DateTableConfig
+            {
+                PrimaryDateTable = "opportunity",
+                PrimaryDateField = "createdon",
+                TimeZoneId = "UTC",
+                UtcOffsetHours = 0,
+                StartYear = 2020,
+                EndYear = 2030,
+                WrappedFields = new List<DataverseToPowerBI.Core.Models.DateTimeFieldConfig>
+                {
+                    new DataverseToPowerBI.Core.Models.DateTimeFieldConfig
+                    {
+                        TableName = "opportunity",
+                        FieldName = "createdon"
+                    }
+                }
+            };
+
+            var tmdl = _builder.GenerateTableTmdl(
+                table,
+                attributeDisplayInfo,
+                new HashSet<string>(StringComparer.OrdinalIgnoreCase),
+                dateTableConfig);
+
+            Assert.Contains("CAST(DATEADD(hour, 0, Base.createdon) AS DATE) [Created On]", tmdl, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("CAST(DATEADD(hour, 0, Base.createdon) AS DATE) AS createdon", tmdl, StringComparison.OrdinalIgnoreCase);
         }
 
         #endregion

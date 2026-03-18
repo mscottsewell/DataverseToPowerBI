@@ -8,6 +8,41 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [1.2026.6.14] - 2026-03-12
+
+### Added
+
+- **Polymorphic Expanded Lookup Support** — Expanded lookups can now select fields from any target table of a multi-target lookup instead of assuming a single related entity.
+  - Expanded attribute metadata now persists the target table logical name, display name, primary key, and object type code so multi-target selections remain stable across save/load and rebuilds.
+  - Expanded polymorphic field names now include the entity context where needed, producing distinct output such as `Reported By : Account : Address 1: City`.
+
+- **Calculated Record Link Columns** — Related-record links are now generated as calculated columns instead of measures.
+  - Standard table record links now generate as `Link to {Table}` calculated columns.
+  - Expanded lookup related-record links also generate as calculated columns, with `dataCategory: WebUrl` preserved on output.
+
+### Changed
+
+- **Expanded Lookup Picker Grouping** — The polymorphic Expand Lookup dialog now groups available attributes by related entity using the same grouped list style as the relationship selector.
+  - Multi-target lookup fields can be reviewed in one picker while still showing which related table each attribute belongs to.
+
+- **Polymorphic Lookup Handling** — Custom multi-target lookups are now treated as polymorphic based on metadata targets, not just the legacy Owner/Customer attribute types.
+  - Generated joins are now target-specific for polymorphic expanded fields, so each target table gets the correct join alias and object-type filter.
+  - Lookup entity discriminator sub-columns now map to numeric object type codes (`Whole Number` / `int64`) instead of text.
+
+### Fixed
+
+- **Date Attribute Display Names** — Wrapped DateTime fields no longer fall back to schema/logical aliases when generated SQL casts them to dates.
+  - Wrapped DateTime SQL projections now reuse the same alias helper as other fields so display-name aliases remain stable.
+
+- **Expanded Lookup Link Requirements** — Polymorphic related-record links now auto-require both the lookup id and lookup type sub-columns as hidden fields.
+  - This ensures the generated Dataverse URL has both the record id and the entity type code it needs for `etc=` links.
+
+- **Incremental Update Stability for Link Columns** — Existing calculated link columns are now parsed correctly during change analysis, preventing false modified-column diffs on unchanged rebuilds.
+
+- **Calendar Timezone Dialog Noise** — Removed the informational popup for selected DateOnly/TimeZoneIndependent fields in the date-table configuration dialog.
+
+---
+
 ## [1.2026.6.8] - 2026-03-10
 
 ### Added
