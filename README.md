@@ -86,7 +86,7 @@ This tool eliminates all of that complexity:
 
 ## 📌 Latest Changes
 
-> **v1.2026.6.14** — Full details in [CHANGELOG.md](docs/CHANGELOG.md).
+> **v1.2026.6.19** — Full details in [CHANGELOG.md](docs/CHANGELOG.md).
 
 ### 🔀 Polymorphic Expanded Lookups
 
@@ -103,8 +103,13 @@ Related-record navigation links are now generated as **calculated columns** inst
 - Expanded lookup links also generate as columns, using `etn=` for single-target lookups and `etc=` for polymorphic lookups.
 - For polymorphic links, the required lookup id and lookup type columns are auto-included and hidden.
 
-### 🛠 Stability Fixes
+### 💾 Model Configuration Backup
 
+A copy of `SemanticModelConfig.json` is now automatically saved into the PBIP output folder on each build. If your `%APPDATA%` settings are lost or you move the model to another machine, re-import the JSON via the Semantic Model Manager's **Import** feature.
+
+### 🛠 Additional Changes
+
+- Count measures now format with locale-aware thousands separators (`#,0`).
 - Wrapped DateTime fields now keep their display-name aliases when generated as date casts.
 - Unchanged rebuilds no longer report false column changes for existing calculated link columns.
 - The informational timezone warning popup in the calendar dialog was removed.

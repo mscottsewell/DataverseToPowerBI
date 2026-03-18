@@ -2,7 +2,7 @@
 <package>
 	<metadata>
     <id>DataverseToPowerBI.XrmToolBox</id>
-  <version>1.2026.6.18</version>
+  <version>1.2026.6.19</version>
     <title>Dataverse to Power BI Semantic Model</title>
     <authors>Scott Sewell</authors>
     <owners>mScottSewell</owners>
@@ -11,13 +11,13 @@
     <description>Extract Dataverse metadata and generate Power BI TMDL/PBIP semantic models with automatic table relationships, calendar tables, and incremental change detection.</description>
     <summary>XrmToolBox plugin for generating Power BI semantic models from Dataverse metadata</summary>
     <releaseNotes>
-      v1.2026.6.14 — **Polymorphic expanded lookups, safer link generation, and cleaner rebuild behavior.**
+      v1.2026.6.19 — **Polymorphic expanded lookups, config backup, thousands separator, and stability fixes.**
 
-      NEW — Expanded lookups now support multi-target polymorphic relationships with target-aware metadata and distinct output naming.
+      NEW — Expanded lookups now support multi-target polymorphic relationships with target-aware metadata and distinct output naming. Model configuration JSON is now automatically saved into the PBIP output folder on each build for backup and portability.
 
-      CHANGED — Related-record links now generate as calculated columns instead of measures, and the polymorphic Expand Lookup picker now groups attributes by related entity.
+      CHANGED — Related-record links now generate as calculated columns instead of measures. Count measures now use locale-aware thousands grouping (#,0). The polymorphic Expand Lookup picker groups attributes by related entity. OrganizationUniqueName is now properly persisted across save/copy operations.
 
-      FIXED — Polymorphic link generation now auto-requires hidden id/type fields, wrapped DateTime aliases keep display names, unchanged rebuilds no longer report false diffs for calculated link columns, and the unnecessary timezone warning popup was removed.
+      FIXED — Polymorphic link generation auto-requires hidden id/type fields, wrapped DateTime aliases keep display names, unchanged rebuilds no longer report false diffs for calculated link columns, and the unnecessary timezone warning popup was removed.
 
       Full details: docs/CHANGELOG.md | https://github.com/mscottsewell/DataverseToPowerBI
     </releaseNotes>

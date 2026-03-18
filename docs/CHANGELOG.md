@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
-## [1.2026.6.14] - 2026-03-12
+## [1.2026.6.19] - 2026-03-18
 
 ### Added
 
@@ -20,6 +20,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - Standard table record links now generate as `Link to {Table}` calculated columns.
   - Expanded lookup related-record links also generate as calculated columns, with `dataCategory: WebUrl` preserved on output.
 
+- **Model Configuration Backup in PBIP Folder** — After each successful build, a copy of the current `SemanticModelConfig.json` is automatically saved into the PBIP output folder alongside the generated model files.
+  - The full configuration (table selections, attributes, relationships, display overrides, expanded lookups, connection settings) travels with the model output.
+  - If the `%APPDATA%` configuration is lost or the model is transferred to another machine, the JSON file can be re-imported via the Semantic Model Manager's **Import** feature to restore the configuration.
+
 ### Changed
 
 - **Expanded Lookup Picker Grouping** — The polymorphic Expand Lookup dialog now groups available attributes by related entity using the same grouped list style as the relationship selector.
@@ -28,6 +32,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - **Polymorphic Lookup Handling** — Custom multi-target lookups are now treated as polymorphic based on metadata targets, not just the legacy Owner/Customer attribute types.
   - Generated joins are now target-specific for polymorphic expanded fields, so each target table gets the correct join alias and object-type filter.
   - Lookup entity discriminator sub-columns now map to numeric object type codes (`Whole Number` / `int64`) instead of text.
+
+- **Count Measure Thousands Separator** — Auto-generated `{Table} Count` measures now use `formatString: #,0` instead of `formatString: 0`, enabling locale-aware thousands grouping in Power BI visuals (e.g. `1,234` in en-US, `1.234` in de-DE). Power BI renders the group separator based on the report's locale settings automatically.
+
+- **Organization Unique Name Persistence** — The `OrganizationUniqueName` value is now properly carried through model save/update and copy operations, ensuring the TDS `DataverseUniqueDB` parameter remains stable across saves and clones.
 
 ### Fixed
 

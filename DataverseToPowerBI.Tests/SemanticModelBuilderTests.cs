@@ -669,7 +669,7 @@ namespace DataverseToPowerBI.Tests
                 "\tlineageTag: aaaa\r\n" +
                 "\r\n" +
                 "\tmeasure 'Contact Count' = COUNTROWS('Contact')\r\n" +
-                "\t\tformatString: 0\r\n" +
+                "\t\tformatString: #,0\r\n" +
                 "\t\tlineageTag: bbbb\r\n" +
                 "\r\n" +
                 "\tcolumn contactid\r\n" +
@@ -731,7 +731,7 @@ namespace DataverseToPowerBI.Tests
                 "\tlineageTag: aaaa\r\n" +
                 "\r\n" +
                 "\tmeasure 'Test Count' = COUNTROWS('Test')\r\n" +
-                "\t\tformatString: 0\r\n" +
+                "\t\tformatString: #,0\r\n" +
                 "\t\tlineageTag: bbbb\r\n" +
                 "\r\n" +
                 "\t/// Source: test.col1\r\n" +

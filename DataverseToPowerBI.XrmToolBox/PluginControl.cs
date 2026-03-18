@@ -6035,6 +6035,22 @@ namespace DataverseToPowerBI.XrmToolBox
                         createBackup,
                         dateTableConfig,
                         removeOrphanedTables);
+
+                    // Save a copy of the current model configuration JSON into the PBIP folder
+                    if (success && _currentModel != null)
+                    {
+                        try
+                        {
+                            var envName = UrlHelper.ExtractEnvironmentName(fullUrl);
+                            var pbipFolder = Path.Combine(outputPath, envName, modelName);
+                            SaveModelConfigToFolder(pbipFolder, _currentModel);
+                        }
+                        catch (Exception ex)
+                        {
+                            // Non-fatal — log but don't fail the build
+                            DebugLogger.Log($"Warning: Could not save model configuration to PBIP folder: {ex.Message}");
+                        }
+                    }
                     
                     args.Result = new { 
                         Success = success, 
@@ -6109,6 +6125,31 @@ namespace DataverseToPowerBI.XrmToolBox
                     }
                 }
             });
+        }
+
+        /// <summary>
+        /// Serializes the current <see cref="SemanticModelConfig"/> as JSON and writes
+        /// it into the PBIP folder so the configuration travels with the model output.
+        /// </summary>
+        private static void SaveModelConfigToFolder(string pbipFolder, SemanticModelConfig model)
+        {
+            if (!Directory.Exists(pbipFolder))
+                return;
+
+            var serializer = new DataContractJsonSerializer(
+                typeof(SemanticModelConfig),
+                new DataContractJsonSerializerSettings
+                {
+                    UseSimpleDictionaryFormat = true
+                });
+
+            using (var ms = new MemoryStream())
+            {
+                serializer.WriteObject(ms, model);
+                var configPath = Path.Combine(pbipFolder, "SemanticModelConfig.json");
+                File.WriteAllText(configPath, Encoding.UTF8.GetString(ms.ToArray()));
+                DebugLogger.Log($"Saved model configuration to: {configPath}");
+            }
         }
         
         private void CopyDirectory(string sourceDir, string destDir)

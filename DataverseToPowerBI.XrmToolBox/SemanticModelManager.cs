@@ -220,6 +220,7 @@ namespace DataverseToPowerBI.XrmToolBox
 
             // Update the existing model
             existing.DataverseUrl = model.DataverseUrl;
+            existing.OrganizationUniqueName = model.OrganizationUniqueName;
             existing.ConnectionType = model.ConnectionType;
             existing.FabricLinkSQLEndpoint = model.FabricLinkSQLEndpoint;
             existing.FabricLinkSQLDatabase = model.FabricLinkSQLDatabase;
@@ -285,6 +286,7 @@ namespace DataverseToPowerBI.XrmToolBox
             {
                 Name = newName,
                 DataverseUrl = source.DataverseUrl,
+                OrganizationUniqueName = source.OrganizationUniqueName,
                 ConnectionType = source.ConnectionType,
                 FabricLinkSQLEndpoint = source.FabricLinkSQLEndpoint,
                 FabricLinkSQLDatabase = source.FabricLinkSQLDatabase,

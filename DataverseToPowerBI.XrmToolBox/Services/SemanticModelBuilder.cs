@@ -6067,7 +6067,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
             if (includeCountMeasure)
             {
                 sb.AppendLine($"\tmeasure '{displayName} Count' = COUNTROWS('{displayName}')");
-                sb.AppendLine($"\t\tformatString: 0");
+                sb.AppendLine($"\t\tformatString: #,0");
                 sb.AppendLine($"\t\tlineageTag: {GetOrNewLineageTag(existingLineageTags, $"measure:{displayName} Count")}");
                 sb.AppendLine();
             }
