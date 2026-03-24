@@ -659,7 +659,7 @@ namespace DataverseToPowerBI.XrmToolBox
                     Conditions =
                     {
                         new ConditionExpression("returnedtypecode", ConditionOperator.Equal, entityLogicalName),
-                        new ConditionExpression("querytype", ConditionOperator.Equal, 0) // Public views
+                        new ConditionExpression("querytype", ConditionOperator.In, 0, 1) // Public views + Advanced Find views
                     }
                 },
                 Orders = { new OrderExpression("name", OrderType.Ascending) }

@@ -363,6 +363,20 @@ namespace DataverseToPowerBI.Tests
             Assert.Contains("[c].[firstname] = 'John'", result.SqlWhereClause);
         }
 
+        [Fact]
+        public void ConvertToWhereClause_LinkEntityWithoutFilter_GeneratesExistsSubquery()
+        {
+            // Inner join with no filter still restricts results to rows with a matching linked row
+            var xml = @"<fetch><entity name=""account"">
+                <filter><condition attribute=""statecode"" operator=""eq"" value=""0"" /></filter>
+                <link-entity name=""opportunity"" alias=""aa"" link-type=""inner"" from=""parentaccountid"" to=""accountid"" />
+            </entity></fetch>";
+            var result = new FetchXmlToSqlConverter().ConvertToWhereClause(xml);
+            Assert.Contains("EXISTS", result.SqlWhereClause);
+            Assert.Contains("SELECT 1 FROM [opportunity] AS [aa]", result.SqlWhereClause);
+            Assert.Contains("[aa].[parentaccountid] = [Base].[accountid]", result.SqlWhereClause);
+        }
+
         #endregion
 
         #region SQL Injection Prevention

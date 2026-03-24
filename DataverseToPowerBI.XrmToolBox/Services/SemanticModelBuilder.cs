@@ -457,13 +457,17 @@ namespace DataverseToPowerBI.XrmToolBox.Services
         /// Captures existing per-table artifacts that should survive a full rebuild.
         /// Keyed by source table logical name from the generated "/// Source:" header.
         /// </summary>
-        private Dictionary<string, ExistingTablePreservationInfo> CaptureExistingTablePreservationData(string pbipFolder, string projectName)
+        private Dictionary<string, ExistingTablePreservationInfo> CaptureExistingTablePreservationData(string pbipFolder, string projectName, IReadOnlyList<ExportTable>? tables = null)
         {
             var result = new Dictionary<string, ExistingTablePreservationInfo>(StringComparer.OrdinalIgnoreCase);
             var tablesFolder = Path.Combine(pbipFolder, $"{projectName}.SemanticModel", "definition", "tables");
 
             if (!Directory.Exists(tablesFolder))
                 return result;
+
+            // Build lookup so we can pass table context to ExtractUserMeasuresSection
+            // (needed to identify and exclude auto-generated measures like count measures).
+            var tablesByLogical = tables?.ToDictionary(t => t.LogicalName, t => t, StringComparer.OrdinalIgnoreCase);
 
             foreach (var tablePath in Directory.GetFiles(tablesFolder, "*.tmdl"))
             {
@@ -480,11 +484,14 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                     if (string.IsNullOrWhiteSpace(logicalName))
                         continue;
 
+                    ExportTable? tableInfo = null;
+                    tablesByLogical?.TryGetValue(logicalName, out tableInfo);
+
                     result[logicalName] = new ExistingTablePreservationInfo
                     {
                         LineageTags = ParseExistingLineageTags(tablePath),
                         ColumnMetadata = ParseExistingColumnMetadata(tablePath),
-                        UserMeasuresSection = ExtractUserMeasuresSection(tablePath),
+                        UserMeasuresSection = ExtractUserMeasuresSection(tablePath, tableInfo),
                         UserHierarchiesSection = ExtractUserHierarchiesSection(tablePath),
                         QueryGroup = ParseExistingQueryGroup(tablePath)
                     };
@@ -1878,7 +1885,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
             string? existingDatabaseTmdl = null;
             if (Directory.Exists(pbipFolder))
             {
-                existingTablePreservationData = CaptureExistingTablePreservationData(pbipFolder, projectName);
+                existingTablePreservationData = CaptureExistingTablePreservationData(pbipFolder, projectName, tables);
                 existingDatabaseTmdl = CaptureExistingDatabaseTmdl(pbipFolder, projectName);
                 Directory.Delete(pbipFolder, true);
             }

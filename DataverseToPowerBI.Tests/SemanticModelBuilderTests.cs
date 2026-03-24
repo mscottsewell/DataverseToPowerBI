@@ -2389,6 +2389,7 @@ namespace DataverseToPowerBI.Tests
                 new HashSet<string>(StringComparer.OrdinalIgnoreCase));
 
             Assert.Contains("measure 'Account Count'", tmdl);
+            Assert.Contains("formatString: #,0", tmdl);
             Assert.DoesNotContain("measure 'Link to Account'", tmdl);
             Assert.DoesNotContain("column 'Link to Account' = ```", tmdl);
         }
@@ -2426,6 +2427,7 @@ namespace DataverseToPowerBI.Tests
             Assert.Contains("dataCategory: WebUrl", tmdl);
             Assert.DoesNotContain("measure 'Link to Case'", tmdl);
             Assert.Contains("measure 'Case Count'", tmdl);
+            Assert.Contains("formatString: #,0", tmdl);
         }
 
         #endregion

@@ -5717,6 +5717,11 @@ namespace DataverseToPowerBI.XrmToolBox
                 {
                     foreach (var expand in expands)
                     {
+                        // Only check expanded lookups whose parent lookup is actually selected or required —
+                        // mirrors the filter in PrepareExportData so we don't flag columns that won't be in the model.
+                        if (!selected.Contains(expand.LookupAttributeName) && !requiredAttrs.Contains(expand.LookupAttributeName))
+                            continue;
+
                         foreach (var attr in expand.Attributes.Where(a => a.IncludeInModel ?? true))
                         {
                             var effectiveName = GetExpandedLookupEffectiveDisplayName(tableName, expand.LookupAttributeName, attr);
@@ -5738,13 +5743,79 @@ namespace DataverseToPowerBI.XrmToolBox
             
             if (conflicts.Count == 0) return false;
             
-            MessageBox.Show(
-                "Duplicate display name aliases found. Each column in a table must have a unique display name.\n\n" +
-                "Conflicts:\n" + string.Join("\n", conflicts) + "\n\n" +
-                "Double-click the Display Name column in the attributes list to rename conflicting columns.",
-                "Duplicate Column Names",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Warning);
+            using (var dlg = new Form())
+            {
+                dlg.Text = "Duplicate Column Names";
+                dlg.StartPosition = FormStartPosition.CenterParent;
+                dlg.Width = 750;
+                dlg.MinimumSize = new System.Drawing.Size(500, 300);
+                dlg.MaximizeBox = false;
+                dlg.MinimizeBox = false;
+                dlg.ShowIcon = false;
+                dlg.ShowInTaskbar = false;
+                dlg.FormBorderStyle = FormBorderStyle.Sizable;
+
+                var icon = new PictureBox
+                {
+                    Image = SystemIcons.Warning.ToBitmap(),
+                    SizeMode = PictureBoxSizeMode.AutoSize,
+                    Location = new System.Drawing.Point(12, 12)
+                };
+
+                var header = new System.Windows.Forms.Label
+                {
+                    Text = "Duplicate display name aliases found. Each column in a table must have a unique display name.",
+                    AutoSize = false,
+                    Location = new System.Drawing.Point(52, 12),
+                    Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
+                    Width = dlg.ClientSize.Width - 64,
+                    Height = 36
+                };
+
+                var textBox = new TextBox
+                {
+                    Multiline = true,
+                    ReadOnly = true,
+                    ScrollBars = ScrollBars.Vertical,
+                    WordWrap = true,
+                    Location = new System.Drawing.Point(12, 54),
+                    Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right,
+                    Width = dlg.ClientSize.Width - 24,
+                    Font = new System.Drawing.Font("Segoe UI", 9),
+                    Text = "Conflicts:\r\n" + string.Join("\r\n", conflicts)
+                };
+
+                var footer = new System.Windows.Forms.Label
+                {
+                    Text = "Double-click the Display Name column in the attributes list to rename conflicting columns.",
+                    AutoSize = false,
+                    Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right,
+                    Width = dlg.ClientSize.Width - 24,
+                    Location = new System.Drawing.Point(12, 0),
+                    Height = 36
+                };
+
+                var okButton = new Button
+                {
+                    Text = "OK",
+                    DialogResult = DialogResult.OK,
+                    Anchor = AnchorStyles.Bottom | AnchorStyles.Right,
+                    Width = 80,
+                    Height = 28
+                };
+                dlg.AcceptButton = okButton;
+
+                // Size the dialog to fit content, capped at 600px height
+                var contentHeight = 54 + (conflicts.Count * 16) + 20;
+                dlg.Height = Math.Min(Math.Max(contentHeight + 140, 300), 600);
+
+                textBox.Height = dlg.ClientSize.Height - 54 - 36 - 48;
+                footer.Location = new System.Drawing.Point(12, dlg.ClientSize.Height - 74);
+                okButton.Location = new System.Drawing.Point(dlg.ClientSize.Width - 92, dlg.ClientSize.Height - 36);
+
+                dlg.Controls.AddRange(new Control[] { icon, header, textBox, footer, okButton });
+                dlg.ShowDialog(this);
+            }
             return true;
         }
         

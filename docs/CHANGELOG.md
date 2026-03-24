@@ -8,6 +8,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [1.2026.6.24] - 2026-03-24
+
+### Added
+
+- **Advanced Find Views in View Selector** — The view picker now includes Advanced Find views (querytype 1) alongside standard public views, giving users access to more filtering options when selecting default fields.
+
+### Changed
+
+- **Duplicate Column Names Dialog** — Replaced the narrow system MessageBox with a wider, resizable custom dialog (750px default width) with a scrollable text area. Long conflict lists are now easily readable without text wrapping.
+
+### Fixed
+
+- **FetchXML Inner Join Without Filter** — Inner `link-entity` joins without an explicit `<filter>` child now correctly generate an `EXISTS` subquery. Previously the join was silently ignored, producing SQL that returned more rows than the FetchXML view intended.
+- **Expanded Lookup False-Positive Duplicate Warnings** — The duplicate display name check now skips expanded lookup columns whose parent lookup attribute isn't selected or required. Previously, expanded columns from deselected lookups were incorrectly flagged as conflicts.
+- **Count Measure Preservation on Rebuild** — The user-measure extraction during incremental rebuilds now receives table context, allowing it to correctly identify auto-generated count measures and exclude them from the user-measures preservation block.
+
+---
+
 ## [1.2026.6.19] - 2026-03-18
 
 ### Added

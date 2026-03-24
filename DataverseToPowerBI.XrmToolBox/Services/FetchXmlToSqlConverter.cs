@@ -559,14 +559,13 @@ namespace DataverseToPowerBI.XrmToolBox.Services
             
             // Wrap all conditions in a single EXISTS subquery for this link-entity
             // FetchXML: from = column on the linked (inner) table, to = column on the parent (outer) table
-            if (innerConditions.Any())
-            {
-                var joinPredicate = $"{EscapeSqlIdentifier(alias)}.{EscapeSqlIdentifier(fromAttr)} = {EscapeSqlIdentifier(baseTableAlias)}.{EscapeSqlIdentifier(toAttr)}";
-                var allConditions = string.Join(" AND ", new[] { joinPredicate }.Concat(innerConditions));
-                var existsClause = $"EXISTS (SELECT 1 FROM {EscapeSqlIdentifier(linkEntityName)} AS {EscapeSqlIdentifier(alias)} WHERE {allConditions})";
-                clauses.Add(existsClause);
-                _debugLog.Add($"    Generated EXISTS clause: {existsClause}");
-            }
+            // An inner link-entity always produces an EXISTS — even without filters it restricts
+            // results to rows that have at least one matching row in the linked table.
+            var joinPredicate = $"{EscapeSqlIdentifier(alias)}.{EscapeSqlIdentifier(fromAttr)} = {EscapeSqlIdentifier(baseTableAlias)}.{EscapeSqlIdentifier(toAttr)}";
+            var allConditions = string.Join(" AND ", new[] { joinPredicate }.Concat(innerConditions));
+            var existsClause = $"EXISTS (SELECT 1 FROM {EscapeSqlIdentifier(linkEntityName)} AS {EscapeSqlIdentifier(alias)} WHERE {allConditions})";
+            clauses.Add(existsClause);
+            _debugLog.Add($"    Generated EXISTS clause: {existsClause}");
             
             return clauses;
         }
