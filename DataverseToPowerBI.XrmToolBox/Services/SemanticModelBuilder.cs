@@ -449,6 +449,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
             public Dictionary<string, string> LineageTags { get; set; } = new(StringComparer.OrdinalIgnoreCase);
             public Dictionary<string, ExistingColumnInfo> ColumnMetadata { get; set; } = new(StringComparer.OrdinalIgnoreCase);
             public string? UserMeasuresSection { get; set; }
+            public string? UserColumnsSection { get; set; }
             public string? UserHierarchiesSection { get; set; }
             public string? QueryGroup { get; set; }
         }
@@ -492,6 +493,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                         LineageTags = ParseExistingLineageTags(tablePath),
                         ColumnMetadata = ParseExistingColumnMetadata(tablePath),
                         UserMeasuresSection = ExtractUserMeasuresSection(tablePath, tableInfo),
+                        UserColumnsSection = ExtractUserColumnsSection(tablePath),
                         UserHierarchiesSection = ExtractUserHierarchiesSection(tablePath),
                         QueryGroup = ParseExistingQueryGroup(tablePath)
                     };
@@ -1962,6 +1964,11 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                     preservationInfo?.LineageTags,
                     preservationInfo?.ColumnMetadata,
                     preservationInfo?.QueryGroup);
+
+                if (!string.IsNullOrEmpty(preservationInfo?.UserColumnsSection))
+                {
+                    tableTmdl = InsertUserColumns(tableTmdl, preservationInfo.UserColumnsSection!);
+                }
 
                 if (!string.IsNullOrEmpty(preservationInfo?.UserHierarchiesSection))
                 {
@@ -4606,6 +4613,13 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                     userMeasuresSection = ExtractUserMeasuresSection(sourceFile, table);
                 }
 
+                // Extract user-added columns (no DataverseToPowerBI_LogicalName annotation)
+                string? userColumnsSection = null;
+                if (sourceFile != null)
+                {
+                    userColumnsSection = ExtractUserColumnsSection(sourceFile);
+                }
+
                 // Extract user-defined hierarchies if table exists (from current or renamed file)
                 string? userHierarchiesSection = null;
                 if (sourceFile != null)
@@ -4615,6 +4629,12 @@ namespace DataverseToPowerBI.XrmToolBox.Services
 
                 // Generate new table TMDL with preserved lineage tags and column metadata
                 var tableTmdl = GenerateTableTmdl(table, attributeDisplayInfo, requiredLookupColumns, dateTableConfig, existingLineageTags: existingTags, existingColumnMetadata: existingColMeta, existingQueryGroup: existingQueryGroup);
+
+                // Append user-added columns if any
+                if (!string.IsNullOrEmpty(userColumnsSection))
+                {
+                    tableTmdl = InsertUserColumns(tableTmdl, userColumnsSection!);
+                }
 
                 // Append user hierarchies if any
                 if (!string.IsNullOrEmpty(userHierarchiesSection))
@@ -4874,6 +4894,118 @@ namespace DataverseToPowerBI.XrmToolBox.Services
 
             // Fallback: append at end
             return tableTmdl + measuresSection;
+        }
+
+        /// <summary>
+        /// Extracts user-added column blocks from existing TMDL.
+        /// User-added columns are those without a <c>DataverseToPowerBI_LogicalName</c> annotation,
+        /// meaning they were manually added by the user in Power BI Desktop or a text editor
+        /// (e.g. calculated columns, custom sourced columns).
+        /// </summary>
+        internal string? ExtractUserColumnsSection(string tmdlPath)
+        {
+            if (!File.Exists(tmdlPath))
+                return null;
+
+            try
+            {
+                var content = File.ReadAllText(tmdlPath);
+
+                // Match each column block (with optional preceding /// doc comments)
+                var matches = ExistingColumnBlockRegex.Matches(content);
+                if (matches.Count == 0)
+                    return null;
+
+                var sb = new StringBuilder();
+                foreach (Match match in matches)
+                {
+                    var block = match.Value;
+
+                    // Tool-generated columns always have this annotation — skip them
+                    if (block.Contains("DataverseToPowerBI_LogicalName"))
+                        continue;
+
+                    // Also skip the SummarizationSetBy-only columns that the tool generates
+                    // without a logical name annotation (legacy columns from older builds).
+                    // Tool columns always have a sourceColumn property.
+                    // User calculated columns use '= expression' syntax without sourceColumn.
+                    // However, user-added sourced columns could also have sourceColumn,
+                    // so we only use the annotation as the distinguishing marker.
+
+                    // Capture any preceding /// doc-comment lines that belong to this column
+                    var blockStart = match.Index;
+                    var docCommentStart = blockStart;
+                    var pos = blockStart;
+                    while (pos > 1)
+                    {
+                        // pos points to the first char of the current line.
+                        // The character at pos-1 is the \n terminating the preceding line.
+                        var prevLineEnd = pos - 1;
+                        if (content[prevLineEnd] != '\n')
+                            break;
+
+                        // Find the \n that *starts* the preceding line
+                        var nlBefore = content.LastIndexOf('\n', prevLineEnd - 1);
+                        var lineStart = nlBefore >= 0 ? nlBefore + 1 : 0;
+                        var line = content.Substring(lineStart, prevLineEnd - lineStart).TrimEnd('\r');
+                        if (line.StartsWith("\t///"))
+                        {
+                            docCommentStart = lineStart;
+                            pos = lineStart;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+
+                    if (docCommentStart < blockStart)
+                    {
+                        sb.Append(content.Substring(docCommentStart, blockStart - docCommentStart));
+                    }
+                    sb.Append(block);
+                }
+
+                return sb.Length > 0 ? sb.ToString() : null;
+            }
+            catch (Exception ex)
+            {
+                DebugLogger.Log($"Warning: Could not extract user columns from {tmdlPath}: {ex.Message}");
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Inserts user-added columns into generated TMDL (after tool-generated columns, before hierarchies/partition).
+        /// </summary>
+        internal string InsertUserColumns(string tableTmdl, string columnsSection)
+        {
+            // PBI Desktop serialization order: measures → columns → hierarchies → partitions → annotations.
+            // Insert user columns after the last tool-generated column, before hierarchies/partition.
+
+            // Try to insert before hierarchy
+            var hierarchyIndex = tableTmdl.IndexOf("\thierarchy ");
+            if (hierarchyIndex > 0)
+            {
+                return tableTmdl.Insert(hierarchyIndex, columnsSection);
+            }
+
+            // Insert before partition
+            var partitionIndex = tableTmdl.IndexOf("\tpartition");
+            if (partitionIndex > 0)
+            {
+                return tableTmdl.Insert(partitionIndex, columnsSection);
+            }
+
+            // Insert before table-level annotations
+            var annotationIndex = tableTmdl.IndexOf("\tannotation");
+            if (annotationIndex > 0)
+            {
+                return tableTmdl.Insert(annotationIndex, columnsSection);
+            }
+
+            // Fallback: append at end
+            return tableTmdl + columnsSection;
         }
 
         /// <summary>

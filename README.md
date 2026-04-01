@@ -77,7 +77,7 @@ This tool eliminates all of that complexity:
 | **Date Table Generation** | Creates a proper calendar dimension with timezone support |
 | **View-Based Filtering** | Applies your Dataverse view filters (FetchXML) directly to the data model — supports 20+ filter operators |
 | **Auto-Generated Count & Link Output** | Creates a `{Table} Count` measure and a clickable `Link to {Table}` URL column on fact tables by default |
-| **Incremental Updates** | Safely update your model while preserving custom measures, descriptions, formatting, and relationships |
+| **Incremental Updates** | Safely update your model while preserving custom measures, columns, descriptions, formatting, and relationships |
 | **Change Preview** | TreeView-based change preview with impact analysis (Safe/Additive/Moderate/Destructive) before applying any changes |
 | **Expand Lookups** | Denormalize fields from related tables directly into a parent table's query — no extra dimension needed |
 | **Configuration Management** | Save, load, export, and import model configurations; CSV documentation export for review |
@@ -86,33 +86,19 @@ This tool eliminates all of that complexity:
 
 ## 📌 Latest Changes
 
-> **v1.2026.6.19** — Full details in [CHANGELOG.md](docs/CHANGELOG.md).
+> **v1.2026.6.27** — Full details in [CHANGELOG.md](docs/CHANGELOG.md).
 
-### 🔀 Polymorphic Expanded Lookups
+### 🧩 User-Added Column Preservation
 
-Expanded lookups can now work across **multi-target lookups** such as `ReportedBy`, allowing you to select fields from any possible related entity in one dialog.
+Incremental and merge rebuilds now detect and preserve **user-added columns** (calculated columns, custom sourced columns) created in Power BI Desktop or a text editor. Columns without the `DataverseToPowerBI_LogicalName` annotation are extracted and re-inserted after tool-generated columns, maintaining correct TMDL serialization order.
 
-- Expanded fields now keep target-table context in their names where needed, for example `Reported By : Account : Address 1: City`.
-- The picker groups available attributes by related entity to match the relationship selector experience.
+### 🔗 One-to-Many Relationship Persistence
 
-### 🔗 Related Record Links Now Use Columns
-
-Related-record navigation links are now generated as **calculated columns** instead of measures.
-
-- Standard table links now generate as `Link to {Table}` columns.
-- Expanded lookup links also generate as columns, using `etn=` for single-target lookups and `etc=` for polymorphic lookups.
-- For polymorphic links, the required lookup id and lookup type columns are auto-included and hidden.
-
-### 💾 Model Configuration Backup
-
-A copy of `SemanticModelConfig.json` is now automatically saved into the PBIP output folder on each build. If your `%APPDATA%` settings are lost or you move the model to another machine, re-import the JSON via the Semantic Model Manager's **Import** feature.
+One-to-many relationship selections now persist correctly across save/load cycles. The `IsOneToMany` property is stored on the model configuration, and the star schema wizard reliably restores checked state, active/inactive status, and referential integrity settings.
 
 ### 🛠 Additional Changes
 
-- Count measures now format with locale-aware thousands separators (`#,0`).
-- Wrapped DateTime fields now keep their display-name aliases when generated as date casts.
-- Unchanged rebuilds no longer report false column changes for existing calculated link columns.
-- The informational timezone warning popup in the calendar dialog was removed.
+- One-to-many relationships in the Fact/Dimension selector no longer reset to unchecked on each reload.
 
 
 ---
@@ -684,6 +670,7 @@ When you rebuild an existing model, the tool performs an **incremental update** 
 | Customization | How It's Preserved |
 |---|---|
 | **User-created measures** | Extracted before rebuild and re-inserted (auto-generated measures like "Link to X" and "X Count" are regenerated fresh) |
+| **User-added columns** | Calculated columns and custom sourced columns without a `DataverseToPowerBI_LogicalName` annotation are preserved and re-inserted after tool-generated columns |
 | **User-added relationships** | Relationships not matching Dataverse metadata are detected and preserved with a `/// User-added relationship` marker |
 | **Column descriptions** | User-edited descriptions (those not matching the tool's `Source:` pattern) are preserved; tool descriptions are regenerated |
 | **Column formatting** | User changes to `formatString` and `summarizeBy` are preserved when the column's data type hasn't changed |

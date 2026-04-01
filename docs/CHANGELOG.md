@@ -8,6 +8,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [1.2026.6.27] - 2026-04-01
+
+### Added
+
+- **User-Added Column Preservation on Rebuild** — Incremental and merge rebuilds now detect and preserve user-added columns (calculated columns, custom sourced columns) that were manually created in Power BI Desktop or a text editor. Columns without the `DataverseToPowerBI_LogicalName` annotation are extracted from existing TMDL and re-inserted after tool-generated columns, maintaining correct TMDL serialization order (columns → hierarchies → partitions).
+
+- **One-to-Many Relationship Persistence** — The `IsOneToMany` property is now persisted on the `RelationshipConfig` model, replacing the previous heuristic-based detection. One-to-many relationship selections, active/inactive state, and referential integrity settings are now correctly saved and restored across sessions.
+
+### Fixed
+
+- **One-to-Many Relationship Reload in Star Schema Wizard** — The Fact/Dimension selector form now reliably restores one-to-many checkbox state and per-relationship checked/active/referential-integrity settings from saved configurations. Previously, one-to-many relationships were reset to unchecked on each load.
+
+---
+
 ## [1.2026.6.24] - 2026-03-24
 
 ### Added

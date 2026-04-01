@@ -568,10 +568,11 @@ namespace DataverseToPowerBI.XrmToolBox
                 Application.DoEvents();
 
                 // Restore one-to-many checkbox state from existing config
-                if (_currentRelationships.Any(r => r.IsSnowflake == false && string.IsNullOrEmpty(r.SourceAttribute) == false))
+                if (_currentRelationships.Any(r => r.IsOneToMany))
                 {
-                    // Check if any existing relationship is a reverse (has SourceTable != FactTable)
-                    // This is a heuristic - in the Core model we don't have explicit IsReverse
+                    _suppressOneToManyWarning = true;
+                    chkIncludeOneToMany.Checked = true;
+                    _suppressOneToManyWarning = false;
                 }
 
                 // Fetch attributes for the fact table
@@ -662,14 +663,24 @@ namespace DataverseToPowerBI.XrmToolBox
                         ?? (_allEntityDisplayNames.TryGetValue(rel.ReferencingEntity, out var refDisplayName) ? refDisplayName : rel.ReferencingEntity);
 
                     var item = new ListViewItem("");
-                    item.Checked = false; // One-to-many not auto-selected
+                    // Check existing configuration for this one-to-many relationship
+                    var existingO2mRel = _currentRelationships.FirstOrDefault(r =>
+                        r.IsOneToMany &&
+                        string.Equals(r.SourceTable, rel.ReferencingEntity, StringComparison.OrdinalIgnoreCase) &&
+                        string.Equals(r.SourceAttribute, rel.ReferencingAttribute, StringComparison.OrdinalIgnoreCase));
+
+                    var isO2mChecked = existingO2mRel != null;
+                    var isO2mActive = existingO2mRel?.IsActive ?? true;
+                    var statusText = isO2mActive ? "Active" : "Inactive";
+
+                    item.Checked = isO2mChecked;
                     item.SubItems.Add("1:Many");
                     item.SubItems.Add(referencingDisplayName);
                     item.SubItems.Add(rel.LookupDisplayName ?? rel.ReferencingAttribute);
                     item.SubItems.Add(rel.ReferencingAttribute);
                     item.SubItems.Add(referencingDisplayName);
                     item.SubItems.Add(rel.ReferencingEntity);
-                    item.SubItems.Add("Active");
+                    item.SubItems.Add(statusText);
                     item.SubItems.Add("Reverse");
                     item.Tag = new RelationshipTag
                     {
@@ -677,11 +688,11 @@ namespace DataverseToPowerBI.XrmToolBox
                         SourceAttribute = rel.ReferencingAttribute,
                         TargetTable = SelectedFactTable.LogicalName,
                         DisplayName = rel.LookupDisplayName ?? rel.ReferencingAttribute,
-                        IsActive = true,
+                        IsActive = isO2mActive,
                         IsSnowflake = false,
                         IsOneToMany = true,
-                        AssumeReferentialIntegrity = false,
-                        IsChecked = false
+                        AssumeReferentialIntegrity = existingO2mRel?.AssumeReferentialIntegrity ?? false,
+                        IsChecked = isO2mChecked
                     };
                     item.BackColor = Color.LightGreen;
                     _allRelationshipItems.Add(item);
@@ -1862,7 +1873,8 @@ namespace DataverseToPowerBI.XrmToolBox
                 IsActive = c.IsActive,
                 IsSnowflake = c.IsSnowflake,
                 SnowflakeLevel = c.SnowflakeLevel,
-                AssumeReferentialIntegrity = c.AssumeReferentialIntegrity
+                AssumeReferentialIntegrity = c.AssumeReferentialIntegrity,
+                IsOneToMany = c.IsOneToMany
             }).ToList();
 
             // Build list of all selected tables

@@ -1103,6 +1103,11 @@ namespace DataverseToPowerBI.Core.Models
         /// Whether to assume referential integrity.
         /// </summary>
         public bool AssumeReferentialIntegrity { get; set; } = false;
+
+        /// <summary>
+        /// Indicates if this is a reverse (one-to-many) relationship direction.
+        /// </summary>
+        public bool IsOneToMany { get; set; } = false;
     }
 
     /// <summary>

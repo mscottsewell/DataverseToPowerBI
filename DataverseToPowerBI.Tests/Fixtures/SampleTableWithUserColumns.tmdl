@@ -1,0 +1,78 @@
+/// Source: account
+table Account
+	lineageTag: aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee
+
+	/// Primary key | Source: account.accountid
+	column accountid
+		dataType: string
+		isHidden
+		isKey
+		lineageTag: 11111111-2222-3333-4444-555555555555
+		summarizeBy: none
+		sourceColumn: accountid
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation DataverseToPowerBI_LogicalName = accountid
+
+	/// The name of the account | Source: account.name
+	column 'Account Name'
+		dataType: string
+		lineageTag: 22222222-3333-4444-5555-666666666666
+		isDefaultLabel
+		summarizeBy: none
+		sourceColumn: name
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation DataverseToPowerBI_LogicalName = name
+
+	/// Revenue | Source: account.revenue
+	column Revenue
+		dataType: decimal
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: 33333333-4444-5555-6666-777777777777
+		summarizeBy: sum
+		sourceColumn: revenue
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation DataverseToPowerBI_LogicalName = revenue
+
+	/// User-added calculated column
+	column 'Revenue Category' = ```
+			IF([Revenue] > 1000000, "Large", IF([Revenue] > 100000, "Medium", "Small"))
+		```
+		dataType: string
+		lineageTag: cccccccc-dddd-eeee-ffff-000000000000
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Full Address' = [City] & ", " & [State]
+		dataType: string
+		lineageTag: dddddddd-eeee-ffff-0000-111111111111
+		summarizeBy: none
+
+	measure 'Custom Measure' = SUM(Account[Revenue]) * 2
+		formatString: $#,0.00
+		lineageTag: 55555555-6666-7777-8888-999999999999
+
+	partition Account = m
+		mode: directQuery
+		source =
+				let
+				    Source = CommonDataServiceForApps.Database(DataverseURL,
+				    [Query="
+				    SELECT Base.accountid
+				        ,Base.name
+				        ,Base.revenue
+				    FROM Account AS Base
+				    WHERE Base.statecode = 0
+				    " ,null ,[EnableFolding=true])
+				in
+				    Source
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table

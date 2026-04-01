@@ -205,5 +205,61 @@ namespace DataverseToPowerBI.Tests
         }
 
         #endregion
+
+        #region User Column Preservation
+
+        [Fact]
+        public void ExtractUserColumnsSection_ReturnsColumnsWithoutLogicalNameAnnotation()
+        {
+            var result = _builder.ExtractUserColumnsSection(FixturePath("SampleTableWithUserColumns.tmdl"));
+
+            Assert.NotNull(result);
+            // Should contain the user-added calculated columns
+            Assert.Contains("Revenue Category", result);
+            Assert.Contains("Full Address", result);
+        }
+
+        [Fact]
+        public void ExtractUserColumnsSection_ExcludesToolGeneratedColumns()
+        {
+            var result = _builder.ExtractUserColumnsSection(FixturePath("SampleTableWithUserColumns.tmdl"));
+
+            // Tool-generated columns have DataverseToPowerBI_LogicalName — should NOT be extracted
+            Assert.DoesNotContain("DataverseToPowerBI_LogicalName", result);
+        }
+
+        [Fact]
+        public void ExtractUserColumnsSection_PreservesDocComments()
+        {
+            var result = _builder.ExtractUserColumnsSection(FixturePath("SampleTableWithUserColumns.tmdl"));
+
+            Assert.NotNull(result);
+            // The "Revenue Category" column has a preceding /// doc comment
+            Assert.Contains("/// User-added calculated column", result);
+        }
+
+        [Fact]
+        public void ExtractUserColumnsSection_ReturnsNullWhenNoUserColumns()
+        {
+            // SampleTableWithLogicalNames.tmdl has all tool-generated columns (with annotations)
+            var result = _builder.ExtractUserColumnsSection(FixturePath("SampleTableWithLogicalNames.tmdl"));
+
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public void InsertUserColumns_InsertsBeforePartition()
+        {
+            var tableTmdl = "table Test\n\tlineageTag: abc\n\n\tcolumn Col1\n\t\tdataType: string\n\t\tlineageTag: 111\n\t\tsourceColumn: col1\n\n\t\tannotation DataverseToPowerBI_LogicalName = col1\n\n\tpartition Test = m\n\t\tmode: directQuery\n";
+            var userColumns = "\tcolumn 'My Calc' = [Col1] & \" suffix\"\n\t\tdataType: string\n\t\tlineageTag: 222\n\t\tsummarizeBy: none\n\n";
+
+            var result = _builder.InsertUserColumns(tableTmdl, userColumns);
+
+            var partitionIdx = result.IndexOf("\tpartition");
+            var userColIdx = result.IndexOf("My Calc");
+            Assert.True(userColIdx > 0 && userColIdx < partitionIdx, "User column should appear before partition");
+        }
+
+        #endregion
     }
 }
