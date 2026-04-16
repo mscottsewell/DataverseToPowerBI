@@ -138,6 +138,107 @@ namespace DataverseToPowerBI.Tests
         }
 
         [Fact]
+        public void ParseExistingColumnMetadata_ExtractsSortByColumn()
+        {
+            // Create a temp file with a column that has sortByColumn configured
+            var testFile = Path.Combine(_tempDir, "TableWithSortBy.tmdl");
+            var tmdlContent = @"/// Source: test.testtable
+table TestTable
+	lineageTag: abc-123
+
+	column Mode
+		dataType: string
+		sourceProviderType: nvarchar
+		lineageTag: d6d16f49-fa4f-4706-a8d3-86578418e8b5
+		summarizeBy: none
+		sourceColumn: Mode
+		sortByColumn: Mode_Sort
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column Mode_Sort
+		dataType: int64
+		sourceColumn: Mode_Sort
+		lineageTag: e7e27f5a-g5g5-5817-b9e4-97689529f9c6
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+";
+            File.WriteAllText(testFile, tmdlContent);
+
+            var cols = _builder.ParseExistingColumnMetadata(testFile);
+            Assert.Equal("Mode_Sort", cols["Mode"].SortByColumn);
+            Assert.Null(cols["Mode_Sort"].SortByColumn);
+        }
+
+        [Fact]
+        public void GenerateTableTmdl_PreservesSortByColumnOnRebuild()
+        {
+            var localBuilder = new SemanticModelBuilder(_tempDir, UseDisplayNameRenamesInPowerQuery: false);
+
+            var table = new ExportTable
+            {
+                LogicalName = "testtable",
+                DisplayName = "Test Table",
+                SchemaName = "TestTable",
+                PrimaryIdAttribute = "testid",
+                PrimaryNameAttribute = "name",
+                Attributes = new List<DataverseToPowerBI.Core.Models.AttributeMetadata>
+                {
+                    new DataverseToPowerBI.Core.Models.AttributeMetadata { LogicalName = "mode", DisplayName = "Mode", AttributeType = "String" },
+                    new DataverseToPowerBI.Core.Models.AttributeMetadata { LogicalName = "modesort", DisplayName = "Mode_Sort", AttributeType = "Integer" }
+                }
+            };
+
+            var existingMetadata = new Dictionary<string, SemanticModelBuilder.ExistingColumnInfo>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["Mode"] = new SemanticModelBuilder.ExistingColumnInfo
+                {
+                    SourceColumn = "Mode",
+                    DataType = "string",
+                    SortByColumn = "Mode_Sort"
+                }
+            };
+
+            var tmdl = localBuilder.GenerateTableTmdl(
+                table,
+                new Dictionary<string, Dictionary<string, AttributeDisplayInfo>>(StringComparer.OrdinalIgnoreCase),
+                new HashSet<string>(StringComparer.OrdinalIgnoreCase),
+                existingColumnMetadata: existingMetadata);
+
+            Assert.Contains("sortByColumn: Mode_Sort", tmdl);
+            Assert.Contains("changedProperty = SortByColumn", tmdl);
+        }
+
+        [Fact]
+        public void GenerateTableTmdl_OmitsSortByColumnWhenNotPreviouslySet()
+        {
+            var table = new ExportTable
+            {
+                LogicalName = "account",
+                DisplayName = "Account",
+                SchemaName = "Account",
+                PrimaryIdAttribute = "accountid",
+                PrimaryNameAttribute = "name",
+                Attributes = new List<DataverseToPowerBI.Core.Models.AttributeMetadata>
+                {
+                    new DataverseToPowerBI.Core.Models.AttributeMetadata { LogicalName = "name", DisplayName = "Account Name", AttributeType = "String" }
+                }
+            };
+
+            var tmdl = _builder.GenerateTableTmdl(
+                table,
+                new Dictionary<string, Dictionary<string, AttributeDisplayInfo>>(StringComparer.OrdinalIgnoreCase),
+                new HashSet<string>(StringComparer.OrdinalIgnoreCase));
+
+            // No sortByColumn should appear when not previously configured
+            Assert.DoesNotContain("sortByColumn:", tmdl);
+            Assert.DoesNotContain("changedProperty = SortByColumn", tmdl);
+        }
+
+        [Fact]
         public void GenerateTableTmdl_PreservesDataCategoryOnRebuild()
         {
             // Display-name aliasing in SQL means sourceColumn = display name now

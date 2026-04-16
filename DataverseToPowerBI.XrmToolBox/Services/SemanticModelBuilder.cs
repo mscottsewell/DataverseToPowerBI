@@ -399,6 +399,9 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                     var dataCatMatch = Regex.Match(block, @"dataCategory:\s*(.+)$", RegexOptions.Multiline);
                     if (dataCatMatch.Success) info.DataCategory = dataCatMatch.Groups[1].Value.Trim();
 
+                    var sortByMatch = Regex.Match(block, @"sortByColumn:\s*(.+)$", RegexOptions.Multiline);
+                    if (sortByMatch.Success) info.SortByColumn = sortByMatch.Groups[1].Value.Trim();
+
                     info.IsHidden = Regex.IsMatch(block, @"^\s*isHidden\s*$", RegexOptions.Multiline);
 
                     // Extract annotations (key = value pairs)
@@ -441,6 +444,8 @@ namespace DataverseToPowerBI.XrmToolBox.Services
             public bool IsHidden { get; set; }
             /// <summary>User-assigned Power BI data category (e.g. City, Country/Region, Latitude, Longitude). Preserved across rebuilds.</summary>
             public string? DataCategory { get; set; }
+            /// <summary>User-configured sort column. Preserved across rebuilds.</summary>
+            public string? SortByColumn { get; set; }
             public Dictionary<string, string> Annotations { get; set; } = new(StringComparer.OrdinalIgnoreCase);
         }
 
@@ -6304,6 +6309,11 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                 {
                     sb.AppendLine($"\t\tsourceColumn: {col.SourceColumn}");
                 }
+                // Preserve user-configured sortByColumn
+                if (existingCol?.SortByColumn != null)
+                {
+                    sb.AppendLine($"\t\tsortByColumn: {existingCol.SortByColumn}");
+                }
                 // Preserve user-assigned data category (e.g. City, Country/Region, Latitude, Longitude)
                 var dataCategory = col.DataCategory ?? existingCol?.DataCategory;
                 if (dataCategory != null)
@@ -6311,6 +6321,12 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                     sb.AppendLine($"\t\tdataCategory: {dataCategory}");
                 }
                 sb.AppendLine();
+                // Emit changedProperty marker when sortByColumn is preserved
+                if (existingCol?.SortByColumn != null)
+                {
+                    sb.AppendLine($"\t\tchangedProperty = SortByColumn");
+                    sb.AppendLine();
+                }
                 if (isDateTime)
                 {
                     sb.AppendLine($"\t\tchangedProperty = DataType");
