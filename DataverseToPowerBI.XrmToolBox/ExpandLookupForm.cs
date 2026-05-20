@@ -603,10 +603,6 @@ namespace DataverseToPowerBI.XrmToolBox
             if (attr.LogicalName.Equals(targetTablePrimaryKey, StringComparison.OrdinalIgnoreCase))
                 return true;
 
-            if (attr.LogicalName.Equals("statecode", StringComparison.OrdinalIgnoreCase) ||
-                attr.LogicalName.Equals("statuscode", StringComparison.OrdinalIgnoreCase))
-                return true;
-
             return false;
         }
 
