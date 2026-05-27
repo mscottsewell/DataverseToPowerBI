@@ -198,9 +198,9 @@ namespace DataverseToPowerBI.XrmToolBox
             // btnChangeWorkingFolder
             this.btnChangeWorkingFolder.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.ImageAndText;
             this.btnChangeWorkingFolder.Name = "btnChangeWorkingFolder";
-            this.btnChangeWorkingFolder.Size = new System.Drawing.Size(120, 25);
-            this.btnChangeWorkingFolder.Text = "Working Folder";
-            this.btnChangeWorkingFolder.ToolTipText = "Browse or open the working folder";
+            this.btnChangeWorkingFolder.Size = new System.Drawing.Size(150, 25);
+            this.btnChangeWorkingFolder.Text = "Working Folder Root";
+            this.btnChangeWorkingFolder.ToolTipText = "Browse or open the working folder root (environment/model subfolders are created under it)";
             this.btnChangeWorkingFolder.Click += new System.EventHandler(this.BtnChangeWorkingFolder_Click);
 
             // btnSettingsFolder

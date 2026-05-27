@@ -253,10 +253,10 @@ namespace DataverseToPowerBI.XrmToolBox
                 BackColor = SystemColors.Control
             };
 
-            // Working Folder - moved up under Environment URL
+            // Working Folder root - environment/model subfolders are created under this path
             lblWorkingFolder = new Label
             {
-                Text = "Working Folder:",
+                Text = "Working Folder Root:",
                 Location = new Point(15, 145),
                 AutoSize = true
             };
@@ -930,46 +930,156 @@ namespace DataverseToPowerBI.XrmToolBox
             using (var dialog = new Form())
             {
                 dialog.Text = "Copy Semantic Model";
-                dialog.Size = new Size(400, 150);
+                dialog.Size = new Size(500, 380);
                 dialog.FormBorderStyle = FormBorderStyle.FixedDialog;
                 dialog.MaximizeBox = false;
                 dialog.MinimizeBox = false;
                 dialog.StartPosition = FormStartPosition.CenterParent;
 
+                // Mode selection (Copy vs Move)
+                var rbCopy = new RadioButton
+                {
+                    Text = "Copy within same environment",
+                    Location = new Point(20, 20),
+                    Size = new Size(300, 20),
+                    Checked = true
+                };
+
+                var rbMove = new RadioButton
+                {
+                    Text = "Move to different environment",
+                    Location = new Point(20, 50),
+                    Size = new Size(300, 20)
+                };
+
+                // New Name
                 var lblNewName = new Label
                 {
                     Text = "New Name:",
-                    Location = new Point(20, 20),
+                    Location = new Point(40, 90),
                     AutoSize = true
                 };
 
                 var txtNewName = new TextBox
                 {
                     Text = _selectedModel.Name + " - Copy",
-                    Location = new Point(20, 45),
-                    Size = new Size(340, 23)
+                    Location = new Point(40, 110),
+                    Size = new Size(420, 23)
                 };
+
+                // Target Environment URL (only visible for Move)
+                var lblTargetUrl = new Label
+                {
+                    Text = "Target Environment URL:",
+                    Location = new Point(40, 155),
+                    AutoSize = true,
+                    Visible = false
+                };
+
+                var txtTargetUrl = new TextBox
+                {
+                    Text = _selectedModel.DataverseUrl ?? "",
+                    Location = new Point(40, 175),
+                    Size = new Size(420, 23),
+                    Visible = false
+                };
+
+                // Working Folder (only visible for Move)
+                var lblWorkingFolder = new Label
+                {
+                    Text = "New Working Folder Root:",
+                    Location = new Point(40, 210),
+                    AutoSize = true,
+                    Visible = false
+                };
+
+                var txtWorkingFolder = new TextBox
+                {
+                    Text = _selectedModel.WorkingFolder ?? "",
+                    Location = new Point(40, 230),
+                    Size = new Size(340, 23),
+                    Visible = false
+                };
+
+                var btnBrowse = new Button
+                {
+                    Text = "Browse...",
+                    Location = new Point(385, 230),
+                    Size = new Size(75, 23),
+                    Visible = false
+                };
+
+                btnBrowse.Click += (s, args) =>
+                {
+                    using (var folderDialog = new FolderBrowserDialog
+                    {
+                        Description = "Select new working folder root (environment/model subfolders are created under this folder)",
+                        SelectedPath = txtWorkingFolder.Text
+                    })
+                    {
+                        if (folderDialog.ShowDialog(this) == DialogResult.OK)
+                        {
+                            txtWorkingFolder.Text = folderDialog.SelectedPath;
+                        }
+                    }
+                };
+
+                // Hint for Move mode
+                var lblMoveHint = new Label
+                {
+                    Text = "Both URL and working folder will be updated.",
+                    Location = new Point(40, 265),
+                    Size = new Size(420, 18),
+                    ForeColor = Color.Gray,
+                    Font = new Font(SystemFonts.MessageBoxFont.FontFamily,
+                        SystemFonts.MessageBoxFont.Size - 1f, FontStyle.Regular),
+                    Visible = false
+                };
+
+                // Radio button change handler
+                EventHandler modeChanged = (s, args) =>
+                {
+                    var isMoveMode = rbMove.Checked;
+                    lblTargetUrl.Visible = isMoveMode;
+                    txtTargetUrl.Visible = isMoveMode;
+                    lblWorkingFolder.Visible = isMoveMode;
+                    txtWorkingFolder.Visible = isMoveMode;
+                    btnBrowse.Visible = isMoveMode;
+                    lblMoveHint.Visible = isMoveMode;
+                };
+
+                rbCopy.CheckedChanged += modeChanged;
+                rbMove.CheckedChanged += modeChanged;
 
                 var btnOk = new Button
                 {
                     Text = "OK",
-                    Location = new Point(200, 80),
-                    Size = new Size(75, 28),
+                    Location = new Point(295, 320),
+                    Size = new Size(90, 30),
                     DialogResult = DialogResult.OK
                 };
 
                 var btnCancelDlg = new Button
                 {
                     Text = "Cancel",
-                    Location = new Point(285, 80),
-                    Size = new Size(75, 28),
+                    Location = new Point(395, 320),
+                    Size = new Size(90, 30),
                     DialogResult = DialogResult.Cancel
                 };
 
+                dialog.Controls.Add(rbCopy);
+                dialog.Controls.Add(rbMove);
                 dialog.Controls.Add(lblNewName);
                 dialog.Controls.Add(txtNewName);
+                dialog.Controls.Add(lblTargetUrl);
+                dialog.Controls.Add(txtTargetUrl);
+                dialog.Controls.Add(lblWorkingFolder);
+                dialog.Controls.Add(txtWorkingFolder);
+                dialog.Controls.Add(btnBrowse);
+                dialog.Controls.Add(lblMoveHint);
                 dialog.Controls.Add(btnOk);
                 dialog.Controls.Add(btnCancelDlg);
+
                 dialog.AcceptButton = btnOk;
                 dialog.CancelButton = btnCancelDlg;
 
@@ -983,35 +1093,107 @@ namespace DataverseToPowerBI.XrmToolBox
                         return;
                     }
 
-                    if (_modelManager.ModelExists(newName))
+                    if (rbMove.Checked)
                     {
-                        MessageBox.Show($"A semantic model named '{newName}' already exists.",
-                            "Duplicate Name", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        return;
-                    }
+                        // Move mode: validate URL and working folder
+                        var targetUrl = txtTargetUrl.Text.Trim();
+                        var newWorkingFolder = txtWorkingFolder.Text.Trim();
 
-                    try
-                    {
-                        _modelManager.CopyModel(_selectedModel.Name, newName);
-                        ConfigurationsChanged = true;
-                        LoadModels();
-
-                        // Select the copied model
-                        var item = listViewModels.Items.Cast<ListViewItem>()
-                            .FirstOrDefault(i => ((SemanticModelConfig)i.Tag).Name == newName);
-                        if (item != null)
+                        if (string.IsNullOrWhiteSpace(targetUrl))
                         {
-                            item.Selected = true;
-                            item.EnsureVisible();
+                            MessageBox.Show("Please enter a target environment URL.", "Validation",
+                                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
                         }
 
-                        MessageBox.Show($"Semantic model copied to '{newName}'.",
-                            "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        if (string.IsNullOrWhiteSpace(newWorkingFolder))
+                        {
+                            MessageBox.Show("Please select a new working folder.", "Validation",
+                                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
+
+                        if (!Directory.Exists(newWorkingFolder))
+                        {
+                            MessageBox.Show("The specified working folder does not exist.", "Validation",
+                                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
+
+                        // Check for duplicates in target environment
+                        if (_modelManager.ModelExistsInEnvironment(newName, targetUrl))
+                        {
+                            MessageBox.Show(
+                                $"A semantic model named '{newName}' already exists in environment '{targetUrl}'.",
+                                "Duplicate Name", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
+
+                        try
+                        {
+                            _modelManager.CopyModel(_selectedModel.Name, newName, targetUrl);
+                            
+                            // Update the working folder for the copied model
+                            var copiedModel = _modelManager.GetModel(newName);
+                            if (copiedModel != null)
+                            {
+                                copiedModel.WorkingFolder = newWorkingFolder;
+                                _modelManager.SaveModel(copiedModel);
+                            }
+
+                            ConfigurationsChanged = true;
+                            LoadModels();
+
+                            var item = listViewModels.Items.Cast<ListViewItem>()
+                                .FirstOrDefault(i => ((SemanticModelConfig)i.Tag).Name == newName);
+                            if (item != null)
+                            {
+                                item.Selected = true;
+                                item.EnsureVisible();
+                            }
+
+                            MessageBox.Show(
+                                $"Semantic model moved to '{newName}' in new environment and working folder.",
+                                "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show($"Error moving semantic model:\n{ex.Message}",
+                                "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
                     }
-                    catch (Exception ex)
+                    else
                     {
-                        MessageBox.Show($"Error copying semantic model:\n{ex.Message}",
-                            "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        // Copy mode: same environment, only check global name uniqueness
+                        if (_modelManager.ModelExists(newName))
+                        {
+                            MessageBox.Show($"A semantic model named '{newName}' already exists.",
+                                "Duplicate Name", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
+
+                        try
+                        {
+                            _modelManager.CopyModel(_selectedModel.Name, newName);
+                            ConfigurationsChanged = true;
+                            LoadModels();
+
+                            var item = listViewModels.Items.Cast<ListViewItem>()
+                                .FirstOrDefault(i => ((SemanticModelConfig)i.Tag).Name == newName);
+                            if (item != null)
+                            {
+                                item.Selected = true;
+                                item.EnsureVisible();
+                            }
+
+                            MessageBox.Show($"Semantic model copied to '{newName}'.",
+                                "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show($"Error copying semantic model:\n{ex.Message}",
+                                "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
                     }
                 }
             }
@@ -1296,7 +1478,10 @@ namespace DataverseToPowerBI.XrmToolBox
         {
             if (_selectedModel == null) return;
 
-            var selectedPath = VistaFolderPicker.ShowDialog(this, "Select Working Folder", txtWorkingFolder.Text);
+            var selectedPath = VistaFolderPicker.ShowDialog(
+                this,
+                "Select Working Folder Root (environment/model subfolders are created under this folder)",
+                txtWorkingFolder.Text);
             if (selectedPath != null)
             {
                 txtWorkingFolder.Text = selectedPath;

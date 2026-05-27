@@ -5649,7 +5649,7 @@ namespace DataverseToPowerBI.XrmToolBox
             {
                 using (var folderDialog = new FolderBrowserDialog())
                 {
-                    folderDialog.Description = "Select output folder for the semantic model";
+                    folderDialog.Description = "Select working folder root (environment/model subfolders are created under this folder)";
                     folderDialog.ShowNewFolderButton = true;
                     
                     if (folderDialog.ShowDialog() != DialogResult.OK)
@@ -6324,7 +6324,7 @@ namespace DataverseToPowerBI.XrmToolBox
             // Otherwise let user select a folder
             using (var dialog = new FolderBrowserDialog())
             {
-                dialog.Description = "Select working folder for semantic model output";
+                dialog.Description = "Select working folder root (environment/model subfolders are created under this folder)";
                 dialog.ShowNewFolderButton = true;
                 
                 if (_currentModel != null && !string.IsNullOrEmpty(_currentModel.WorkingFolder))

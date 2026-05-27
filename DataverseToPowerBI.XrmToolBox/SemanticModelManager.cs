@@ -182,12 +182,24 @@ namespace DataverseToPowerBI.XrmToolBox
         }
 
         /// <summary>
-        /// Check if a model with the given name exists
+        /// Check if a model with the given name exists across all environments.
         /// </summary>
         public bool ModelExists(string name)
         {
-            return _modelsFile.Models.Any(m => 
+            return _modelsFile.Models.Any(m =>
                 m.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+        }
+
+        /// <summary>
+        /// Check if a model with the given name exists within a specific environment URL.
+        /// Use this when the same name is acceptable in a different environment.
+        /// </summary>
+        public bool ModelExistsInEnvironment(string name, string environmentUrl)
+        {
+            var normalized = NormalizeUrl(environmentUrl);
+            return _modelsFile.Models.Any(m =>
+                m.Name.Equals(name, StringComparison.OrdinalIgnoreCase) &&
+                NormalizeUrl(m.DataverseUrl) == normalized);
         }
 
         /// <summary>
@@ -267,9 +279,15 @@ namespace DataverseToPowerBI.XrmToolBox
         }
 
         /// <summary>
-        /// Copy a model to a new name
+        /// Copy a model to a new name, optionally targeting a different environment URL.
+        /// When <paramref name="targetUrl"/> is provided and differs from the source URL,
+        /// <see cref="SemanticModelConfig.OrganizationUniqueName"/> is cleared because it
+        /// is environment-specific and would be invalid in the new environment.
         /// </summary>
-        public void CopyModel(string sourceName, string newName)
+        /// <param name="sourceName">Name of the model to copy.</param>
+        /// <param name="newName">Name for the new copy.</param>
+        /// <param name="targetUrl">Target Dataverse environment URL. Null or empty keeps the source URL.</param>
+        public void CopyModel(string sourceName, string newName, string? targetUrl = null)
         {
             var source = _modelsFile.Models.FirstOrDefault(m => m.Name == sourceName);
             if (source == null)
@@ -282,11 +300,22 @@ namespace DataverseToPowerBI.XrmToolBox
                 throw new Exception($"A semantic model named '{newName}' already exists.");
             }
 
+            var resolvedUrl = string.IsNullOrWhiteSpace(targetUrl) ? source.DataverseUrl : targetUrl.Trim();
+            var isCrossEnvironment = NormalizeUrl(resolvedUrl) != NormalizeUrl(source.DataverseUrl);
+
+            // For cross-environment copies, names only need to be unique within the target environment
+            if (isCrossEnvironment ? ModelExistsInEnvironment(newName, resolvedUrl) : ModelExists(newName))
+            {
+                throw new Exception($"A semantic model named '{newName}' already exists" +
+                    (isCrossEnvironment ? $" in the target environment ({NormalizeUrl(resolvedUrl)})." : "."));
+            }
+
             var copy = new SemanticModelConfig
             {
                 Name = newName,
-                DataverseUrl = source.DataverseUrl,
-                OrganizationUniqueName = source.OrganizationUniqueName,
+                DataverseUrl = resolvedUrl,
+                // OrganizationUniqueName is environment-specific — clear it for cross-environment copies
+                OrganizationUniqueName = isCrossEnvironment ? null : source.OrganizationUniqueName,
                 ConnectionType = source.ConnectionType,
                 FabricLinkSQLEndpoint = source.FabricLinkSQLEndpoint,
                 FabricLinkSQLDatabase = source.FabricLinkSQLDatabase,
