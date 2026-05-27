@@ -1373,11 +1373,21 @@ namespace DataverseToPowerBI.XrmToolBox.Services
         private HashSet<string> BuildAutoMeasureNames(ExportTable table)
         {
             var displayName = table.DisplayName ?? table.SchemaName ?? table.LogicalName;
+            var includeCountMeasure = table.IncludeCountMeasure ?? string.Equals(table.Role, "Fact", StringComparison.OrdinalIgnoreCase);
+            var includeRecordLinkMeasure = table.IncludeRecordLinkMeasure ?? string.Equals(table.Role, "Fact", StringComparison.OrdinalIgnoreCase);
             var autoMeasures = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
-                $"Link to {displayName}",
-                $"{displayName} Count"
             };
+
+            if (includeRecordLinkMeasure)
+            {
+                autoMeasures.Add($"Link to {displayName}");
+            }
+
+            if (includeCountMeasure)
+            {
+                autoMeasures.Add($"{displayName} Count");
+            }
 
             if (table.ExpandedLookups != null)
             {

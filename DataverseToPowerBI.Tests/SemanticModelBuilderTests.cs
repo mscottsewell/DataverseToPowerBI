@@ -664,12 +664,31 @@ table TestTable
             var table = new ExportTable
             {
                 LogicalName = "account",
-                DisplayName = "Account"
+                DisplayName = "Account",
+                Role = "Fact"
             };
 
             var result = _builder.ExtractUserMeasuresSection(FixturePath("SampleTable.tmdl"), table);
             Assert.DoesNotContain("Link to Account", result ?? "");
             Assert.DoesNotContain("Account Count", result ?? "");
+        }
+
+        [Fact]
+        public void ExtractUserMeasuresSection_PreservesManualCountMeasure_WhenCountMeasureDisabledForTable()
+        {
+            var table = new ExportTable
+            {
+                LogicalName = "account",
+                DisplayName = "Account",
+                Role = "Dimension",
+                IncludeCountMeasure = false,
+                IncludeRecordLinkMeasure = false
+            };
+
+            var result = _builder.ExtractUserMeasuresSection(FixturePath("SampleTable.tmdl"), table);
+
+            Assert.NotNull(result);
+            Assert.Contains("Account Count", result);
         }
 
         [Fact]
@@ -1413,6 +1432,7 @@ table TestTable
                     {
                         LogicalName = "statecode",
                         DisplayName = "Status",
+                        OverrideDisplayName = "Service Status",
                         AttributeType = "State"
                     }
                 }
@@ -1424,7 +1444,7 @@ table TestTable
                 new HashSet<string>(StringComparer.OrdinalIgnoreCase));
 
             Assert.Contains("JOIN [StateMetadata] incident_statecode", tmdl);
-            Assert.Contains("incident_statecode.[LocalizedLabel] [Status]", tmdl);
+            Assert.Contains("incident_statecode.[LocalizedLabel] [Service Status]", tmdl);
         }
 
         [Fact]
@@ -2538,16 +2558,19 @@ table TestTable
         [Fact]
         public void ExtractUserMeasuresSection_ExcludesAutoMeasuresForRoleChange()
         {
-            // When a table changes from Fact to Dimension, "Link to X" and "X Count" are auto-measures
-            // They should still be excluded even if the table's role changes
+            // When a table has explicit IncludeCountMeasure=true / IncludeRecordLinkMeasure=true,
+            // the generated "Link to X" and "X Count" names are treated as auto-measures and excluded
+            // so they don't persist as fake "user" measures on the next incremental build.
             var table = new ExportTable
             {
                 LogicalName = "account",
-                DisplayName = "Account"
+                DisplayName = "Account",
+                IncludeCountMeasure = true,
+                IncludeRecordLinkMeasure = true
             };
 
             var result = _builder.ExtractUserMeasuresSection(FixturePath("SampleTable.tmdl"), table);
-            // Auto-generated measures should always be excluded
+            // Auto-generated measures should be excluded when toggles are explicitly on
             Assert.DoesNotContain("Link to Account", result ?? "");
             Assert.DoesNotContain("Account Count", result ?? "");
             // User measures should still be preserved

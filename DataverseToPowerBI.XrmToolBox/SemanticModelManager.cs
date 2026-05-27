@@ -59,6 +59,7 @@ namespace DataverseToPowerBI.XrmToolBox
         private const string ModelsFileName = "semantic-models.json";
         private readonly string _settingsFolder;
         private readonly string _modelsFilePath;
+        private readonly bool _inMemory;
         private SemanticModelsFile _modelsFile = null!;
 
         public SemanticModelManager()
@@ -68,8 +69,20 @@ namespace DataverseToPowerBI.XrmToolBox
                 "MscrmTools", "XrmToolBox", "Settings", "DataverseToPowerBI");
             Directory.CreateDirectory(_settingsFolder);
             _modelsFilePath = Path.Combine(_settingsFolder, ModelsFileName);
-            
+            _inMemory = false;
             LoadModelsFile();
+        }
+
+        /// <summary>
+        /// Constructor for unit tests. When <paramref name="inMemory"/> is true, no
+        /// file I/O is performed — the model list is kept in memory only.
+        /// </summary>
+        internal SemanticModelManager(bool inMemory)
+        {
+            _settingsFolder = "";
+            _modelsFilePath = "";
+            _inMemory = inMemory;
+            _modelsFile = new SemanticModelsFile();
         }
 
         public string SettingsFolder => _settingsFolder;
@@ -118,6 +131,8 @@ namespace DataverseToPowerBI.XrmToolBox
 
         private void SaveModelsFile()
         {
+            if (_inMemory) return;
+
             try
             {
                 using (var ms = new MemoryStream())
@@ -475,9 +490,11 @@ namespace DataverseToPowerBI.XrmToolBox
                     k => k.Key,
                     v => v.Value?.ToList() ?? new List<string>()
                 ) ?? new Dictionary<string, List<string>>(),
-                SelectedFormIds = source.SelectedFormIds?.ToDictionary(k => k.Key, v => v.Value) 
+                SelectedFormIds = source.SelectedFormIds?.ToDictionary(k => k.Key, v => v.Value)
                     ?? new Dictionary<string, string>(),
-                SelectedViewIds = source.SelectedViewIds?.ToDictionary(k => k.Key, v => v.Value) 
+                SelectedViewIds = source.SelectedViewIds?.ToDictionary(k => k.Key, v => v.Value)
+                    ?? new Dictionary<string, string>(),
+                SelectedFieldViewIds = source.SelectedFieldViewIds?.ToDictionary(k => k.Key, v => v.Value)
                     ?? new Dictionary<string, string>(),
                 Relationships = source.Relationships?.Select(r => new SerializedRelationship
                 {
@@ -485,7 +502,20 @@ namespace DataverseToPowerBI.XrmToolBox
                     SourceAttribute = r.SourceAttribute,
                     TargetTable = r.TargetTable,
                     IsActive = r.IsActive,
-                    IsSnowflake = r.IsSnowflake
+                    IsSnowflake = r.IsSnowflake,
+                    SnowflakeLevel = r.SnowflakeLevel,
+                    AssumeReferentialIntegrity = r.AssumeReferentialIntegrity
+                }).ToList() ?? new List<SerializedRelationship>(),
+                AdditionalTableNames = source.AdditionalTableNames?.ToList() ?? new List<string>(),
+                AdditionalRelationships = source.AdditionalRelationships?.Select(r => new SerializedRelationship
+                {
+                    SourceTable = r.SourceTable,
+                    SourceAttribute = r.SourceAttribute,
+                    TargetTable = r.TargetTable,
+                    IsActive = r.IsActive,
+                    IsSnowflake = r.IsSnowflake,
+                    SnowflakeLevel = r.SnowflakeLevel,
+                    AssumeReferentialIntegrity = r.AssumeReferentialIntegrity
                 }).ToList() ?? new List<SerializedRelationship>(),
                 TableDisplayInfo = source.TableDisplayInfo?.ToDictionary(
                     k => k.Key,
@@ -498,9 +528,36 @@ namespace DataverseToPowerBI.XrmToolBox
                     }
                 ) ?? new Dictionary<string, TableDisplayInfo>(),
                 ShowAllAttributes = source.ShowAllAttributes,
+                DateTableConfig = source.DateTableConfig == null ? null : new DataverseToPowerBI.Core.Models.DateTableConfig
+                {
+                    PrimaryDateTable = source.DateTableConfig.PrimaryDateTable,
+                    PrimaryDateField = source.DateTableConfig.PrimaryDateField,
+                    TimeZoneId = source.DateTableConfig.TimeZoneId,
+                    UtcOffsetHours = source.DateTableConfig.UtcOffsetHours,
+                    StartYear = source.DateTableConfig.StartYear,
+                    EndYear = source.DateTableConfig.EndYear,
+                    WrappedFields = source.DateTableConfig.WrappedFields?.Select(f =>
+                        new DataverseToPowerBI.Core.Models.DateTimeFieldConfig
+                        {
+                            TableName = f.TableName,
+                            FieldName = f.FieldName,
+                            ConvertToDateOnly = f.ConvertToDateOnly
+                        }).ToList() ?? new List<DataverseToPowerBI.Core.Models.DateTimeFieldConfig>()
+                },
+                LanguageCode = source.LanguageCode,
+                AttributeDisplayNameOverrides = source.AttributeDisplayNameOverrides?.ToDictionary(
+                    k => k.Key,
+                    v => v.Value?.ToDictionary(ik => ik.Key, iv => iv.Value) ?? new Dictionary<string, string>()
+                ) ?? new Dictionary<string, Dictionary<string, string>>(),
                 TableStorageModes = source.TableStorageModes?.ToDictionary(k => k.Key, v => v.Value)
                     ?? new Dictionary<string, string>(),
                 TableFabricLinkRetentionModes = source.TableFabricLinkRetentionModes?.ToDictionary(k => k.Key, v => v.Value)
+                    ?? new Dictionary<string, string>(),
+                TableIncludeCountMeasures = source.TableIncludeCountMeasures?.ToDictionary(k => k.Key, v => v.Value)
+                    ?? new Dictionary<string, bool>(),
+                TableIncludeRecordLinkMeasures = source.TableIncludeRecordLinkMeasures?.ToDictionary(k => k.Key, v => v.Value)
+                    ?? new Dictionary<string, bool>(),
+                FieldSelectionModes = source.FieldSelectionModes?.ToDictionary(k => k.Key, v => v.Value)
                     ?? new Dictionary<string, string>(),
                 ExpandedLookups = source.ExpandedLookups?.ToDictionary(
                     k => k.Key,

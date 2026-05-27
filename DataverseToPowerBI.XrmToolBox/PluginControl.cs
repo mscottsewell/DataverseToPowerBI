@@ -700,8 +700,9 @@ namespace DataverseToPowerBI.XrmToolBox
             if (settings.AttributeDisplayNameOverrides != null)
             {
                 foreach (var kvp in settings.AttributeDisplayNameOverrides)
-                    _attributeDisplayNameOverrides[kvp.Key] = new Dictionary<string, string>(kvp.Value);
+                    _attributeDisplayNameOverrides[kvp.Key] = new Dictionary<string, string>(kvp.Value, StringComparer.OrdinalIgnoreCase);
             }
+            NormalizeLegacyChoiceDisplayNameOverrides();
             
             // Restore expanded lookups
             _expandedLookups.Clear();
@@ -2259,7 +2260,7 @@ namespace DataverseToPowerBI.XrmToolBox
 
         private static string GetMeasureToggleDisplayText(bool enabled)
         {
-            return enabled ? "✓" : "";
+            return enabled ? "✓" : "○";
         }
 
         private void SyncTableMeasureOptionsWithSelectedTables()
@@ -2944,6 +2945,34 @@ namespace DataverseToPowerBI.XrmToolBox
             return true;
         }
 
+        private void NormalizeLegacyChoiceDisplayNameOverrides()
+        {
+            foreach (var tableEntry in _attributeDisplayNameOverrides)
+            {
+                var tableOverrides = tableEntry.Value;
+                var legacyEntries = tableOverrides
+                    .Where(kvp => TryParseChoiceSubRowTag(kvp.Key, out _, out var subType) &&
+                                  subType.Equals("label", StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+
+                foreach (var legacy in legacyEntries)
+                {
+                    if (!TryParseChoiceSubRowTag(legacy.Key, out var parentAttribute, out var parsedSubType) ||
+                        !parsedSubType.Equals("label", StringComparison.OrdinalIgnoreCase))
+                    {
+                        continue;
+                    }
+
+                    if (!tableOverrides.ContainsKey(parentAttribute) || string.IsNullOrWhiteSpace(tableOverrides[parentAttribute]))
+                    {
+                        tableOverrides[parentAttribute] = legacy.Value;
+                    }
+
+                    tableOverrides.Remove(legacy.Key);
+                }
+            }
+        }
+
         private static bool TryParseExpandedSubRowTag(string tag, out string parentLookup, out string? targetTableLogicalName, out string expandedAttribute)
         {
             parentLookup = "";
@@ -3339,7 +3368,10 @@ namespace DataverseToPowerBI.XrmToolBox
                     var collapsedKey = $"{logicalName}.{attr.LogicalName}";
                     var isCollapsed = !_collapsedLookupGroups.Contains(collapsedKey);
 
-                    var headerText = $"{(isCollapsed ? "▶" : "▼")} {attr.DisplayName ?? attr.LogicalName}";
+                    var choiceHeaderDisplayName = overrides.ContainsKey(attr.LogicalName)
+                        ? overrides[attr.LogicalName]
+                        : (attr.DisplayName ?? attr.LogicalName);
+                    var headerText = $"{(isCollapsed ? "▶" : "▼")} {choiceHeaderDisplayName}";
                     var headerItem = new ListViewItem
                     {
                         Text = "",
@@ -4109,6 +4141,14 @@ namespace DataverseToPowerBI.XrmToolBox
                 attrLogicalName = parentLookup;
             }
 
+            if (TryParseChoiceSubRowTag(attrLogicalName, out var parentAttribute, out var choiceSubType))
+            {
+                // Only the label sub-column uses display aliases. Keep value field names fixed.
+                if (!choiceSubType.Equals("label", StringComparison.OrdinalIgnoreCase))
+                    return;
+                attrLogicalName = parentAttribute;
+            }
+
             if (TryParseExpandedSubRowTag(attrLogicalName, out var expandedParentLookup, out var expandedTargetTableName, out var expandedAttributeName))
             {
                 var expandedTableName = listViewSelectedTables.SelectedItems[0].Name;
@@ -4703,8 +4743,8 @@ namespace DataverseToPowerBI.XrmToolBox
             const int editWidth = 30;
             const int roleWidth = 40;
             const int liveLtrWidth = 60;
-            const int countMeasureWidth = 40;
-            const int linkMeasureWidth = 40;
+            const int countMeasureWidth = 50;
+            const int linkMeasureWidth = 50;
             const int attrsWidth = 40;
             const int scrollBarWidth = 20;
             
