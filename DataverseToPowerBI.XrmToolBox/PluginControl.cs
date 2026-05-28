@@ -170,6 +170,18 @@ namespace DataverseToPowerBI.XrmToolBox
         private int _operationVersion = 0;
         private bool _isLoadingMetadata = false;
         private bool _allowAttributeCheckToggle = false;
+
+        // Becomes true only after LoadSemanticModel has fully populated all in-memory state
+        // from the persisted PluginSettings. SaveCurrentModel must early-return while false
+        // so a stray callback can't serialize a partially-initialized snapshot over good data.
+        private bool _settingsLoaded = false;
+
+        // Set by ValidateLoadedConfiguration when on-disk state fails invariants
+        // (missing TableDisplayInfo, missing SelectedAttributes, invalid FactTable).
+        // RevalidateMetadata's PostWorkCallBack consumes this to refetch entity-level
+        // metadata and force a save so the healed state is persisted.
+        private bool _configHealNeeded = false;
+        private List<string> _configHealMessages = new List<string>();
         
         public PluginControl()
         {
@@ -638,6 +650,9 @@ namespace DataverseToPowerBI.XrmToolBox
         private void LoadSemanticModel(SemanticModelConfig model)
         {
             _operationVersion++;
+            _settingsLoaded = false;
+            _configHealNeeded = false;
+            _configHealMessages.Clear();
             _currentModel = model;
             _modelManager.SetCurrentModel(model.Name);
             
@@ -919,7 +934,13 @@ namespace DataverseToPowerBI.XrmToolBox
                 
                 RefreshTableListDisplay();
                 UpdateTableCount();
-                
+
+                // Self-healing layer 1: detect drift between SelectedTableNames and the per-table
+                // dicts (TableDisplayInfo / SelectedAttributes / FactTable). Seeds empty entries
+                // so RevalidateMetadata can re-derive required columns, and flags the run so the
+                // PostWorkCallBack will refetch entity metadata and force a save.
+                ValidateLoadedConfiguration();
+
                 // Revalidate metadata in background - preserves user selections while refreshing from Dataverse
                 // This handles the case where user closes and reopens the solution
                 RevalidateMetadata();
@@ -934,13 +955,86 @@ namespace DataverseToPowerBI.XrmToolBox
             
             UpdateSemanticModelDisplay();
             SetStatus($"Loaded semantic model: {model.Name}");
-            
+
+            // From this point on, SaveCurrentModel is allowed to persist state. Any save
+            // attempted earlier in this method would write a partially-initialized snapshot.
+            _settingsLoaded = true;
+
             // Note: Buttons will be enabled after RevalidateMetadata completes
         }
         
+        /// <summary>
+        /// Detects drift between the persisted SelectedTableNames and the per-table dicts.
+        /// Seeds missing entries where safe (so RevalidateMetadata can repopulate required
+        /// columns) and sets <see cref="_configHealNeeded"/> so the revalidate post-work
+        /// will refetch entity-level metadata and force a save.
+        /// </summary>
+        private void ValidateLoadedConfiguration()
+        {
+            if (_currentModel == null) return;
+            var settings = _currentModel.PluginSettings;
+            if (settings?.SelectedTableNames == null || settings.SelectedTableNames.Count == 0) return;
+
+            var issues = new List<string>();
+
+            // 1. TableDisplayInfo must cover every selected table; otherwise the diff
+            //    against an existing PBIP can't match logical-name to display-name folders.
+            var tdi = settings.TableDisplayInfo ?? new Dictionary<string, TableDisplayInfo>();
+            var missingTdi = settings.SelectedTableNames
+                .Where(n => !tdi.ContainsKey(n))
+                .ToList();
+            if (missingTdi.Count > 0)
+            {
+                var sample = string.Join(", ", missingTdi.Take(3));
+                issues.Add($"missing display info for {missingTdi.Count} table(s) [{sample}{(missingTdi.Count > 3 ? ", ..." : "")}]");
+            }
+
+            // 2. SelectedAttributes must have an entry per selected table. Seed empty so
+            //    RevalidateTableMetadata's required-attribute pass populates primary id /
+            //    primary name / relationship lookups.
+            var missingAttrs = settings.SelectedTableNames
+                .Where(n => !_selectedAttributes.ContainsKey(n) || _selectedAttributes[n].Count == 0)
+                .ToList();
+            if (missingAttrs.Count > 0)
+            {
+                foreach (var n in missingAttrs)
+                {
+                    if (!_selectedAttributes.ContainsKey(n))
+                        _selectedAttributes[n] = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                }
+                var sample = string.Join(", ", missingAttrs.Take(3));
+                issues.Add($"no field selections for {missingAttrs.Count} table(s) [{sample}{(missingAttrs.Count > 3 ? ", ..." : "")}]");
+            }
+
+            // 3. FactTable must reference a selected table; otherwise builder generates nonsense.
+            if (!string.IsNullOrEmpty(_factTable) && !settings.SelectedTableNames.Contains(_factTable, StringComparer.OrdinalIgnoreCase))
+            {
+                issues.Add($"fact table '{_factTable}' is not in SelectedTableNames; defaulting to '{settings.SelectedTableNames[0]}'");
+                _factTable = settings.SelectedTableNames[0];
+            }
+            else if (string.IsNullOrEmpty(_factTable) && settings.SelectedTableNames.Count > 0)
+            {
+                issues.Add($"fact table not set; defaulting to '{settings.SelectedTableNames[0]}'");
+                _factTable = settings.SelectedTableNames[0];
+            }
+
+            if (issues.Count > 0)
+            {
+                _configHealNeeded = true;
+                _configHealMessages = issues;
+                var msg = $"Configuration drift detected: {string.Join("; ", issues)}";
+                SetStatus(msg + ". Refreshing from Dataverse...");
+                DebugLogger.Log($"ValidateLoadedConfiguration drift on '{_currentModel.Name}': {msg}");
+            }
+        }
+
         private void SaveCurrentModel()
         {
             if (_currentModel == null) return;
+            // Block saves until LoadSemanticModel has finished populating in-memory state.
+            // Without this, a callback firing mid-load (e.g. a stale RevalidateMetadata
+            // PostWorkCallBack) can serialize empty per-table dicts over good on-disk data.
+            if (!_settingsLoaded) return;
             
             try
             {
@@ -1107,6 +1201,14 @@ namespace DataverseToPowerBI.XrmToolBox
         
         private void ShowSemanticModelSelector()
         {
+            // Flush any pending changes on the outgoing model before the dialog is even shown,
+            // so that swapping to a different model can't carry stale in-memory state into the
+            // wrong slot.
+            if (_settingsLoaded && _currentModel != null)
+            {
+                SaveCurrentModel();
+            }
+
             using (var dialog = new SemanticModelSelectorDialog(_modelManager, _currentEnvironmentUrl ?? "", _currentOrganizationUniqueName))
             {
                 if (dialog.ShowDialog(this) == DialogResult.OK && dialog.SelectedSemanticModel != null)
@@ -1653,6 +1755,10 @@ namespace DataverseToPowerBI.XrmToolBox
 
             var tablesToLoad = _selectedTables.Keys.ToList();
             var capturedVersion = _operationVersion;
+            var healNeeded = _configHealNeeded;
+            // Side-channel for healed entity-level metadata, populated on the background thread
+            // and consumed in PostWorkCallBack to repair _selectedTables display info.
+            var healedTableMetadata = new Dictionary<string, TableMetadata>(StringComparer.OrdinalIgnoreCase);
             _isLoadingMetadata = true;
             
             WorkAsync(new WorkAsyncInfo
@@ -1680,6 +1786,20 @@ namespace DataverseToPowerBI.XrmToolBox
                             
                             var views = _xrmAdapter.GetViewsSync(Service, tableName, true);
                             viewResults[tableName] = views;
+
+                            // When healing, also pull entity-level metadata so we can fix
+                            // missing display name / schema / primary keys in _selectedTables.
+                            if (healNeeded)
+                            {
+                                try
+                                {
+                                    healedTableMetadata[tableName] = _xrmAdapter.GetTableMetadataSync(Service, tableName);
+                                }
+                                catch (Exception ex)
+                                {
+                                    System.Diagnostics.Debug.WriteLine($"Error fetching entity metadata for {tableName}: {ex.Message}");
+                                }
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -1713,6 +1833,23 @@ namespace DataverseToPowerBI.XrmToolBox
                             _tableForms[kvp.Key] = kvp.Value;
                         foreach (var kvp in result.Item3)
                             _tableViews[kvp.Key] = kvp.Value;
+
+                        // Self-healing: apply refetched entity-level metadata to _selectedTables
+                        // so display name / schema name / primary keys are correct even if the
+                        // persisted TableDisplayInfo was missing entries.
+                        if (healNeeded && healedTableMetadata.Count > 0)
+                        {
+                            foreach (var kvp in healedTableMetadata)
+                            {
+                                if (_selectedTables.TryGetValue(kvp.Key, out var existing))
+                                {
+                                    existing.DisplayName = kvp.Value.DisplayName ?? existing.DisplayName ?? kvp.Key;
+                                    existing.SchemaName = kvp.Value.SchemaName ?? existing.SchemaName ?? kvp.Key;
+                                    existing.PrimaryIdAttribute = kvp.Value.PrimaryIdAttribute ?? existing.PrimaryIdAttribute;
+                                    existing.PrimaryNameAttribute = kvp.Value.PrimaryNameAttribute ?? existing.PrimaryNameAttribute;
+                                }
+                            }
+                        }
                         
                         // Revalidate each table's selections (matching MainForm.RevalidateTableMetadata)
                         foreach (var tableName in _selectedTables.Keys.ToList())
@@ -1721,9 +1858,18 @@ namespace DataverseToPowerBI.XrmToolBox
                         }
                         
                         var normalizedExpandedLookupSettings = NormalizeExpandedLookupsFromMetadata();
-                        if (normalizedExpandedLookupSettings)
+                        if (normalizedExpandedLookupSettings || healNeeded)
                         {
                             SaveSettings();
+                        }
+
+                        if (healNeeded)
+                        {
+                            var summary = $"Configuration drift was repaired: {string.Join("; ", _configHealMessages)}. Review your field selections — defaults were applied where data was lost.";
+                            DebugLogger.Log($"Self-heal complete on '{_currentModel?.Name}': {summary}");
+                            SetStatus(summary);
+                            _configHealNeeded = false;
+                            _configHealMessages.Clear();
                         }
                     }
                     

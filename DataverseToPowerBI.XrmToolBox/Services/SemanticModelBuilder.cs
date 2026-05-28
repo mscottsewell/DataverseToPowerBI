@@ -1403,6 +1403,86 @@ namespace DataverseToPowerBI.XrmToolBox.Services
             return autoMeasures;
         }
 
+        private static string BuildDefaultCountMeasureExpression(ExportTable table)
+        {
+            var displayName = table.DisplayName ?? table.SchemaName ?? table.LogicalName;
+            return $"COUNTROWS('{displayName}')";
+        }
+
+        private static string NormalizeDaxExpression(string expression)
+        {
+            if (string.IsNullOrWhiteSpace(expression))
+                return string.Empty;
+
+            return Regex.Replace(expression, @"\s+", string.Empty).ToUpperInvariant();
+        }
+
+        private static bool IsCountMeasureModified(string measureName, string? measureExpression, ExportTable table)
+        {
+            var displayName = table.DisplayName ?? table.SchemaName ?? table.LogicalName;
+            var expectedName = $"{displayName} Count";
+
+            if (!string.Equals(measureName, expectedName, StringComparison.OrdinalIgnoreCase))
+                return false;
+
+            // If expression isn't parseable from the measure declaration line,
+            // conservatively preserve it as user-modified.
+            if (string.IsNullOrWhiteSpace(measureExpression))
+                return true;
+
+            var expected = NormalizeDaxExpression(BuildDefaultCountMeasureExpression(table));
+            var actual = NormalizeDaxExpression(measureExpression);
+            return !string.Equals(actual, expected, StringComparison.Ordinal);
+        }
+
+        private static bool TryExtractMeasureNameAndExpression(Match measureBlockMatch, out string measureName, out string? measureExpression)
+        {
+            measureName = string.Empty;
+            measureExpression = null;
+
+            var declaration = measureBlockMatch.Groups[2].Value;
+            var nameMatch = Regex.Match(declaration, @"^'([^']+)'|^([^\s=]+)");
+            if (!nameMatch.Success)
+                return false;
+
+            measureName = nameMatch.Groups[1].Success ? nameMatch.Groups[1].Value : nameMatch.Groups[2].Value;
+
+            var expressionMatch = Regex.Match(declaration, @"=\s*(.+)$");
+            if (expressionMatch.Success)
+            {
+                measureExpression = expressionMatch.Groups[1].Value.Trim();
+            }
+
+            return true;
+        }
+
+        private bool HasModifiedCountMeasure(string tmdlPath, ExportTable table)
+        {
+            if (!File.Exists(tmdlPath))
+                return false;
+
+            try
+            {
+                var content = File.ReadAllText(tmdlPath);
+                var matches = MeasureBlockRegex.Matches(content);
+
+                foreach (Match match in matches)
+                {
+                    if (!TryExtractMeasureNameAndExpression(match, out var measureName, out var measureExpression))
+                        continue;
+
+                    if (IsCountMeasureModified(measureName, measureExpression, table))
+                        return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                DebugLogger.Log($"Warning: Could not inspect count measure in {tmdlPath}: {ex.Message}");
+            }
+
+            return false;
+        }
+
         private static bool IsLookupType(string? attrType)
         {
             return string.Equals(attrType, "Lookup", StringComparison.OrdinalIgnoreCase) ||
@@ -4623,8 +4703,10 @@ namespace DataverseToPowerBI.XrmToolBox.Services
 
                 // Extract user measures if table exists (from current or renamed file)
                 string? userMeasuresSection = null;
+                var hasModifiedCountMeasure = false;
                 if (sourceFile != null)
                 {
+                    hasModifiedCountMeasure = HasModifiedCountMeasure(sourceFile, table);
                     userMeasuresSection = ExtractUserMeasuresSection(sourceFile, table);
                 }
 
@@ -4643,7 +4725,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                 }
 
                 // Generate new table TMDL with preserved lineage tags and column metadata
-                var tableTmdl = GenerateTableTmdl(table, attributeDisplayInfo, requiredLookupColumns, dateTableConfig, existingLineageTags: existingTags, existingColumnMetadata: existingColMeta, existingQueryGroup: existingQueryGroup);
+                var tableTmdl = GenerateTableTmdl(table, attributeDisplayInfo, requiredLookupColumns, dateTableConfig, existingLineageTags: existingTags, existingColumnMetadata: existingColMeta, existingQueryGroup: existingQueryGroup, suppressAutoCountMeasure: hasModifiedCountMeasure);
 
                 // Append user-added columns if any
                 if (!string.IsNullOrEmpty(userColumnsSection))
@@ -4840,12 +4922,16 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                 var sb = new StringBuilder();
                 foreach (Match match in matches)
                 {
-                    // Extract measure name from the "measure 'Name' = ..." line
-                    var nameMatch = Regex.Match(match.Groups[2].Value, @"^'([^']+)'|^([^\s=]+)");
-                    var measureName = nameMatch.Groups[1].Success ? nameMatch.Groups[1].Value : nameMatch.Groups[2].Value;
+                    if (!TryExtractMeasureNameAndExpression(match, out var measureName, out var measureExpression))
+                        continue;
                     
-                    // Skip auto-generated measures (they'll be re-generated)
-                    if (autoMeasures.Contains(measureName))
+                    // Count measures that were user-modified are preserved forever:
+                    // never regenerate/overwrite/remove them on incremental updates.
+                    var preserveModifiedCountMeasure = table != null && IsCountMeasureModified(measureName, measureExpression, table);
+
+                    // Skip auto-generated measures (they'll be re-generated), unless this is
+                    // a user-modified count measure that must remain untouched.
+                    if (autoMeasures.Contains(measureName) && !preserveModifiedCountMeasure)
                         continue;
 
                     // The regex can capture a leading \n from the blank-line separator between measures
@@ -5444,7 +5530,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
         /// <summary>
         /// Generates TMDL content for a table
         /// </summary>
-        internal string GenerateTableTmdl(ExportTable table, Dictionary<string, Dictionary<string, AttributeDisplayInfo>> attributeDisplayInfo, HashSet<string> requiredLookupColumns, DateTableConfig? dateTableConfig = null, string? outputFolder = null, Dictionary<string, string>? existingLineageTags = null, Dictionary<string, ExistingColumnInfo>? existingColumnMetadata = null, string? existingQueryGroup = null)
+        internal string GenerateTableTmdl(ExportTable table, Dictionary<string, Dictionary<string, AttributeDisplayInfo>> attributeDisplayInfo, HashSet<string> requiredLookupColumns, DateTableConfig? dateTableConfig = null, string? outputFolder = null, Dictionary<string, string>? existingLineageTags = null, Dictionary<string, ExistingColumnInfo>? existingColumnMetadata = null, string? existingQueryGroup = null, bool suppressAutoCountMeasure = false)
         {
             var sb = new StringBuilder();
             var displayName = table.DisplayName ?? table.SchemaName ?? table.LogicalName;
@@ -6218,7 +6304,7 @@ namespace DataverseToPowerBI.XrmToolBox.Services
             // Auto-generate table count measure based on per-table options (fact tables default enabled).
             // PBI Desktop expects measures to appear before columns in TMDL serialization order.
 
-            if (includeCountMeasure)
+            if (includeCountMeasure && !suppressAutoCountMeasure)
             {
                 sb.AppendLine($"\tmeasure '{displayName} Count' = COUNTROWS('{displayName}')");
                 sb.AppendLine($"\t\tformatString: #,0");

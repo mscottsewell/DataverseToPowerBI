@@ -692,6 +692,46 @@ table TestTable
         }
 
         [Fact]
+        public void ExtractUserMeasuresSection_PreservesModifiedCountMeasure_WhenCountMeasureEnabledForTable()
+        {
+            var table = new ExportTable
+            {
+                LogicalName = "account",
+                DisplayName = "Account",
+                Role = "Fact",
+                IncludeCountMeasure = true,
+                IncludeRecordLinkMeasure = true
+            };
+
+            var tmdlPath = Path.Combine(_tempDir, "ModifiedCountMeasure.tmdl");
+            File.WriteAllText(
+                tmdlPath,
+                "table 'Account'\r\n" +
+                "\tmeasure 'Account Count' = CALCULATE(COUNTROWS('Account'), NOT ISBLANK('Account'[name]))\r\n" +
+                "\t\tformatString: #,0\r\n" +
+                "\t\tlineageTag: modified-count\r\n" +
+                "\r\n" +
+                "\tmeasure 'Link to Account' = \"auto\"\r\n" +
+                "\t\tlineageTag: auto-link\r\n" +
+                "\r\n" +
+                "\tmeasure 'Custom Measure' = 1\r\n" +
+                "\t\tformatString: 0\r\n" +
+                "\r\n" +
+                "\tcolumn accountid\r\n" +
+                "\t\tdataType: int64\r\n" +
+                "\r\n" +
+                "\tpartition 'Account' = p\r\n");
+
+            var result = _builder.ExtractUserMeasuresSection(tmdlPath, table);
+
+            Assert.NotNull(result);
+            Assert.Contains("measure 'Account Count'", result);
+            Assert.Contains("CALCULATE(COUNTROWS('Account'), NOT ISBLANK('Account'[name]))", result);
+            Assert.DoesNotContain("measure 'Link to Account'", result);
+            Assert.Contains("measure 'Custom Measure'", result);
+        }
+
+        [Fact]
         public void ExtractUserMeasuresSection_ExcludesExpandedLookupLinkMeasures()
         {
             var table = new ExportTable
@@ -2513,6 +2553,33 @@ table TestTable
             Assert.Contains("formatString: #,0", tmdl);
             Assert.DoesNotContain("measure 'Link to Account'", tmdl);
             Assert.DoesNotContain("column 'Link to Account' = ```", tmdl);
+        }
+
+        [Fact]
+        public void GenerateTableTmdl_SuppressAutoCountMeasure_DoesNotGenerateCount()
+        {
+            var table = new ExportTable
+            {
+                LogicalName = "account",
+                DisplayName = "Account",
+                SchemaName = "Account",
+                PrimaryIdAttribute = "accountid",
+                PrimaryNameAttribute = "name",
+                Role = "Fact",
+                IncludeCountMeasure = true,
+                Attributes = new List<DataverseToPowerBI.Core.Models.AttributeMetadata>
+                {
+                    new DataverseToPowerBI.Core.Models.AttributeMetadata { LogicalName = "accountid", DisplayName = "Account", AttributeType = "Uniqueidentifier" }
+                }
+            };
+
+            var tmdl = _builder.GenerateTableTmdl(
+                table,
+                new Dictionary<string, Dictionary<string, AttributeDisplayInfo>>(StringComparer.OrdinalIgnoreCase),
+                new HashSet<string>(StringComparer.OrdinalIgnoreCase),
+                suppressAutoCountMeasure: true);
+
+            Assert.DoesNotContain("measure 'Account Count'", tmdl);
         }
 
         [Fact]

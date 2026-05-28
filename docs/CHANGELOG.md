@@ -8,6 +8,30 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [1.2026.6.36] - 2026-05-28
+
+### Added
+
+- **SortByColumn Preservation on Rebuild** — Incremental regeneration now preserves existing `sortByColumn` metadata so custom sort-order behavior remains stable across publishes.
+
+- **Model Management and Copy Fidelity Test Coverage** — Added targeted tests for semantic model copy/serialization fidelity and count-measure preservation behaviors, including modified count-measure handling and suppression paths used during incremental updates.
+
+### Changed
+
+- **Semantic Model Manager UX and Terminology** — Model-management flows were refined and wording aligned around "Working Folder" behavior to reduce ambiguity when creating, selecting, and maintaining semantic model configurations.
+
+- **Configuration Copy Fidelity** — Model copy behavior now preserves a broader set of configuration attributes end-to-end, including field-view selections, display-name overrides, field-selection modes, per-table measure toggles, additional tables/relationships, language code, date-table settings, and relationship metadata flags.
+
+### Fixed
+
+- **Expanded Lookup Form Reliability** — Expanded lookup form behavior is now covered by additional tests and implementation adjustments to reduce regression risk in lookup configuration workflows.
+
+- **User-Modified Count Measure Protection** — Incremental publish now treats modified `{Table} Count` measures as user-owned.
+  - If the existing count measure DAX differs from the default generated `COUNTROWS(...)`, the tool preserves that measure and does not overwrite, regenerate, or remove it.
+  - Default/unmodified count measures continue to follow normal per-table toggle behavior.
+
+---
+
 ## [1.2026.6.27] - 2026-04-01
 
 ### Added

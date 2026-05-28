@@ -57,6 +57,15 @@ Try these optimizations:
 7. For larger datasets, moving the fact table to Import Mode will make the interaction more responsive.
 8. Filtering on large Date Ranges using a Direct Query source with the Date Table can cause timeouts based on the way the query is constructed. You may want to apply the query to the date field directly from within the query pane rather than relying on the Date Table.
 
+### "Will rebuild overwrite my customized {Table} Count measure?"
+If your existing `{Table} Count` DAX has been modified from the default generated `COUNTROWS(...)` expression, incremental publish now preserves it as user-owned and will not overwrite or remove it.
+
+Expected behavior:
+- **Modified count measure:** preserved (never regenerated/removed by incremental publish)
+- **Default/unmodified count measure:** still follows the table's Count toggle behavior
+
+If you want the tool-managed count behavior again, revert the measure back to the default `COUNTROWS('{Table}')` pattern.
+
 ### "Users see data they shouldn't see (DirectQuery TDS)"
 **Cause:** Single Sign-On (SSO) is not enabled in Power BI Service
 

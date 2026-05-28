@@ -86,19 +86,19 @@ This tool eliminates all of that complexity:
 
 ## 📌 Latest Changes
 
-> **v1.2026.6.27** — Full details in [CHANGELOG.md](docs/CHANGELOG.md).
+> **v1.2026.6.36** — Full details in [CHANGELOG.md](docs/CHANGELOG.md).
 
-### 🧩 User-Added Column Preservation
+### 🧠 Configuration Fidelity and Model Management
 
-Incremental and merge rebuilds now detect and preserve **user-added columns** (calculated columns, custom sourced columns) created in Power BI Desktop or a text editor. Columns without the `DataverseToPowerBI_LogicalName` annotation are extracted and re-inserted after tool-generated columns, maintaining correct TMDL serialization order.
+Semantic model management and copy behavior now preserve more configuration attributes end-to-end (including field/view selections, display-name overrides, per-table measure toggles, additional tables/relationships, language/date settings, and relationship metadata), reducing drift when duplicating or migrating model configs.
 
-### 🔗 One-to-Many Relationship Persistence
+### 📊 Count Measure Safety for Custom DAX
 
-One-to-many relationship selections now persist correctly across save/load cycles. The `IsOneToMany` property is stored on the model configuration, and the star schema wizard reliably restores checked state, active/inactive status, and referential integrity settings.
+If you customize a generated `{Table} Count` measure, incremental publish now treats that measure as user-owned. When the existing DAX no longer matches the default generated `COUNTROWS(...)` pattern, the measure is preserved and is not overwritten or removed.
 
-### 🛠 Additional Changes
+### 🧩 Incremental Rebuild Stability Improvements
 
-- One-to-many relationships in the Fact/Dimension selector no longer reset to unchecked on each reload.
+Incremental regeneration now preserves existing `sortByColumn` metadata, helping maintain custom sort ordering behavior across rebuilds.
 
 
 ---

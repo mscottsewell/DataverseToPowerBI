@@ -2,7 +2,7 @@
 <package>
 	<metadata>
     <id>DataverseToPowerBI.XrmToolBox</id>
-  <version>1.2026.6.34</version>
+  <version>1.2026.6.36</version>
     <title>Dataverse to Power BI Semantic Model</title>
     <authors>Scott Sewell</authors>
     <owners>mScottSewell</owners>
@@ -11,11 +11,13 @@
     <description>Extract Dataverse metadata and generate Power BI TMDL/PBIP semantic models with automatic table relationships, calendar tables, and incremental change detection.</description>
     <summary>XrmToolBox plugin for generating Power BI semantic models from Dataverse metadata</summary>
     <releaseNotes>
-      v1.2026.6.27 — **User-added column preservation, one-to-many relationship persistence, and reload fixes.**
+      v1.2026.6.36 — **Post-1.2026.6.28 reliability and configuration-fidelity release.**
 
-      NEW — Incremental and merge rebuilds now detect and preserve user-added columns (calculated columns, custom sourced columns) created in Power BI Desktop. Columns without a DataverseToPowerBI_LogicalName annotation are re-inserted after tool-generated columns on rebuild. The IsOneToMany property is now persisted on RelationshipConfig, replacing heuristic-based detection.
+      NEW — Added preservation for existing sortByColumn metadata on rebuild and expanded regression coverage for semantic model copy/serialization and count-measure preservation workflows.
 
-      FIXED — One-to-many relationships in the star schema wizard now correctly restore their checked state, active/inactive status, and referential integrity settings from saved configurations instead of resetting on each load.
+      CHANGED — Enhanced semantic model management and copy fidelity to carry more configuration attributes (field/view selections, display overrides, per-table measure toggles, additional tables/relationships, language/date settings, and relationship metadata).
+
+      FIXED — User-modified {Table} Count measures are now treated as user-owned during incremental publish: if DAX differs from the default COUNTROWS pattern, the measure is preserved and not overwritten or removed.
 
       Full details: docs/CHANGELOG.md | https://github.com/mscottsewell/DataverseToPowerBI
     </releaseNotes>
