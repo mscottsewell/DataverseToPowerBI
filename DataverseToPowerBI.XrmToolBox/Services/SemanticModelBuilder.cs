@@ -109,8 +109,12 @@ namespace DataverseToPowerBI.XrmToolBox.Services
             RegexOptions.Multiline | RegexOptions.Compiled, RegexTimeout);
 
         /// <summary>Measure block pattern for <see cref="ExtractUserMeasuresSection"/>.</summary>
+        // Lookahead includes `///` so a measure body does not swallow the doc-comment
+        // line that introduces the next column. Without it, the trailing /// gets
+        // captured into the user-measures section and re-inserted above the next
+        // column's freshly-generated /// on every rebuild, duplicating the description.
         private static readonly Regex MeasureBlockRegex = new Regex(
-            @"(^\s*(?:///[^\r\n]*\r?\n)*\s*measure\s+([^\r\n]+)\r?\n(?:.*?\r?\n)*?(?=^\s*(?:measure|column|partition|annotation)\s|\z))",
+            @"(^\s*(?:///[^\r\n]*\r?\n)*\s*measure\s+([^\r\n]+)\r?\n(?:.*?\r?\n)*?(?=^\s*(?:measure|column|partition|annotation)\s|^\s*///|\z))",
             RegexOptions.Multiline | RegexOptions.Compiled, RegexTimeout);
 
         /// <summary>Hierarchy block pattern for <see cref="ExtractUserHierarchiesSection"/>.</summary>
@@ -210,6 +214,32 @@ namespace DataverseToPowerBI.XrmToolBox.Services
             }
 
             return generatedTables;
+        }
+
+        /// <summary>
+        /// Returns true if the given TMDL file is sourced from Dataverse (i.e. its partition
+        /// uses the Sql.Database / Sql.Databases connector). Returns false for user-authored
+        /// calculated tables (partition mode 'calculated', DAX expressions like DATATABLE / GENERATESERIES)
+        /// and for inline Power Query data tables (Table.FromRows on Json.Document / #table literals).
+        /// Used to suppress the orphan-warning noise on tables this utility didn't generate.
+        /// </summary>
+        private static bool IsDataverseSourcedTmdl(string tmdlPath)
+        {
+            try
+            {
+                if (!File.Exists(tmdlPath)) return false;
+                var text = File.ReadAllText(tmdlPath);
+                // The plugin always emits Sql.Database / Sql.Databases for Dataverse tables
+                // (DataverseTDS and FabricLink modes both use the SQL connector). Anything
+                // missing that signature is local to the model.
+                return text.IndexOf("Sql.Database", StringComparison.OrdinalIgnoreCase) >= 0;
+            }
+            catch
+            {
+                // If we can't read it, be conservative and treat it as Dataverse-sourced
+                // so the user still sees a warning.
+                return true;
+            }
         }
 
         /// <summary>
@@ -2456,11 +2486,13 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                         }
                     }
 
-                    // Warn about orphaned tables (exclude generated tables like Date/DateAutoTemplate/DataverseURL)
+                    // Warn about orphaned tables (exclude generated tables like Date/DateAutoTemplate/DataverseURL
+                    // and user-authored calculated/DAX/inline-M tables that this utility didn't produce).
                     var generatedTables = GetGeneratedTableNames();
                     var orphanedTables = existingTables
                         .Except(metadataTables, StringComparer.OrdinalIgnoreCase)
                         .Where(t => !generatedTables.Contains(t))
+                        .Where(t => IsDataverseSourcedTmdl(Path.Combine(tablesFolder, t + ".tmdl")))
                         .ToList();
                     
                     foreach (var orphan in orphanedTables)
@@ -4777,6 +4809,13 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                     var tableName = Path.GetFileNameWithoutExtension(filePath);
                     if (!metadataTables.Contains(tableName) && !generatedTables.Contains(tableName))
                     {
+                        // Never delete user-authored calculated / inline-M tables, even when
+                        // 'Remove orphaned tables' is checked — they aren't ours to remove.
+                        if (!IsDataverseSourcedTmdl(filePath))
+                        {
+                            DebugLogger.Log($"Skipping non-Dataverse table during orphan removal: {filePath}");
+                            continue;
+                        }
                         SetStatus($"Removing orphaned table: {tableName}...");
                         DebugLogger.Log($"Removing orphaned table file: {filePath}");
                         File.Delete(filePath);
@@ -6837,8 +6876,8 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                 return normalizedType switch
                 {
                     // Numeric types - Fabric SQL endpoint returns money/decimal as float (double)
-                    "integer" => ("int64", "0", "int", "sum"),
-                    "bigint" => ("int64", "0", "bigint", "sum"),
+                    "integer" => ("int64", "#,0", "int", "sum"),
+                    "bigint" => ("int64", "#,0", "bigint", "sum"),
                     "decimal" => ("double", "#,0.00", null, "sum"),
                     "double" => ("double", "#,0.00", null, "sum"),
                     "money" => ("double", "\\$#,0.00;(\\$#,0.00);\\$#,0.00", null, "sum"),
@@ -6871,8 +6910,8 @@ namespace DataverseToPowerBI.XrmToolBox.Services
                 // Numeric types
                 // PBI Desktop converts money/decimal to double on TDS too — match that
                 // to avoid false change detection ("Changed: dataType: double → decimal")
-                "integer" => ("int64", "0", "int", "sum"),
-                "bigint" => ("int64", "0", "bigint", "sum"),
+                "integer" => ("int64", "#,0", "int", "sum"),
+                "bigint" => ("int64", "#,0", "bigint", "sum"),
                 "decimal" => ("double", "#,0.00", null, "sum"),
                 "double" => ("double", "#,0.00", null, "sum"),
                 "money" => ("double", "\\$#,0.00;(\\$#,0.00);\\$#,0.00", null, "sum"),

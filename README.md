@@ -86,19 +86,19 @@ This tool eliminates all of that complexity:
 
 ## 📌 Latest Changes
 
-> **v1.2026.6.36** — Full details in [CHANGELOG.md](docs/CHANGELOG.md).
+> **v1.2026.6.37** — Full details in [CHANGELOG.md](docs/CHANGELOG.md).
 
-### 🧠 Configuration Fidelity and Model Management
+### 🔢 Locale-Aware Thousands Separator for Whole Numbers
 
-Semantic model management and copy behavior now preserve more configuration attributes end-to-end (including field/view selections, display-name overrides, per-table measure toggles, additional tables/relationships, language/date settings, and relationship metadata), reducing drift when duplicating or migrating model configs.
+`Integer` and `BigInt` columns now generate `formatString: #,0` so whole-number values render with thousands grouping in Power BI visuals (e.g. `1,234,567` in en-US, `1.234.567` in de-DE). Power BI applies the group separator from the report viewer's locale at render time.
 
-### 📊 Count Measure Safety for Custom DAX
+### 🛡️ User-Authored Calculated Tables Protected from Orphan Cleanup
 
-If you customize a generated `{Table} Count` measure, incremental publish now treats that measure as user-owned. When the existing DAX no longer matches the default generated `COUNTROWS(...)` pattern, the measure is preserved and is not overwritten or removed.
+Orphan detection and the "Remove orphaned tables" cleanup now classify tables by whether they are Dataverse-sourced (have a `Sql.Database` partition). User-authored calculated tables (`DATATABLE`, `GENERATESERIES`) and inline Power Query data tables are no longer flagged as orphans or deleted during rebuild.
 
-### 🧩 Incremental Rebuild Stability Improvements
+### 🧹 Cleaner Incremental Rebuilds
 
-Incremental regeneration now preserves existing `sortByColumn` metadata, helping maintain custom sort ordering behavior across rebuilds.
+Fixed an issue where each incremental rebuild appended an extra `///` doc-comment line above every column, causing comment duplication to accumulate over time.
 
 
 ---

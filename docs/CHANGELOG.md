@@ -8,6 +8,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [1.2026.6.37] - 2026-05-28
+
+### Changed
+
+- **Whole-Number Thousands Separator** — `integer` and `bigint` columns now generate `formatString: #,0` (was `0`) so whole-number values render with locale-aware thousands grouping in Power BI visuals (e.g. `1,234,567` in en-US, `1.234.567` in de-DE). Power BI applies the group separator from the report viewer's locale at render time. Picklist/state/status/entityname columns remain unformatted because they are option-set codes, not quantities.
+
+### Fixed
+
+- **User-Authored Calculated Tables No Longer Flagged or Removed as Orphans** — Orphan detection and the "Remove orphaned tables" cleanup now distinguish Dataverse-sourced tables from user-authored ones.
+  - A new `IsDataverseSourcedTmdl` check classifies a TMDL table as Dataverse-sourced only when it contains a `Sql.Database` partition (DataverseTDS or FabricLink).
+  - User-authored calculated tables (`DATATABLE`, `GENERATESERIES`) and inline Power Query data tables are now excluded from orphan warnings and skipped during orphan removal, with a diagnostic log entry written when a non-Dataverse table is encountered.
+
+- **Duplicate `///` Comment Lines Accumulating on Rebuild** — The user-measure extraction regex now stops at the `///` header that introduces the next column, instead of capturing it into the preserved measure block. Previously, each incremental rebuild appended an extra `///` line above every column, causing comment duplication to grow with each publish.
+
+---
+
 ## [1.2026.6.36] - 2026-05-28
 
 ### Added
